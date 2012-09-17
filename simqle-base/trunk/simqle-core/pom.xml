@@ -11,7 +11,7 @@
   <artifactId>simqle-core</artifactId>
   <version>0.0-SNAPSHOT</version>
   <name>simqle-core</name>
-  <url>http://simqle.org</url>
+  <url>simqle-core</url>
 
   <properties>
       <docbook.xsl.url>http://docbook.sourceforge.net/release/xsl/1.75.2/</docbook.xsl.url>
@@ -26,38 +26,6 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-             <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-site-plugin</artifactId>
-            </plugin>
-	    <plugin>
-	        <groupId>org.codehaus.mojo</groupId>
-        	<artifactId>exec-maven-plugin</artifactId>
-	        <version>1.1</version>
-        	<executions>
-	          <execution>
-                  <id>design-html</id>
-                  <phase>site</phase>
-	            <goals>
-        	      <goal>java</goal>
-	            </goals>
-        	<configuration>
-	          <executable>maven</executable>
-		  <mainClass>org.apache.xalan.xslt.Process</mainClass>
-                  <classpathScope>test</classpathScope>
-	          <arguments>
-        	    <argument>-IN</argument>
-        	    <argument>${basedir}/src/site/docbook/design.xml</argument>
-        	    <argument>-xsl</argument>
-        	    <!--argument>${basedir}/xsl/html/docbook.xsl</argument-->
-        	    <argument>${docbook.xsl.url}/html/docbook.xsl</argument>
-        	    <argument>-OUT</argument>
-        	    <argument>${basedir}/target/site/design.xml</argument>
-	          </arguments>
-        	</configuration>
-        	  </execution>
-	        </executions>
-	      </plugin>
         </plugins>
     </build>
     <reporting>
