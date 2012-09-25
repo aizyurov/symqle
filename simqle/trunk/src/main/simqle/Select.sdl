@@ -62,3 +62,45 @@ interface cursor_specification<T> : Query<T> {}
 class CursorSpecification<T> implements cursor_specification<T> with sqlBuilder
 {}
 
+#cursor_specification ::= query_expression [ order_by_clause ] [ updatability_clause ]
+#updatability_clause moved to select_statement
+#cursor_specification_scalar introduced
+
+<T> cursor_specification<T> ::= cspec:cursor_specification_scalar<T>
+    :: CursorSpecificationScalar<T> mimics CursorSpecification<T>
+    {}
+| qe:query_expression<T>
+    ::  QueryExpression<T> mimics CursorSpecification<T>
+    {}
+
+| qe:query_expression<T> obc:order_by_clause
+    :: QueryExpression<T>
+        {
+            CursorSpecification<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
+                final SqlFactory factory = SqlFactory.getInstance();
+                sort_specification_list sortList = factory.sort_specification_list_IS_sort_specification(sort);
+                for (sort_specification sortSpec: additionalSort) {
+                    sortList = factory.sort_specification_list_IS_sort_specification_list_COMMA_sort_specification(sortList, sortSpec);
+                }
+                order_by_clause orderBy = factory.order_by_clause_IS_ORDER_BY_sort_specification_list(sortList);
+                return new CursorSpecification<T>(factory.cursor_specification_IS_query_expression_order_by_clause(this, orderBy));
+            }
+        }
+;
+
+public interface cursor_specification_scalar<T> extends Scalar<T> : Query<T>
+ {}
+
+public class CursorSpecificationScalar<T> implements cursor_specification_scalar<T> with sqlBuilder
+import java.util.List;
+import java.sql.SQLException;
+{}
+
+public interface query_expression<T> : Query<T>
+{}
+
+public class QueryExpression<T> implements query_expression<T> with sqlBuilder
+import java.util.List;
+import java.sql.SQLException;
+{}
+

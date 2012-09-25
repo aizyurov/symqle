@@ -1,0 +1,5 @@
+public interface value_expression<T> extends Scalar<T> : Sql
+{}
+
+public class Value<T> implements value_expression<T> with valueExpression
+{}

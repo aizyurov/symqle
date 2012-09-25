@@ -1,0 +1,94 @@
+#order_by_clause ::= ORDER BY sort_specification_list
+#sort_specification_list ::= sort_specification [ { comma sort_specification }... ]
+#sort_specification ::= sort_key [ ordering_specification ] [ null_ordering ]
+#sort_key ::= value_expression
+#ordering_specification ::= ASC | DESC
+#null_ordering ::= NULLS FIRST | NULLS LAST
+
+#rephrased in trivial manner - see below
+
+public interface order_by_clause : Sql
+{}
+# no class OrderByClause!
+
+order_by_clause ::= ORDER BY ssl:sort_specification_list
+;
+
+public interface sort_specification_list : Sql
+{}
+public class SortSpecificationList implements sort_specification_list with sortSpecificationListBuilder
+{}
+
+sort_specification_list ::= ss:sort_specification
+| ssl:sort_specification_list COMMA ss:sort_specification
+;
+
+# we need not a class sort_specification_list: the user never constructs it directly, because
+# CursorSpecification#orderBy accepts a list of sort_specification and constructs sort_specification_list internally
+
+public interface sort_specification : Sql
+{}
+public class SortSpecification implements sort_specification with sortSpec
+{}
+
+sort_specification ::= sos:sort_ordering_specification
+    :: SortOrderingSpecification mimics SortSpecification
+    {}
+|   sos:sort_ordering_specification NULLS FIRST
+    :: SortOrderingSpecification
+    {
+        public SortSpecification nullsFirst() {
+            return new SortSpecification(
+                _APPLY_RULE_(this)
+                );
+        }
+    }
+|   sos:sort_ordering_specification NULLS LAST
+    :: SortOrderingSpecification
+    {
+        public SortSpecification nullsLast() {
+            return new SortSpecification(
+                _APPLY_RULE_(this)
+                );
+        }
+
+    }
+;
+
+public interface sort_ordering_specification : Sql
+{}
+public class SortOrderingSpecification implements sort_ordering_specification with sortOderingSpecBuilder
+{}
+
+sort_ordering_specification ::= key:sort_key
+    :: SortKey mimics SortOrderingSpecification
+    {}
+| key:sort_key ASC
+    :: SortKey
+    {
+        SortOrderingSpecification asc() {
+            return new SortOrderingSpecification(
+                _APPLY_RULE_(this)
+                );
+        }
+    }
+| key:sort_key DESC
+    :: SortKey
+    {
+        SortOrderingSpecification desc() {
+            return new SortOrderingSpecification(
+                _APPLY_RULE_(this)
+                );
+        }
+    }
+;
+
+public interface sort_key : Sql
+{}
+class SortKey implements sort_key with sortKeyBuilder
+{}
+
+sort_key ::= ve:value_expression
+    :: Value<T> mimics SortKey
+    {}
+;
