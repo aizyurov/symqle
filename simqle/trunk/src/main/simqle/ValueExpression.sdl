@@ -163,6 +163,38 @@ class BooleanPrimary implements boolean_primary with sqlBuilder
 {}
 
 
+boolean_primary ::= p:predicate
+    ::Predicate mimics BooleanPrimary
+    {}
+
+  | LEFT_PAREN bve:boolean_value_expression RIGHT_PAREN
+    :: BooleanValueExpression mimics BooleanPrimary
+    {}
+
+  | vep:value_expression_primary<Boolean>
+  :: Value<T> {
+public BooleanPrimary asCondition()   {
+        return new BooleanPrimary(SqlFactory.getInstance().boolean_primary_IS_value_expression_primary(
+                new value_expression_primary<Boolean>() {
+                    @Override
+                    public Sql z$create$value_expression_primary(final SqlContext context) {
+                        return z$create$value_expression_primary(context);
+                    }
+
+                    @Override
+                    public void z$prepare$value_expression_primary(final SqlContext context) {
+                        z$prepare$value_expression(context);
+                    }
+
+                    @Override
+                    public Boolean value(final Element element) throws SQLException {
+                        return element.getBoolean();
+                    }
+                }));
+    }
+  }
+;
+
 
 
 public interface value_expression_primary<T> extends Scalar<T> : Sql

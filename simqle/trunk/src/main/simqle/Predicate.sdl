@@ -1,0 +1,5 @@
+public interface predicate extends Scalar<Boolean> :Sql
+{}
+
+public class Predicate implements predicate with sqlBuilder
+{}
