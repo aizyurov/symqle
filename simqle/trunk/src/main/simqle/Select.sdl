@@ -268,6 +268,10 @@ public class QueryBaseScalar<T> implements query_base_scalar<T> with sqlBuilder
 # A single class RowValue represents both select_list and row_value_expression.
 # so, all() and distinct() methods are methods of this class
 
+public interface select_list<T> : Query<T>
+{}
+
+
 <T> query_base<T> ::= SELECT sl:select_list<T> fc:from_clause
     :: RowValue<T> mimics QueryBase<T>  {
     // this is a tricky part. The user never supplies from_clause,
@@ -299,6 +303,79 @@ public class QueryBaseScalar<T> implements query_base_scalar<T> with sqlBuilder
         }
      }
 ;
+
+# select_sublist
+# scalar counterpart of select_list is select_sublist rather than select_list_scalar
+
+<T> query_base_scalar<T> ::= SELECT sl:select_sublist<T> fc:from_clause
+    :: SelectSublist<T> mimics QueryBaseScalar<T>  {
+    // this is a tricky part. The user never supplies from_clause,
+    // we are extracting it from Sqlcontext. So, we have only one argument
+    // and can implement it transparently
+    // but we have to write code of toQueryBase manually
+    // providing an instance of ImplicitFromClause
+        protected final QueryBaseScalar<T> toQueryBaseScalar() {
+            from_clause fromClause = new ImplicitFromClause();
+            return new QueryBaseScalar<T>(_APPLY_RULE_(this, fromClause));
+        }
+    }
+
+| SELECT ALL sl:select_sublist<T> fc:from_clause
+     :: SelectSublist<T>
+     {
+        public QueryBaseScalar<T> all() {
+            from_clause fromClause = new ImplicitFromClause();
+            return new QueryBaseScalar<T>(_APPLY_RULE_(this, fromClause));
+        }
+     }
+
+| SELECT DISTINCT sl:select_sublist<T> fc:from_clause
+     :: SelectSublist<T>
+     {
+        public QueryBaseScalar<T> distinct() {
+            from_clause fromClause = new ImplicitFromClause();
+            return new QueryBaseScalar<T>(_APPLY_RULE_(this, fromClause));
+        }
+     }
+;
+
+public interface select_sublist<T> extends Scalar<T> : Query<T>
+{}
+
+public class SelectSublist<T> implements select_sublist<T> with builder
+{}
+
+<T> select_list<T> ::= ssl:select_sublist<T>
+    :: SelectSublist<T> mimics RowValue<T>
+    {}
+;
+
+ // more naturally implemented as static method of Values class:
+ // <L,R> RowValue<Pair<L,R> makePair(RowValue<L> l, RowValue<R> r);
+ // so no class member method is defined for this production
+<T,U> select_list<Pair<T,U>> ::= sl1:select_list<T> COMMA sl2:select_list<U>
+{   return new select_list<Pair<T,U>>() {
+        public void z$prepare$select_list(final SqlContext context) {
+            sl1.z$prepare$select_list(context);
+            sl2.z$prepare$select_list(context);
+        }
+        public Query<Pair<T,U>> z$create$select_list(final SqlContext context) {
+            final Query<T> sql1 = sl1.z$create$select_list(context);
+            final Query<U> sql2 = sl2.z$create$select_list(context);
+            DataExtractor<Pair<T,U>> extractor = new DataExtractor<Pair<T, U>>() {
+                public Pair<T, U> extract(final Row row) throws SQLException {
+                    final T first = sql1.extract(row);
+                    final U second = sql2.extract(row);
+                    return Pair.of(first, second);
+                }
+            };
+            return new CompoundQuery<Pair<T,U>>(extractor, new CompositeSql(sql1, SqlTerminal.COMMA, sql2));
+        }
+    };
+}
+;
+
+
 
 
 

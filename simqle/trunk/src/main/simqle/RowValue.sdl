@@ -1,6 +1,3 @@
-public interface select_list<T> : Query<T>
-{}
-
 /*
 A single class RowValue represents both select_list and row_value_expression.
 A more expressive and neutral name given.
