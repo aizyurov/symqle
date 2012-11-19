@@ -149,13 +149,6 @@ import java.sql.SQLException;
     }
 ;
 
-public interface query_base<T> : Query<T>
-{}
-
-public class QueryBase<T> implements query_base<T> with sqlBuilder
-{}
-
-
 <T> query_expression_scalar<T> ::= qt:query_term<T>
     :: QueryTerm<T> mimics QueryExpressionScalar<T>
      {}
@@ -193,10 +186,82 @@ public class QueryBase<T> implements query_base<T> with sqlBuilder
     }
 ;
 
+# query_term is always scalar; we do not add suffix _scalar for brevity
+
 public interface query_term<T> extends Scalar<T> :  Query<T>
 {}
 
 public class QueryTerm<T> implements query_term<T> with SqlBuilder
+{}
+
+<T> query_term<T> ::= qp:query_primary_scalar<T>
+    :: QueryPrimaryScalar<T> mimics QueryTerm<T>
+    {}
+
+|   qt:query_term<T> INTERSECT ALL qp:query_primary_scalar<T>
+    ::QueryTerm<T>
+     {
+         public QueryTerm<T> intersectAll(final query_primary_scalar<T> qps) {
+            return new QueryTerm<T>(_APPLY_RULE_(this, qps));
+         }
+     }
+
+|   qt:query_term<T> INTERSECT DISTINCT qp:query_primary_scalar<T>
+    :: QueryTerm<T>
+     {
+         public QueryTerm<T> intersectDistinct(final query_primary_scalar<T> qps) {
+            return new QueryTerm<T>(_APPLY_RULE_(this, qps));
+         }
+     }
+;
+
+public interface query_primary_scalar<T> extends Scalar<T>  : Query<T>
+{}
+
+public class QueryPrimaryScalar<T> implements query_primary_scalar<T> with sqlBuilder
+{}
+
+<T> query_primary_scalar<T> ::= qs:query_specification_scalar<T>
+    :: QuerySpecificationScalar<T> mimics QueryPrimaryScalar<T>
+    {}
+
+|  LEFT_PAREN qe:query_expression_scalar<T> RIGHT_PAREN
+    :: QueryExpressionScalar<T> mimics QueryPrimaryScalar<T>
+    {}
+;
+
+public interface query_specification_scalar<T> extends Scalar<T> : Query<T>
+{}
+
+public class QuerySpecificationScalar<T> implements query_specification_scalar<T> with sqlBuilder
+{}
+
+<T> query_specification_scalar<T> ::= qb:query_base_scalar<T>
+    :: QueryBaseScalar<T> mimics QuerySpecificationScalar<T>
+    {}
+
+  |  qb:query_base_scalar<T> wc:where_clause
+    :: QueryBaseScalar<T>
+    {
+        public QuerySpecificationScalar<T> where(where_clause condition) {
+            return new QuerySpecificationScalar<T>(_APPLY_RULE_(this, condition));
+        }
+    }
+;
+
+
+# query_base and query_base_scalar
+
+public interface query_base<T> : Query<T>
+{}
+
+public class QueryBase<T> implements query_base<T> with sqlBuilder
+{}
+
+public interface query_base_scalar<T> extends Scalar<T> :  Query<T>
+{}
+
+public class QueryBaseScalar<T> implements query_base_scalar<T> with sqlBuilder
 {}
 
 
