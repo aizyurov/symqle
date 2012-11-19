@@ -376,6 +376,48 @@ public class SelectSublist<T> implements select_sublist<T> with builder
 ;
 
 
+# <T> select_sublist<T> ::= value_expression<T> [ AS Identifier ]
+# Identifier is added automatically when needed
+# SqlFactory method does not know about [ AS Identifier ]
+
+<T> select_sublist<T> ::=  ve:value_expression<T>
+{
+    return new select_sublist<T>() {
+
+        public void z$prepare$select_sublist(SqlContext context) {
+            ve.z$prepare$value_expression(context);
+        }
+
+        public Query<T> z$create$select_sublist(SqlContext context) {
+        final ColumnNameProvider columnNameProvider = context.get(ColumnNameProvider.class);
+            final Identifier identifier = columnNameProvider.getUniqueName();
+            if (identifier!=null) {
+                final DataExtractor<T> extractor = new DataExtractor<T>() {
+                    @Override
+                    public T extract(final Row row) throws SQLException {
+                        return ve.value(row.getValue(identifier.toString()));
+                    }
+                };
+                return new CompoundQuery<T>(extractor,
+                        new CompositeSql(ve.z$create$value_expression(context), AS, identifier));
+            } else {
+                // column names are not provided in this context
+                return new CompoundQuery<T>(new NullDataExtractor<T>(), ve.z$create$value_expression(context));
+            }
+        }
+
+        public T value(final Element element) {
+            return ve.value(element);
+        }
+    };
+}
+    :: Value<T> mimics SelectSublist<T>
+    {}
+;
+
+
+
+
 
 
 
