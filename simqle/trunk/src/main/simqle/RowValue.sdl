@@ -1,0 +1,31 @@
+public interface select_list<T> : Query<T>
+{}
+
+/*
+A single class RowValue represents both select_list and row_value_expression.
+A more expressive and neutral name given.
+*/
+
+public class RowValue<T> implements select_list<T> with selectList, row_value_expression<T>
+ {
+    public Sql z$create$row_value_expression(final SqlContext context) {
+        // This is tricky: we form a new SqlContext without
+        // ColumnNameProvider
+        // then delegate to selectList
+        // with this fake context AS ... are not generated,
+        // so we get exactly what we need
+        SqlContext fakeContext = new SqlContext();
+        fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
+        fakeContext.set(FromClause.class, context.get(FromClause.class));
+        return this.selectList.z$create$select_list(fakeContext);
+    }
+
+    public void z$prepare$row_value_expression(final SqlContext context) {
+        // same as prepare context of select_list
+        z$prepare$select_list(context);
+    }
+}
+
+public interface row_value_expression<T> : Sql
+{}
+

@@ -265,6 +265,41 @@ public class QueryBaseScalar<T> implements query_base_scalar<T> with sqlBuilder
 {}
 
 
+# A single class RowValue represents both select_list and row_value_expression.
+# so, all() and distinct() methods are methods of this class
+
+<T> query_base<T> ::= SELECT sl:select_list<T> fc:from_clause
+    :: RowValue<T> mimics QueryBase<T>  {
+    // this is a tricky part. The user never supplies from_clause,
+    // we are extracting it from Sqlcontext. So, we have only one argument
+    // and can implement it transparently
+    // but we have to write code of toQueryBase manually
+    // providing an instance of ImplicitFromClause
+        protected final QueryBase<T> toQueryBase() {
+            from_clause fromClause = new ImplicitFromClause();
+            return new QueryBase<T>(_APPLY_RULE_(this, fromClause));
+        }
+    }
+
+| SELECT ALL sl:select_list<T> fc:from_clause
+     :: RowValue<T>
+     {
+        public QueryBase<T> all() {
+            from_clause fromClause = new ImplicitFromClause();
+            return new QueryBase<T>(_APPLY_RULE_(this, fromClause));
+        }
+     }
+
+| SELECT DISTINCT sl:select_list<T> fc:from_clause
+     :: RowValue<T>
+     {
+        public QueryBase<T> distinct() {
+            from_clause fromClause = new ImplicitFromClause();
+            return new QueryBase<T>(_APPLY_RULE_(this, fromClause));
+        }
+     }
+;
+
 
 
 

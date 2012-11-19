@@ -1,0 +1,29 @@
+public interface from_clause : Sql
+{}
+
+import org.simqle.Sql;
+import org.simqle.SqlContext;
+/**
+ * @author Alexander Izyurov
+ */
+public class ImplicitFromClause implements from_clause {
+    /**
+     * Defines Sql produced by this syntactic element.
+     * Implementations should produce Sql conforming to the productions specified above.
+     *
+     * @param context - construction context: dialect, tables available in this and enclosing contexts etc.
+     * @return sql as required for from_clause syntax
+     */
+    public Sql z$create$from_clause(SqlContext context) {
+        return context.get(FromClause.class).z$create$from_clause(context);
+    }
+
+    public void z$prepare$from_clause(SqlContext context) {
+        // do nothing
+    }
+}
+
+// TODO implement - this implementation is fake
+class FromClause implements from_clause with fake
+{}
+
