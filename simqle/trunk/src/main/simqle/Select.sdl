@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.sql.SQLException;
 {
     // TODO add scroll
-    // TODO uncomment wgen ready (requires FromClause)
+    // TODO uncomment when ready (requires FromClause)
     /*
     public List<T> list(final Database database)  throws SQLException {
         final SqlContext context = new SqlContext();
@@ -76,7 +76,7 @@ class CursorSpecification<T> implements cursor_specification<T> with sqlBuilder
 | qe:query_expression<T> obc:order_by_clause
     :: QueryExpression<T>
         {
-            CursorSpecification<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
+            public CursorSpecification<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
                 final SqlFactory factory = SqlFactory.getInstance();
                 sort_specification_list sortList = factory.sort_specification_list_IS_sort_specification(sort);
                 for (sort_specification sortSpec: additionalSort) {
@@ -103,4 +103,105 @@ public class QueryExpression<T> implements query_expression<T> with sqlBuilder
 import java.util.List;
 import java.sql.SQLException;
 {}
+
+
+<T> cursor_specification_scalar<T> ::= qe:query_expression_scalar<T>
+      :: QueryExpressionScalar<T> mimics CursorSpecificationScalar<T>
+      {}
+| qu:query_expression_scalar<T> obc:order_by_clause
+        :: QueryExpressionScalar<T>
+        {
+            public CursorSpecificationScalar<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
+                final SqlFactory factory = SqlFactory.getInstance();
+                sort_specification_list sortList = factory.sort_specification_list_IS_sort_specification(sort);
+                for (sort_specification sortSpec: additionalSort) {
+                    sortList = factory.sort_specification_list_IS_sort_specification_list_COMMA_sort_specification(sortList, sortSpec);
+                }
+                order_by_clause orderBy = factory.order_by_clause_IS_ORDER_BY_sort_specification_list(sortList);
+                return new CursorSpecificationScalar<T>(factory.cursor_specification_scalar_IS_query_expression_scalar_order_by_clause(this, orderBy));
+            }
+        }
+;
+
+
+public interface query_expression_scalar<T> extends Scalar<T> : Query<T>
+{}
+
+public class QueryExpressionScalar<T> implements query_expression_scalar<T> with sqlBuilder
+import java.util.List;
+import java.sql.SQLException;
+{}
+
+# we have different rules for query_expression and query_expression-scalar
+# the first one is just query_base with (maybe) where clause
+# the second one is really an expression, which may include union, intersection etc.
+
+<T> query_expression<T> ::= qb:query_base<T>
+    :: QueryBase<T> mimics QueryExpression<T>
+    {}
+
+|   qb:query_base<T> wc:where_clause
+    :: QueryBase<T>
+    {
+        public QueryExpression<T> where(where_clause condition) {
+            return new QueryExpression<T>(_APPLY_RULE_(this, condition));
+        }
+    }
+;
+
+public interface query_base<T> : Query<T>
+{}
+
+public class QueryBase<T> implements query_base<T> with sqlBuilder
+{}
+
+
+<T> query_expression_scalar<T> ::= qt:query_term<T>
+    :: QueryTerm<T> mimics QueryExpressionScalar<T>
+     {}
+
+|    qe:query_expression_scalar<T> UNION ALL qt:query_term<T>
+    :: QueryExpressionScalar<T>
+    {
+    public QueryExpressionScalar<T> unionAll(query_term<T> queryTerm) {
+        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
+        }
+    }
+
+|    qe:query_expression_scalar<T> UNION DISTINCT qt:query_term<T>
+    :: QueryExpressionScalar<T>
+    {
+    public QueryExpressionScalar<T> unionDistinct(query_term<T> queryTerm) {
+        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
+        }
+    }
+
+|    qe:query_expression_scalar<T> EXCEPT ALL qt:query_term<T>
+    :: QueryExpressionScalar<T>
+    {
+    public QueryExpressionScalar<T> exceptAll(query_term<T> queryTerm) {
+        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
+        }
+    }
+
+|    qe:query_expression_scalar<T> EXCEPT DISTINCT qt:query_term<T>
+    :: QueryExpressionScalar<T>
+    {
+    public QueryExpressionScalar<T> exceptDistinct(query_term<T> queryTerm) {
+        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
+        }
+    }
+;
+
+public interface query_term<T> extends Scalar<T> :  Query<T>
+{}
+
+public class QueryTerm<T> implements query_term<T> with SqlBuilder
+{}
+
+
+
+
+
+
 
