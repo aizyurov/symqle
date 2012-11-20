@@ -8,8 +8,8 @@ predicate ::=
 		p:comparison_predicate
 		:: ComparisonPredicate mimics Predicate
 		{}
-#	|	p:in_predicate<T>
-#		InPredicate mimics Predicate
+	|	p:in_predicate<T>
+		InPredicate mimics Predicate
 #	|	p:null_predicate<T>
 #		NullPredicate mimics Predicate
 #	|	p:exists_predicate
@@ -122,5 +122,65 @@ public class GenericComparisonPredicate implements comparison_predicate
 ;
 
 
+public interface in_predicate extends Scalar<Boolean>
+{}
 
+class InPredicate implements in_predicate with SqlBuilder;
 
+/*
+<in predicate> ::= <row value predicand> <in predicate part 2>
+
+<in predicate part 2> ::= [ NOT ] IN <in predicate value>
+
+<in predicate value> ::=
+		<table subquery>
+	|	<left paren> <in value list> <right paren>
+
+<in value list> ::= <row value expression> [ { <comma> <row value expression> }... ]
+*/
+
+<T> in_predicate ::= p:row_value_predicand<T> IN v:in_predicate_value<T>
+    :: RowValuePredicand<T>
+    {
+        public InPredicate in(in_predicate_value<T> v) {
+            return new InPredicate(_APLY_RULE_(this, v);
+        }
+    }
+|   p:row_value_predicand<T> NOT IN v:in_predicate_value<T>
+    :: RowValuePredicand<T>
+    {
+        public InPredicate notIn(in_predicate_value<T> v) {
+            return new InPredicate(_APLY_RULE_(this, v);
+        }
+    }
+;
+
+public interface in_predicate_value<T> : Sql
+{}
+
+public class InPredicateValue<T> implements in_predicate_value<T> with sqlBuilder
+{}
+
+<T> in_predicate_value<T> ::= sq:subquery<t>
+    :: Subquery<T> mimics  InPredicateValue<T>
+    {}
+|
+    LEFT_PAREN vl:in_value_list<T> RIGHT_PAREN
+    :: InValueList<T> mimics InPredicateValue<T>
+    {}
+;
+
+public interface in_value_list<T> : Sql
+{}
+
+public class InValueList<T> implements n_value_list<T>
+{}
+
+<T> in_value_list<T> ::= e:row_value_expression<T>
+     :: RowValue<T> mimics InValueList<T>
+
+<T, U> in_value_list<Pair<T, U>> ::= l:in_value_list<T> COMMA e:row_value_expression<U>
+     {
+        throw new RuntimeException("Not implemented");
+     }
+;
