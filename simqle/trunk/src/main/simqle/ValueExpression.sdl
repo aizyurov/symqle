@@ -203,5 +203,48 @@ public interface value_expression_primary<T> extends Scalar<T> : Sql
 public class ValueExpressionPrimary<T> implements value_expression_primary<T>  with sqlBuilder
 {}
 
+<T> value_expression_primary<T> ::=
+		dps:dynamic_parameter_specification<T>
+		:: DynamicParameter<T> mimics ValueExpressionPrimary<T>
+		 {}
+#	|	cr:column_reference<T>
+#	    :: Column<T> mimics ValueExpressionPrimary<T>
+#	|	scalar_subquery<T>
+#	    :: ScalarSubquery<T> mimics ValueExpressionPrimary<T>
+#	|	routine_invocation<T>
+#	|	next_value_expression<T>
+;
 
 
+public interface	dynamic_parameter_specification<T> extends Scalar<T> : Sql
+{}
+
+public abstract class DynamicParameter<T> implements dynamic_parameter_specification<T>
+{
+    @Override
+    public final void z$prepare$dynamic_parameter_specification(final SqlContext context) {
+        // do nothing
+    }
+
+    @Override
+    public final Sql z$create$dynamic_parameter_specification(final SqlContext context) {
+        return new Sql() {
+            @Override
+            public String getSqlText() {
+                return SqlTerminal.QUESTION.getSqlText();
+            }
+
+            @Override
+            public void setParameters(final SqlParameters p) {
+                setParameter(p);
+            }
+        };
+    }
+
+    /**
+    * To be implemented in derived classes.
+    *
+    */
+    protected abstract void setParameter(final SqlParameters p);
+
+}
