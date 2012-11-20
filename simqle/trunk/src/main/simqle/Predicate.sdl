@@ -3,3 +3,130 @@ public interface predicate extends Scalar<Boolean> :Sql
 
 public class Predicate implements predicate with sqlBuilder
 {}
+
+predicate ::=
+		p:comparison_predicate
+		:: ComparisonPredicate mimics Predicate
+		{}
+#	|	p:in_predicate<T>
+#		InPredicate mimics Predicate
+#	|	p:null_predicate<T>
+#		NullPredicate mimics Predicate
+#	|	p:exists_predicate
+#		ExistsPredicate mimics Predicate
+;
+
+public interface comparison_predicate extends Scalar<Boolean> : Sql
+ {}
+
+
+public class ComparisonPredicate implements comparison_predicate with SqlBuilder
+{}
+
+public class GenericComparisonPredicate implements comparison_predicate
+{
+    private final Sql op;
+    private final row_value_predicand<?> p1;
+    private final row_value_predicand<?> p2;
+
+
+    public GenericComparisonPredicate$(final Sql op, final row_value_predicand<?> p1, final row_value_predicand<?> p2) {
+        this.op = op;
+        this.p1 = p1;
+        this.p2 = p2;
+    }
+
+    @Override
+    public Sql z$create$comparison_predicate(final SqlContext context) {
+        return new CompositeSql(p1.z$create$row_value_predicand(context), op, p2.z$create$row_value_predicand(context));
+    }
+
+    @Override
+    public void z$prepare$comparison_predicate(final SqlContext context) {
+        p1.z$prepare$row_value_predicand(context);
+        p2.z$prepare$row_value_predicand(context);
+    }
+
+    @Override
+    public Boolean value(final Element element) throws SQLException {
+        return element.getBoolean();
+    }
+}
+
+<T> comparison_predicate ::=
+    p1:row_value_predicand<T> EQ p2:row_value_predicand<T>
+		{
+		    return new GenericComparisonPredicate(EQ, p1, p2);
+		}
+        :: RowValuePredicand<T>
+        {
+		    public ComparisonPredicate eq(row_value_predicand<T> other) {
+		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
+		    }
+        }
+|
+    p1:row_value_predicand<T> NE p2:row_value_predicand<T>
+		{
+		    return new GenericComparisonPredicate(NE, p1, p2);
+		}
+        :: RowValuePredicand<T>
+        {
+		    public ComparisonPredicate ne(row_value_predicand<T> other) {
+		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
+		    }
+        }
+|
+    p1:row_value_predicand<T> GT p2:row_value_predicand<T>
+		{
+		    return new GenericComparisonPredicate(GT, p1, p2);
+		}
+        :: RowValuePredicand<T>
+        {
+		    public ComparisonPredicate gt(row_value_predicand<T> other) {
+		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
+		    }
+        }
+|
+    p1:row_value_predicand<T> LT p2:row_value_predicand<T>
+		{
+		    return new GenericComparisonPredicate(LT, p1, p2);
+		}
+        :: RowValuePredicand<T>
+        {
+		    public ComparisonPredicate lt(row_value_predicand<T> other) {
+		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
+		    }
+        }
+|
+    p1:row_value_predicand<T> GE p2:row_value_predicand<T>
+		{
+		    return new GenericComparisonPredicate(GE, p1, p2);
+		}
+        :: RowValuePredicand<T>
+        {
+		    public ComparisonPredicate ge(row_value_predicand<T> other) {
+		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
+		    }
+        }
+|
+    p1:row_value_predicand<T> LE p2:row_value_predicand<T>
+		{
+		    return new GenericComparisonPredicate(LE, p1, p2);
+		}
+        :: RowValuePredicand<T>
+        {
+		    public ComparisonPredicate le(row_value_predicand<T> other) {
+		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
+		    }
+        }
+;
+
+
+interface row_value_predicand<T> : Sql
+{}
+
+class RowValuePredicand<T> implements row_value_predicand<T> with sqlBuilder
+{}
+
+
+
