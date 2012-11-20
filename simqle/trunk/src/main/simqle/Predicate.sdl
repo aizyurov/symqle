@@ -199,7 +199,18 @@ public class InValueList<T> implements in_value_list<T> with sqlBuilder
 
 <T, U> in_value_list<Pair<T, U>> ::= l:in_value_list<T> COMMA e:row_value_expression<U>
      {
-        throw new RuntimeException("Not implemented");
+         return new in_value_list<Pair<T, U>>() {
+             @Override
+             public Sql z$create$in_value_list(final SqlContext context) {
+                 return new CompositeSql(l.z$create$in_value_list(context), COMMA, e.z$create$row_value_expression(context));
+             }
+
+             @Override
+             public void z$prepare$in_value_list(final SqlContext context) {
+                 l.z$prepare$in_value_list(context);
+                 e.z$prepare$row_value_expression(context);
+             }
+         };
      }
 ;
 
