@@ -277,12 +277,11 @@ public abstract class AbstractJoinedTableWithCondition extends AbstractJoinedTab
 interface join_specification : Sql
 {}
 
-/*
-join_specification ::= join_condition | named_columns_join
-join_condition ::= ON search_condition
 
-We do not support named_columns_join
-*/
+# join_specification ::= join_condition | named_columns_join
+# join_condition ::= ON search_condition
+
+# We do not support named_columns_join
 
 join_specification ::= ON e:boolean_value_expression
     :: BooleanValueExpression mimics JoinSpecification
