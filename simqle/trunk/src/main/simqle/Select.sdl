@@ -406,7 +406,7 @@ public class SelectSublist<T> implements select_sublist<T> with builder
             }
         }
 
-        public T value(final Element element) {
+        public T value(final Element element) throws SQLException {
             return ve.value(element);
         }
     };
