@@ -207,11 +207,14 @@ public class ValueExpressionPrimary<T> implements value_expression_primary<T>  w
 		dps:dynamic_parameter_specification<T>
 		:: DynamicParameter<T> mimics ValueExpressionPrimary<T>
 		 {}
-#	|	cr:column_reference<T>
-#	    :: Column<T> mimics ValueExpressionPrimary<T>
-#	|	scalar_subquery<T>
-#	    :: ScalarSubquery<T> mimics ValueExpressionPrimary<T>
-#	|	routine_invocation<T>
+	|	cr:column_reference<T>
+	    :: Column<T> mimics ValueExpressionPrimary<T>
+	    {}
+	|	sc:scalar_subquery<T>
+	    :: ScalarSubquery<T> mimics ValueExpressionPrimary<T>
+	    {}
+	|	ri:routine_invocation<T>
+
 #	|	next_value_expression<T>
 ;
 
@@ -248,3 +251,54 @@ public abstract class DynamicParameter<T> implements dynamic_parameter_specifica
     protected abstract void setParameter(final SqlParameters p);
 
 }
+
+
+public interface	column_reference<T> extends Scalar<T> : Sql
+{}
+
+public abstract class Column<T> implements column_reference<T>
+{
+// TODO implement
+
+}
+
+public interface	routine_invocation<T>  extends Scalar<T> : Sql
+{}
+
+# there are no default implementations or routine_invocation
+# should be created individually
+# as factory methods
+# to have type-check of arguments
+
+/*
+<routine invocation> ::= <routine name> <SQL argument list>
+
+<routine name> ::= [ <schema name> <period> ] <qualified identifier>
+
+<SQL argument list> ::= <left paren> [ <SQL argument> [ { <comma> <SQL argument> }... ] ] <right paren>
+
+<SQL argument> ::=
+		<value expression>
+	|	<generalized expression>
+	|	<target specification>
+
+Simplified, generalized expression and target specification not supported
+*/
+
+<T> routine_invocation<T> ::= rn:routine_name<T> LEFT_PAREN al:argument_list RIGHT_PAREN
+
+    | rn:routine_name<T> LEFT_PAREN RIGHT_PAREN
+;
+
+public interface routine_name<T> extends Scalar<T> : Sql
+{}
+
+public interface argument_list : Sql
+ {}
+
+ argument_list ::= ve:value_expression<?>
+
+    | al:argument_list COMMA ve:value_expression<?>
+;
+
+

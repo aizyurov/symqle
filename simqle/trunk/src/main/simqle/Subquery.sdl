@@ -1,0 +1,5 @@
+public interface	scalar_subquery<T> extends Scalar<T> : Sql
+{}
+
+public class ScalarSubquery<T> implements scalar_subquery<T> with sqlBuilder
+{}
