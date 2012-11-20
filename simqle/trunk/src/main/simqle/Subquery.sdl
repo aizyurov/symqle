@@ -3,3 +3,11 @@ public interface	scalar_subquery<T> extends Scalar<T> : Sql
 
 public class ScalarSubquery<T> implements scalar_subquery<T> with sqlBuilder
 {}
+
+interface subquery<T> : Sql
+{}
+
+class Subquery<T> implements subquery<T> with sqlBuilder
+{}
+
+

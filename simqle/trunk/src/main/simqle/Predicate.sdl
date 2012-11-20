@@ -122,11 +122,5 @@ public class GenericComparisonPredicate implements comparison_predicate
 ;
 
 
-interface row_value_predicand<T> : Sql
-{}
-
-class RowValuePredicand<T> implements row_value_predicand<T> with sqlBuilder
-{}
-
 
 

@@ -14,6 +14,7 @@ public class RowValue<T> implements select_list<T> with selectList, row_value_ex
         SqlContext fakeContext = new SqlContext();
         fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
         fakeContext.set(FromClause.class, context.get(FromClause.class));
+        fakeContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
         return this.selectList.z$create$select_list(fakeContext);
     }
 
@@ -25,4 +26,72 @@ public class RowValue<T> implements select_list<T> with selectList, row_value_ex
 
 public interface row_value_expression<T> : Sql
 {}
+
+interface row_value_predicand<T> : Sql
+{}
+
+class RowValuePredicand<T> implements row_value_predicand<T> with sqlBuilder
+{}
+
+<T> row_value_predicand<T> ::= e:row_value_expression<T>
+    :: RowValue<T> mimics RowValuePredicand<T>
+    {}
+
+	|	c:explicit_row_value_constructor<T>
+	    :: ExplicitRowValueConstructor<T> mimics  RowValuePredicand<T>
+	    {}
+;
+
+row_value_predicand<Boolean> ::= LEFT_PAREN be:boolean_value_expression RIGHT_PAREN
+    :: BooleanValueExpression mimics RowValuePredicand<Boolean>
+    {}
+;
+
+public interface explicit_row_value_constructor<T> : Sql
+{}
+
+public class ExplicitRowValueConstructor<T> implements explicit_row_value_constructor<T> with sqlBuilder
+{}
+
+<T> explicit_row_value_constructor<T> ::= sq:subquery<T>
+    :: Subquery<T> mimics ExplicitRowValueConstructor<T>
+    {}
+;
+
+// this is used by Values.pairOf(...) method
+<T,U> explicit_row_value_constructor<Pair<T,U>> ::=
+		LEFT_PAREN l1:row_value_constructor_element_list<T> COMMA l2:row_value_constructor_element_list<U> RIGHT_PAREN
+		{
+            return new explicit_row_value_constructor<Pair<T, U>>() {
+                @Override
+                public Sql z$create$explicit_row_value_constructor(final SqlContext context) {
+                    return new CompositeSql(l1.z$create$row_value_constructor_element_list(context), LEFT_PAREN, l2.z$create$row_value_constructor_element_list(context));
+                }
+
+                @Override
+                public void z$prepare$explicit_row_value_constructor(final SqlContext context) {
+                    l1.z$prepare$row_value_constructor_element_list(context);
+                    l2.z$prepare$row_value_constructor_element_list(context);
+                }
+            };
+        }
+;
+
+
+public interface row_value_constructor_element_list<T> : Sql
+{}
+
+public class RowValueConstructorElementList<T> implements row_value_constructor_element_list<T> with sqlBuilder
+{}
+
+<T> row_value_constructor_element_list<T> ::= ve:value_expression<T>
+    :: Value<T> mimics RowValueConstructorElementList<T>
+    {}
+
+  |  c:explicit_row_value_constructor<T>
+        :: ExplicitRowValueConstructor<T> mimics RowValueConstructorElementList<T>
+        {}
+;
+
+
 
