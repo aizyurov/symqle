@@ -49,7 +49,73 @@ import org.simqle.util.TSort;
     }
 
     public Sql z$create$from_clause(final SqlContext context) {
-        throw new RuntimeException("Not implemented");
+    TSort<table> tSort = new TSort<table>();
+    // TODO some RDBMS allow emtry FromClause
+    if (localTables.size()==0) {
+        throw new IllegalStateException("No referenced tables");
+    }
+    for (table table: localTables.keySet()) {
+        tSort.add(table);
+
+        SqlContext probeContext = new SqlContext();
+        final FromClause probeFromClause = new FromClause();
+        probeContext.set(FromClause.class, probeFromClause);
+        probeContext.set(SqlFactory.class, context.get(SqlFactory.class));
+        table.z$prepare$table(probeContext);
+        final Set<table> dependencies = probeFromClause.getAllTables();
+        // remove self-dependency
+        dependencies.remove(table);
+        for (table dependency: dependencies) {
+            tSort.add(table, dependency);
+        }
+    }
+    // TODO better diagnostics on IllegalSTateException and ClassCastException
+    // cyclic dependency
+    final List<table> sortedTables = tSort.sort();
+    final table_primary root = (table_primary) sortedTables.get(0);
+    table_reference tableReference = SqlFactory.getInstance().table_reference_IS_table_primary(root);
+    int i;
+    for (i = 1; i< sortedTables.size(); i++) {
+        final joined_table t = (joined_table) sortedTables.get(i);
+        tableReference = SqlFactory.getInstance().table_reference_IS_table_reference_joined_table(tableReference, t);
+    }
+    return SqlFactory.getInstance().from_clause_IS_FROM_table_reference(tableReference).z$create$from_clause(context);
+    }
+
+    public Identifier getCorrelationName(table table) {
+        if (localTables.containsKey(table)) {
+            Identifier name = localTables.get(table);
+            if (name==null) {
+                name = nameGenerator.generate();
+                localTables.put(table, name);
+            }
+            return name;
+        } else if (enclosingClause!=null) {
+            return enclosingClause.getCorrelationName(table);
+        } else {
+            throw new IllegalStateException("Table "+table+" has not been registered in FromClause");
+        }
+    }
+
+    public boolean addTable(table table) {
+        if (!isAvailable(table)) {
+            localTables.put(table, null);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isAvailable(table table) {
+        return enclosingClause != null && enclosingClause.isAvailable(table) || localTables.containsKey(table);
+    }
+
+    public Set<table> getAllTables() {
+        Set<table> allTables = new HashSet<table>(localTables.keySet());
+        if (enclosingClause!=null) {
+            allTables.addAll(enclosingClause.getAllTables());
+        }
+        return allTables;
     }
 
     private static class NameGenerator {
@@ -68,16 +134,10 @@ from_clause ::= FROM  tr:table_reference
 interface table_reference : Sql
 {}
 
+# table_reference is used internally by FromClause; no implementing class
 table_reference ::=  tp:table_primary
-    :: Table mimics TableReference
-    {}
-     | join:join
-     :: Join mimics TableReference
-     {}
+     | tr:table_reference jt:joined_table
 ;
-
-class TableReference implements table_reference with builder
-{}
 
 // marker interface for table_primary and joined_table
 public interface table : Sql
@@ -94,16 +154,6 @@ public class Table implements table_primary with sqlBuilder
 
 public class JoinedTable implements joined_table with SqlBuilder
 {}
-
-public interface join : Sql
-{}
-
-public class Join implements join with sqlBuilder
-{}
-
-// no implementation; used internally by FromClause
-join ::= tr: table_reference jt:joined_table
-;
 
 
 
