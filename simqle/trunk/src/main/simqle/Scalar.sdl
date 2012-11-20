@@ -4,3 +4,10 @@ public interface Scalar<T>
 {
     T value(final Element element) throws SQLException;
 }
+
+public abstract class BooleanScalar implements Scalar<Boolean> {
+    @Override
+    public final Boolean value(final Element element) throws SQLException {
+        return element.getBoolean();
+    }
+}

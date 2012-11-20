@@ -11,8 +11,9 @@ predicate ::=
 	|	p:in_predicate
 		:: InPredicate mimics Predicate
 		{}
-#	|	p:null_predicate<T>
-#		NullPredicate mimics Predicate
+	|	p:null_predicate
+		:: NullPredicate mimics Predicate
+		{}
 #	|	p:exists_predicate
 #		ExistsPredicate mimics Predicate
 ;
@@ -24,7 +25,7 @@ public interface comparison_predicate extends Scalar<Boolean> : Sql
 public class ComparisonPredicate implements comparison_predicate with SqlBuilder
 {}
 
-public class GenericComparisonPredicate implements comparison_predicate
+public class GenericComparisonPredicate extends BooleanScalar implements comparison_predicate
 {
     private final Sql op;
     private final row_value_predicand<?> p1;
@@ -48,43 +49,8 @@ public class GenericComparisonPredicate implements comparison_predicate
         p2.z$prepare$row_value_predicand(context);
     }
 
-    @Override
-    public Boolean value(final Element element) throws SQLException {
-        return element.getBoolean();
-    }
 }
 
-public class GenericInPredicate implements in_predicate
-{
-    private final boolean not;
-    private final row_value_predicand<?> p;
-    private final in_predicate_value<?> v;
-
-
-    public GenericInPredicate$(row_value_predicand<?> p, final in_predicate_value<?> v, boolean not) {
-        this.not = not;
-        this.p = p;
-        this.v = v;
-    }
-
-    @Override
-    public Sql z$create$in_predicate(final SqlContext context) {
-        return not ?
-        new CompositeSql(SqlTerminal.NOT, SqlTerminal.IN, p.z$create$row_value_predicand(context), v.z$create$in_predicate_value(context)) :
-        new CompositeSql(SqlTerminal.IN, p.z$create$row_value_predicand(context), v.z$create$in_predicate_value(context));
-    }
-
-    @Override
-    public void z$prepare$in_predicate(final SqlContext context) {
-        p.z$prepare$row_value_predicand(context);
-        v.z$prepare$in_predicate_value(context);
-    }
-
-    @Override
-    public Boolean value(final Element element) throws SQLException {
-        return element.getBoolean();
-    }
-}
 
 <T> comparison_predicate ::=
     p1:row_value_predicand<T> EQ p2:row_value_predicand<T>
@@ -175,7 +141,12 @@ class InPredicate implements in_predicate with SqlBuilder
 
 <T> in_predicate ::= p:row_value_predicand<T> IN v:in_predicate_value<T>
     {
-        return new GenericInPredicate(p, v, false);
+        return new AbstractInPredicate(p, v) {
+            @Override
+            public Sql z$create$in_predicate(final SqlContext context) {
+                return new CompositeSql(IN, p.z$create$row_value_predicand(context), v.z$create$in_predicate_value(context));
+            }
+        };
     }
     :: RowValuePredicand<T>
     {
@@ -185,7 +156,12 @@ class InPredicate implements in_predicate with SqlBuilder
     }
 |   p:row_value_predicand<T> NOT IN v:in_predicate_value<T>
     {
-        return new GenericInPredicate(p, v, true);
+        return new AbstractInPredicate(p, v) {
+            @Override
+            public Sql z$create$in_predicate(final SqlContext context) {
+                return new CompositeSql(NOT, IN, p.z$create$row_value_predicand(context), v.z$create$in_predicate_value(context));
+            }
+        };
     }
     :: RowValuePredicand<T>
     {
@@ -226,3 +202,80 @@ public class InValueList<T> implements in_value_list<T> with sqlBuilder
         throw new RuntimeException("Not implemented");
      }
 ;
+
+public abstract class AbstractInPredicate extends BooleanScalar implements in_predicate
+{
+    private final row_value_predicand<?> p;
+    private final in_predicate_value<?> v;
+
+
+    public AbstractInPredicate$(row_value_predicand<?> p, final in_predicate_value<?> v) {
+        this.p = p;
+        this.v = v;
+    }
+
+    @Override
+    public final void z$prepare$in_predicate(final SqlContext context) {
+        p.z$prepare$row_value_predicand(context);
+        v.z$prepare$in_predicate_value(context);
+    }
+
+}
+
+public interface null_predicate extends Scalar<Boolean> : Sql
+{}
+
+class NullPredicate implements null_predicate with SqlBuilder
+{}
+
+/*
+<null predicate> ::= <row value predicand> <null predicate part 2>
+
+<null predicate part 2> ::= IS [ NOT ] NULL
+*/
+
+null_predicate ::= p:row_value_predicand<?> IS NULL
+    {
+        return new AbstractNullPredicate(p) {
+            @Override
+             public Sql z$create$null_predicate(final SqlContext context) {
+                 return new CompositeSql(p.z$create$row_value_predicand(context), IS, NULL);
+             }
+        };
+    }
+    :: RowValuePredicand<T>
+    {
+        public NullPredicate isNull() {
+            return new NullPredicate(_APPLY_RULE_(this));
+        }
+    }
+|   p:row_value_predicand<?> IS NOT NULL
+    {
+        return new AbstractNullPredicate(p) {
+             @Override
+             public Sql z$create$null_predicate(final SqlContext context) {
+                 return new CompositeSql(p.z$create$row_value_predicand(context), IS, NOT, NULL);
+             }
+        };
+    }
+    :: RowValuePredicand<T>
+    {
+        public NullPredicate isNotNull() {
+            return new NullPredicate(_APPLY_RULE_(this));
+        }
+    }
+;
+
+public abstract class AbstractNullPredicate extends BooleanScalar implements null_predicate {
+    private final row_value_predicand p;
+
+    protected AbstractNullPredicate$(final row_value_predicand p) {
+        this.p = p;
+    }
+
+    @Override
+    public final void z$prepare$null_predicate(final SqlContext context) {
+        p.z$prepare$row_value_predicand(context);
+    }
+
+}
