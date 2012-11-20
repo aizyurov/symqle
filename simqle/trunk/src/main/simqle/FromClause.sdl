@@ -23,7 +23,222 @@ public class ImplicitFromClause implements from_clause {
     }
 }
 
-// TODO implement - this implementation is fake
-class FromClause implements from_clause with fake
+class FromClause implements from_clause
+import java.util.*;
+import org.simqle.util.TSort;
+{
+    private final FromClause enclosingClause;
+    private final NameGenerator nameGenerator;
+    private final Map<table, Identifier> localTables = new HashMap<table, Identifier>();
+
+    protected final NameGenerator getNameGenerator() {
+        return nameGenerator;
+    }
+
+    public FromClause$(final FromClause enclosingClause) {
+        this.enclosingClause = enclosingClause;
+        this.nameGenerator = enclosingClause !=null ? enclosingClause.getNameGenerator() : new NameGenerator();
+    }
+
+    public FromClause$() {
+        this(null);
+     }
+
+    public void z$prepare$from_clause(SqlContext context) {
+        throw new RuntimeException("This code should not be reachable");
+    }
+
+    public Sql z$create$from_clause(final SqlContext context) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    private static class NameGenerator {
+        private int counter=0;
+
+        private Identifier generate() {
+            return new Identifier("T"+(counter++));
+        }
+    }
+
+}
+
+from_clause ::= FROM  tr:table_reference
+;
+
+interface table_reference : Sql
+{}
+
+table_reference ::=  tp:table_primary
+    :: Table mimics TableReference
+    {}
+     | join:join
+     :: Join mimics TableReference
+     {}
+;
+
+class TableReference implements table_reference with builder
+{}
+
+// marker interface for table_primary and joined_table
+public interface table : Sql
+{}
+
+public interface table_primary extends table : Sql
+{}
+
+public interface joined_table extends table : Sql
+{}
+
+public class Table implements table_primary with sqlBuilder
+{}
+
+public class JoinedTable implements joined_table with SqlBuilder
+{}
+
+public interface join : Sql
+{}
+
+public class Join implements join with sqlBuilder
+{}
+
+// no implementation; used internally by FromClause
+join ::= tr: table_reference jt:joined_table
+;
+
+
+
+joined_table ::=
+      CROSS JOIN tp:table_primary
+      {
+        return new AbstractJoinedTable() {
+            @Override
+            public void z$prepare$joined_table(final SqlContext context) {
+                 tp.z$prepare$table_primary(context);
+            }
+            @Override
+            public Sql z$create$joined_table(final SqlContext context) {
+                return new CompositeSql(CROSS, JOIN, tp.z$create$table_primary(context));
+            }
+        };
+      }
+      :: Table
+      {
+        public JoinedTable crossJoin() {
+            return new JoinedTable(_APPLY_RULE_(this));
+        }
+      }
+|     INNER JOIN tp:table_primary js:join_specification
+      {
+        return new AbstractJoinedTableWithCondition(tp, js) {
+            @Override
+            public Sql z$create$joined_table(final SqlContext context) {
+                return new CompositeSql(INNER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
+            }
+        };
+
+
+      }
+      :: Table
+      {
+        public JoinedTable innerJoin(join_specification js) {
+            return new JoinedTable(_APPLY_RULE_(this, js));
+        }
+      }
+|     OUTER JOIN tp:table_primary js:join_specification
+      {
+        return new AbstractJoinedTableWithCondition(tp, js) {
+            @Override
+            public Sql z$create$joined_table(final SqlContext context) {
+                return new CompositeSql(OUTER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
+            }
+        };
+
+      }
+      :: Table
+      {
+        public JoinedTable outerJoin(join_specification js) {
+            return new JoinedTable(_APPLY_RULE_(this, js));
+        }
+      }
+|     LEFT OUTER JOIN tp:table_primary js:join_specification
+      {
+        return new AbstractJoinedTableWithCondition(tp, js) {
+            @Override
+            public Sql z$create$joined_table(final SqlContext context) {
+                return new CompositeSql(LEFT, OUTER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
+            }
+        };
+
+      }
+      :: Table
+      {
+        public JoinedTable leftJoin(join_specification js) {
+            return new JoinedTable(_APPLY_RULE_(this, js));
+        }
+      }
+|
+      RIGHT OUTER JOIN tp:table_primary js:join_specification
+      {
+        return new AbstractJoinedTableWithCondition(tp, js) {
+            @Override
+            public Sql z$create$joined_table(final SqlContext context) {
+                return new CompositeSql(RIGHT, OUTER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
+            }
+        };
+
+      }
+      :: Table
+      {
+        public JoinedTable rightJoin(join_specification js) {
+            return new JoinedTable(_APPLY_RULE_(this, js));
+        }
+      }
+;
+
+
+public abstract class AbstractJoinedTable implements joined_table {
+        @Override
+        public final Sql z$create$table(final SqlContext context) {
+            return z$create$joined_table(context);
+        }
+
+        @Override
+        public final void z$prepare$table(final SqlContext context) {
+            z$prepare$joined_table(context);
+        }
+}
+
+public abstract class AbstractJoinedTableWithCondition extends AbstractJoinedTable {
+    private final table_primary tp;
+    private final join_specification js;
+
+    protected AbstractJoinedTableWithCondition$(final table_primary tp, final join_specification js) {
+        this.tp = tp;
+        this.js = js;
+    }
+        @Override
+    public final void z$prepare$joined_table(final SqlContext context) {
+         tp.z$prepare$table_primary(context);
+         js.z$prepare$join_specification(context);
+    }
+
+}
+
+interface join_specification : Sql
+{}
+
+/*
+join_specification ::= join_condition | named_columns_join
+join_condition ::= ON search_condition
+
+We do not support named_columns_join
+*/
+
+join_specification ::= ON e:boolean_value_expression
+    :: BooleanValueExpression mimics JoinSpecification
+    {}
+;
+
+class JoinSpecification implements join_specification with builder
 {}
 
