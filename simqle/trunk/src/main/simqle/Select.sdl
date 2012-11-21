@@ -269,6 +269,9 @@ public class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
     {}
 
 |   qt:zQueryTerm<T> INTERSECT ALL qp:zQueryPrimaryScalar<T>
+    {
+        return new zAbstractQueryTerm<T>(qt, qp, true);
+    }
     ::QueryTerm<T>
      {
          public QueryTerm<T> intersectAll(final zQueryPrimaryScalar<T> qps) {
@@ -277,6 +280,9 @@ public class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
      }
 
 |   qt:zQueryTerm<T> INTERSECT DISTINCT qp:zQueryPrimaryScalar<T>
+    {
+        return new zAbstractQueryTerm<T>(qt, qp, false);
+    }
     :: QueryTerm<T>
      {
          public QueryTerm<T> intersectDistinct(final zQueryPrimaryScalar<T> qps) {
@@ -284,6 +290,50 @@ public class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
          }
      }
 ;
+
+class  zAbstractQueryTerm<T> implements zQueryTerm<T> {
+    private final zQueryTerm<T> qt;
+    private final zQueryPrimaryScalar<T> qp;
+    private final SqlTerminal allOrDistinct;
+
+    zAbstractQueryTerm$(
+        final zQueryTerm<T> qt,
+        final zQueryPrimaryScalar<T> qp,
+        final boolean allNotDistinct
+        ) {
+        this.qt = qt;
+        this.qp = qp;
+        this.allOrDistinct = allNotDistinct ? SqlTerminal.ALL : SqlTerminal.DISTINCT;
+        }
+           @Override
+           public T value(final Element element) throws SQLException {
+                return qt.value(element);
+           }
+            @Override
+            public void z$prepare$zQueryTerm(final SqlContext context) {
+                final SqlContext leftContext = new SqlContext();
+                leftContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                leftContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                final SqlContext rightContext = new SqlContext();
+                rightContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                rightContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                 qt.z$prepare$zQueryTerm(leftContext);
+                 qp.z$prepare$zQueryPrimaryScalar(rightContext);
+            }
+            @Override
+            public Query<T> z$create$zQueryTerm(final SqlContext context) {
+                final SqlContext leftContext = new SqlContext();
+                leftContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                leftContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                final SqlContext rightContext = new SqlContext();
+                rightContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                rightContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                 qt.z$prepare$zQueryTerm(leftContext);
+                 qp.z$prepare$zQueryPrimaryScalar(rightContext);
+                return new CompositeQuery<T>(qt.z$create$zQueryTerm(leftContext), SqlTerminal.INTERSECT, allOrDistinct, qp.z$create$zQueryPrimaryScalar(rightContext));
+            }
+
+}
 
 public interface zQueryPrimaryScalar<T> extends Scalar<T>  : Query<T>
 {}

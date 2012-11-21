@@ -145,6 +145,20 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
+    public void testIntersectAll() throws Exception {
+        final LongColumn column = createId();
+        final String sql = column.intersectAll(new LongColumn("age", person2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.age AS C0 FROM person AS T1", sql);
+
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final LongColumn column = createId();
+        final String sql = column.intersectDistinct(new LongColumn("age", person2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
+
+    }
+
     private static class Person extends Table {
         private Person() {
             super("person");
