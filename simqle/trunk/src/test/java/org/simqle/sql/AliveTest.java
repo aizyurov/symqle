@@ -1,9 +1,7 @@
 package org.simqle.sql;
 
 import junit.framework.TestCase;
-import org.simqle.ColumnNameProvider;
 import org.simqle.Element;
-import org.simqle.SqlContext;
 
 import java.sql.SQLException;
 
@@ -26,12 +24,16 @@ public class AliveTest extends TestCase {
             }
         };
         assertEquals(Long.valueOf(1), col.value(element));
-        final SqlContext context = new SqlContext();
-        context.set(FromClause.class, new FromClause());
-        context.set(ColumnNameProvider.class, new ColumnNameProvider());
-        context.set(SqlFactory.class, new GenericSqlFactory());
-        col.z$prepare$zSelectStatement(context);
-        System.out.println(col.z$create$zSelectStatement(context).getSqlText());
+        System.out.println(col.show());
+
+    }
+
+    public void testFunction() throws Exception {
+        final Person person = new Person();
+        final LongColumn col = new LongColumn("id", person);
+        final StringColumn name = new StringColumn("name", person);
+        final StringColumn surname = new StringColumn("surname", person);
+        System.out.println(concat(name, surname).show());
 
     }
 
@@ -52,5 +54,25 @@ public class AliveTest extends TestCase {
         public Long value(final Element element) throws SQLException {
             return element.getLong();
         }
+    }
+
+    private static class StringColumn extends Column<String> {
+        private StringColumn(final String name, final Table owner) {
+            super(name, owner);
+        }
+
+        @Override
+        public String value(final Element element) throws SQLException {
+            return element.getString();
+        }
+    }
+
+    private RoutineInvocation<String> concat(zValueExpression<String> v1, zValueExpression<String> v2) {
+        return new Function<String>("concat") {
+            @Override
+            public String value(final Element element) throws SQLException {
+                return element.getString();
+            }
+        }.apply(v1, v2);
     }
 }

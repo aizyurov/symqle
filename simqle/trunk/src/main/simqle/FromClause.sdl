@@ -49,7 +49,38 @@ import org.simqle.util.TSort;
     }
 
     public Sql z$create$zFromClause(final SqlContext context) {
-        throw new RuntimeException("Not implemented");
+    // TODO some RDBMS allow empty FromClause
+    if (localTables.size()==0) {
+        throw new IllegalStateException("No referenced tables");
+    }
+    TSort<zTable> tSort = new TSort<zTable>();
+    for (zTable table: localTables.keySet()) {
+        tSort.add(table);
+
+        SqlContext probeContext = new SqlContext();
+        final FromClause probeFrom = new FromClause();
+        probeContext.set(FromClause.class, probeFrom);
+        probeContext.set(SqlFactory.class, context.get(SqlFactory.class));
+        table.z$prepare$zTable(probeContext);
+        final Set<zTable> dependencies = probeFrom.getAllTables();
+        // remove self-dependency
+        dependencies.remove(table);
+        for (zTable dependency: dependencies) {
+            tSort.add(table, dependency);
+        }
+    }
+    // TODO better diagnostics on IllegalSTateException
+    // cyclic dependency
+    final List<zTable> sortedTables = tSort.sort();
+    zTable root = sortedTables.get(0);
+    zTableReference ref = SqlFactory.getInstance().zTableReference_IS_zTablePrimary(root);
+    int i;
+    for (i = 1; i< sortedTables.size(); i++) {
+        final zTable t = sortedTables.get(i);
+        ref = SqlFactory.getInstance().zTableReference_IS_zTableReference_zTableJoin(ref, t);
+    }
+    // TODO take SqlFactory from the context
+    return SqlFactory.getInstance().zFromClause_IS_FROM_zTableReference(ref).z$create$zFromClause(context);
     }
 
     public Identifier getCorrelationName(zTable table) {
@@ -81,11 +112,15 @@ import org.simqle.util.TSort;
     }
 
     public Set<zTable> getAllTables() {
-        Set<zTable> allTables = new HashSet<zTable>(localTables.keySet());
+        Set<zTable> allTables = getLocalTables();
         if (enclosingClause!=null) {
             allTables.addAll(enclosingClause.getAllTables());
         }
         return allTables;
+    }
+
+    public HashSet<zTable> getLocalTables() {
+        return new HashSet<zTable>(localTables.keySet());
     }
 
     private static class NameGenerator {

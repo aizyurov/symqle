@@ -25,6 +25,15 @@ import java.sql.SQLException;
         return list;
     }
     */
+public String show() {
+    final SqlContext context = new SqlContext();
+    context.set(FromClause.class, new FromClause());
+    context.set(ColumnNameProvider.class, new ColumnNameProvider());
+    context.set(SqlFactory.class, new GenericSqlFactory());
+    z$prepare$zSelectStatement(context);
+    final String sqlText = z$create$zSelectStatement(context).getSqlText();
+    return sqlText.replaceAll("([.(])(\\s+)", "$1").replaceAll("(\\s+)(\\p{Punct})", "$2");
+}
 }
 
 
