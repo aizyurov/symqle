@@ -146,9 +146,9 @@ import java.sql.SQLException;
 
 /*
 zQueryExpression ::= [ with_clause ] zQueryExpression_body
-zQueryExpression_body ::= non-join_zQueryExpression | joined_table
+zQueryExpression_body ::= non-join_zQueryExpression | zTableJoin
 
-with_clause and joined_table are not supported (not needed)
+with_clause and zTableJoin are not supported (not needed)
 union, intersect and except are supported only for scalars
 so, the syntax is simplified
 */
@@ -246,7 +246,7 @@ class QueryPrimary<T> implements zQueryPrimary<T> with sqlBuilder
 {};
 
 /*
-zQueryPrimary ::= non-join_zQueryPrimary | joined_table
+zQueryPrimary ::= non-join_zQueryPrimary | zTableJoin
 
 non-join_zQueryPrimary ::= simple_table | left_paren non-join_zQueryExpression right_paren
 
@@ -1124,35 +1124,35 @@ interface zFromClause ;
 /*
 zFromClause ::= FROM zTableReference_list
 zTableReference_list ::= zTableReference [ { comma zTableReference }... ]
-zTableReference ::= table_primary_or_joined_table [ sample_clause ]
-table_primary_or_joined_table ::= table_primary | joined_table
+zTableReference ::= zTablePrimary_or_zTableJoin [ sample_clause ]
+zTablePrimary_or_zTableJoin ::= zTablePrimary | zTableJoin
 
-table_primary ::=
+zTablePrimary ::=
 		table_or_query_name [ [ AS ] correlation_name [ left_paren derived_column_list right_paren ] ]
 	|	derived_table [ AS ] correlation_name [ left_paren derived_column_list right_paren ]
 	|	lateral_derived_table [ AS ] correlation_name [ left_paren derived_column_list right_paren ]
 	|	collection_derived_table [ AS ] correlation_name [ left_paren derived_column_list right_paren ]
 	|	table_function_derived_table [ AS ] correlation_name [ left_paren derived_column_list right_paren ]
 	|	only_spec [ [ AS ] correlation_name [ left_paren derived_column_list right_paren ] ]
-	|	left_paren joined_table right_paren
+	|	left_paren zTableJoin right_paren
 
-joined_table ::=
+zTableJoin ::=
 		cross_join
 	|	qualified_join
 	|	natural_join
 	|	union_join
 
-cross_join ::= zTableReference CROSS JOIN table_primary
+cross_join ::= zTableReference CROSS JOIN zTablePrimary
 
-qualified_join ::= zTableReference [ join_type ] JOIN zTableReference join_specification
+qualified_join ::= zTableReference [ join_type ] JOIN zTableReference zJoinSpecification
 
-natural_join ::= zTableReference NATURAL [ join_type ] JOIN table_primary
+natural_join ::= zTableReference NATURAL [ join_type ] JOIN zTablePrimary
 
-union_join ::= zTableReference UNION JOIN table_primary
+union_join ::= zTableReference UNION JOIN zTablePrimary
 
 *** Changes:
 1. implicitt cross joins are not supported, so zTableReference_list can be only zTableReference
-2. table_or_query_name is the only supported variant of table_primary
+2. table_or_query_name is the only supported variant of zTablePrimary
 3. qualified_join is re-formulated to contain only table_brinary after join type
 4. natural joins are not supported (not needed)
 5. union joins are not supported (mostly not supported by popular RDBMS)
@@ -1165,16 +1165,16 @@ union_join ::= zTableReference UNION JOIN table_primary
 zFromClause ::= FROM  zTableReference ;
 interface zTableReference ;
 
-zTableReference ::=  table_primary
+zTableReference ::=  zTablePrimary
     ( TableReference ::= Table )
-     | joined_table
+     | zTableJoin
      ( TableReference ::= JoinedTable )
 ;
 
 class TableReference implements zTableReference with builder ;
 
-interface table_primary ;
-interface joined_table;
+interface zTablePrimary ;
+interface zTableJoin;
 
 class FromClause implements zFromClause
 import java.util.*;
@@ -1281,7 +1281,7 @@ import org.simqle.util.TSort;
 }
 ;
 
-class Table implements table_primary {
+class Table implements zTablePrimary {
     private final Identifier tableOrQueryName;
     public Table(String name) {
         tableOrQueryName = new Identifier(name);
@@ -1293,7 +1293,7 @@ class Table implements table_primary {
         left,
         right
     }
-    private join_specification joinSpecification = null;
+    private zJoinSpecification joinSpecification = null;
     private JoinType joinType = null;
 
     private void setJoinType(JoinType joinType) {
@@ -1305,13 +1305,13 @@ class Table implements table_primary {
     public void joinCross() {
         setJoinType(joinType.cross);
     }
-    public void joinLeft(join_specification joinSpecification) {
+    public void joinLeft(zJoinSpecification joinSpecification) {
         setJoinType(joinType.left);
         this.joinSpecification = joinSpecification;
     }
 
 
-    public Sql z$create$table_primary(final SqlContext context) {
+    public Sql z$create$zTablePrimary(final SqlContext context) {
         final FromClause fromClause = context.get(FromClause.class);
         final Identifier correlationName = fromClause.getCorrelationName(this);
         return new CompositeSql(tableOrQueryName, correlationName);
@@ -1321,14 +1321,14 @@ class Table implements table_primary {
         if (joinType==null) {
             throw new IllegalStateException("No join defined for this table"+tableOrQueryName);
         }
-        final joined_table.Builder joinedTableBuilder;
+        final zTableJoin.Builder joinedTableBuilder;
         switch (joinType) {
             case cross:
-                joinedTableBuilder = SqlFactory.getInstance().joined_table_is_zTableReference_CROSS_JOIN_table_primary(tableReference, this);
+                joinedTableBuilder = SqlFactory.getInstance().zTableJoin_is_zTableReference_CROSS_JOIN_zTablePrimary(tableReference, this);
                 break;
             case left:
                 joinedTableBuilder = SqlFactory.getInstance()
-                .joined_table_is_zTableReference_LEFT_OUTER_JOIN_table_primary_join_specification(tableReference, this, joinSpecification);
+                .zTableJoin_is_zTableReference_LEFT_OUTER_JOIN_zTablePrimary_zJoinSpecification(tableReference, this, joinSpecification);
                 break;
             default:
                 throw new IllegalStateException("Unexpected join type "+joinType);
@@ -1336,44 +1336,44 @@ class Table implements table_primary {
         return new JoinedTable(joinedTableBuilder);
     }
 
-    public void z$prepare$table_primary(SqlContext context) {
+    public void z$prepare$zTablePrimary(SqlContext context) {
         final FromClause fromClause = context.get(FromClause.class);
         if (fromClause.addTable(this) && joinSpecification!=null) {
-            joinSpecification.z$prepare$join_specification(context);
+            joinSpecification.z$prepare$zJoinSpecification(context);
         }
     }
 }
 ;
 
-table_primary ::= Identifier AS Identifier ;
+# used in Table constructor
+
+zTablePrimary ::= Identifier AS Identifier ;
 
 /*
 see Table.join(zTableReference)
 */
-joined_table ::=
-      zTableReference CROSS JOIN table_primary
-|     zTableReference INNER JOIN table_primary join_specification
-|     zTableReference OUTER JOIN table_primary join_specification
-|     zTableReference LEFT OUTER JOIN table_primary join_specification
-|     zTableReference RIGHT OUTER JOIN table_primary join_specification ;
+zTableJoin ::=
+      zTableReference CROSS JOIN zTablePrimary
+|     zTableReference INNER JOIN zTablePrimary zJoinSpecification
+|     zTableReference OUTER JOIN zTablePrimary zJoinSpecification
+|     zTableReference LEFT OUTER JOIN zTablePrimary zJoinSpecification
+|     zTableReference RIGHT OUTER JOIN zTablePrimary zJoinSpecification ;
 
 
-class JoinedTable implements joined_table with builder;
-
-interface join_specification;
+interface zJoinSpecification;
 
 /*
-join_specification ::= join_condition | named_columns_join
+zJoinSpecification ::= join_condition | named_columns_join
 join_condition ::= ON search_condition
 
 We do not support named_columns_join
 */
 
-join_specification ::= ON search_condition
+zJoinSpecification ::= ON search_condition
     ( JoinSpecification ::= SearchCondition )
 ;
 
-class JoinSpecification implements join_specification with builder;
+class JoinSpecification implements zJoinSpecification with builder;
 
 interface search_condition ;
 

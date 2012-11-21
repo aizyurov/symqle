@@ -105,128 +105,154 @@ interface zTableReference : Sql
 {}
 
 # zTableReference is used internally by FromClause; no implementing class
-zTableReference ::=  tp:table_primary
-     | tr:zTableReference jt:joined_table
+zTableReference ::=  tp:zTablePrimary
+     | tr:zTableReference jt:zTableJoin
 ;
 
-public interface table_primary : Sql
+public interface zTablePrimary : Sql
 {}
 
-public interface joined_table  : Sql
+# used internally by Table
+# Correlation name is added automatically
+# zTablePrimary ::= id:Identifier [ AS Identifier ]
+# zTablePrimary ::= id:Identifier
+
+
+public interface zTableJoin  : Sql
 {}
 
-public class Table implements zTable with sqlBuilder
-{}
+public abstract class Table implements zTable
+{
+    private boolean isJoined = false;
+    private zTableJoin tableJoin;
+    private zTablePrimary tablePrimary;
 
-public interface zTable extends table_primary, joined_table : Sql
-{}
+    private void startJoin() {
+        if (isJoined) {
+            throw new IllegalStateException("Double join");
+        }
+        isJoined = true;
+    }
 
-
-/*
-joined_table ::=
-      CROSS JOIN tp:table_primary
-      {
-        return new AbstractJoinedTable() {
+    protected Table$(final String name) {
+        tablePrimary = new zTablePrimary() {
             @Override
-            public void z$prepare$joined_table(final SqlContext context) {
-                 tp.z$prepare$table_primary(context);
+            public void z$prepare$zTablePrimary(final SqlContext context) {
+            // do nothing
             }
-            @Override
-            public Sql z$create$joined_table(final SqlContext context) {
-                return new CompositeSql(CROSS, JOIN, tp.z$create$table_primary(context));
+            public Sql z$create$zTablePrimary(final SqlContext context) {
+                return new Identifier(name);
             }
         };
-      }
+    }
+
+    public Sql z$create$zTable(final SqlContext context)          {
+                return
+                 isJoined ?
+                z$create$zTableJoin(context) :
+                z$create$zTablePrimary(context);
+            }
+
+    public Sql z$create$zTableJoin(final SqlContext context)          {
+                return tableJoin.z$create$zTableJoin(context);
+            }
+
+    public void z$prepare$zTable(final SqlContext context)          {
+                if (isJoined) {
+                    z$prepare$zTableJoin(context);
+                } else {
+                    z$prepare$zTablePrimary(context);
+                }
+            }
+
+    public void z$prepare$zTableJoin(final SqlContext context)          {
+                final FromClause fromClause = context.get(FromClause.class);
+                fromClause.addTable(this);
+                // propagate to dependencies
+                tableJoin.z$prepare$zTableJoin(context);
+            }
+
+    public void z$prepare$zTablePrimary(final SqlContext context)          {
+                final FromClause fromClause = context.get(FromClause.class);
+                fromClause.addTable(this);
+                tablePrimary.z$prepare$zTablePrimary(context);
+            }
+
+    public Sql z$create$zTablePrimary(final SqlContext context) {
+        final FromClause fromClause = context.get(FromClause.class);
+        final Sql name = tablePrimary.z$create$zTablePrimary(context);
+        final Sql correlationName = fromClause.getCorrelationName(this);
+        return new CompositeSql(name, SqlTerminal.AS, correlationName);
+    }
+
+}
+
+public interface zTable extends zTablePrimary, zTableJoin : Sql
+{}
+
+
+
+
+
+zTableJoin ::=
+      CROSS JOIN tp:zTablePrimary
       :: Table
       {
-        public JoinedTable crossJoin() {
-            return new JoinedTable(_APPLY_RULE_(this));
+        public void crossJoin() {
+            startJoin();
+            tableJoin = _APPLY_RULE_(this);
         }
       }
-|     INNER JOIN tp:table_primary js:join_specification
-      {
-        return new AbstractJoinedTableWithCondition(tp, js) {
-            @Override
-            public Sql z$create$joined_table(final SqlContext context) {
-                return new CompositeSql(INNER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
-            }
-        };
-
-
-      }
+|     INNER JOIN tp:zTablePrimary js:zJoinSpecification
       :: Table
       {
-        public JoinedTable innerJoin(join_specification js) {
-            return new JoinedTable(_APPLY_RULE_(this, js));
+        public void innerJoin(final zJoinSpecification js) {
+            startJoin();
+            tableJoin = _APPLY_RULE_(this, js);
         }
       }
-|     OUTER JOIN tp:table_primary js:join_specification
-      {
-        return new AbstractJoinedTableWithCondition(tp, js) {
-            @Override
-            public Sql z$create$joined_table(final SqlContext context) {
-                return new CompositeSql(OUTER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
-            }
-        };
-
-      }
+|     OUTER JOIN tp:zTablePrimary js:zJoinSpecification
       :: Table
       {
-        public JoinedTable outerJoin(join_specification js) {
-            return new JoinedTable(_APPLY_RULE_(this, js));
+        public void outerJoin(final zJoinSpecification js) {
+            startJoin();
+            tableJoin = _APPLY_RULE_(this, js);
         }
       }
-|     LEFT OUTER JOIN tp:table_primary js:join_specification
-      {
-        return new AbstractJoinedTableWithCondition(tp, js) {
-            @Override
-            public Sql z$create$joined_table(final SqlContext context) {
-                return new CompositeSql(LEFT, OUTER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
-            }
-        };
-
-      }
+|     LEFT OUTER JOIN tp:zTablePrimary js:zJoinSpecification
       :: Table
       {
-        public JoinedTable leftJoin(join_specification js) {
-            return new JoinedTable(_APPLY_RULE_(this, js));
+        public void leftJoin(final zJoinSpecification js) {
+            startJoin();
+            tableJoin = _APPLY_RULE_(this, js);
         }
       }
 |
-      RIGHT OUTER JOIN tp:table_primary js:join_specification
-      {
-        return new AbstractJoinedTableWithCondition(tp, js) {
-            @Override
-            public Sql z$create$joined_table(final SqlContext context) {
-                return new CompositeSql(RIGHT, OUTER, JOIN, tp.z$create$table_primary(context), js.z$create$join_specification(context));
-            }
-        };
-
-      }
+      RIGHT OUTER JOIN tp:zTablePrimary js:zJoinSpecification
       :: Table
       {
-        public JoinedTable rightJoin(join_specification js) {
-            return new JoinedTable(_APPLY_RULE_(this, js));
+        public void rightJoin(final zJoinSpecification js) {
+            startJoin();
+            tableJoin = _APPLY_RULE_(this, js);
         }
       }
 ;
-*/
 
 
-interface join_specification : Sql
+interface zJoinSpecification : Sql
 {}
 
 
-# join_specification ::= join_condition | named_columns_join
+# zJoinSpecification ::= join_condition | named_columns_join
 # join_condition ::= ON search_condition
 
 # We do not support named_columns_join
 
-join_specification ::= ON e:boolean_value_expression
+zJoinSpecification ::= ON e:boolean_value_expression
     :: BooleanValueExpression mimics JoinSpecification
     {}
 ;
 
-class JoinSpecification implements join_specification with builder
+class JoinSpecification implements zJoinSpecification with builder
 {}
 
