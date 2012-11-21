@@ -1,9 +1,9 @@
 /*
-A single class RowValue represents both select_list and row_value_expression.
+A single class RowValue represents both zSelectList and row_value_expression.
 A more expressive and neutral name given.
 */
 
-public class RowValue<T> implements select_list<T> with selectList, row_value_expression<T>
+public class RowValue<T> implements zSelectList<T> with selectList, row_value_expression<T>
  {
     public Sql z$create$row_value_expression(final SqlContext context) {
         // This is tricky: we form a new SqlContext without
@@ -15,12 +15,12 @@ public class RowValue<T> implements select_list<T> with selectList, row_value_ex
         fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
         fakeContext.set(FromClause.class, context.get(FromClause.class));
         fakeContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
-        return this.selectList.z$create$select_list(fakeContext);
+        return this.selectList.z$create$zSelectList(fakeContext);
     }
 
     public void z$prepare$row_value_expression(final SqlContext context) {
-        // same as prepare context of select_list
-        z$prepare$select_list(context);
+        // same as prepare context of zSelectList
+        z$prepare$zSelectList(context);
     }
 }
 

@@ -219,21 +219,21 @@ class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
  import java.sql.SQLException;
 {};
 
-<T> zQueryTerm<T> ::= zQueryPrimary_scalar<T>
+<T> zQueryTerm<T> ::= zQueryPrimaryScalar<T>
     ( QueryTerm<T> ::= QueryPrimaryScalar<T> )
 
-|   zQueryTerm<T> INTERSECT ALL zQueryPrimary_scalar<T>
+|   zQueryTerm<T> INTERSECT ALL zQueryPrimaryScalar<T>
     ( + QueryTerm<T> )
      {
-         public QueryTerm<T> intersectAll(final zQueryPrimary_scalar<T> qps) {
+         public QueryTerm<T> intersectAll(final zQueryPrimaryScalar<T> qps) {
             return new QueryTerm<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, qps));
          }
      }
 
-|   zQueryTerm<T> INTERSECT DISTINCT zQueryPrimary_scalar<T>
+|   zQueryTerm<T> INTERSECT DISTINCT zQueryPrimaryScalar<T>
     ( + QueryTerm<T> )
      {
-         public QueryTerm<T> intersectDistinct(final zQueryPrimary_scalar<T> qps) {
+         public QueryTerm<T> intersectDistinct(final zQueryPrimaryScalar<T> qps) {
             return new QueryTerm<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, qps));
          }
      }
@@ -262,16 +262,16 @@ Only simple_table -> query_specification is supported
 ;
 
 
-interface zQueryPrimary_scalar<T> (Query<T>) extends Scalar<T> ;
+interface zQueryPrimaryScalar<T> (Query<T>) extends Scalar<T> ;
 
-class QueryPrimaryScalar<T> implements zQueryPrimary_scalar<T> with sqlBuilder ;
+class QueryPrimaryScalar<T> implements zQueryPrimaryScalar<T> with sqlBuilder ;
 
-<T> zQueryPrimary_scalar<T> ::= query_specification_scalar<T>
+<T> zQueryPrimaryScalar<T> ::= zQuerySpecificationScalar<T>
     ( QueryPrimaryScalar<T> ::= QuerySpecificationScalar<T> )
 
 |  LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
 {
-public Query<T> z$create$zQueryPrimary_scalar(SqlContext context) {
+public Query<T> z$create$zQueryPrimaryScalar(SqlContext context) {
     final Query<T> base = arg0.z$create$zQueryExpressionScalar(context);
     return new CompoundQuery<T>(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
         }
@@ -284,12 +284,12 @@ interface query_specification<T> (Query<T>) ;
 
 class QuerySpecification<T> implements query_specification<T> with sqlBuilder ;
 
-interface query_specification_scalar<T> (Query<T>) extends Scalar<T> ;
+interface zQuerySpecificationScalar<T> (Query<T>) extends Scalar<T> ;
 
-class QuerySpecificationScalar<T> implements query_specification_scalar<T> with sqlBuilder ;
+class QuerySpecificationScalar<T> implements zQuerySpecificationScalar<T> with sqlBuilder ;
 
 /*
-query_specification ::= SELECT [ set_quantifier ] select_list table_expression
+query_specification ::= SELECT [ set_quantifier ] zSelectList table_expression
 set_quantifier ::= DISTINCT | ALL
 
 
@@ -303,20 +303,20 @@ table_expression ::=
 This has been reformulated as follows:
 1. Remove group_by_clause, having_clause, window_clause - not supported
 2. Inline table_expression
-query_specification ::= SELECT [ set_quantifier ] select_list from_clause [where_clause]
+query_specification ::= SELECT [ set_quantifier ] zSelectList from_clause [where_clause]
 3. Introduce new non-terminal:
-query_base ::= SELECT [ set_quantifier ] select_list from_clause
-query_specification ::= query_base
- 		|  query_base where_clause
-4. Inline set_quantifier in query_base
+zQueryBase ::= SELECT [ set_quantifier ] zSelectList from_clause
+query_specification ::= zQueryBase
+ 		|  zQueryBase where_clause
+4. Inline set_quantifier in zQueryBase
 
 Scalar counterparts productions are alike.
 */
 
-<T> query_specification<T> ::= query_base<T>
+<T> query_specification<T> ::= zQueryBase<T>
     ( QuerySpecification<T> ::= QueryBase<T> )
 
-  |  query_base<T> where_clause
+  |  zQueryBase<T> where_clause
     ( + QueryBase<T> )
     {
         public QuerySpecification<T> where(where_clause condition) {
@@ -327,10 +327,10 @@ Scalar counterparts productions are alike.
     }
 ;
 
-<T> query_specification_scalar<T> ::= query_base_scalar<T>
+<T> zQuerySpecificationScalar<T> ::= zQueryBaseScalar<T>
     ( QuerySpecificationScalar<T> ::= QueryBaseScalar<T> )
 
-  |  query_base_scalar<T> where_clause
+  |  zQueryBaseScalar<T> where_clause
     ( + QueryBaseScalar<T> )
     {
         public QuerySpecificationScalar<T> where(where_clause condition) {
@@ -341,17 +341,17 @@ Scalar counterparts productions are alike.
     }
 ;
 
-interface query_base<T> (Query<T>) ;
-interface query_base_scalar<T> (Query<T>) extends Scalar<T>;
+interface zQueryBase<T> (Query<T>) ;
+interface zQueryBaseScalar<T> (Query<T>) extends Scalar<T>;
 
-class QueryBase<T> implements query_base<T> with sqlBuilder;
+class QueryBase<T> implements zQueryBase<T> with sqlBuilder;
 
-class QueryBaseScalar<T> implements query_base_scalar<T> with sqlBuilder;
+class QueryBaseScalar<T> implements zQueryBaseScalar<T> with sqlBuilder;
 
-<T> query_base<T> ::= SELECT select_list<T> from_clause
+<T> zQueryBase<T> ::= SELECT zSelectList<T> from_clause
 {
-public Query<T> z$create$query_base(SqlContext context) {
-    final Query<T> selectListQuery = arg0.z$create$select_list(context);
+public Query<T> z$create$zQueryBase(SqlContext context) {
+    final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
     return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, selectListQuery, arg1.z$create$from_clause(context)));
         }
 }
@@ -367,10 +367,10 @@ public Query<T> z$create$query_base(SqlContext context) {
         }
     }
 
-| SELECT ALL select_list<T> from_clause
+| SELECT ALL zSelectList<T> from_clause
 {
-public Query<T> z$create$query_base(SqlContext context) {
-    final Query<T> selectListQuery = arg0.z$create$select_list(context);
+public Query<T> z$create$zQueryBase(SqlContext context) {
+    final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
     return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$from_clause(context)));
         }
 }
@@ -382,10 +382,10 @@ public Query<T> z$create$query_base(SqlContext context) {
         }
      }
 
-| SELECT DISTINCT select_list<T> from_clause
+| SELECT DISTINCT zSelectList<T> from_clause
 {
-public Query<T> z$create$query_base(SqlContext context) {
-    final Query<T> selectListQuery = arg0.z$create$select_list(context);
+public Query<T> z$create$zQueryBase(SqlContext context) {
+    final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
     return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$from_clause(context)));
         }
 }
@@ -399,12 +399,12 @@ public Query<T> z$create$query_base(SqlContext context) {
 ;
 
 
-/* scalar counterpart of select_list is select_sublist rather than select_list_scalar */
+/* scalar counterpart of zSelectList is zSelectSublist rather than zSelectList_scalar */
 
-<T> query_base_scalar<T> ::= SELECT select_sublist<T> from_clause
+<T> zQueryBaseScalar<T> ::= SELECT zSelectSublist<T> from_clause
 {
-public Query<T> z$create$query_base_scalar(SqlContext context) {
-    final Query<T> sql0 = arg0.z$create$select_sublist(context);
+public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
+    final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
     final Sql sql1 = arg1.z$create$from_clause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, sql0, sql1));
         }
@@ -417,10 +417,10 @@ public Query<T> z$create$query_base_scalar(SqlContext context) {
         }
     }
 
-| SELECT ALL select_sublist<T> from_clause
+| SELECT ALL zSelectSublist<T> from_clause
 {
-public Query<T> z$create$query_base_scalar(SqlContext context) {
-    final Query<T> sql0 = arg0.z$create$select_sublist(context);
+public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
+    final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
     final Sql sql1 = arg1.z$create$from_clause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, ALL, sql0, sql1));
         }
@@ -433,10 +433,10 @@ public Query<T> z$create$query_base_scalar(SqlContext context) {
         }
      }
 
-| SELECT DISTINCT select_sublist<T> from_clause
+| SELECT DISTINCT zSelectSublist<T> from_clause
 {
-public Query<T> z$create$query_base_scalar(SqlContext context) {
-    final Query<T> sql0 = arg0.z$create$select_sublist(context);
+public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
+    final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
     final Sql sql1 = arg1.z$create$from_clause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, DISTINCT, sql0, sql1));
         }
@@ -451,14 +451,14 @@ public Query<T> z$create$query_base_scalar(SqlContext context) {
 ;
 
 
-interface select_list<T> (Query<T>) ;
+interface zSelectList<T> (Query<T>) ;
 
 /*
-A single class RowValue represents both select_list and row_value_expression.
+A single class RowValue represents both zSelectList and row_value_expression.
 A more expressive and neutral name given.
 */
 
-class RowValue<T> implements select_list<T> with selectList, row_value_expression<T>
+class RowValue<T> implements zSelectList<T> with selectList, row_value_expression<T>
  {
     public Sql z$create$row_value_expression(final SqlContext context) {
         // This is tricky: we form a new SqlContext without
@@ -469,33 +469,33 @@ class RowValue<T> implements select_list<T> with selectList, row_value_expressio
         SqlContext fakeContext = new SqlContext();
         fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
         fakeContext.set(FromClause.class, context.get(FromClause.class));
-        return this.selectList.z$create$select_list(fakeContext);
+        return this.selectList.z$create$zSelectList(fakeContext);
     }
 
     public void z$prepare$row_value_expression(final SqlContext context) {
-        // same as prepare context wof select_list
-        z$prepare$select_list(context);
+        // same as prepare context wof zSelectList
+        z$prepare$zSelectList(context);
     }
 }
 ;
 
 
 /**
-select_list ::= asterisk | select_sublist [ { comma select_sublist }... ]
+zSelectList ::= asterisk | zSelectSublist [ { comma zSelectSublist }... ]
 
 the first rule is not supported (used internally bypassing the API)
 The last one is translated to equivalent non-deterministic rule (but we do not care)
 */
 
-<T> select_list<T> ::= select_sublist<T>
+<T> zSelectList<T> ::= zSelectSublist<T>
     ( RowValue<T> ::= SelectSublist<T> )
 ;
 
-<T,U> select_list<Pair<T,U>> ::= select_list<T> COMMA select_list<U>
+<T,U> zSelectList<Pair<T,U>> ::= zSelectList<T> COMMA zSelectList<U>
 {
-    public Query<Pair<T,U>> z$create$select_list(final SqlContext context) {
-        final Query<T> sql0 = arg0.z$create$select_list(context);
-        final Query<U> sql1 = arg1.z$create$select_list(context);
+    public Query<Pair<T,U>> z$create$zSelectList(final SqlContext context) {
+        final Query<T> sql0 = arg0.z$create$zSelectList(context);
+        final Query<U> sql1 = arg1.z$create$zSelectList(context);
         DataExtractor<Pair<T,U>> extractor = new DataExtractor<Pair<T, U>>() {
             public Pair<T, U> extract(final Row row) throws SQLException {
                 final T first = sql0.extract(row);
@@ -511,11 +511,11 @@ The last one is translated to equivalent non-deterministic rule (but we do not c
  // so no class member method is defined for this production
 ;
 
-interface select_sublist<T> (Query<T>) extends Scalar<T> ;
-class SelectSublist<T> implements select_sublist<T> with builder;
+interface zSelectSublist<T> (Query<T>) extends Scalar<T> ;
+class SelectSublist<T> implements zSelectSublist<T> with builder;
 
 /*
-select_sublist ::= derived_column | qualified_asterisk
+zSelectSublist ::= derived_column | qualified_asterisk
 derived_column ::= value_expression [ as_clause ]
 as_clause ::= [ AS ] column_name
 column_name ::= identifier
@@ -525,9 +525,9 @@ inline as_clause, column_name. We may choose to use or not to use AS. Adding it 
 may override in dialects.
 */
 
-<T> select_sublist<T> ::= value_expression<T> AS Identifier
+<T> zSelectSublist<T> ::= value_expression<T> AS Identifier
 {
-    public void z$prepare$select_sublist(SqlContext context) {
+    public void z$prepare$zSelectSublist(SqlContext context) {
     arg0.z$prepare$value_expression(context);
     }
 
@@ -548,8 +548,8 @@ public Query<T> _GET_SQL_(SqlContext context) {
     final ColumnNameProvider columnNameProvider = context.get(ColumnNameProvider.class);
         Identifier identifier = columnNameProvider.getUniqueName();
         if (identifier!=null) {
-            return select_sublist_is_value_expression_AS_Identifier(arg0,
-            identifier).z$create$select_sublist(context);
+            return zSelectSublist_is_value_expression_AS_Identifier(arg0,
+            identifier).z$create$zSelectSublist(context);
         } else {
             return new CompoundQuery<T>(new NullDataExtractor<T>(), arg0.z$create$value_expression(context));
         }
@@ -565,7 +565,7 @@ public Query<T> _GET_SQL_(SqlContext context) {
 interface value_expression<T> extends Scalar<T> ; // not Query<T>!
 
 
-// A single class Value implements both select_sublist and value_expressin
+// A single class Value implements both zSelectSublist and value_expressin
 
 class Value<T> implements value_expression<T> with valueExpression ;
 
@@ -579,7 +579,7 @@ etc.
 
 Simqle syntax is quite different. We do not separate value expression types.
 row_value_expression is not value_expression. Instead of
-select_list ::= select_sublist ::= row_value_expression
+zSelectList ::= zSelectSublist ::= row_value_expression
 we have RowValue<T> extends row_value_expression<T> directly - TODO
 all common_value_expression are alike, we do not distinct them.
 Both common_value_expression

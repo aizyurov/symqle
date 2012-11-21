@@ -133,14 +133,14 @@ import java.sql.SQLException;
 {}
 
 # we have different rules for zQueryExpression and zQueryExpression-scalar
-# the first one is just query_base with (maybe) where clause
+# the first one is just zQueryBase with (maybe) where clause
 # the second one is really an expression, which may include union, intersection etc.
 
-<T> zQueryExpression<T> ::= qb:query_base<T>
+<T> zQueryExpression<T> ::= qb:zQueryBase<T>
     :: QueryBase<T> mimics QueryExpression<T>
     {}
 
-|   qb:query_base<T> wc:where_clause
+|   qb:zQueryBase<T> wc:where_clause
     :: QueryBase<T>
     {
         public QueryExpression<T> where(where_clause condition) {
@@ -194,34 +194,34 @@ public interface zQueryTerm<T> extends Scalar<T> :  Query<T>
 public class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
 {}
 
-<T> zQueryTerm<T> ::= qp:zQueryPrimary_scalar<T>
+<T> zQueryTerm<T> ::= qp:zQueryPrimaryScalar<T>
     :: QueryPrimaryScalar<T> mimics QueryTerm<T>
     {}
 
-|   qt:zQueryTerm<T> INTERSECT ALL qp:zQueryPrimary_scalar<T>
+|   qt:zQueryTerm<T> INTERSECT ALL qp:zQueryPrimaryScalar<T>
     ::QueryTerm<T>
      {
-         public QueryTerm<T> intersectAll(final zQueryPrimary_scalar<T> qps) {
+         public QueryTerm<T> intersectAll(final zQueryPrimaryScalar<T> qps) {
             return new QueryTerm<T>(_APPLY_RULE_(this, qps));
          }
      }
 
-|   qt:zQueryTerm<T> INTERSECT DISTINCT qp:zQueryPrimary_scalar<T>
+|   qt:zQueryTerm<T> INTERSECT DISTINCT qp:zQueryPrimaryScalar<T>
     :: QueryTerm<T>
      {
-         public QueryTerm<T> intersectDistinct(final zQueryPrimary_scalar<T> qps) {
+         public QueryTerm<T> intersectDistinct(final zQueryPrimaryScalar<T> qps) {
             return new QueryTerm<T>(_APPLY_RULE_(this, qps));
          }
      }
 ;
 
-public interface zQueryPrimary_scalar<T> extends Scalar<T>  : Query<T>
+public interface zQueryPrimaryScalar<T> extends Scalar<T>  : Query<T>
 {}
 
-public class QueryPrimaryScalar<T> implements zQueryPrimary_scalar<T> with sqlBuilder
+public class QueryPrimaryScalar<T> implements zQueryPrimaryScalar<T> with sqlBuilder
 {}
 
-<T> zQueryPrimary_scalar<T> ::= qs:query_specification_scalar<T>
+<T> zQueryPrimaryScalar<T> ::= qs:zQuerySpecificationScalar<T>
     :: QuerySpecificationScalar<T> mimics QueryPrimaryScalar<T>
     {}
 
@@ -230,17 +230,17 @@ public class QueryPrimaryScalar<T> implements zQueryPrimary_scalar<T> with sqlBu
     {}
 ;
 
-public interface query_specification_scalar<T> extends Scalar<T> : Query<T>
+public interface zQuerySpecificationScalar<T> extends Scalar<T> : Query<T>
 {}
 
-public class QuerySpecificationScalar<T> implements query_specification_scalar<T> with sqlBuilder
+public class QuerySpecificationScalar<T> implements zQuerySpecificationScalar<T> with sqlBuilder
 {}
 
-<T> query_specification_scalar<T> ::= qb:query_base_scalar<T>
+<T> zQuerySpecificationScalar<T> ::= qb:zQueryBaseScalar<T>
     :: QueryBaseScalar<T> mimics QuerySpecificationScalar<T>
     {}
 
-  |  qb:query_base_scalar<T> wc:where_clause
+  |  qb:zQueryBaseScalar<T> wc:where_clause
     :: QueryBaseScalar<T>
     {
         public QuerySpecificationScalar<T> where(where_clause condition) {
@@ -250,29 +250,29 @@ public class QuerySpecificationScalar<T> implements query_specification_scalar<T
 ;
 
 
-# query_base and query_base_scalar
+# zQueryBase and zQueryBaseScalar
 
-public interface query_base<T> : Query<T>
+public interface zQueryBase<T> : Query<T>
 {}
 
-public class QueryBase<T> implements query_base<T> with sqlBuilder
+public class QueryBase<T> implements zQueryBase<T> with sqlBuilder
 {}
 
-public interface query_base_scalar<T> extends Scalar<T> :  Query<T>
+public interface zQueryBaseScalar<T> extends Scalar<T> :  Query<T>
 {}
 
-public class QueryBaseScalar<T> implements query_base_scalar<T> with sqlBuilder
+public class QueryBaseScalar<T> implements zQueryBaseScalar<T> with sqlBuilder
 {}
 
 
-# A single class RowValue represents both select_list and row_value_expression.
+# A single class RowValue represents both zSelectList and row_value_expression.
 # so, all() and distinct() methods are methods of this class
 
-public interface select_list<T> : Query<T>
+public interface zSelectList<T> : Query<T>
 {}
 
 
-<T> query_base<T> ::= SELECT sl:select_list<T> fc:from_clause
+<T> zQueryBase<T> ::= SELECT sl:zSelectList<T> fc:from_clause
     :: RowValue<T> mimics QueryBase<T>  {
     // this is a tricky part. The user never supplies from_clause,
     // we are extracting it from Sqlcontext. So, we have only one argument
@@ -285,7 +285,7 @@ public interface select_list<T> : Query<T>
         }
     }
 
-| SELECT ALL sl:select_list<T> fc:from_clause
+| SELECT ALL sl:zSelectList<T> fc:from_clause
      :: RowValue<T>
      {
         public QueryBase<T> all() {
@@ -294,7 +294,7 @@ public interface select_list<T> : Query<T>
         }
      }
 
-| SELECT DISTINCT sl:select_list<T> fc:from_clause
+| SELECT DISTINCT sl:zSelectList<T> fc:from_clause
      :: RowValue<T>
      {
         public QueryBase<T> distinct() {
@@ -304,10 +304,10 @@ public interface select_list<T> : Query<T>
      }
 ;
 
-# select_sublist
-# scalar counterpart of select_list is select_sublist rather than select_list_scalar
+# zSelectSublist
+# scalar counterpart of zSelectList is zSelectSublist rather than zSelectList_scalar
 
-<T> query_base_scalar<T> ::= SELECT sl:select_sublist<T> fc:from_clause
+<T> zQueryBaseScalar<T> ::= SELECT sl:zSelectSublist<T> fc:from_clause
     :: SelectSublist<T> mimics QueryBaseScalar<T>  {
     // this is a tricky part. The user never supplies from_clause,
     // we are extracting it from Sqlcontext. So, we have only one argument
@@ -320,7 +320,7 @@ public interface select_list<T> : Query<T>
         }
     }
 
-| SELECT ALL sl:select_sublist<T> fc:from_clause
+| SELECT ALL sl:zSelectSublist<T> fc:from_clause
      :: SelectSublist<T>
      {
         public QueryBaseScalar<T> all() {
@@ -329,7 +329,7 @@ public interface select_list<T> : Query<T>
         }
      }
 
-| SELECT DISTINCT sl:select_sublist<T> fc:from_clause
+| SELECT DISTINCT sl:zSelectSublist<T> fc:from_clause
      :: SelectSublist<T>
      {
         public QueryBaseScalar<T> distinct() {
@@ -339,13 +339,13 @@ public interface select_list<T> : Query<T>
      }
 ;
 
-public interface select_sublist<T> extends Scalar<T> : Query<T>
+public interface zSelectSublist<T> extends Scalar<T> : Query<T>
 {}
 
-public class SelectSublist<T> implements select_sublist<T> with builder
+public class SelectSublist<T> implements zSelectSublist<T> with builder
 {}
 
-<T> select_list<T> ::= ssl:select_sublist<T>
+<T> zSelectList<T> ::= ssl:zSelectSublist<T>
     :: SelectSublist<T> mimics RowValue<T>
     {}
 ;
@@ -353,15 +353,15 @@ public class SelectSublist<T> implements select_sublist<T> with builder
  // more naturally implemented as static method of Values class:
  // <L,R> RowValue<Pair<L,R> makePair(RowValue<L> l, RowValue<R> r);
  // so no class member method is defined for this production
-<T,U> select_list<Pair<T,U>> ::= sl1:select_list<T> COMMA sl2:select_list<U>
-{   return new select_list<Pair<T,U>>() {
-        public void z$prepare$select_list(final SqlContext context) {
-            sl1.z$prepare$select_list(context);
-            sl2.z$prepare$select_list(context);
+<T,U> zSelectList<Pair<T,U>> ::= sl1:zSelectList<T> COMMA sl2:zSelectList<U>
+{   return new zSelectList<Pair<T,U>>() {
+        public void z$prepare$zSelectList(final SqlContext context) {
+            sl1.z$prepare$zSelectList(context);
+            sl2.z$prepare$zSelectList(context);
         }
-        public Query<Pair<T,U>> z$create$select_list(final SqlContext context) {
-            final Query<T> sql1 = sl1.z$create$select_list(context);
-            final Query<U> sql2 = sl2.z$create$select_list(context);
+        public Query<Pair<T,U>> z$create$zSelectList(final SqlContext context) {
+            final Query<T> sql1 = sl1.z$create$zSelectList(context);
+            final Query<U> sql2 = sl2.z$create$zSelectList(context);
             DataExtractor<Pair<T,U>> extractor = new DataExtractor<Pair<T, U>>() {
                 public Pair<T, U> extract(final Row row) throws SQLException {
                     final T first = sql1.extract(row);
@@ -376,19 +376,19 @@ public class SelectSublist<T> implements select_sublist<T> with builder
 ;
 
 
-# <T> select_sublist<T> ::= value_expression<T> [ AS Identifier ]
+# <T> zSelectSublist<T> ::= value_expression<T> [ AS Identifier ]
 # Identifier is added automatically when needed
 # SqlFactory method does not know about [ AS Identifier ]
 
-<T> select_sublist<T> ::=  ve:value_expression<T>
+<T> zSelectSublist<T> ::=  ve:value_expression<T>
 {
-    return new select_sublist<T>() {
+    return new zSelectSublist<T>() {
 
-        public void z$prepare$select_sublist(SqlContext context) {
+        public void z$prepare$zSelectSublist(SqlContext context) {
             ve.z$prepare$value_expression(context);
         }
 
-        public Query<T> z$create$select_sublist(SqlContext context) {
+        public Query<T> z$create$zSelectSublist(SqlContext context) {
         final ColumnNameProvider columnNameProvider = context.get(ColumnNameProvider.class);
             final Identifier identifier = columnNameProvider.getUniqueName();
             if (identifier!=null) {
