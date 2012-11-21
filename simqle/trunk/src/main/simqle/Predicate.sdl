@@ -1,20 +1,20 @@
-public interface predicate extends Scalar<Boolean> :Sql
+public interface zPredicate extends Scalar<Boolean> :Sql
 {}
 
-public class Predicate implements predicate with sqlBuilder
+public class Predicate implements zPredicate with sqlBuilder
 {}
 
-predicate ::=
+zPredicate ::=
 		p:zComparisonPredicate
 		:: ComparisonPredicate mimics Predicate
 		{}
 	|	p:zInPredicate
 		:: InPredicate mimics Predicate
 		{}
-	|	p:null_predicate
+	|	p:zNullPredicate
 		:: NullPredicate mimics Predicate
 		{}
-	|	p:exists_predicate
+	|	p:zExistsPredicate
 		:: ExistsPredicate mimics Predicate
 		{}
 ;
@@ -129,11 +129,11 @@ class InPredicate implements zInPredicate with SqlBuilder
 {}
 
 /*
-<in predicate> ::= <row value predicand> <in predicate part 2>
+<in zPredicate> ::= <row value predicand> <in zPredicate part 2>
 
-<in predicate part 2> ::= [ NOT ] IN <in predicate value>
+<in zPredicate part 2> ::= [ NOT ] IN <in zPredicate value>
 
-<in predicate value> ::=
+<in zPredicate value> ::=
 		<table subquery>
 	|	<left paren> <in value list> <right paren>
 
@@ -226,23 +226,23 @@ public abstract class AbstractInPredicate extends AbstractPredicate implements z
 
 }
 
-public interface null_predicate extends Scalar<Boolean> : Sql
+public interface zNullPredicate extends Scalar<Boolean> : Sql
 {}
 
-class NullPredicate implements null_predicate with SqlBuilder
+class NullPredicate implements zNullPredicate with SqlBuilder
 {}
 
 /*
-<null predicate> ::= <row value predicand> <null predicate part 2>
+<null zPredicate> ::= <row value predicand> <null zPredicate part 2>
 
-<null predicate part 2> ::= IS [ NOT ] NULL
+<null zPredicate part 2> ::= IS [ NOT ] NULL
 */
 
-null_predicate ::= p:row_value_predicand<?> IS NULL
+zNullPredicate ::= p:row_value_predicand<?> IS NULL
     {
         return new AbstractNullPredicate(p) {
             @Override
-             public Sql z$create$null_predicate(final SqlContext context) {
+             public Sql z$create$zNullPredicate(final SqlContext context) {
                  return new CompositeSql(p.z$create$row_value_predicand(context), IS, NULL);
              }
         };
@@ -257,7 +257,7 @@ null_predicate ::= p:row_value_predicand<?> IS NULL
     {
         return new AbstractNullPredicate(p) {
              @Override
-             public Sql z$create$null_predicate(final SqlContext context) {
+             public Sql z$create$zNullPredicate(final SqlContext context) {
                  return new CompositeSql(p.z$create$row_value_predicand(context), IS, NOT, NULL);
              }
         };
@@ -270,7 +270,7 @@ null_predicate ::= p:row_value_predicand<?> IS NULL
     }
 ;
 
-public abstract class AbstractNullPredicate extends AbstractPredicate implements null_predicate {
+public abstract class AbstractNullPredicate extends AbstractPredicate implements zNullPredicate {
     private final row_value_predicand p;
 
     protected AbstractNullPredicate$(final row_value_predicand p) {
@@ -278,27 +278,27 @@ public abstract class AbstractNullPredicate extends AbstractPredicate implements
     }
 
     @Override
-    public final void z$prepare$null_predicate(final SqlContext context) {
+    public final void z$prepare$zNullPredicate(final SqlContext context) {
         p.z$prepare$row_value_predicand(context);
     }
 
 }
 
-public interface exists_predicate extends Scalar<Boolean> : Sql
+public interface zExistsPredicate extends Scalar<Boolean> : Sql
 {}
 
-public class ExistsPredicate implements exists_predicate with SqlBuilder
+public class ExistsPredicate implements zExistsPredicate with SqlBuilder
 {}
 
-exists_predicate ::= EXISTS sq:subquery<?>
+zExistsPredicate ::= EXISTS sq:subquery<?>
     {
         return new AbstractExistsPredicate() {
              @Override
-             public Sql z$create$exists_predicate(final SqlContext context) {
+             public Sql z$create$zExistsPredicate(final SqlContext context) {
                  return new CompositeSql(EXISTS, sq.z$create$subquery(context));
              }
              @Override
-             public void z$prepare$exists_predicate(final SqlContext context) {
+             public void z$prepare$zExistsPredicate(final SqlContext context) {
                 sq.z$prepare$subquery(context);
              }
         };
@@ -319,5 +319,5 @@ public abstract class AbstractPredicate implements Scalar<Boolean> {
     }
 }
 
-public abstract class AbstractExistsPredicate extends AbstractPredicate implements exists_predicate
+public abstract class AbstractExistsPredicate extends AbstractPredicate implements zExistsPredicate
 {}

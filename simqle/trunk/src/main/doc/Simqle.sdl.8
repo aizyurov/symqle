@@ -768,7 +768,7 @@ truth_value ::= TRUE | FALSE | UNKNOWN
 
 
 /*
-boolean_primary ::= predicate | boolean_predicand
+boolean_primary ::= zPredicate | boolean_predicand
 
 boolean_predicand ::=
 		parenthesized_boolean_value_expression
@@ -780,7 +780,7 @@ simplified by inlining
 */
 
 
-<T> boolean_primary<T> ::= predicate<T>
+<T> boolean_primary<T> ::= zPredicate<T>
     ( BooleanPrimary<T> ::= Predicate<T> )
   | LEFT_PAREN boolean_value_expression<T> RIGHT_PAREN
     ( BooleanPrimary<T> ::= BooleanValueExpression<T> )
@@ -788,19 +788,19 @@ simplified by inlining
     ( BooleanPrimary<T> ::= ValueExpressionPrimary<T> )
 ;
 
-interface predicate<T> extends Scalar<T> ;
-class Predicate<T> implements predicate<T> with sqlBuilder;
+interface zPredicate<T> extends Scalar<T> ;
+class Predicate<T> implements zPredicate<T> with sqlBuilder;
 
 /**
-predicate ::=
+zPredicate ::=
 		zComparisonPredicate
 	|	between_predicate - full release
 	|	zInPredicate
 	|	like_predicate - full release
 	|	similar_predicate -- not supported by MySql; skipped
-	|	null_predicate
+	|	zNullPredicate
 	|	quantified_zComparisonPredicate - full release
-	|	exists_predicate
+	|	zExistsPredicate
 	|	unique_predicate - full release
 	|	normalized_predicate - not supported
 	|	match_predicate - full release
@@ -812,26 +812,26 @@ predicate ::=
 	|	type_predicate- not supported
 */
 
-<T> predicate<T> ::=
+<T> zPredicate<T> ::=
 		zComparisonPredicate<T>
 		( Predicate<T> ::= ComparisonPredicate<T> )
 	|	zInPredicate<T>
 		( Predicate<T> ::= InPredicate<T> )
-	|	null_predicate<T>
+	|	zNullPredicate<T>
 		( Predicate<T> ::= NullPredicate<T> )
-	|	exists_predicate<T>
+	|	zExistsPredicate<T>
 		( Predicate<T> ::= ExistsPredicate<T> )
 ;
 
 interface zComparisonPredicate<T> extends Scalar<T> ;
 interface zInPredicate<T> extends Scalar<T> ;
-interface null_predicate<T> extends Scalar<T> ;
-interface exists_predicate<T> extends Scalar<T> ;
+interface zNullPredicate<T> extends Scalar<T> ;
+interface zExistsPredicate<T> extends Scalar<T> ;
 
 class ComparisonPredicate<T> implements zComparisonPredicate<T> with SqlBuilder;
 class InPredicate<T> implements zInPredicate<T> with SqlBuilder;
-class NullPredicate<T> implements null_predicate<T> with SqlBuilder;
-class ExistsPredicate<T> implements exists_predicate<T> with SqlBuilder;
+class NullPredicate<T> implements zNullPredicate<T> with SqlBuilder;
+class ExistsPredicate<T> implements zExistsPredicate<T> with SqlBuilder;
 
 
 /*

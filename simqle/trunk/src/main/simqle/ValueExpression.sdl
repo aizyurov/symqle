@@ -163,7 +163,7 @@ class BooleanPrimary implements boolean_primary with sqlBuilder
 {}
 
 
-boolean_primary ::= p:predicate
+boolean_primary ::= p:zPredicate
     ::Predicate mimics BooleanPrimary
     {}
 
