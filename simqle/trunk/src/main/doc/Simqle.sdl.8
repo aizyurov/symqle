@@ -42,7 +42,7 @@ import java.sql.SQLException;
 
 /*
 direct_select_statement:_multiple_rows ::= zCursorSpecification
-zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
+zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
 updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
 
 Simqle re-defines this in the following way:
@@ -79,7 +79,7 @@ import java.sql.SQLException;
 {};
 
 /*
-zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
+zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
 updatability_clause moved to select_statement
 zCursorSpecification_scalar introduced
 */
@@ -90,7 +90,7 @@ zCursorSpecification_scalar introduced
 | zQueryExpression<T>
       ( CursorSpecification<T> ::= QueryExpression<T> )
 
-| zQueryExpression<T> order_by_clause
+| zQueryExpression<T> zOrderByClause
         ( + QueryExpression<T> )
         {
             // TODO: add arguments and implement
@@ -126,7 +126,7 @@ It does not have its own orderBy;
 <T> zCursorSpecification_scalar<T> ::= zQueryExpressionScalar<T>
       ( CursorSpecificationScalar<T> ::= QueryExpressionScalar<T> )
 
-| zQueryExpressionScalar<T> order_by_clause
+| zQueryExpressionScalar<T> zOrderByClause
         ( + QueryExpressionScalar<T> )
         {
             // TODO: add arguments and implement
@@ -1391,7 +1391,7 @@ where_clause ::= WHERE search_condition
 
 
 
-interface order_by_clause ;
+interface zOrderByClause ;
 
 // no class OrderByClause!
 

@@ -30,7 +30,7 @@ import java.sql.SQLException;
 
 
 # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification
-# zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
+# zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
 # updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
 
 # Simqle re-defines this in the following way:
@@ -62,7 +62,7 @@ interface zCursorSpecification<T> : Query<T> {}
 class CursorSpecification<T> implements zCursorSpecification<T> with sqlBuilder
 {}
 
-#zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
+#zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
 #updatability_clause moved to zSelectStatement
 #zCursorSpecificationScalar introduced
 
@@ -73,17 +73,17 @@ class CursorSpecification<T> implements zCursorSpecification<T> with sqlBuilder
     ::  QueryExpression<T> mimics CursorSpecification<T>
     {}
 
-| qe:zQueryExpression<T> obc:order_by_clause
+| qe:zQueryExpression<T> obc:zOrderByClause
     :: QueryExpression<T>
         {
-            public CursorSpecification<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
+            public CursorSpecification<T> orderBy(zSortSpecification sort, zSortSpecification... additionalSort) {
                 final SqlFactory factory = SqlFactory.getInstance();
-                sort_specification_list sortList = factory.sort_specification_list_IS_sort_specification(sort);
-                for (sort_specification sortSpec: additionalSort) {
-                    sortList = factory.sort_specification_list_IS_sort_specification_list_COMMA_sort_specification(sortList, sortSpec);
+                zSortSpecificationList sortList = factory.zSortSpecificationList_IS_zSortSpecification(sort);
+                for (zSortSpecification sortSpec: additionalSort) {
+                    sortList = factory.zSortSpecificationList_IS_zSortSpecificationList_COMMA_zSortSpecification(sortList, sortSpec);
                 }
-                order_by_clause orderBy = factory.order_by_clause_IS_ORDER_BY_sort_specification_list(sortList);
-                return new CursorSpecification<T>(factory.zCursorSpecification_IS_zQueryExpression_order_by_clause(this, orderBy));
+                zOrderByClause orderBy = factory.zOrderByClause_IS_ORDER_BY_zSortSpecificationList(sortList);
+                return new CursorSpecification<T>(factory.zCursorSpecification_IS_zQueryExpression_zOrderByClause(this, orderBy));
             }
         }
 ;
@@ -108,17 +108,17 @@ import java.sql.SQLException;
 <T> zCursorSpecificationScalar<T> ::= qe:zQueryExpressionScalar<T>
       :: QueryExpressionScalar<T> mimics CursorSpecificationScalar<T>
       {}
-| qu:zQueryExpressionScalar<T> obc:order_by_clause
+| qu:zQueryExpressionScalar<T> obc:zOrderByClause
         :: QueryExpressionScalar<T>
         {
-            public CursorSpecificationScalar<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
+            public CursorSpecificationScalar<T> orderBy(zSortSpecification sort, zSortSpecification... additionalSort) {
                 final SqlFactory factory = SqlFactory.getInstance();
-                sort_specification_list sortList = factory.sort_specification_list_IS_sort_specification(sort);
-                for (sort_specification sortSpec: additionalSort) {
-                    sortList = factory.sort_specification_list_IS_sort_specification_list_COMMA_sort_specification(sortList, sortSpec);
+                zSortSpecificationList sortList = factory.zSortSpecificationList_IS_zSortSpecification(sort);
+                for (zSortSpecification sortSpec: additionalSort) {
+                    sortList = factory.zSortSpecificationList_IS_zSortSpecificationList_COMMA_zSortSpecification(sortList, sortSpec);
                 }
-                order_by_clause orderBy = factory.order_by_clause_IS_ORDER_BY_sort_specification_list(sortList);
-                return new CursorSpecificationScalar<T>(factory.zCursorSpecificationScalar_IS_zQueryExpressionScalar_order_by_clause(this, orderBy));
+                zOrderByClause orderBy = factory.zOrderByClause_IS_ORDER_BY_zSortSpecificationList(sortList);
+                return new CursorSpecificationScalar<T>(factory.zCursorSpecificationScalar_IS_zQueryExpressionScalar_zOrderByClause(this, orderBy));
             }
         }
 ;

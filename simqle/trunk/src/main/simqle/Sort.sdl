@@ -1,40 +1,40 @@
-#order_by_clause ::= ORDER BY sort_specification_list
-#sort_specification_list ::= sort_specification [ { comma sort_specification }... ]
-#sort_specification ::= sort_key [ ordering_specification ] [ null_ordering ]
-#sort_key ::= value_expression
+#zOrderByClause ::= ORDER BY zSortSpecificationList
+#zSortSpecificationList ::= zSortSpecification [ { comma zSortSpecification }... ]
+#zSortSpecification ::= zSortKey [ ordering_specification ] [ null_ordering ]
+#zSortKey ::= value_expression
 #ordering_specification ::= ASC | DESC
 #null_ordering ::= NULLS FIRST | NULLS LAST
 
 #rephrased in trivial manner - see below
 
-public interface order_by_clause : Sql
+public interface zOrderByClause : Sql
 {}
 # no class OrderByClause!
 
-order_by_clause ::= ORDER BY ssl:sort_specification_list
+zOrderByClause ::= ORDER BY ssl:zSortSpecificationList
 ;
 
-public interface sort_specification_list : Sql
+public interface zSortSpecificationList : Sql
 {}
-public class SortSpecificationList implements sort_specification_list with sortSpecificationListBuilder
+public class SortSpecificationList implements zSortSpecificationList with sortSpecificationListBuilder
 {}
 
-sort_specification_list ::= ss:sort_specification
-| ssl:sort_specification_list COMMA ss:sort_specification
+zSortSpecificationList ::= ss:zSortSpecification
+| ssl:zSortSpecificationList COMMA ss:zSortSpecification
 ;
 
-# we need not a class sort_specification_list: the user never constructs it directly, because
-# CursorSpecification#orderBy accepts a list of sort_specification and constructs sort_specification_list internally
+# we need not a class zSortSpecificationList: the user never constructs it directly, because
+# CursorSpecification#orderBy accepts a list of zSortSpecification and constructs zSortSpecificationList internally
 
-public interface sort_specification : Sql
+public interface zSortSpecification : Sql
 {}
-public class SortSpecification implements sort_specification with sortSpec
+public class SortSpecification implements zSortSpecification with sortSpec
 {}
 
-sort_specification ::= sos:sort_ordering_specification
+zSortSpecification ::= sos:zSortOrderingSpecification
     :: SortOrderingSpecification mimics SortSpecification
     {}
-|   sos:sort_ordering_specification NULLS FIRST
+|   sos:zSortOrderingSpecification NULLS FIRST
     :: SortOrderingSpecification
     {
         public SortSpecification nullsFirst() {
@@ -43,7 +43,7 @@ sort_specification ::= sos:sort_ordering_specification
                 );
         }
     }
-|   sos:sort_ordering_specification NULLS LAST
+|   sos:zSortOrderingSpecification NULLS LAST
     :: SortOrderingSpecification
     {
         public SortSpecification nullsLast() {
@@ -55,15 +55,15 @@ sort_specification ::= sos:sort_ordering_specification
     }
 ;
 
-public interface sort_ordering_specification : Sql
+public interface zSortOrderingSpecification : Sql
 {}
-public class SortOrderingSpecification implements sort_ordering_specification with sortOderingSpecBuilder
+public class SortOrderingSpecification implements zSortOrderingSpecification with sortOderingSpecBuilder
 {}
 
-sort_ordering_specification ::= key:sort_key
+zSortOrderingSpecification ::= key:zSortKey
     :: SortKey mimics SortOrderingSpecification
     {}
-| key:sort_key ASC
+| key:zSortKey ASC
     :: SortKey
     {
         SortOrderingSpecification asc() {
@@ -72,7 +72,7 @@ sort_ordering_specification ::= key:sort_key
                 );
         }
     }
-| key:sort_key DESC
+| key:zSortKey DESC
     :: SortKey
     {
         SortOrderingSpecification desc() {
@@ -83,12 +83,12 @@ sort_ordering_specification ::= key:sort_key
     }
 ;
 
-public interface sort_key : Sql
+public interface zSortKey : Sql
 {}
-class SortKey implements sort_key with sortKeyBuilder
+class SortKey implements zSortKey with sortKeyBuilder
 {}
 
-sort_key ::= ve:value_expression
+zSortKey ::= ve:value_expression
     :: Value<T> mimics SortKey
     {}
 ;
