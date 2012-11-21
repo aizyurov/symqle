@@ -178,7 +178,7 @@ public BooleanPrimary asCondition()   {
                 new zValueExpressionPrimary<Boolean>() {
                     @Override
                     public Sql z$create$zValueExpressionPrimary(final SqlContext context) {
-                        return z$create$zValueExpressionPrimary(context);
+                        return z$create$zValueExpression(context);
                     }
 
                     @Override
@@ -297,6 +297,7 @@ public abstract class Column<T> implements zColumnReference<T>
 
     @Override
     public void z$prepare$zColumnReference(final SqlContext context) {
+        columnRef.z$prepare$zColumnReference(context);
         owner.z$prepare$zTable(context);
     }
 

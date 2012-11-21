@@ -14,26 +14,12 @@ import java.sql.SQLException;
  */
 public class AliveTest extends TestCase {
 
-    public void test() throws Exception {
-        final Person person = new Person();
-        final LongColumn col = new LongColumn("id", person);
-        Element element = new ElementAdapter() {
-            @Override
-            public Long getLong() throws SQLException {
-                return 1L;
-            }
-        };
-        assertEquals(Long.valueOf(1), col.value(element));
-        System.out.println(col.show());
-
-    }
 
     public void testFunction() throws Exception {
         final Person person = new Person();
-        final LongColumn col = new LongColumn("id", person);
         final StringColumn name = new StringColumn("name", person);
         final StringColumn surname = new StringColumn("surname", person);
-        System.out.println(concat(name, surname).show());
+        assertEquals("SELECT concat(T0.name, T0.surname) AS C0 FROM person AS T0", concat(name, surname).show());
 
     }
 
@@ -43,17 +29,6 @@ public class AliveTest extends TestCase {
         }
 
 
-    }
-
-    private static class LongColumn extends Column<Long> {
-        private LongColumn(final String name, final Table owner) {
-            super(name, owner);
-        }
-
-        @Override
-        public Long value(final Element element) throws SQLException {
-            return element.getLong();
-        }
     }
 
     private static class StringColumn extends Column<String> {

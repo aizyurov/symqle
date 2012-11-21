@@ -32,7 +32,7 @@ public String show() {
     context.set(SqlFactory.class, new GenericSqlFactory());
     z$prepare$zSelectStatement(context);
     final String sqlText = z$create$zSelectStatement(context).getSqlText();
-    return sqlText.replaceAll("([.(])(\\s+)", "$1").replaceAll("(\\s+)(\\p{Punct})", "$2");
+    return sqlText.replaceAll("([.(])(\\s+)", "$1").replaceAll("(\\s+)(([.,)(]))", "$2");
 }
 }
 
@@ -179,6 +179,36 @@ import java.sql.SQLException;
     }
 
 |    qe:zQueryExpressionScalar<T> EXCEPT ALL qt:zQueryTerm<T>
+    {  return new zQueryExpressionScalar<T>() {
+           @Override
+           public T value(final Element element) throws SQLException {
+                return qe.value(element);
+           }
+            @Override
+            public void z$prepare$zQueryExpressionScalar(final SqlContext context) {
+                final SqlContext leftContext = new SqlContext();
+                leftContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                leftContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                 qe.z$prepare$zQueryExpressionScalar(leftContext);
+                final SqlContext rightContext = new SqlContext();
+                rightContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                rightContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                 qt.z$prepare$zQueryTerm(rightContext);
+            }
+            @Override
+            public Query<T> z$create$zQueryExpressionScalar(final SqlContext context) {
+                final SqlContext leftContext = new SqlContext();
+                leftContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                leftContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                final SqlContext rightContext = new SqlContext();
+                rightContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
+                rightContext.set(ColumnNameProvider.class, new ColumnNameProvider());
+                 qe.z$prepare$zQueryExpressionScalar(leftContext);
+                 qt.z$prepare$zQueryTerm(rightContext);
+                return new CompositeQuery<T>(qe.z$create$zQueryExpressionScalar(leftContext), EXCEPT, ALL, qt.z$create$zQueryTerm(rightContext));
+            }
+        };
+     }
     :: QueryExpressionScalar<T>
     {
     public QueryExpressionScalar<T> exceptAll(zQueryTerm<T> queryTerm) {
