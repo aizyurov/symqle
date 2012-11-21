@@ -265,41 +265,22 @@ public interface	zColumnReference<T> extends Scalar<T> : Sql
 
 public abstract class Column<T> implements zColumnReference<T>
 {
-    private final zColumnReference<T> columnRef;
-    final Table owner;
+    private final Identifier columnName;
+    private final Table owner;
 
-    protected Column$(final String name, final Table owner) {
-        this.columnRef = new zColumnReference<T>() {
-            @Override
-            public Sql z$create$zColumnReference(final SqlContext context) {
-                return new Identifier(name);
-            }
+    protected Column$(final String name,  final Table owner)  {
+            this.columnName = new Identifier(name);
+            this.owner = owner;
+        }
+    protected final ValueExpressionPrimary<T> toValueExpressionPrimary()   {    return new ValueExpressionPrimary<T>(SqlFactory.getInstance().zValueExpressionPrimary_IS_zColumnReference(this));    }
 
-            @Override
-            public void z$prepare$zColumnReference(final SqlContext context) {
-                // do nothing
-            }
-
-            @Override
-            public T value(final Element element) throws SQLException {
-                return Column$.this.value(element);
-            }
-        };
-        this.owner = owner;
-    }
-
-    @Override
-    public Sql z$create$zColumnReference(final SqlContext context) {
-        final Sql columnName = columnRef.z$create$zColumnReference(context);
-        final Identifier tableName = context.get(FromClause.class).getCorrelationName(owner);
-        return new CompositeSql(tableName, SqlTerminal.PERIOD, columnName);
-    }
-
-    @Override
-    public void z$prepare$zColumnReference(final SqlContext context) {
-        columnRef.z$prepare$zColumnReference(context);
-        owner.z$prepare$zTable(context);
-    }
+    public Sql z$create$zColumnReference(final SqlContext context)   {
+            final Identifier tableName = context.get(FromClause.class).getCorrelationName(owner);
+            return new CompositeSql(tableName, SqlTerminal.PERIOD, columnName);
+        }
+    public void z$prepare$zColumnReference(final SqlContext context)   {
+            owner.z$prepare$zTable(context);
+        }
 
     public abstract T value(final Element element) throws SQLException ;
 }
