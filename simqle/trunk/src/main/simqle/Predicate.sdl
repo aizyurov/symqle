@@ -134,7 +134,7 @@ class InPredicate implements zInPredicate with SqlBuilder
 <in zPredicate part 2> ::= [ NOT ] IN <in zPredicate value>
 
 <in zPredicate value> ::=
-		<table subquery>
+		<table zSubquery>
 	|	<left paren> <in value list> <right paren>
 
 <in value list> ::= <row value expression> [ { <comma> <row value expression> }... ]
@@ -178,7 +178,7 @@ public interface zInPredicate_value<T> : Sql
 public class InPredicateValue<T> implements zInPredicate_value<T> with sqlBuilder
 {}
 
-<T> zInPredicate_value<T> ::= sq:subquery<T>
+<T> zInPredicate_value<T> ::= sq:zSubquery<T>
     :: Subquery<T> mimics  InPredicateValue<T>
     {}
 |
@@ -290,16 +290,16 @@ public interface zExistsPredicate extends Scalar<Boolean> : Sql
 public class ExistsPredicate implements zExistsPredicate with SqlBuilder
 {}
 
-zExistsPredicate ::= EXISTS sq:subquery<?>
+zExistsPredicate ::= EXISTS sq:zSubquery<?>
     {
         return new AbstractExistsPredicate() {
              @Override
              public Sql z$create$zExistsPredicate(final SqlContext context) {
-                 return new CompositeSql(EXISTS, sq.z$create$subquery(context));
+                 return new CompositeSql(EXISTS, sq.z$create$zSubquery(context));
              }
              @Override
              public void z$prepare$zExistsPredicate(final SqlContext context) {
-                sq.z$prepare$subquery(context);
+                sq.z$prepare$zSubquery(context);
              }
         };
 

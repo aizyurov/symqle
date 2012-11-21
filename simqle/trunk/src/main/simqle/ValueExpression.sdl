@@ -210,7 +210,7 @@ public class ValueExpressionPrimary<T> implements value_expression_primary<T>  w
 	|	cr:column_reference<T>
 	    :: Column<T> mimics ValueExpressionPrimary<T>
 	    {}
-	|	sc:scalar_subquery<T>
+	|	sc:zScalarSubquery<T>
 	    :: ScalarSubquery<T> mimics ValueExpressionPrimary<T>
 	    {}
 	|	ri:routine_invocation<T>

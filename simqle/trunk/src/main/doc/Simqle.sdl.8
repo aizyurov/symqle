@@ -967,17 +967,17 @@ row_value_special_case ::= nonparenthesized_value_expression_primary
 zExplicitRowValueConstructor ::=
 		left_paren row_value_constructor_element comma zRowValueConstructorElementList right_paren
 	|	ROW left_paren zRowValueConstructorElementList right_paren
-	|	row_subquery
+	|	row_zSubquery
 
 zRowValueConstructorElementList ::=
 		row_value_constructor_element [ { comma row_value_constructor_element }... ]
 
 row_value_constructor_element ::= value_expression
 
-row_subquery ::= subquery
+row_zSubquery ::= zSubquery
 
 Changes:
-1. inline row_value_special_case, row_value_constructor_element, row_subquery
+1. inline row_value_special_case, row_value_constructor_element, row_zSubquery
 2. change right recursion to left zExplicitRowValueConstructor
 3. Allow row_value_constructor_element to be zRowValueConstructorElementList
    and allow both members to be row
@@ -995,7 +995,7 @@ interface zRowValueExpression<T> ;
 		LEFT_PAREN zRowValueConstructorElementList<T> COMMA zRowValueConstructorElementList<U> RIGHT_PAREN
 // this is used by Values.pairOf(...) method
 
-	|	subquery<T>
+	|	zSubquery<T>
 
 ;
 
@@ -1024,7 +1024,7 @@ nonparenthesized_value_expression_primary ::=
 	|	column_reference
 	|	set_function_specification
 	|	window_function
-	|	scalar_subquery
+	|	zScalarSubquery
 	|	case_expression
 	|	cast_specification
 	|	field_reference
@@ -1047,7 +1047,7 @@ nonparenthesized_value_expression_primary ::=
 		dynamic_parameter_specification<T>
 	|	column_reference<T>
 	    (ValueExpressionPrimary<T> ::= Column<T> )
-	|	scalar_subquery<T>
+	|	zScalarSubquery<T>
 	    ( ValueExpressionPrimary<T> ::= ScalarSubquery<T> )
 	|	routine_invocation<T>
 	|	next_value_expression<T>
@@ -1086,17 +1086,17 @@ abstract class Column<T> implements column_reference<T>
     }
 }
 ;
-interface	scalar_subquery<T> extends Scalar<T> ;
-class ScalarSubquery<T> implements scalar_subquery<T> with sqlBuilder;
+interface	zScalarSubquery<T> extends Scalar<T> ;
+class ScalarSubquery<T> implements zScalarSubquery<T> with sqlBuilder;
 interface	routine_invocation<T>  extends Scalar<T> ;
 class RoutineInvocation<T> implements routine_invocation<T> with sqlBuilder;
 interface	next_value_expression<T>  extends Scalar<T> ;
 class NextValueExpression<T> implements next_value_expression<T> with sqlBuilder;
 
 
-<T> scalar_subquery<T> ::= LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
+<T> zScalarSubquery<T> ::= LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
 {
-    public Sql z$create$scalar_subquery(SqlContext context) {
+    public Sql z$create$zScalarSubquery(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
         innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
@@ -1107,15 +1107,15 @@ class NextValueExpression<T> implements next_value_expression<T> with sqlBuilder
         return new CompoundQuery(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
     }
 
-    public void z$prepare$scalar_subquery(SqlContext context) {
+    public void z$prepare$zScalarSubquery(SqlContext context) {
         // do nothing
     }
 }
     ( ScalarSubquery<T> ::= QueryExpressionScalar<T> )
 ;
 
-interface subquery<T> ;
-class Subquery<T> implements subquery<T> with sqlBuilder ;
+interface zSubquery<T> ;
+class Subquery<T> implements zSubquery<T> with sqlBuilder ;
 
 interface where_clause ;
 

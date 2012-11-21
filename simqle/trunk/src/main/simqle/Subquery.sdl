@@ -1,21 +1,21 @@
-public interface	scalar_subquery<T> extends Scalar<T> : Sql
+public interface	zScalarSubquery<T> extends Scalar<T> : Sql
 {}
 
-public class ScalarSubquery<T> implements scalar_subquery<T> with sqlBuilder
+public class ScalarSubquery<T> implements zScalarSubquery<T> with sqlBuilder
 {}
 
-interface subquery<T> : Sql
+interface zSubquery<T> : Sql
 {}
 
-class Subquery<T> implements subquery<T> with sqlBuilder
+class Subquery<T> implements zSubquery<T> with sqlBuilder
 {}
 
 
-<T> scalar_subquery<T> ::= LEFT_PAREN qe:zQueryExpressionScalar<T> RIGHT_PAREN
+<T> zScalarSubquery<T> ::= LEFT_PAREN qe:zQueryExpressionScalar<T> RIGHT_PAREN
 {
-    return new scalar_subquery<T>() {
+    return new zScalarSubquery<T>() {
         @Override
-        public Sql z$create$scalar_subquery(SqlContext context) {
+        public Sql z$create$zScalarSubquery(SqlContext context) {
             SqlContext innerContext = new SqlContext();
             innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
             innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
@@ -27,7 +27,7 @@ class Subquery<T> implements subquery<T> with sqlBuilder
         }
 
             @Override
-        public void z$prepare$scalar_subquery(SqlContext context) {
+        public void z$prepare$zScalarSubquery(SqlContext context) {
             // do nothing
         }
 
@@ -41,11 +41,11 @@ class Subquery<T> implements subquery<T> with sqlBuilder
     {}
 ;
 
-<T> subquery<T> ::= LEFT_PAREN qe:zQueryExpression<T> RIGHT_PAREN
+<T> zSubquery<T> ::= LEFT_PAREN qe:zQueryExpression<T> RIGHT_PAREN
 {
-    return new subquery<T>() {
+    return new zSubquery<T>() {
             @Override
-        public Sql z$create$subquery(SqlContext context) {
+        public Sql z$create$zSubquery(SqlContext context) {
             SqlContext innerContext = new SqlContext();
             innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
             innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
@@ -57,7 +57,7 @@ class Subquery<T> implements subquery<T> with sqlBuilder
         }
 
             @Override
-        public void z$prepare$subquery(SqlContext context) {
+        public void z$prepare$zSubquery(SqlContext context) {
             // do nothing
         }
     };
