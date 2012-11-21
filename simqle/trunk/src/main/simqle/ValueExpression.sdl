@@ -295,6 +295,8 @@ public abstract class Column<T> implements zColumnReference<T>
     public void z$prepare$zColumnReference(final SqlContext context) {
         owner.z$prepare$zTable(context);
     }
+
+    public abstract T value(final Element element) throws SQLException ;
 }
 
 public interface	zRoutineInvocation<T>  extends Scalar<T> : Sql
