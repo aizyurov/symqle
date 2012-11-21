@@ -124,8 +124,25 @@ public class ColumnTest extends TestCase {
     public void testExceptAll() throws Exception {
         final LongColumn column = createId();
         final String sql = column.exceptAll(new LongColumn("age", person2)).show();
-        System.out.println(sql);
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.age AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final LongColumn column = createId();
+        final String sql = column.exceptDistinct(new LongColumn("age", person2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionAll() throws Exception {
+        final LongColumn column = createId();
+        final String sql = column.unionAll(new LongColumn("age", person2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 UNION ALL SELECT T1.age AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final LongColumn column = createId();
+        final String sql = column.unionDistinct(new LongColumn("age", person2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     private static class Person extends Table {

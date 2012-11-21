@@ -163,6 +163,9 @@ import java.sql.SQLException;
      {}
 
 |    qe:zQueryExpressionScalar<T> UNION ALL qt:zQueryTerm<T>
+    {
+    return new zAbstractQueryExpression<T>(qe, qt, false, true);
+    }
     :: QueryExpressionScalar<T>
     {
     public QueryExpressionScalar<T> unionAll(zQueryTerm<T> queryTerm) {
@@ -171,6 +174,9 @@ import java.sql.SQLException;
     }
 
 |    qe:zQueryExpressionScalar<T> UNION DISTINCT qt:zQueryTerm<T>
+    {
+    return new zAbstractQueryExpression<T>(qe, qt, false, false);
+    }
     :: QueryExpressionScalar<T>
     {
     public QueryExpressionScalar<T> unionDistinct(zQueryTerm<T> queryTerm) {
@@ -179,7 +185,47 @@ import java.sql.SQLException;
     }
 
 |    qe:zQueryExpressionScalar<T> EXCEPT ALL qt:zQueryTerm<T>
-    {  return new zQueryExpressionScalar<T>() {
+    {
+    return new zAbstractQueryExpression<T>(qe, qt, true, true);
+    }
+    :: QueryExpressionScalar<T>
+    {
+    public QueryExpressionScalar<T> exceptAll(zQueryTerm<T> queryTerm) {
+        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
+        }
+    }
+
+|    qe:zQueryExpressionScalar<T> EXCEPT DISTINCT qt:zQueryTerm<T>
+    {
+    return new zAbstractQueryExpression<T>(qe, qt, true, false);
+    }
+    :: QueryExpressionScalar<T>
+    {
+    public QueryExpressionScalar<T> exceptDistinct(zQueryTerm<T> queryTerm) {
+        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
+        }
+    }
+;
+
+class zAbstractQueryExpression<T> implements zQueryExpressionScalar<T> {
+    private final zQueryExpressionScalar<T> qe;
+    private final zQueryTerm<T> qt;
+    private final SqlTerminal exceptOrUnion;
+    private final SqlTerminal allOrDistinct;
+
+    zAbstractQueryExpression$(
+        final zQueryExpressionScalar<T> qe,
+        final zQueryTerm<T> qt,
+        final boolean exceptNotUnion,
+        final boolean allNotDistinct
+        ) {
+        this.qe = qe;
+        this.qt = qt;
+        this.exceptOrUnion = exceptNotUnion ? SqlTerminal.EXCEPT : SqlTerminal.UNION;
+        this.allOrDistinct = allNotDistinct ? SqlTerminal.ALL : SqlTerminal.DISTINCT;
+        }
+
+
            @Override
            public T value(final Element element) throws SQLException {
                 return qe.value(element);
@@ -205,25 +251,10 @@ import java.sql.SQLException;
                 rightContext.set(ColumnNameProvider.class, new ColumnNameProvider());
                  qe.z$prepare$zQueryExpressionScalar(leftContext);
                  qt.z$prepare$zQueryTerm(rightContext);
-                return new CompositeQuery<T>(qe.z$create$zQueryExpressionScalar(leftContext), EXCEPT, ALL, qt.z$create$zQueryTerm(rightContext));
+                return new CompositeQuery<T>(qe.z$create$zQueryExpressionScalar(leftContext), exceptOrUnion, allOrDistinct, qt.z$create$zQueryTerm(rightContext));
             }
-        };
-     }
-    :: QueryExpressionScalar<T>
-    {
-    public QueryExpressionScalar<T> exceptAll(zQueryTerm<T> queryTerm) {
-        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
-        }
-    }
 
-|    qe:zQueryExpressionScalar<T> EXCEPT DISTINCT qt:zQueryTerm<T>
-    :: QueryExpressionScalar<T>
-    {
-    public QueryExpressionScalar<T> exceptDistinct(zQueryTerm<T> queryTerm) {
-        return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
-        }
-    }
-;
+}
 
 # zQueryTerm is always scalar; we do not add suffix _scalar for brevity
 
