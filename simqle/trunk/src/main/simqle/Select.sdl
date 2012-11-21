@@ -140,10 +140,10 @@ import java.sql.SQLException;
     :: QueryBase<T> mimics QueryExpression<T>
     {}
 
-|   qb:zQueryBase<T> wc:where_clause
+|   qb:zQueryBase<T> wc:zWhereClause
     :: QueryBase<T>
     {
-        public QueryExpression<T> where(where_clause condition) {
+        public QueryExpression<T> where(zWhereClause condition) {
             return new QueryExpression<T>(_APPLY_RULE_(this, condition));
         }
     }
@@ -240,10 +240,10 @@ public class QuerySpecificationScalar<T> implements zQuerySpecificationScalar<T>
     :: QueryBaseScalar<T> mimics QuerySpecificationScalar<T>
     {}
 
-  |  qb:zQueryBaseScalar<T> wc:where_clause
+  |  qb:zQueryBaseScalar<T> wc:zWhereClause
     :: QueryBaseScalar<T>
     {
-        public QuerySpecificationScalar<T> where(where_clause condition) {
+        public QuerySpecificationScalar<T> where(zWhereClause condition) {
             return new QuerySpecificationScalar<T>(_APPLY_RULE_(this, condition));
         }
     }

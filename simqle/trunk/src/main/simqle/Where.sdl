@@ -1,12 +1,12 @@
-public interface where_clause : Sql
+public interface zWhereClause : Sql
 {}
 
 
 
-public class WhereClause implements where_clause with builder
+public class WhereClause implements zWhereClause with builder
 {}
 
-where_clause ::= WHERE cond:zBooleanValueExpression
+zWhereClause ::= WHERE cond:zBooleanValueExpression
         :: BooleanValueExpression mimics WhereClause
         {}
 ;

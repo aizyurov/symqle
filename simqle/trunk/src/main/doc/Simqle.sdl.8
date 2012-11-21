@@ -295,7 +295,7 @@ set_quantifier ::= DISTINCT | ALL
 
 table_expression ::=
 		zFromClause
-		[ where_clause ]
+		[ zWhereClause ]
 		[ group_by_clause ]
 		[ having_clause ]
 		[ window_clause ]
@@ -303,11 +303,11 @@ table_expression ::=
 This has been reformulated as follows:
 1. Remove group_by_clause, having_clause, window_clause - not supported
 2. Inline table_expression
-query_specification ::= SELECT [ set_quantifier ] zSelectList zFromClause [where_clause]
+query_specification ::= SELECT [ set_quantifier ] zSelectList zFromClause [zWhereClause]
 3. Introduce new non-terminal:
 zQueryBase ::= SELECT [ set_quantifier ] zSelectList zFromClause
 query_specification ::= zQueryBase
- 		|  zQueryBase where_clause
+ 		|  zQueryBase zWhereClause
 4. Inline set_quantifier in zQueryBase
 
 Scalar counterparts productions are alike.
@@ -316,10 +316,10 @@ Scalar counterparts productions are alike.
 <T> query_specification<T> ::= zQueryBase<T>
     ( QuerySpecification<T> ::= QueryBase<T> )
 
-  |  zQueryBase<T> where_clause
+  |  zQueryBase<T> zWhereClause
     ( + QueryBase<T> )
     {
-        public QuerySpecification<T> where(where_clause condition) {
+        public QuerySpecification<T> where(zWhereClause condition) {
             return new QuerySpecification<T>(
                 SqlFactory.getInstance()._THIS_PRODUCTION_(this, condition)
                 );
@@ -330,10 +330,10 @@ Scalar counterparts productions are alike.
 <T> zQuerySpecificationScalar<T> ::= zQueryBaseScalar<T>
     ( QuerySpecificationScalar<T> ::= QueryBaseScalar<T> )
 
-  |  zQueryBaseScalar<T> where_clause
+  |  zQueryBaseScalar<T> zWhereClause
     ( + QueryBaseScalar<T> )
     {
-        public QuerySpecificationScalar<T> where(where_clause condition) {
+        public QuerySpecificationScalar<T> where(zWhereClause condition) {
             return new QuerySpecificationScalar<T>(
                 SqlFactory.getInstance()._THIS_PRODUCTION_(this, condition)
                 );
@@ -1117,7 +1117,7 @@ class NextValueExpression<T> implements next_value_expression<T> with sqlBuilder
 interface zSubquery<T> ;
 class Subquery<T> implements zSubquery<T> with sqlBuilder ;
 
-interface where_clause ;
+interface zWhereClause ;
 
 interface zFromClause ;
 
@@ -1383,9 +1383,9 @@ search_condition ::= zBooleanValueExpression
     ( SearchCondition ::= BooleanValueExpression )
 ;
 
-class WhereClause implements where_clause with builder;
+class WhereClause implements zWhereClause with builder;
 
-where_clause ::= WHERE search_condition
+zWhereClause ::= WHERE search_condition
         ( WhereClause ::= SearchCondition )
 ;
 
