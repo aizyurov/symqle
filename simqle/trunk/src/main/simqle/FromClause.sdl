@@ -1,4 +1,4 @@
-public interface from_clause : Sql
+public interface zFromClause : Sql
 {}
 
 import org.simqle.Sql;
@@ -6,30 +6,30 @@ import org.simqle.SqlContext;
 /**
  * @author Alexander Izyurov
  */
-public class ImplicitFromClause implements from_clause {
+public class ImplicitFromClause implements zFromClause {
     /**
      * Defines Sql produced by this syntactic element.
      * Implementations should produce Sql conforming to the productions specified above.
      *
      * @param context - construction context: dialect, tables available in this and enclosing contexts etc.
-     * @return sql as required for from_clause syntax
+     * @return sql as required for zFromClause syntax
      */
-    public Sql z$create$from_clause(SqlContext context) {
-        return context.get(FromClause.class).z$create$from_clause(context);
+    public Sql z$create$zFromClause(SqlContext context) {
+        return context.get(FromClause.class).z$create$zFromClause(context);
     }
 
-    public void z$prepare$from_clause(SqlContext context) {
+    public void z$prepare$zFromClause(SqlContext context) {
         // do nothing
     }
 }
 
-class FromClause implements from_clause
+class FromClause implements zFromClause
 import java.util.*;
 import org.simqle.util.TSort;
 {
     private final FromClause enclosingClause;
     private final NameGenerator nameGenerator;
-    private final Map<table, Identifier> localTables = new HashMap<table, Identifier>();
+    private final Map<zTable, Identifier> localTables = new HashMap<zTable, Identifier>();
 
     protected final NameGenerator getNameGenerator() {
         return nameGenerator;
@@ -44,45 +44,15 @@ import org.simqle.util.TSort;
         this(null);
      }
 
-    public void z$prepare$from_clause(SqlContext context) {
+    public void z$prepare$zFromClause(SqlContext context) {
         throw new RuntimeException("This code should not be reachable");
     }
 
-    public Sql z$create$from_clause(final SqlContext context) {
-    TSort<table> tSort = new TSort<table>();
-    // TODO some RDBMS allow emtry FromClause
-    if (localTables.size()==0) {
-        throw new IllegalStateException("No referenced tables");
-    }
-    for (table table: localTables.keySet()) {
-        tSort.add(table);
-
-        SqlContext probeContext = new SqlContext();
-        final FromClause probeFromClause = new FromClause();
-        probeContext.set(FromClause.class, probeFromClause);
-        probeContext.set(SqlFactory.class, context.get(SqlFactory.class));
-        table.z$prepare$table(probeContext);
-        final Set<table> dependencies = probeFromClause.getAllTables();
-        // remove self-dependency
-        dependencies.remove(table);
-        for (table dependency: dependencies) {
-            tSort.add(table, dependency);
-        }
-    }
-    // TODO better diagnostics on IllegalSTateException and ClassCastException
-    // cyclic dependency
-    final List<table> sortedTables = tSort.sort();
-    final table_primary root = (table_primary) sortedTables.get(0);
-    table_reference tableReference = SqlFactory.getInstance().table_reference_IS_table_primary(root);
-    int i;
-    for (i = 1; i< sortedTables.size(); i++) {
-        final joined_table t = (joined_table) sortedTables.get(i);
-        tableReference = SqlFactory.getInstance().table_reference_IS_table_reference_joined_table(tableReference, t);
-    }
-    return SqlFactory.getInstance().from_clause_IS_FROM_table_reference(tableReference).z$create$from_clause(context);
+    public Sql z$create$zFromClause(final SqlContext context) {
+        throw new RuntimeException("Not implemented");
     }
 
-    public Identifier getCorrelationName(table table) {
+    public Identifier getCorrelationName(zTable table) {
         if (localTables.containsKey(table)) {
             Identifier name = localTables.get(table);
             if (name==null) {
@@ -97,7 +67,7 @@ import org.simqle.util.TSort;
         }
     }
 
-    public boolean addTable(table table) {
+    public boolean addTable(zTable table) {
         if (!isAvailable(table)) {
             localTables.put(table, null);
             return true;
@@ -106,12 +76,12 @@ import org.simqle.util.TSort;
         }
     }
 
-    public boolean isAvailable(table table) {
+    public boolean isAvailable(zTable table) {
         return enclosingClause != null && enclosingClause.isAvailable(table) || localTables.containsKey(table);
     }
 
-    public Set<table> getAllTables() {
-        Set<table> allTables = new HashSet<table>(localTables.keySet());
+    public Set<zTable> getAllTables() {
+        Set<zTable> allTables = new HashSet<zTable>(localTables.keySet());
         if (enclosingClause!=null) {
             allTables.addAll(enclosingClause.getAllTables());
         }
@@ -128,35 +98,31 @@ import org.simqle.util.TSort;
 
 }
 
-from_clause ::= FROM  tr:table_reference
+zFromClause ::= FROM  tr:zTableReference
 ;
 
-interface table_reference : Sql
+interface zTableReference : Sql
 {}
 
-# table_reference is used internally by FromClause; no implementing class
-table_reference ::=  tp:table_primary
-     | tr:table_reference jt:joined_table
+# zTableReference is used internally by FromClause; no implementing class
+zTableReference ::=  tp:table_primary
+     | tr:zTableReference jt:joined_table
 ;
 
-// marker interface for table_primary and joined_table
-public interface table : Sql
+public interface table_primary : Sql
 {}
 
-public interface table_primary extends table : Sql
+public interface joined_table  : Sql
 {}
 
-public interface joined_table extends table : Sql
+public class Table implements zTable with sqlBuilder
 {}
 
-public class Table implements table_primary with sqlBuilder
-{}
-
-public class JoinedTable implements joined_table with SqlBuilder
+public interface zTable extends table_primary, joined_table : Sql
 {}
 
 
-
+/*
 joined_table ::=
       CROSS JOIN tp:table_primary
       {
@@ -244,35 +210,8 @@ joined_table ::=
         }
       }
 ;
+*/
 
-
-public abstract class AbstractJoinedTable implements joined_table {
-        @Override
-        public final Sql z$create$table(final SqlContext context) {
-            return z$create$joined_table(context);
-        }
-
-        @Override
-        public final void z$prepare$table(final SqlContext context) {
-            z$prepare$joined_table(context);
-        }
-}
-
-public abstract class AbstractJoinedTableWithCondition extends AbstractJoinedTable {
-    private final table_primary tp;
-    private final join_specification js;
-
-    protected AbstractJoinedTableWithCondition$(final table_primary tp, final join_specification js) {
-        this.tp = tp;
-        this.js = js;
-    }
-        @Override
-    public final void z$prepare$joined_table(final SqlContext context) {
-         tp.z$prepare$table_primary(context);
-         js.z$prepare$join_specification(context);
-    }
-
-}
 
 interface join_specification : Sql
 {}

@@ -294,7 +294,7 @@ set_quantifier ::= DISTINCT | ALL
 
 
 table_expression ::=
-		from_clause
+		zFromClause
 		[ where_clause ]
 		[ group_by_clause ]
 		[ having_clause ]
@@ -303,9 +303,9 @@ table_expression ::=
 This has been reformulated as follows:
 1. Remove group_by_clause, having_clause, window_clause - not supported
 2. Inline table_expression
-query_specification ::= SELECT [ set_quantifier ] zSelectList from_clause [where_clause]
+query_specification ::= SELECT [ set_quantifier ] zSelectList zFromClause [where_clause]
 3. Introduce new non-terminal:
-zQueryBase ::= SELECT [ set_quantifier ] zSelectList from_clause
+zQueryBase ::= SELECT [ set_quantifier ] zSelectList zFromClause
 query_specification ::= zQueryBase
  		|  zQueryBase where_clause
 4. Inline set_quantifier in zQueryBase
@@ -348,51 +348,51 @@ class QueryBase<T> implements zQueryBase<T> with sqlBuilder;
 
 class QueryBaseScalar<T> implements zQueryBaseScalar<T> with sqlBuilder;
 
-<T> zQueryBase<T> ::= SELECT zSelectList<T> from_clause
+<T> zQueryBase<T> ::= SELECT zSelectList<T> zFromClause
 {
 public Query<T> z$create$zQueryBase(SqlContext context) {
     final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
-    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, selectListQuery, arg1.z$create$from_clause(context)));
+    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, selectListQuery, arg1.z$create$zFromClause(context)));
         }
 }
     ( QueryBase<T> ::= RowValue<T> ) {
-    // this is a tricky part. The user never supplies from_clause,
+    // this is a tricky part. The user never supplies zFromClause,
     // we are extracting it from Sqlcontext. So, we have only one argument
     // and can implement it transparently
     // but we have to write code of toQueryBase manually
     // providing an instance of ImplicitFromClause
         private final QueryBase<T> toQueryBase() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBase<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, fromClause));
         }
     }
 
-| SELECT ALL zSelectList<T> from_clause
+| SELECT ALL zSelectList<T> zFromClause
 {
 public Query<T> z$create$zQueryBase(SqlContext context) {
     final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
-    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$from_clause(context)));
+    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$zFromClause(context)));
         }
 }
      ( + RowValue<T> )
      {
         public QueryBase<T> all() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBase<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, fromClause));
         }
      }
 
-| SELECT DISTINCT zSelectList<T> from_clause
+| SELECT DISTINCT zSelectList<T> zFromClause
 {
 public Query<T> z$create$zQueryBase(SqlContext context) {
     final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
-    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$from_clause(context)));
+    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$zFromClause(context)));
         }
 }
      ( + RowValue<T> )
      {
         public QueryBase<T> distinct() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBase<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, fromClause));
         }
      }
@@ -401,50 +401,50 @@ public Query<T> z$create$zQueryBase(SqlContext context) {
 
 /* scalar counterpart of zSelectList is zSelectSublist rather than zSelectList_scalar */
 
-<T> zQueryBaseScalar<T> ::= SELECT zSelectSublist<T> from_clause
+<T> zQueryBaseScalar<T> ::= SELECT zSelectSublist<T> zFromClause
 {
 public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
     final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
-    final Sql sql1 = arg1.z$create$from_clause(context);
+    final Sql sql1 = arg1.z$create$zFromClause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, sql0, sql1));
         }
 }
     ( QueryBaseScalar<T> ::= SelectSublist<T> ) {
     // see comments to RowValue#toQueryBase()
         private final QueryBaseScalar<T> toQueryBaseScalar() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBaseScalar<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, fromClause));
         }
     }
 
-| SELECT ALL zSelectSublist<T> from_clause
+| SELECT ALL zSelectSublist<T> zFromClause
 {
 public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
     final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
-    final Sql sql1 = arg1.z$create$from_clause(context);
+    final Sql sql1 = arg1.z$create$zFromClause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, ALL, sql0, sql1));
         }
 }
      ( + Value<T> )
      {
         public QueryBaseScalar<T> all() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBaseScalar<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, fromClause));
         }
      }
 
-| SELECT DISTINCT zSelectSublist<T> from_clause
+| SELECT DISTINCT zSelectSublist<T> zFromClause
 {
 public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
     final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
-    final Sql sql1 = arg1.z$create$from_clause(context);
+    final Sql sql1 = arg1.z$create$zFromClause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, DISTINCT, sql0, sql1));
         }
 }
      ( + Value<T> )
      {
         public QueryBaseScalar<T> distinct() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBaseScalar<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, fromClause));
         }
      }
@@ -1069,7 +1069,7 @@ abstract class Column<T> implements column_reference<T>
     }
 
     public void z$prepare$column_reference(SqlContext context) {
-        owner.z$prepare$table_reference(context);
+        owner.z$prepare$zTableReference(context);
     }
 
     /**
@@ -1119,12 +1119,12 @@ class Subquery<T> implements subquery<T> with sqlBuilder ;
 
 interface where_clause ;
 
-interface from_clause ;
+interface zFromClause ;
 
 /*
-from_clause ::= FROM table_reference_list
-table_reference_list ::= table_reference [ { comma table_reference }... ]
-table_reference ::= table_primary_or_joined_table [ sample_clause ]
+zFromClause ::= FROM zTableReference_list
+zTableReference_list ::= zTableReference [ { comma zTableReference }... ]
+zTableReference ::= table_primary_or_joined_table [ sample_clause ]
 table_primary_or_joined_table ::= table_primary | joined_table
 
 table_primary ::=
@@ -1142,16 +1142,16 @@ joined_table ::=
 	|	natural_join
 	|	union_join
 
-cross_join ::= table_reference CROSS JOIN table_primary
+cross_join ::= zTableReference CROSS JOIN table_primary
 
-qualified_join ::= table_reference [ join_type ] JOIN table_reference join_specification
+qualified_join ::= zTableReference [ join_type ] JOIN zTableReference join_specification
 
-natural_join ::= table_reference NATURAL [ join_type ] JOIN table_primary
+natural_join ::= zTableReference NATURAL [ join_type ] JOIN table_primary
 
-union_join ::= table_reference UNION JOIN table_primary
+union_join ::= zTableReference UNION JOIN table_primary
 
 *** Changes:
-1. implicitt cross joins are not supported, so table_reference_list can be only table_reference
+1. implicitt cross joins are not supported, so zTableReference_list can be only zTableReference
 2. table_or_query_name is the only supported variant of table_primary
 3. qualified_join is re-formulated to contain only table_brinary after join type
 4. natural joins are not supported (not needed)
@@ -1162,21 +1162,21 @@ union_join ::= table_reference UNION JOIN table_primary
 
 */
 
-from_clause ::= FROM  table_reference ;
-interface table_reference ;
+zFromClause ::= FROM  zTableReference ;
+interface zTableReference ;
 
-table_reference ::=  table_primary
+zTableReference ::=  table_primary
     ( TableReference ::= Table )
      | joined_table
      ( TableReference ::= JoinedTable )
 ;
 
-class TableReference implements table_reference with builder ;
+class TableReference implements zTableReference with builder ;
 
 interface table_primary ;
 interface joined_table;
 
-class FromClause implements from_clause
+class FromClause implements zFromClause
 import java.util.*;
 import org.simqle.util.TSort;
 
@@ -1215,7 +1215,7 @@ import org.simqle.util.TSort;
         this(null);
      }
 
-    public void z$prepare$from_clause(SqlContext context) {
+    public void z$prepare$zFromClause(SqlContext context) {
         throw new RuntimeException("This code should not be reachable");
     }
 
@@ -1228,7 +1228,7 @@ import org.simqle.util.TSort;
         }
     }
 
-    public Sql z$create$from_clause(final SqlContext context) {
+    public Sql z$create$zFromClause(final SqlContext context) {
         TSort<Table> tSort = new TSort<Table>();
         // TODO some RDBMS allow emtry FromClause
         if (localTables.size()==0) {
@@ -1240,7 +1240,7 @@ import org.simqle.util.TSort;
             SqlContext probeContext = new SqlContext();
             probeContext.set(FromClause.class, new FromClause());
             probeContext.set(SqlFactory.class, context.get(SqlFactory.class));
-            table.z$prepare$table_reference(probeContext);
+            table.z$prepare$zTableReference(probeContext);
             final Set<Table> dependencies = new HashSet<Table>(
                     probeContext.get(FromClause.class).localTables.keySet()
                     );
@@ -1253,13 +1253,13 @@ import org.simqle.util.TSort;
         // TODO better diagnostics on IllegalSTateException
         // cyclic dependency
         final List<Table> sortedTables = tSort.sort();
-        table_reference tableReference = sortedTables.get(0);
+        zTableReference tableReference = sortedTables.get(0);
         for (int i = 1; i< sortedTables.size(); i++) {
             final Table t = sortedTables.get(i);
             tableReference = t.makeJoinedTable(tableReference);
         }
         // TODO take SqlFactory from the context
-        return SqlFactory.getInstance().from_clause_is_FROM_table_reference(tableReference).z$create$from_clause(context);
+        return SqlFactory.getInstance().zFromClause_is_FROM_zTableReference(tableReference).z$create$zFromClause(context);
     }
 
     private boolean isAvailable(Table table) {
@@ -1317,18 +1317,18 @@ class Table implements table_primary {
         return new CompositeSql(tableOrQueryName, correlationName);
     }
 
-    protected JoinedTable makeJoinedTable(table_reference tableReference) {
+    protected JoinedTable makeJoinedTable(zTableReference tableReference) {
         if (joinType==null) {
             throw new IllegalStateException("No join defined for this table"+tableOrQueryName);
         }
         final joined_table.Builder joinedTableBuilder;
         switch (joinType) {
             case cross:
-                joinedTableBuilder = SqlFactory.getInstance().joined_table_is_table_reference_CROSS_JOIN_table_primary(tableReference, this);
+                joinedTableBuilder = SqlFactory.getInstance().joined_table_is_zTableReference_CROSS_JOIN_table_primary(tableReference, this);
                 break;
             case left:
                 joinedTableBuilder = SqlFactory.getInstance()
-                .joined_table_is_table_reference_LEFT_OUTER_JOIN_table_primary_join_specification(tableReference, this, joinSpecification);
+                .joined_table_is_zTableReference_LEFT_OUTER_JOIN_table_primary_join_specification(tableReference, this, joinSpecification);
                 break;
             default:
                 throw new IllegalStateException("Unexpected join type "+joinType);
@@ -1348,14 +1348,14 @@ class Table implements table_primary {
 table_primary ::= Identifier AS Identifier ;
 
 /*
-see Table.join(table_reference)
+see Table.join(zTableReference)
 */
 joined_table ::=
-      table_reference CROSS JOIN table_primary
-|     table_reference INNER JOIN table_primary join_specification
-|     table_reference OUTER JOIN table_primary join_specification
-|     table_reference LEFT OUTER JOIN table_primary join_specification
-|     table_reference RIGHT OUTER JOIN table_primary join_specification ;
+      zTableReference CROSS JOIN table_primary
+|     zTableReference INNER JOIN table_primary join_specification
+|     zTableReference OUTER JOIN table_primary join_specification
+|     zTableReference LEFT OUTER JOIN table_primary join_specification
+|     zTableReference RIGHT OUTER JOIN table_primary join_specification ;
 
 
 class JoinedTable implements joined_table with builder;

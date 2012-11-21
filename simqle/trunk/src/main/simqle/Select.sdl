@@ -272,33 +272,33 @@ public interface zSelectList<T> : Query<T>
 {}
 
 
-<T> zQueryBase<T> ::= SELECT sl:zSelectList<T> fc:from_clause
+<T> zQueryBase<T> ::= SELECT sl:zSelectList<T> fc:zFromClause
     :: RowValue<T> mimics QueryBase<T>  {
-    // this is a tricky part. The user never supplies from_clause,
+    // this is a tricky part. The user never supplies zFromClause,
     // we are extracting it from Sqlcontext. So, we have only one argument
     // and can implement it transparently
     // but we have to write code of toQueryBase manually
     // providing an instance of ImplicitFromClause
         protected final QueryBase<T> toQueryBase() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBase<T>(_APPLY_RULE_(this, fromClause));
         }
     }
 
-| SELECT ALL sl:zSelectList<T> fc:from_clause
+| SELECT ALL sl:zSelectList<T> fc:zFromClause
      :: RowValue<T>
      {
         public QueryBase<T> all() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBase<T>(_APPLY_RULE_(this, fromClause));
         }
      }
 
-| SELECT DISTINCT sl:zSelectList<T> fc:from_clause
+| SELECT DISTINCT sl:zSelectList<T> fc:zFromClause
      :: RowValue<T>
      {
         public QueryBase<T> distinct() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBase<T>(_APPLY_RULE_(this, fromClause));
         }
      }
@@ -307,33 +307,33 @@ public interface zSelectList<T> : Query<T>
 # zSelectSublist
 # scalar counterpart of zSelectList is zSelectSublist rather than zSelectList_scalar
 
-<T> zQueryBaseScalar<T> ::= SELECT sl:zSelectSublist<T> fc:from_clause
+<T> zQueryBaseScalar<T> ::= SELECT sl:zSelectSublist<T> fc:zFromClause
     :: SelectSublist<T> mimics QueryBaseScalar<T>  {
-    // this is a tricky part. The user never supplies from_clause,
+    // this is a tricky part. The user never supplies zFromClause,
     // we are extracting it from Sqlcontext. So, we have only one argument
     // and can implement it transparently
     // but we have to write code of toQueryBase manually
     // providing an instance of ImplicitFromClause
         protected final QueryBaseScalar<T> toQueryBaseScalar() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBaseScalar<T>(_APPLY_RULE_(this, fromClause));
         }
     }
 
-| SELECT ALL sl:zSelectSublist<T> fc:from_clause
+| SELECT ALL sl:zSelectSublist<T> fc:zFromClause
      :: SelectSublist<T>
      {
         public QueryBaseScalar<T> all() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBaseScalar<T>(_APPLY_RULE_(this, fromClause));
         }
      }
 
-| SELECT DISTINCT sl:zSelectSublist<T> fc:from_clause
+| SELECT DISTINCT sl:zSelectSublist<T> fc:zFromClause
      :: SelectSublist<T>
      {
         public QueryBaseScalar<T> distinct() {
-            from_clause fromClause = new ImplicitFromClause();
+            zFromClause fromClause = new ImplicitFromClause();
             return new QueryBaseScalar<T>(_APPLY_RULE_(this, fromClause));
         }
      }
