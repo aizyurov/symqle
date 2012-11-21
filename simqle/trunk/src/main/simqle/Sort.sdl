@@ -1,7 +1,7 @@
 #zOrderByClause ::= ORDER BY zSortSpecificationList
 #zSortSpecificationList ::= zSortSpecification [ { comma zSortSpecification }... ]
 #zSortSpecification ::= zSortKey [ ordering_specification ] [ null_ordering ]
-#zSortKey ::= value_expression
+#zSortKey ::= zValueExpression
 #ordering_specification ::= ASC | DESC
 #null_ordering ::= NULLS FIRST | NULLS LAST
 
@@ -88,7 +88,7 @@ public interface zSortKey : Sql
 class SortKey implements zSortKey with sortKeyBuilder
 {}
 
-zSortKey ::= ve:value_expression
+zSortKey ::= ve:zValueExpression
     :: Value<T> mimics SortKey
     {}
 ;

@@ -1,29 +1,29 @@
-public interface value_expression<T> extends Scalar<T> : Sql
+public interface zValueExpression<T> extends Scalar<T> : Sql
 {}
 
-public class Value<T> implements value_expression<T> with valueExpression
+public class Value<T> implements zValueExpression<T> with valueExpression
 {}
 
 
-<T> value_expression<T> ::=
-		cve:common_value_expression<T>
+<T> zValueExpression<T> ::=
+		cve:zCommonValueExpression<T>
 		:: CommonValueExpression<T> mimics Value<T>
 		{}
 ;
-value_expression<Boolean> ::= bve: zBooleanValueExpression
+zValueExpression<Boolean> ::= bve: zBooleanValueExpression
 	    :: BooleanValueExpression mimics Value<Boolean>
 	    {}
 ;
 
-public interface common_value_expression<T> extends Scalar<T> : Sql
+public interface zCommonValueExpression<T> extends Scalar<T> : Sql
 {}
 
-public class CommonValueExpression<T> implements common_value_expression<T> with sqlBuilder
+public class CommonValueExpression<T> implements zCommonValueExpression<T> with sqlBuilder
 {}
 
 
 /*
- Most instances will be <Boolean>, but SQL allows any valid primary_value_expression
+ Most instances will be <Boolean>, but SQL allows any valid primary_zValueExpression
  and database boolean value may be mapped to another type in Java
  */
 public interface zBooleanValueExpression extends Scalar<Boolean> : Sql
@@ -32,12 +32,12 @@ public interface zBooleanValueExpression extends Scalar<Boolean> : Sql
 public class BooleanValueExpression implements zBooleanValueExpression with sqlBuilder
 {}
 
-# common_value_expression
-<T> common_value_expression<T> ::=  LEFT_PAREN ve:value_expression<T> RIGHT_PAREN
+# zCommonValueExpression
+<T> zCommonValueExpression<T> ::=  LEFT_PAREN ve:zValueExpression<T> RIGHT_PAREN
     :: Value<T> mimics CommonValueExpression<T>
     {}
 
-    | vep: value_expression_primary<T>
+    | vep: zValueExpressionPrimary<T>
     :: ValueExpressionPrimary<T> mimics CommonValueExpression<T>
     {}
 ;
@@ -47,29 +47,29 @@ public class BooleanValueExpression implements zBooleanValueExpression with sqlB
 # But not type paremeters: all methods do not have
 # type parametes, return type is <Boolean> and arguments are <?>
 
-zBooleanValueExpression ::= bt:boolean_term
+zBooleanValueExpression ::= bt:zBooleanTerm
 		    :: BooleanTerm mimics BooleanValueExpression
 		    {}
 
-    |   bve:zBooleanValueExpression OR bvt:boolean_term
+    |   bve:zBooleanValueExpression OR bvt:zBooleanTerm
 		:: BooleanValueExpression {
-		    public BooleanValueExpression or(boolean_term term) {
+		    public BooleanValueExpression or(zBooleanTerm term) {
 		        return new BooleanValueExpression(_APPLY_RULE_(this, term));
 		    }
 		}
 ;
 
-public interface boolean_term extends Scalar<Boolean> : Sql
+public interface zBooleanTerm extends Scalar<Boolean> : Sql
 {}
 
-public class BooleanTerm implements boolean_term with sqlBuilder
+public class BooleanTerm implements zBooleanTerm with sqlBuilder
 {}
 
-boolean_term ::= bf:boolean_factor
+zBooleanTerm ::= bf:zBooleanFactor
     :: BooleanFactor mimics BooleanTerm
     {}
 
-   |  bt:boolean_term AND bf:boolean_factor
+   |  bt:zBooleanTerm AND bf:zBooleanFactor
 	::BooleanTerm {
 	    public BooleanTerm and(BooleanFactor factor) {
 		        return new BooleanTerm(_APPLY_RULE_(this, factor));
@@ -77,17 +77,17 @@ boolean_term ::= bf:boolean_factor
 	}
 ;
 
-public interface boolean_factor extends Scalar<Boolean> : Sql
+public interface zBooleanFactor extends Scalar<Boolean> : Sql
 {}
 
-public class BooleanFactor implements boolean_factor with sqlBuilder
+public class BooleanFactor implements zBooleanFactor with sqlBuilder
 {}
 
-boolean_factor ::= bt:boolean_test
+zBooleanFactor ::= bt:zBooleanTest
     :: BooleanTest mimics BooleanFactor
     {}
 
-  | NOT bt:boolean_test
+  | NOT bt:zBooleanTest
     :: BooleanTest
     {
         BooleanFactor negate() {
@@ -96,18 +96,18 @@ boolean_factor ::= bt:boolean_test
     }
 ;
 
-public interface boolean_test extends Scalar<Boolean> : Sql
+public interface zBooleanTest extends Scalar<Boolean> : Sql
 {}
 
-public class BooleanTest implements boolean_test with sqlBuilder
+public class BooleanTest implements zBooleanTest with sqlBuilder
 {}
 
 
-boolean_test ::= bp:boolean_primary
+zBooleanTest ::= bp:zBooleanPrimary
     :: BooleanPrimary mimics BooleanTest
     {}
 
-|  bp:boolean_primary  IS  NOT  TRUE
+|  bp:zBooleanPrimary  IS  NOT  TRUE
     :: BooleanPrimary
     {
         public BooleanTest isNotTrue() {
@@ -115,7 +115,7 @@ boolean_test ::= bp:boolean_primary
         }
     }
 
-|  bp:boolean_primary  IS  TRUE
+|  bp:zBooleanPrimary  IS  TRUE
     :: BooleanPrimary
     {
         public BooleanTest isTrue() {
@@ -123,7 +123,7 @@ boolean_test ::= bp:boolean_primary
         }
     }
 
-| bp:boolean_primary  IS  NOT  FALSE
+| bp:zBooleanPrimary  IS  NOT  FALSE
     :: BooleanPrimary
     {
         public BooleanTest isNotFalse() {
@@ -131,7 +131,7 @@ boolean_test ::= bp:boolean_primary
         }
     }
 
-|  bp:boolean_primary  IS  FALSE
+|  bp:zBooleanPrimary  IS  FALSE
     :: BooleanPrimary
     {
         public BooleanTest isFalse() {
@@ -139,7 +139,7 @@ boolean_test ::= bp:boolean_primary
         }
     }
 
-| bp:boolean_primary  IS  NOT  UNKNOWN
+| bp:zBooleanPrimary  IS  NOT  UNKNOWN
     :: BooleanPrimary
     {
         public BooleanTest isNotUnknown() {
@@ -147,7 +147,7 @@ boolean_test ::= bp:boolean_primary
         }
     }
 
-|  bp:boolean_primary  IS  UNKNOWN
+|  bp:zBooleanPrimary  IS  UNKNOWN
     :: BooleanPrimary
     {
         public BooleanTest isUnknown() {
@@ -156,14 +156,14 @@ boolean_test ::= bp:boolean_primary
     }
 ;
 
-interface boolean_primary extends Scalar<Boolean> : Sql
+interface zBooleanPrimary extends Scalar<Boolean> : Sql
 {}
 
-class BooleanPrimary implements boolean_primary with sqlBuilder
+class BooleanPrimary implements zBooleanPrimary with sqlBuilder
 {}
 
 
-boolean_primary ::= p:zPredicate
+zBooleanPrimary ::= p:zPredicate
     ::Predicate mimics BooleanPrimary
     {}
 
@@ -171,19 +171,19 @@ boolean_primary ::= p:zPredicate
     :: BooleanValueExpression mimics BooleanPrimary
     {}
 
-  | vep:value_expression_primary<Boolean>
+  | vep:zValueExpressionPrimary<Boolean>
   :: Value<T> {
 public BooleanPrimary asCondition()   {
-        return new BooleanPrimary(SqlFactory.getInstance().boolean_primary_IS_value_expression_primary(
-                new value_expression_primary<Boolean>() {
+        return new BooleanPrimary(SqlFactory.getInstance().zBooleanPrimary_IS_zValueExpressionPrimary(
+                new zValueExpressionPrimary<Boolean>() {
                     @Override
-                    public Sql z$create$value_expression_primary(final SqlContext context) {
-                        return z$create$value_expression_primary(context);
+                    public Sql z$create$zValueExpressionPrimary(final SqlContext context) {
+                        return z$create$zValueExpressionPrimary(context);
                     }
 
                     @Override
-                    public void z$prepare$value_expression_primary(final SqlContext context) {
-                        z$prepare$value_expression(context);
+                    public void z$prepare$zValueExpressionPrimary(final SqlContext context) {
+                        z$prepare$zValueExpression(context);
                     }
 
                     @Override
@@ -197,40 +197,42 @@ public BooleanPrimary asCondition()   {
 
 
 
-public interface value_expression_primary<T> extends Scalar<T> : Sql
+public interface zValueExpressionPrimary<T> extends Scalar<T> : Sql
 {}
 
-public class ValueExpressionPrimary<T> implements value_expression_primary<T>  with sqlBuilder
+public class ValueExpressionPrimary<T> implements zValueExpressionPrimary<T>  with sqlBuilder
 {}
 
-<T> value_expression_primary<T> ::=
-		dps:dynamic_parameter_specification<T>
+<T> zValueExpressionPrimary<T> ::=
+		dps:zDynamicParameterSpecification<T>
 		:: DynamicParameter<T> mimics ValueExpressionPrimary<T>
 		 {}
-	|	cr:column_reference<T>
+	|	cr:zColumnReference<T>
 	    :: Column<T> mimics ValueExpressionPrimary<T>
 	    {}
 	|	sc:zScalarSubquery<T>
 	    :: ScalarSubquery<T> mimics ValueExpressionPrimary<T>
 	    {}
-	|	ri:routine_invocation<T>
+	|	ri:zRoutineInvocation<T>
+	    :: RoutineInvocation<T> mimics ValueExpressionPrimary<T>
+	    {}
 
-#	|	next_value_expression<T>
+#	|	next_zValueExpression<T>
 ;
 
 
-public interface	dynamic_parameter_specification<T> extends Scalar<T> : Sql
+public interface	zDynamicParameterSpecification<T> extends Scalar<T> : Sql
 {}
 
-public abstract class DynamicParameter<T> implements dynamic_parameter_specification<T>
+public abstract class DynamicParameter<T> implements zDynamicParameterSpecification<T>
 {
     @Override
-    public final void z$prepare$dynamic_parameter_specification(final SqlContext context) {
+    public final void z$prepare$zDynamicParameterSpecification(final SqlContext context) {
         // do nothing
     }
 
     @Override
-    public final Sql z$create$dynamic_parameter_specification(final SqlContext context) {
+    public final Sql z$create$zDynamicParameterSpecification(final SqlContext context) {
         return new Sql() {
             @Override
             public String getSqlText() {
@@ -253,19 +255,19 @@ public abstract class DynamicParameter<T> implements dynamic_parameter_specifica
 }
 
 
-public interface	column_reference<T> extends Scalar<T> : Sql
+public interface	zColumnReference<T> extends Scalar<T> : Sql
 {}
 
-public abstract class Column<T> implements column_reference<T>
+public abstract class Column<T> implements zColumnReference<T>
 {
 // TODO implement
 
 }
 
-public interface	routine_invocation<T>  extends Scalar<T> : Sql
+public interface	zRoutineInvocation<T>  extends Scalar<T> : Sql
 {}
 
-# there are no default implementations or routine_invocation
+# there are no default implementations or zRoutineInvocation
 # should be created individually
 # as factory methods
 # to have type-check of arguments
@@ -285,20 +287,72 @@ public interface	routine_invocation<T>  extends Scalar<T> : Sql
 Simplified, generalized expression and target specification not supported
 */
 
-<T> routine_invocation<T> ::= rn:routine_name<T> LEFT_PAREN al:argument_list RIGHT_PAREN
+<T> zRoutineInvocation<T> ::= rn:zRoutineName<T> LEFT_PAREN al:zArgumentList RIGHT_PAREN
+    :: Function<T>
+    {
+        protected RoutineInvocation<T> apply(zValueExpression<?> firstArg, zValueExpression<?>... otherArgs) {
+                ArgumentList al = new ArgumentList(SqlFactory.getInstance().zArgumentList_IS_zValueExpression(firstArg));
+                for (zValueExpression ve: otherArgs) {
+                    al = al.appendArg(ve);
+                }
+                return new RoutineInvocation(SqlFactory.getInstance().zRoutineInvocation_IS_zRoutineName_LEFT_PAREN_zArgumentList_RIGHT_PAREN(this, al));
+        }
+    }
 
-    | rn:routine_name<T> LEFT_PAREN RIGHT_PAREN
+    | rn:zRoutineName<T> LEFT_PAREN RIGHT_PAREN
+    :: Function<T>
+    {
+        protected RoutineInvocation<T> apply() {
+                return new RoutineInvocation(_APPLY_RULE_(this));
+        }
+    }
 ;
 
-public interface routine_name<T> extends Scalar<T> : Sql
+public interface zRoutineName<T> extends Scalar<T> : Sql
 {}
 
-public interface argument_list : Sql
+public interface zArgumentList : Sql
  {}
 
- argument_list ::= ve:value_expression<?>
+ zArgumentList ::= ve:zValueExpression<?>
+    :: Value<T> mimics ArgumentList
+    {}
 
-    | al:argument_list COMMA ve:value_expression<?>
+    | al:zArgumentList COMMA ve:zValueExpression<?>
+    :: ArgumentList
+    {
+        public ArgumentList appendArg(final zValueExpression ve) {
+            return new ArgumentList(_APPLY_RULE_(this, ve));
+        }
+    }
 ;
 
+public class ArgumentList implements zArgumentList with SqlBuilder
+{}
+
+public class RoutineInvocation<T> implements zRoutineInvocation<T> with sqlBuilder
+{}
+
+public abstract class Function<T> implements zRoutineName<T>
+{
+    private final zRoutineName routineName;
+    protected Function$(final String name) {
+        routineName = new zRoutineName<T>() {
+            @Override
+            public Sql z$create$zRoutineName(final SqlContext context) {
+                return new Identifier(name);
+            }
+
+            @Override
+            public void z$prepare$zRoutineName(final SqlContext context) {
+                // do nothing
+            }
+
+            @Override
+            public T value(final Element element) throws SQLException {
+                return Function$.this.value(element);
+            }
+        };
+    }
+}
 

@@ -85,7 +85,7 @@ public interface zRowValueConstructorElementList<T> : Sql
 public class RowValueConstructorElementList<T> implements zRowValueConstructorElementList<T> with sqlBuilder
 {}
 
-<T> zRowValueConstructorElementList<T> ::= ve:value_expression<T>
+<T> zRowValueConstructorElementList<T> ::= ve:zValueExpression<T>
     :: Value<T> mimics RowValueConstructorElementList<T>
     {}
 

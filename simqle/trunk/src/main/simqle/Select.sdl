@@ -376,16 +376,16 @@ public class SelectSublist<T> implements zSelectSublist<T> with builder
 ;
 
 
-# <T> zSelectSublist<T> ::= value_expression<T> [ AS Identifier ]
+# <T> zSelectSublist<T> ::= zValueExpression<T> [ AS Identifier ]
 # Identifier is added automatically when needed
 # SqlFactory method does not know about [ AS Identifier ]
 
-<T> zSelectSublist<T> ::=  ve:value_expression<T>
+<T> zSelectSublist<T> ::=  ve:zValueExpression<T>
 {
     return new zSelectSublist<T>() {
 
         public void z$prepare$zSelectSublist(SqlContext context) {
-            ve.z$prepare$value_expression(context);
+            ve.z$prepare$zValueExpression(context);
         }
 
         public Query<T> z$create$zSelectSublist(SqlContext context) {
@@ -399,10 +399,10 @@ public class SelectSublist<T> implements zSelectSublist<T> with builder
                     }
                 };
                 return new CompoundQuery<T>(extractor,
-                        new CompositeSql(ve.z$create$value_expression(context), AS, identifier));
+                        new CompositeSql(ve.z$create$zValueExpression(context), AS, identifier));
             } else {
                 // column names are not provided in this context
-                return new CompoundQuery<T>(new NullDataExtractor<T>(), ve.z$create$value_expression(context));
+                return new CompoundQuery<T>(new NullDataExtractor<T>(), ve.z$create$zValueExpression(context));
             }
         }
 

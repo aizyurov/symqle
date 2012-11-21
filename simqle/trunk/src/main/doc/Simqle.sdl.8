@@ -572,7 +572,7 @@ class Value<T> implements value_expression<T> with valueExpression ;
 /*************
 
 value_expression ::=
-		common_value_expression
+		zCommonValueExpression
 	|	zBooleanValueExpression
 	|	zRowValueExpression
 etc.
@@ -581,20 +581,20 @@ Simqle syntax is quite different. We do not separate value expression types.
 zRowValueExpression is not value_expression. Instead of
 zSelectList ::= zSelectSublist ::= zRowValueExpression
 we have RowValue<T> extends zRowValueExpression<T> directly - TODO
-all common_value_expression are alike, we do not distinct them.
-Both common_value_expression
+all zCommonValueExpression are alike, we do not distinct them.
+Both zCommonValueExpression
 */
 
 <T> value_expression<T> ::=
-		common_value_expression<T>
+		zCommonValueExpression<T>
 		( Value<T> ::= CommonValueExpression<T> )
 
 	|	zBooleanValueExpression<T>
 	    ( Value<T> ::= BooleanValueExpression<T> )
 ;
 
-interface common_value_expression<T> extends Scalar<T> ;
-class CommonValueExpression<T> implements common_value_expression<T> with sqlBuilder;
+interface zCommonValueExpression<T> extends Scalar<T> ;
+class CommonValueExpression<T> implements zCommonValueExpression<T> with sqlBuilder;
 
 
 /*
@@ -605,9 +605,9 @@ interface zBooleanValueExpression<T> extends Scalar<T> ;
 class BooleanValueExpression<T> implements zBooleanValueExpression<T> with sqlBuilder;
 
 
-<T> common_value_expression<T> ::=  LEFT_PAREN value_expression<T> RIGHT_PAREN
+<T> zCommonValueExpression<T> ::=  LEFT_PAREN value_expression<T> RIGHT_PAREN
     ( CommonValueExpression<T> ::= Value<T> )
-    | value_expression_primary<T>
+    | zValueExpressionPrimary<T>
     ( CommonValueExpression<T> ::= ValueExpressionPrimary<T> )
 ;
 
@@ -619,30 +619,30 @@ type parametes, return type is <Boolean> and arguments are <?>
 */
 
 
-<T> zBooleanValueExpression<T> ::= boolean_term<T>
+<T> zBooleanValueExpression<T> ::= zBooleanTerm<T>
 		    ( BooleanValueExpression<T> ::= BooleanTerm<T> )
 ;
-zBooleanValueExpression<Boolean> ::=	zBooleanValueExpression<?> OR boolean_term<?>
+zBooleanValueExpression<Boolean> ::=	zBooleanValueExpression<?> OR zBooleanTerm<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
             }
 		}
 		( + BooleanValueExpression ) {
-		    public BooleanValueExpression<Boolean> or(boolean_term<?> term) {
+		    public BooleanValueExpression<Boolean> or(zBooleanTerm<?> term) {
 		        return new BooleanValueExpression<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, term));
 		    }
 		}
 ;
 
-interface boolean_term<T> extends Scalar<T> ;
-class BooleanTerm<T> implements boolean_term<T> with sqlBuilder ;
+interface zBooleanTerm<T> extends Scalar<T> ;
+class BooleanTerm<T> implements zBooleanTerm<T> with sqlBuilder ;
 
 
-<T> boolean_term<T> ::= boolean_factor<T>
+<T> zBooleanTerm<T> ::= zBooleanFactor<T>
     ( BooleanTerm<T> ::= BooleanFactor<T> )
 ;
-boolean_term<Boolean> ::= boolean_term<?> AND boolean_factor<?>
+zBooleanTerm<Boolean> ::= zBooleanTerm<?> AND zBooleanFactor<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -655,14 +655,14 @@ boolean_term<Boolean> ::= boolean_term<?> AND boolean_factor<?>
 	}
 ;
 
-interface boolean_factor<T> extends Scalar<T> ;
-class BooleanFactor<T> implements boolean_factor<T> with sqlBuilder ;
+interface zBooleanFactor<T> extends Scalar<T> ;
+class BooleanFactor<T> implements zBooleanFactor<T> with sqlBuilder ;
 
 
-<T> boolean_factor<T> ::= boolean_test<T>
+<T> zBooleanFactor<T> ::= zBooleanTest<T>
     ( BooleanFactor<T> ::= BooleanTest<T> )
 
-  | NOT boolean_test<T>
+  | NOT zBooleanTest<T>
     ( + BooleanTest<T> )
     {
         BooleanFactor<T> negate() {
@@ -671,19 +671,19 @@ class BooleanFactor<T> implements boolean_factor<T> with sqlBuilder ;
     }
 ;
 
-interface boolean_test<T> extends Scalar<T> ;
-class BooleanTest<T> implements boolean_test<T> with sqlBuilder ;
+interface zBooleanTest<T> extends Scalar<T> ;
+class BooleanTest<T> implements zBooleanTest<T> with sqlBuilder ;
 
-<T> boolean_test<T> ::= boolean_primary<T>
+<T> zBooleanTest<T> ::= zBooleanPrimary<T>
     ( BooleanTest<T> ::= BooleanPrimary<T> )
 ;
 
-interface boolean_primary<T> extends Scalar<T> ;
-class BooleanPrimary<T> implements boolean_primary<T> with sqlBuilder ;
+interface zBooleanPrimary<T> extends Scalar<T> ;
+class BooleanPrimary<T> implements zBooleanPrimary<T> with sqlBuilder ;
 
 
 
-boolean_test<Boolean> ::= boolean_primary<?>  IS  NOT  TRUE
+zBooleanTest<Boolean> ::= zBooleanPrimary<?>  IS  NOT  TRUE
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -696,7 +696,7 @@ boolean_test<Boolean> ::= boolean_primary<?>  IS  NOT  TRUE
         }
     }
 
-|  boolean_primary<?>  IS  TRUE
+|  zBooleanPrimary<?>  IS  TRUE
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -709,7 +709,7 @@ boolean_test<Boolean> ::= boolean_primary<?>  IS  NOT  TRUE
         }
     }
 
-| boolean_primary<?>  IS  NOT  FALSE
+| zBooleanPrimary<?>  IS  NOT  FALSE
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -722,7 +722,7 @@ boolean_test<Boolean> ::= boolean_primary<?>  IS  NOT  TRUE
         }
     }
 
-|  boolean_primary<?>  IS  FALSE
+|  zBooleanPrimary<?>  IS  FALSE
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -735,7 +735,7 @@ boolean_test<Boolean> ::= boolean_primary<?>  IS  NOT  TRUE
         }
     }
 
-| boolean_primary<?>  IS  NOT  UNKNOWN
+| zBooleanPrimary<?>  IS  NOT  UNKNOWN
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -748,7 +748,7 @@ boolean_test<Boolean> ::= boolean_primary<?>  IS  NOT  TRUE
         }
     }
 
-|  boolean_primary<?>  IS  UNKNOWN
+|  zBooleanPrimary<?>  IS  UNKNOWN
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -768,11 +768,11 @@ truth_value ::= TRUE | FALSE | UNKNOWN
 
 
 /*
-boolean_primary ::= zPredicate | boolean_predicand
+zBooleanPrimary ::= zPredicate | boolean_predicand
 
 boolean_predicand ::=
 		parenthesized_zBooleanValueExpression
-	|	value_expression_primary
+	|	zValueExpressionPrimary
 
 parenthesized_zBooleanValueExpression ::= left_paren zBooleanValueExpression right_paren
 
@@ -780,11 +780,11 @@ simplified by inlining
 */
 
 
-<T> boolean_primary<T> ::= zPredicate<T>
+<T> zBooleanPrimary<T> ::= zPredicate<T>
     ( BooleanPrimary<T> ::= Predicate<T> )
   | LEFT_PAREN zBooleanValueExpression<T> RIGHT_PAREN
     ( BooleanPrimary<T> ::= BooleanValueExpression<T> )
-  | value_expression_primary<T>
+  | zValueExpressionPrimary<T>
     ( BooleanPrimary<T> ::= ValueExpressionPrimary<T> )
 ;
 
@@ -934,17 +934,17 @@ zRowValuePredicand ::=
 		row_value_special_case
 	|	row_value_constructor_predicand
 
-row_value_special_case ::= nonparenthesized_value_expression_primary
+row_value_special_case ::= nonparenthesized_zValueExpressionPrimary
 
 row_value_constructor_predicand ::=
-		common_value_expression
+		zCommonValueExpression
 	|	boolean_predicand
 	|	zExplicitRowValueConstructor
 
 Removed unnecessary mediators
-common_value_expression<T> includes value_expression_primary<T>, so "special_case" is covered by it
+zCommonValueExpression<T> includes zValueExpressionPrimary<T>, so "special_case" is covered by it
 */
-<T> zRowValuePredicand<T> ::= common_value_expression<T>
+<T> zRowValuePredicand<T> ::= zCommonValueExpression<T>
     ( RowValuePredicand<T> ::= CommonValueExpression<T> )
 
     | LEFT_PAREN zBooleanValueExpression<T> RIGHT_PAREN
@@ -962,7 +962,7 @@ zRowValueExpression ::=
 		row_value_special_case
 	|	zExplicitRowValueConstructor
 
-row_value_special_case ::= nonparenthesized_value_expression_primary
+row_value_special_case ::= nonparenthesized_zValueExpressionPrimary
 
 zExplicitRowValueConstructor ::=
 		left_paren row_value_constructor_element comma zRowValueConstructorElementList right_paren
@@ -1013,13 +1013,13 @@ interface zExplicitRowValueConstructor<T> ;
 class ExplicitRowValueConstructor<T> implements zExplicitRowValueConstructor<T> with sqlBuilder;
 
 
-interface value_expression_primary<T> extends Scalar<T> ;
-class ValueExpressionPrimary<T> implements value_expression_primary<T>  with sqlBuilder;
+interface zValueExpressionPrimary<T> extends Scalar<T> ;
+class ValueExpressionPrimary<T> implements zValueExpressionPrimary<T>  with sqlBuilder;
 
 /**************************** TODO *********************/
 
 /*
-nonparenthesized_value_expression_primary ::=
+nonparenthesized_zValueExpressionPrimary ::=
 		unsigned_value_specification
 	|	column_reference
 	|	set_function_specification
@@ -1037,26 +1037,26 @@ nonparenthesized_value_expression_primary ::=
 	|	collection_value_constructor
 	|	array_element_reference
 	|	multiset_element_reference
-	|	routine_invocation
+	|	zRoutineEnvocation
 	|	next_value_expression
 
 */
 
 
-<T> value_expression_primary<T> ::=
-		dynamic_parameter_specification<T>
+<T> zValueExpressionPrimary<T> ::=
+		zDynamicParameterSpecification<T>
 	|	column_reference<T>
 	    (ValueExpressionPrimary<T> ::= Column<T> )
 	|	zScalarSubquery<T>
 	    ( ValueExpressionPrimary<T> ::= ScalarSubquery<T> )
-	|	routine_invocation<T>
+	|	zRoutineEnvocation<T>
 	|	next_value_expression<T>
 ;
 
 // TODO abstract classes!
 
-interface	dynamic_parameter_specification<T> extends Scalar<T> ;
-abstract class DynamicParameter<T> implements dynamic_parameter_specification<T> with sqlBuilder;
+interface	zDynamicParameterSpecification<T> extends Scalar<T> ;
+abstract class DynamicParameter<T> implements zDynamicParameterSpecification<T> with sqlBuilder;
 interface	column_reference<T> extends Scalar<T> ;
 abstract class Column<T> implements column_reference<T>
 {
@@ -1088,8 +1088,8 @@ abstract class Column<T> implements column_reference<T>
 ;
 interface	zScalarSubquery<T> extends Scalar<T> ;
 class ScalarSubquery<T> implements zScalarSubquery<T> with sqlBuilder;
-interface	routine_invocation<T>  extends Scalar<T> ;
-class RoutineInvocation<T> implements routine_invocation<T> with sqlBuilder;
+interface	zRoutineEnvocation<T>  extends Scalar<T> ;
+class RoutineInvocation<T> implements zRoutineEnvocation<T> with sqlBuilder;
 interface	next_value_expression<T>  extends Scalar<T> ;
 class NextValueExpression<T> implements next_value_expression<T> with sqlBuilder;
 
