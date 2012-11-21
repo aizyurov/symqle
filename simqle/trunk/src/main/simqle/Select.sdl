@@ -30,7 +30,7 @@ import java.sql.SQLException;
 
 
 # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification
-# zCursorSpecification ::= query_expression [ order_by_clause ] [ updatability_clause ]
+# zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
 # updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
 
 # Simqle re-defines this in the following way:
@@ -62,18 +62,18 @@ interface zCursorSpecification<T> : Query<T> {}
 class CursorSpecification<T> implements zCursorSpecification<T> with sqlBuilder
 {}
 
-#zCursorSpecification ::= query_expression [ order_by_clause ] [ updatability_clause ]
+#zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
 #updatability_clause moved to zSelectStatement
 #zCursorSpecificationScalar introduced
 
 <T> zCursorSpecification<T> ::= cspec:zCursorSpecificationScalar<T>
     :: CursorSpecificationScalar<T> mimics CursorSpecification<T>
     {}
-| qe:query_expression<T>
+| qe:zQueryExpression<T>
     ::  QueryExpression<T> mimics CursorSpecification<T>
     {}
 
-| qe:query_expression<T> obc:order_by_clause
+| qe:zQueryExpression<T> obc:order_by_clause
     :: QueryExpression<T>
         {
             public CursorSpecification<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
@@ -83,7 +83,7 @@ class CursorSpecification<T> implements zCursorSpecification<T> with sqlBuilder
                     sortList = factory.sort_specification_list_IS_sort_specification_list_COMMA_sort_specification(sortList, sortSpec);
                 }
                 order_by_clause orderBy = factory.order_by_clause_IS_ORDER_BY_sort_specification_list(sortList);
-                return new CursorSpecification<T>(factory.zCursorSpecification_IS_query_expression_order_by_clause(this, orderBy));
+                return new CursorSpecification<T>(factory.zCursorSpecification_IS_zQueryExpression_order_by_clause(this, orderBy));
             }
         }
 ;
@@ -96,19 +96,19 @@ import java.util.List;
 import java.sql.SQLException;
 {}
 
-public interface query_expression<T> : Query<T>
+public interface zQueryExpression<T> : Query<T>
 {}
 
-public class QueryExpression<T> implements query_expression<T> with sqlBuilder
+public class QueryExpression<T> implements zQueryExpression<T> with sqlBuilder
 import java.util.List;
 import java.sql.SQLException;
 {}
 
 
-<T> zCursorSpecificationScalar<T> ::= qe:query_expression_scalar<T>
+<T> zCursorSpecificationScalar<T> ::= qe:zQueryExpressionScalar<T>
       :: QueryExpressionScalar<T> mimics CursorSpecificationScalar<T>
       {}
-| qu:query_expression_scalar<T> obc:order_by_clause
+| qu:zQueryExpressionScalar<T> obc:order_by_clause
         :: QueryExpressionScalar<T>
         {
             public CursorSpecificationScalar<T> orderBy(sort_specification sort, sort_specification... additionalSort) {
@@ -118,25 +118,25 @@ import java.sql.SQLException;
                     sortList = factory.sort_specification_list_IS_sort_specification_list_COMMA_sort_specification(sortList, sortSpec);
                 }
                 order_by_clause orderBy = factory.order_by_clause_IS_ORDER_BY_sort_specification_list(sortList);
-                return new CursorSpecificationScalar<T>(factory.zCursorSpecificationScalar_IS_query_expression_scalar_order_by_clause(this, orderBy));
+                return new CursorSpecificationScalar<T>(factory.zCursorSpecificationScalar_IS_zQueryExpressionScalar_order_by_clause(this, orderBy));
             }
         }
 ;
 
 
-public interface query_expression_scalar<T> extends Scalar<T> : Query<T>
+public interface zQueryExpressionScalar<T> extends Scalar<T> : Query<T>
 {}
 
-public class QueryExpressionScalar<T> implements query_expression_scalar<T> with sqlBuilder
+public class QueryExpressionScalar<T> implements zQueryExpressionScalar<T> with sqlBuilder
 import java.util.List;
 import java.sql.SQLException;
 {}
 
-# we have different rules for query_expression and query_expression-scalar
+# we have different rules for zQueryExpression and zQueryExpression-scalar
 # the first one is just query_base with (maybe) where clause
 # the second one is really an expression, which may include union, intersection etc.
 
-<T> query_expression<T> ::= qb:query_base<T>
+<T> zQueryExpression<T> ::= qb:query_base<T>
     :: QueryBase<T> mimics QueryExpression<T>
     {}
 
@@ -149,83 +149,83 @@ import java.sql.SQLException;
     }
 ;
 
-<T> query_expression_scalar<T> ::= qt:query_term<T>
+<T> zQueryExpressionScalar<T> ::= qt:zQueryTerm<T>
     :: QueryTerm<T> mimics QueryExpressionScalar<T>
      {}
 
-|    qe:query_expression_scalar<T> UNION ALL qt:query_term<T>
+|    qe:zQueryExpressionScalar<T> UNION ALL qt:zQueryTerm<T>
     :: QueryExpressionScalar<T>
     {
-    public QueryExpressionScalar<T> unionAll(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> unionAll(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
         }
     }
 
-|    qe:query_expression_scalar<T> UNION DISTINCT qt:query_term<T>
+|    qe:zQueryExpressionScalar<T> UNION DISTINCT qt:zQueryTerm<T>
     :: QueryExpressionScalar<T>
     {
-    public QueryExpressionScalar<T> unionDistinct(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> unionDistinct(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
         }
     }
 
-|    qe:query_expression_scalar<T> EXCEPT ALL qt:query_term<T>
+|    qe:zQueryExpressionScalar<T> EXCEPT ALL qt:zQueryTerm<T>
     :: QueryExpressionScalar<T>
     {
-    public QueryExpressionScalar<T> exceptAll(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> exceptAll(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
         }
     }
 
-|    qe:query_expression_scalar<T> EXCEPT DISTINCT qt:query_term<T>
+|    qe:zQueryExpressionScalar<T> EXCEPT DISTINCT qt:zQueryTerm<T>
     :: QueryExpressionScalar<T>
     {
-    public QueryExpressionScalar<T> exceptDistinct(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> exceptDistinct(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(_APPLY_RULE_(this, queryTerm));
         }
     }
 ;
 
-# query_term is always scalar; we do not add suffix _scalar for brevity
+# zQueryTerm is always scalar; we do not add suffix _scalar for brevity
 
-public interface query_term<T> extends Scalar<T> :  Query<T>
+public interface zQueryTerm<T> extends Scalar<T> :  Query<T>
 {}
 
-public class QueryTerm<T> implements query_term<T> with SqlBuilder
+public class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
 {}
 
-<T> query_term<T> ::= qp:query_primary_scalar<T>
+<T> zQueryTerm<T> ::= qp:zQueryPrimary_scalar<T>
     :: QueryPrimaryScalar<T> mimics QueryTerm<T>
     {}
 
-|   qt:query_term<T> INTERSECT ALL qp:query_primary_scalar<T>
+|   qt:zQueryTerm<T> INTERSECT ALL qp:zQueryPrimary_scalar<T>
     ::QueryTerm<T>
      {
-         public QueryTerm<T> intersectAll(final query_primary_scalar<T> qps) {
+         public QueryTerm<T> intersectAll(final zQueryPrimary_scalar<T> qps) {
             return new QueryTerm<T>(_APPLY_RULE_(this, qps));
          }
      }
 
-|   qt:query_term<T> INTERSECT DISTINCT qp:query_primary_scalar<T>
+|   qt:zQueryTerm<T> INTERSECT DISTINCT qp:zQueryPrimary_scalar<T>
     :: QueryTerm<T>
      {
-         public QueryTerm<T> intersectDistinct(final query_primary_scalar<T> qps) {
+         public QueryTerm<T> intersectDistinct(final zQueryPrimary_scalar<T> qps) {
             return new QueryTerm<T>(_APPLY_RULE_(this, qps));
          }
      }
 ;
 
-public interface query_primary_scalar<T> extends Scalar<T>  : Query<T>
+public interface zQueryPrimary_scalar<T> extends Scalar<T>  : Query<T>
 {}
 
-public class QueryPrimaryScalar<T> implements query_primary_scalar<T> with sqlBuilder
+public class QueryPrimaryScalar<T> implements zQueryPrimary_scalar<T> with sqlBuilder
 {}
 
-<T> query_primary_scalar<T> ::= qs:query_specification_scalar<T>
+<T> zQueryPrimary_scalar<T> ::= qs:query_specification_scalar<T>
     :: QuerySpecificationScalar<T> mimics QueryPrimaryScalar<T>
     {}
 
-|  LEFT_PAREN qe:query_expression_scalar<T> RIGHT_PAREN
+|  LEFT_PAREN qe:zQueryExpressionScalar<T> RIGHT_PAREN
     :: QueryExpressionScalar<T> mimics QueryPrimaryScalar<T>
     {}
 ;

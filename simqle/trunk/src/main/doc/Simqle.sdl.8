@@ -42,7 +42,7 @@ import java.sql.SQLException;
 
 /*
 direct_select_statement:_multiple_rows ::= zCursorSpecification
-zCursorSpecification ::= query_expression [ order_by_clause ] [ updatability_clause ]
+zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
 updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
 
 Simqle re-defines this in the following way:
@@ -79,7 +79,7 @@ import java.sql.SQLException;
 {};
 
 /*
-zCursorSpecification ::= query_expression [ order_by_clause ] [ updatability_clause ]
+zCursorSpecification ::= zQueryExpression [ order_by_clause ] [ updatability_clause ]
 updatability_clause moved to select_statement
 zCursorSpecification_scalar introduced
 */
@@ -87,10 +87,10 @@ zCursorSpecification_scalar introduced
 <T> zCursorSpecification<T> ::= zCursorSpecification_scalar<T>
     ( CursorSpecification<T> ::= CursorSpecificationScalar<T> )
 
-| query_expression<T>
+| zQueryExpression<T>
       ( CursorSpecification<T> ::= QueryExpression<T> )
 
-| query_expression<T> order_by_clause
+| zQueryExpression<T> order_by_clause
         ( + QueryExpression<T> )
         {
             // TODO: add arguments and implement
@@ -108,25 +108,25 @@ import java.util.List;
 import java.sql.SQLException;
 {};
 
-interface query_expression<T> (Query<T>) ;
+interface zQueryExpression<T> (Query<T>) ;
 
-class QueryExpression<T> implements query_expression<T> with sqlBuilder
+class QueryExpression<T> implements zQueryExpression<T> with sqlBuilder
 import java.util.List;
 import java.sql.SQLException;
 {};
 
 
 /*
-query_expression_scalar introduced
+zQueryExpressionScalar introduced
 It does not have its own orderBy;
- it is inherited from query_expression
+ it is inherited from zQueryExpression
  ( and scalar context is lost)
 
 */
-<T> zCursorSpecification_scalar<T> ::= query_expression_scalar<T>
+<T> zCursorSpecification_scalar<T> ::= zQueryExpressionScalar<T>
       ( CursorSpecificationScalar<T> ::= QueryExpressionScalar<T> )
 
-| query_expression_scalar<T> order_by_clause
+| zQueryExpressionScalar<T> order_by_clause
         ( + QueryExpressionScalar<T> )
         {
             // TODO: add arguments and implement
@@ -137,16 +137,16 @@ It does not have its own orderBy;
 ;
 
 
-interface query_expression_scalar<T> (Query<T>) extends Scalar<T> ;
+interface zQueryExpressionScalar<T> (Query<T>) extends Scalar<T> ;
 
-class QueryExpressionScalar<T> implements query_expression_scalar<T> with sqlBuilder
+class QueryExpressionScalar<T> implements zQueryExpressionScalar<T> with sqlBuilder
 import java.util.List;
 import java.sql.SQLException;
 {};
 
 /*
-query_expression ::= [ with_clause ] query_expression_body
-query_expression_body ::= non-join_query_expression | joined_table
+zQueryExpression ::= [ with_clause ] zQueryExpression_body
+zQueryExpression_body ::= non-join_zQueryExpression | joined_table
 
 with_clause and joined_table are not supported (not needed)
 union, intersect and except are supported only for scalars
@@ -154,57 +154,57 @@ so, the syntax is simplified
 */
 
 
-<T> query_expression<T> ::= query_expression_scalar<T>
+<T> zQueryExpression<T> ::= zQueryExpressionScalar<T>
     ( QueryExpression<T> ::= QueryExpressionScalar<T> )
 
-|  query_primary<T>
+|  zQueryPrimary<T>
     ( QueryExpression<T> ::= QueryPrimary<T> )
 ;
 
 /*
-non-join_query_expression ::=
-		non-join_query_term
-	|	query_expression_body UNION [ ALL | DISTINCT ] [ corresponding_spec ] query_term
-	|	query_expression_body EXCEPT [ ALL | DISTINCT ] [ corresponding_spec ] query_term
+non-join_zQueryExpression ::=
+		non-join_zQueryTerm
+	|	zQueryExpression_body UNION [ ALL | DISTINCT ] [ corresponding_spec ] zQueryTerm
+	|	zQueryExpression_body EXCEPT [ ALL | DISTINCT ] [ corresponding_spec ] zQueryTerm
 */
 
-<T> query_expression_scalar<T> ::= query_term<T>
+<T> zQueryExpressionScalar<T> ::= zQueryTerm<T>
     ( QueryExpressionScalar<T> ::= QueryTerm<T> )
 
-|    query_expression_scalar<T> UNION ALL query_term<T>
+|    zQueryExpressionScalar<T> UNION ALL zQueryTerm<T>
     ( + QueryExpressionScalar<T> )
     {
-    public QueryExpressionScalar<T> unionAll(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> unionAll(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(
             SqlFactory.getInstance()._THIS_PRODUCTION_(this, queryTerm)
             );
         }
     }
 
-|    query_expression_scalar<T> UNION DISTINCT query_term<T>
+|    zQueryExpressionScalar<T> UNION DISTINCT zQueryTerm<T>
     ( + QueryExpressionScalar<T> )
     {
-    public QueryExpressionScalar<T> unionDistinct(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> unionDistinct(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(
             SqlFactory.getInstance()._THIS_PRODUCTION_(this, queryTerm)
             );
         }
     }
 
-|    query_expression_scalar<T> EXCEPT ALL query_term<T>
+|    zQueryExpressionScalar<T> EXCEPT ALL zQueryTerm<T>
     ( + QueryExpressionScalar<T> )
     {
-    public QueryExpressionScalar<T> exceptAll(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> exceptAll(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(
             SqlFactory.getInstance()._THIS_PRODUCTION_(this, queryTerm)
             );
         }
     }
 
-|    query_expression_scalar<T> EXCEPT DISTINCT query_term<T>
+|    zQueryExpressionScalar<T> EXCEPT DISTINCT zQueryTerm<T>
     ( + QueryExpressionScalar<T> )
     {
-    public QueryExpressionScalar<T> exceptDistinct(query_term<T> queryTerm) {
+    public QueryExpressionScalar<T> exceptDistinct(zQueryTerm<T> queryTerm) {
         return new QueryExpressionScalar<T>(
             SqlFactory.getInstance()._THIS_PRODUCTION_(this, queryTerm)
             );
@@ -212,43 +212,43 @@ non-join_query_expression ::=
     }
 ;
 
-interface query_term<T> (Query<T>) extends Scalar<T> ;
+interface zQueryTerm<T> (Query<T>) extends Scalar<T> ;
 
-class QueryTerm<T> implements query_term<T> with SqlBuilder
+class QueryTerm<T> implements zQueryTerm<T> with SqlBuilder
  import java.util.List;
  import java.sql.SQLException;
 {};
 
-<T> query_term<T> ::= query_primary_scalar<T>
+<T> zQueryTerm<T> ::= zQueryPrimary_scalar<T>
     ( QueryTerm<T> ::= QueryPrimaryScalar<T> )
 
-|   query_term<T> INTERSECT ALL query_primary_scalar<T>
+|   zQueryTerm<T> INTERSECT ALL zQueryPrimary_scalar<T>
     ( + QueryTerm<T> )
      {
-         public QueryTerm<T> intersectAll(final query_primary_scalar<T> qps) {
+         public QueryTerm<T> intersectAll(final zQueryPrimary_scalar<T> qps) {
             return new QueryTerm<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, qps));
          }
      }
 
-|   query_term<T> INTERSECT DISTINCT query_primary_scalar<T>
+|   zQueryTerm<T> INTERSECT DISTINCT zQueryPrimary_scalar<T>
     ( + QueryTerm<T> )
      {
-         public QueryTerm<T> intersectDistinct(final query_primary_scalar<T> qps) {
+         public QueryTerm<T> intersectDistinct(final zQueryPrimary_scalar<T> qps) {
             return new QueryTerm<T>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, qps));
          }
      }
 ;
 
-interface query_primary<T> (Query<T>) ;
-class QueryPrimary<T> implements query_primary<T> with sqlBuilder
+interface zQueryPrimary<T> (Query<T>) ;
+class QueryPrimary<T> implements zQueryPrimary<T> with sqlBuilder
  import java.util.List;
  import java.sql.SQLException;
 {};
 
 /*
-query_primary ::= non-join_query_primary | joined_table
+zQueryPrimary ::= non-join_zQueryPrimary | joined_table
 
-non-join_query_primary ::= simple_table | left_paren non-join_query_expression right_paren
+non-join_zQueryPrimary ::= simple_table | left_paren non-join_zQueryExpression right_paren
 
 simple_table ::=
 		query_specification
@@ -257,22 +257,22 @@ simple_table ::=
 Only simple_table -> query_specification is supported
 */
 
-<T> query_primary<T> ::= query_specification<T>
+<T> zQueryPrimary<T> ::= query_specification<T>
     ( QueryPrimary<T> ::= QuerySpecification<T> )
 ;
 
 
-interface query_primary_scalar<T> (Query<T>) extends Scalar<T> ;
+interface zQueryPrimary_scalar<T> (Query<T>) extends Scalar<T> ;
 
-class QueryPrimaryScalar<T> implements query_primary_scalar<T> with sqlBuilder ;
+class QueryPrimaryScalar<T> implements zQueryPrimary_scalar<T> with sqlBuilder ;
 
-<T> query_primary_scalar<T> ::= query_specification_scalar<T>
+<T> zQueryPrimary_scalar<T> ::= query_specification_scalar<T>
     ( QueryPrimaryScalar<T> ::= QuerySpecificationScalar<T> )
 
-|  LEFT_PAREN query_expression_scalar<T> RIGHT_PAREN
+|  LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
 {
-public Query<T> z$create$query_primary_scalar(SqlContext context) {
-    final Query<T> base = arg0.z$create$query_expression_scalar(context);
+public Query<T> z$create$zQueryPrimary_scalar(SqlContext context) {
+    final Query<T> base = arg0.z$create$zQueryExpressionScalar(context);
     return new CompoundQuery<T>(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
         }
 }
@@ -1094,16 +1094,16 @@ interface	next_value_expression<T>  extends Scalar<T> ;
 class NextValueExpression<T> implements next_value_expression<T> with sqlBuilder;
 
 
-<T> scalar_subquery<T> ::= LEFT_PAREN query_expression_scalar<T> RIGHT_PAREN
+<T> scalar_subquery<T> ::= LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
 {
     public Sql z$create$scalar_subquery(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
         innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
-        // create an empty FromClase for query_expression_scalar with current FromClause as enclosing
+        // create an empty FromClase for zQueryExpressionScalar with current FromClause as enclosing
         innerContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
-        arg0.z$prepare$query_expression_scalar(innerContext);
-        final Query<T> base = arg0.z$create$query_expression_scalar(innerContext);
+        arg0.z$prepare$zQueryExpressionScalar(innerContext);
+        final Query<T> base = arg0.z$create$zQueryExpressionScalar(innerContext);
         return new CompoundQuery(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
     }
 

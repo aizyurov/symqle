@@ -11,7 +11,7 @@ class Subquery<T> implements subquery<T> with sqlBuilder
 {}
 
 
-<T> scalar_subquery<T> ::= LEFT_PAREN qe:query_expression_scalar<T> RIGHT_PAREN
+<T> scalar_subquery<T> ::= LEFT_PAREN qe:zQueryExpressionScalar<T> RIGHT_PAREN
 {
     return new scalar_subquery<T>() {
         @Override
@@ -19,10 +19,10 @@ class Subquery<T> implements subquery<T> with sqlBuilder
             SqlContext innerContext = new SqlContext();
             innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
             innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
-            // create an empty FromClase for query_expression_scalar with current FromClause as enclosing
+            // create an empty FromClase for zQueryExpressionScalar with current FromClause as enclosing
             innerContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
-            qe.z$prepare$query_expression_scalar(innerContext);
-            final Query<T> base = qe.z$create$query_expression_scalar(innerContext);
+            qe.z$prepare$zQueryExpressionScalar(innerContext);
+            final Query<T> base = qe.z$create$zQueryExpressionScalar(innerContext);
             return new CompoundQuery(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
         }
 
@@ -41,7 +41,7 @@ class Subquery<T> implements subquery<T> with sqlBuilder
     {}
 ;
 
-<T> subquery<T> ::= LEFT_PAREN qe:query_expression<T> RIGHT_PAREN
+<T> subquery<T> ::= LEFT_PAREN qe:zQueryExpression<T> RIGHT_PAREN
 {
     return new subquery<T>() {
             @Override
@@ -49,10 +49,10 @@ class Subquery<T> implements subquery<T> with sqlBuilder
             SqlContext innerContext = new SqlContext();
             innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
             innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
-            // create an empty FromClase for query_expression_scalar with current FromClause as enclosing
+            // create an empty FromClase for zQueryExpressionScalar with current FromClause as enclosing
             innerContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
-            qe.z$prepare$query_expression(innerContext);
-            final Query<T> base = qe.z$create$query_expression(innerContext);
+            qe.z$prepare$zQueryExpression(innerContext);
+            final Query<T> base = qe.z$create$zQueryExpression(innerContext);
             return new CompoundQuery(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
         }
 
