@@ -248,7 +248,7 @@ interface zJoinSpecification : Sql
 
 # We do not support named_columns_join
 
-zJoinSpecification ::= ON e:boolean_value_expression
+zJoinSpecification ::= ON e:zBooleanValueExpression
     :: BooleanValueExpression mimics JoinSpecification
     {}
 ;

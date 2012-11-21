@@ -6,7 +6,7 @@ public interface where_clause : Sql
 public class WhereClause implements where_clause with builder
 {}
 
-where_clause ::= WHERE cond:boolean_value_expression
+where_clause ::= WHERE cond:zBooleanValueExpression
         :: BooleanValueExpression mimics WhereClause
         {}
 ;

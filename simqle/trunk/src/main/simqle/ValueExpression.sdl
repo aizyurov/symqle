@@ -10,7 +10,7 @@ public class Value<T> implements value_expression<T> with valueExpression
 		:: CommonValueExpression<T> mimics Value<T>
 		{}
 ;
-value_expression<Boolean> ::= bve: boolean_value_expression
+value_expression<Boolean> ::= bve: zBooleanValueExpression
 	    :: BooleanValueExpression mimics Value<Boolean>
 	    {}
 ;
@@ -26,10 +26,10 @@ public class CommonValueExpression<T> implements common_value_expression<T> with
  Most instances will be <Boolean>, but SQL allows any valid primary_value_expression
  and database boolean value may be mapped to another type in Java
  */
-public interface boolean_value_expression extends Scalar<Boolean> : Sql
+public interface zBooleanValueExpression extends Scalar<Boolean> : Sql
 {}
 
-public class BooleanValueExpression implements boolean_value_expression with sqlBuilder
+public class BooleanValueExpression implements zBooleanValueExpression with sqlBuilder
 {}
 
 # common_value_expression
@@ -43,15 +43,15 @@ public class BooleanValueExpression implements boolean_value_expression with sql
 ;
 
 
-# For boolean_value_expression syntax is very close to sql-2003
+# For zBooleanValueExpression syntax is very close to sql-2003
 # But not type paremeters: all methods do not have
 # type parametes, return type is <Boolean> and arguments are <?>
 
-boolean_value_expression ::= bt:boolean_term
+zBooleanValueExpression ::= bt:boolean_term
 		    :: BooleanTerm mimics BooleanValueExpression
 		    {}
 
-    |   bve:boolean_value_expression OR bvt:boolean_term
+    |   bve:zBooleanValueExpression OR bvt:boolean_term
 		:: BooleanValueExpression {
 		    public BooleanValueExpression or(boolean_term term) {
 		        return new BooleanValueExpression(_APPLY_RULE_(this, term));
@@ -167,7 +167,7 @@ boolean_primary ::= p:zPredicate
     ::Predicate mimics BooleanPrimary
     {}
 
-  | LEFT_PAREN bve:boolean_value_expression RIGHT_PAREN
+  | LEFT_PAREN bve:zBooleanValueExpression RIGHT_PAREN
     :: BooleanValueExpression mimics BooleanPrimary
     {}
 

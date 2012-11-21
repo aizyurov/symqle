@@ -265,7 +265,7 @@ public class QueryBaseScalar<T> implements zQueryBaseScalar<T> with sqlBuilder
 {}
 
 
-# A single class RowValue represents both zSelectList and row_value_expression.
+# A single class RowValue represents both zSelectList and zRowValueExpression.
 # so, all() and distinct() methods are methods of this class
 
 public interface zSelectList<T> : Query<T>

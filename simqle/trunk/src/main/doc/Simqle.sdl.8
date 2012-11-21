@@ -454,13 +454,13 @@ public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
 interface zSelectList<T> (Query<T>) ;
 
 /*
-A single class RowValue represents both zSelectList and row_value_expression.
+A single class RowValue represents both zSelectList and zRowValueExpression.
 A more expressive and neutral name given.
 */
 
-class RowValue<T> implements zSelectList<T> with selectList, row_value_expression<T>
+class RowValue<T> implements zSelectList<T> with selectList, zRowValueExpression<T>
  {
-    public Sql z$create$row_value_expression(final SqlContext context) {
+    public Sql z$create$zRowValueExpression(final SqlContext context) {
         // This is tricky: we form a new SqlContext without
         // ColumnNameProvider
         // then delegate to selectList
@@ -472,7 +472,7 @@ class RowValue<T> implements zSelectList<T> with selectList, row_value_expressio
         return this.selectList.z$create$zSelectList(fakeContext);
     }
 
-    public void z$prepare$row_value_expression(final SqlContext context) {
+    public void z$prepare$zRowValueExpression(final SqlContext context) {
         // same as prepare context wof zSelectList
         z$prepare$zSelectList(context);
     }
@@ -573,14 +573,14 @@ class Value<T> implements value_expression<T> with valueExpression ;
 
 value_expression ::=
 		common_value_expression
-	|	boolean_value_expression
-	|	row_value_expression
+	|	zBooleanValueExpression
+	|	zRowValueExpression
 etc.
 
 Simqle syntax is quite different. We do not separate value expression types.
-row_value_expression is not value_expression. Instead of
-zSelectList ::= zSelectSublist ::= row_value_expression
-we have RowValue<T> extends row_value_expression<T> directly - TODO
+zRowValueExpression is not value_expression. Instead of
+zSelectList ::= zSelectSublist ::= zRowValueExpression
+we have RowValue<T> extends zRowValueExpression<T> directly - TODO
 all common_value_expression are alike, we do not distinct them.
 Both common_value_expression
 */
@@ -589,7 +589,7 @@ Both common_value_expression
 		common_value_expression<T>
 		( Value<T> ::= CommonValueExpression<T> )
 
-	|	boolean_value_expression<T>
+	|	zBooleanValueExpression<T>
 	    ( Value<T> ::= BooleanValueExpression<T> )
 ;
 
@@ -601,8 +601,8 @@ class CommonValueExpression<T> implements common_value_expression<T> with sqlBui
  Most instances will be <Boolean>, but SQL allows any valid primary_value_expression
  and database boolean value may be mapped to another type in Java
  */
-interface boolean_value_expression<T> extends Scalar<T> ;
-class BooleanValueExpression<T> implements boolean_value_expression<T> with sqlBuilder;
+interface zBooleanValueExpression<T> extends Scalar<T> ;
+class BooleanValueExpression<T> implements zBooleanValueExpression<T> with sqlBuilder;
 
 
 <T> common_value_expression<T> ::=  LEFT_PAREN value_expression<T> RIGHT_PAREN
@@ -613,16 +613,16 @@ class BooleanValueExpression<T> implements boolean_value_expression<T> with sqlB
 
 
 /*
-For boolean_value_expression syntax is very close to sql-2003
+For zBooleanValueExpression syntax is very close to sql-2003
 But not type paremeters: all methods do not have
 type parametes, return type is <Boolean> and arguments are <?>
 */
 
 
-<T> boolean_value_expression<T> ::= boolean_term<T>
+<T> zBooleanValueExpression<T> ::= boolean_term<T>
 		    ( BooleanValueExpression<T> ::= BooleanTerm<T> )
 ;
-boolean_value_expression<Boolean> ::=	boolean_value_expression<?> OR boolean_term<?>
+zBooleanValueExpression<Boolean> ::=	zBooleanValueExpression<?> OR boolean_term<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -771,10 +771,10 @@ truth_value ::= TRUE | FALSE | UNKNOWN
 boolean_primary ::= zPredicate | boolean_predicand
 
 boolean_predicand ::=
-		parenthesized_boolean_value_expression
+		parenthesized_zBooleanValueExpression
 	|	value_expression_primary
 
-parenthesized_boolean_value_expression ::= left_paren boolean_value_expression right_paren
+parenthesized_zBooleanValueExpression ::= left_paren zBooleanValueExpression right_paren
 
 simplified by inlining
 */
@@ -782,7 +782,7 @@ simplified by inlining
 
 <T> boolean_primary<T> ::= zPredicate<T>
     ( BooleanPrimary<T> ::= Predicate<T> )
-  | LEFT_PAREN boolean_value_expression<T> RIGHT_PAREN
+  | LEFT_PAREN zBooleanValueExpression<T> RIGHT_PAREN
     ( BooleanPrimary<T> ::= BooleanValueExpression<T> )
   | value_expression_primary<T>
     ( BooleanPrimary<T> ::= ValueExpressionPrimary<T> )
@@ -835,9 +835,9 @@ class ExistsPredicate<T> implements zExistsPredicate<T> with SqlBuilder;
 
 
 /*
-zComparisonPredicate ::= row_value_predicand zComparisonPredicate_part_2
+zComparisonPredicate ::= zRowValuePredicand zComparisonPredicate_part_2
 
-zComparisonPredicate_part_2 ::= comp_op row_value_predicand
+zComparisonPredicate_part_2 ::= comp_op zRowValuePredicand
 
 comp_op ::=
 		equals_operator
@@ -850,7 +850,7 @@ comp_op ::=
 */
 
 zComparisonPredicate<Boolean> ::=
-    row_value_predicand<?> EQ row_value_predicand<?>
+    zRowValuePredicand<?> EQ zRowValuePredicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -858,11 +858,11 @@ zComparisonPredicate<Boolean> ::=
 		}
         ( + RowValuePredicand<T> )
         {
-		    public ComparisonPredicate<Boolean> equal(row_value_predicand<?> other) {
+		    public ComparisonPredicate<Boolean> equal(zRowValuePredicand<?> other) {
 		        return new ComparisonPredicate<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, other));
 		    }
         }
-  | row_value_predicand<?> NE row_value_predicand<?>
+  | zRowValuePredicand<?> NE zRowValuePredicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -870,11 +870,11 @@ zComparisonPredicate<Boolean> ::=
 		}
         ( + RowValuePredicand<T> )
         {
-		    public ComparisonPredicate<Boolean> notEqual(row_value_predicand<?> other) {
+		    public ComparisonPredicate<Boolean> notEqual(zRowValuePredicand<?> other) {
 		        return new ComparisonPredicate<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, other));
 		    }
         }
-  | row_value_predicand<?> LT row_value_predicand<?>
+  | zRowValuePredicand<?> LT zRowValuePredicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -882,11 +882,11 @@ zComparisonPredicate<Boolean> ::=
 		}
         ( + RowValuePredicand<T> )
         {
-		    public ComparisonPredicate<Boolean> less(row_value_predicand<?> other) {
+		    public ComparisonPredicate<Boolean> less(zRowValuePredicand<?> other) {
 		        return new ComparisonPredicate<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, other));
 		    }
         }
-  | row_value_predicand<?> GT row_value_predicand<?>
+  | zRowValuePredicand<?> GT zRowValuePredicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -894,11 +894,11 @@ zComparisonPredicate<Boolean> ::=
 		}
         ( + RowValuePredicand<T> )
         {
-		    public ComparisonPredicate<Boolean> greater(row_value_predicand<?> other) {
+		    public ComparisonPredicate<Boolean> greater(zRowValuePredicand<?> other) {
 		        return new ComparisonPredicate<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, other));
 		    }
         }
-  | row_value_predicand<?> LE row_value_predicand<?>
+  | zRowValuePredicand<?> LE zRowValuePredicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -906,11 +906,11 @@ zComparisonPredicate<Boolean> ::=
 		}
         ( + RowValuePredicand<T> )
         {
-		    public ComparisonPredicate<Boolean> lessOrEqual(row_value_predicand<?> other) {
+		    public ComparisonPredicate<Boolean> lessOrEqual(zRowValuePredicand<?> other) {
 		        return new ComparisonPredicate<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, other));
 		    }
         }
-  | row_value_predicand<?> GE row_value_predicand<?>
+  | zRowValuePredicand<?> GE zRowValuePredicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
              return BOOLEAN_SCALAR.value(element);
@@ -918,7 +918,7 @@ zComparisonPredicate<Boolean> ::=
 		}
         ( + RowValuePredicand<T> )
         {
-		    public ComparisonPredicate<Boolean> greaterOrEqual(row_value_predicand<?> other) {
+		    public ComparisonPredicate<Boolean> greaterOrEqual(zRowValuePredicand<?> other) {
 		        return new ComparisonPredicate<Boolean>(SqlFactory.getInstance()._THIS_PRODUCTION_(this, other));
 		    }
         }
@@ -926,11 +926,11 @@ zComparisonPredicate<Boolean> ::=
 
 
 
-interface row_value_predicand<T> ;
-class RowValuePredicand<T> implements row_value_predicand with sqlBuilder ;
+interface zRowValuePredicand<T> ;
+class RowValuePredicand<T> implements zRowValuePredicand with sqlBuilder ;
 
 /*
-row_value_predicand ::=
+zRowValuePredicand ::=
 		row_value_special_case
 	|	row_value_constructor_predicand
 
@@ -939,18 +939,18 @@ row_value_special_case ::= nonparenthesized_value_expression_primary
 row_value_constructor_predicand ::=
 		common_value_expression
 	|	boolean_predicand
-	|	explicit_row_value_constructor
+	|	zExplicitRowValueConstructor
 
 Removed unnecessary mediators
 common_value_expression<T> includes value_expression_primary<T>, so "special_case" is covered by it
 */
-<T> row_value_predicand<T> ::= common_value_expression<T>
+<T> zRowValuePredicand<T> ::= common_value_expression<T>
     ( RowValuePredicand<T> ::= CommonValueExpression<T> )
 
-    | LEFT_PAREN boolean_value_expression<T> RIGHT_PAREN
+    | LEFT_PAREN zBooleanValueExpression<T> RIGHT_PAREN
         ( RowValuePredicand<T> ::= BooleanValueExpression<T> )
 
-	|	explicit_row_value_constructor<T>
+	|	zExplicitRowValueConstructor<T>
 	    ( RowValuePredicand<T> ::= ExplicitRowValueConstructor<T> )
 ;
 
@@ -958,18 +958,18 @@ common_value_expression<T> includes value_expression_primary<T>, so "special_cas
 /********** TODO **********/
 
 /*
-row_value_expression ::=
+zRowValueExpression ::=
 		row_value_special_case
-	|	explicit_row_value_constructor
+	|	zExplicitRowValueConstructor
 
 row_value_special_case ::= nonparenthesized_value_expression_primary
 
-explicit_row_value_constructor ::=
-		left_paren row_value_constructor_element comma row_value_constructor_element_list right_paren
-	|	ROW left_paren row_value_constructor_element_list right_paren
+zExplicitRowValueConstructor ::=
+		left_paren row_value_constructor_element comma zRowValueConstructorElementList right_paren
+	|	ROW left_paren zRowValueConstructorElementList right_paren
 	|	row_subquery
 
-row_value_constructor_element_list ::=
+zRowValueConstructorElementList ::=
 		row_value_constructor_element [ { comma row_value_constructor_element }... ]
 
 row_value_constructor_element ::= value_expression
@@ -978,39 +978,39 @@ row_subquery ::= subquery
 
 Changes:
 1. inline row_value_special_case, row_value_constructor_element, row_subquery
-2. change right recursion to left explicit_row_value_constructor
-3. Allow row_value_constructor_element to be row_value_constructor_element_list
+2. change right recursion to left zExplicitRowValueConstructor
+3. Allow row_value_constructor_element to be zRowValueConstructorElementList
    and allow both members to be row
-We have 2 possibilites for construction of row_value_expression from value_expression: as special case and with
+We have 2 possibilites for construction of zRowValueExpression from value_expression: as special case and with
 ROW. Choosing the first one; the second not needed.
 
 */
 
-interface row_value_expression<T> ;
+interface zRowValueExpression<T> ;
 
-<T> row_value_expression<T> ::= value_expression<T>
-    |  explicit_row_value_constructor<T> ;
+<T> zRowValueExpression<T> ::= value_expression<T>
+    |  zExplicitRowValueConstructor<T> ;
 
-<T,U> explicit_row_value_constructor<Pair<T,U>> ::=
-		LEFT_PAREN row_value_constructor_element_list<T> COMMA row_value_constructor_element_list<U> RIGHT_PAREN
+<T,U> zExplicitRowValueConstructor<Pair<T,U>> ::=
+		LEFT_PAREN zRowValueConstructorElementList<T> COMMA zRowValueConstructorElementList<U> RIGHT_PAREN
 // this is used by Values.pairOf(...) method
 
 	|	subquery<T>
 
 ;
 
-interface row_value_constructor_element_list<T> ;
-class RowValueConstructorElementList<T> implements row_value_constructor_element_list<T> with sqlBuilder;
+interface zRowValueConstructorElementList<T> ;
+class RowValueConstructorElementList<T> implements zRowValueConstructorElementList<T> with sqlBuilder;
 
-<T> row_value_constructor_element_list<T> ::= value_expression<T>
+<T> zRowValueConstructorElementList<T> ::= value_expression<T>
     ( RowValueConstructorElementList<T> ::= Value<T> )
 
-  |  explicit_row_value_constructor<T>
+  |  zExplicitRowValueConstructor<T>
         (  RowValueConstructorElementList<T> ::= ExplicitRowValueConstructor<T> )
 ;
 
-interface explicit_row_value_constructor<T> ;
-class ExplicitRowValueConstructor<T> implements explicit_row_value_constructor<T> with sqlBuilder;
+interface zExplicitRowValueConstructor<T> ;
+class ExplicitRowValueConstructor<T> implements zExplicitRowValueConstructor<T> with sqlBuilder;
 
 
 interface value_expression_primary<T> extends Scalar<T> ;
@@ -1379,7 +1379,7 @@ interface search_condition ;
 
 class SearchCondition implements search_condition with builder;
 
-search_condition ::= boolean_value_expression
+search_condition ::= zBooleanValueExpression
     ( SearchCondition ::= BooleanValueExpression )
 ;
 
