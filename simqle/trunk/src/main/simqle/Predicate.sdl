@@ -5,10 +5,10 @@ public class Predicate implements predicate with sqlBuilder
 {}
 
 predicate ::=
-		p:comparison_predicate
+		p:zComparisonPredicate
 		:: ComparisonPredicate mimics Predicate
 		{}
-	|	p:in_predicate
+	|	p:zInPredicate
 		:: InPredicate mimics Predicate
 		{}
 	|	p:null_predicate
@@ -19,14 +19,14 @@ predicate ::=
 		{}
 ;
 
-public interface comparison_predicate extends Scalar<Boolean> : Sql
+public interface zComparisonPredicate extends Scalar<Boolean> : Sql
  {}
 
 
-public class ComparisonPredicate implements comparison_predicate with SqlBuilder
+public class ComparisonPredicate implements zComparisonPredicate with SqlBuilder
 {}
 
-public class GenericComparisonPredicate extends AbstractPredicate implements comparison_predicate
+public class GenericComparisonPredicate extends AbstractPredicate implements zComparisonPredicate
 {
     private final Sql op;
     private final row_value_predicand<?> p1;
@@ -40,12 +40,12 @@ public class GenericComparisonPredicate extends AbstractPredicate implements com
     }
 
     @Override
-    public Sql z$create$comparison_predicate(final SqlContext context) {
+    public Sql z$create$zComparisonPredicate(final SqlContext context) {
         return new CompositeSql(p1.z$create$row_value_predicand(context), op, p2.z$create$row_value_predicand(context));
     }
 
     @Override
-    public void z$prepare$comparison_predicate(final SqlContext context) {
+    public void z$prepare$zComparisonPredicate(final SqlContext context) {
         p1.z$prepare$row_value_predicand(context);
         p2.z$prepare$row_value_predicand(context);
     }
@@ -53,7 +53,7 @@ public class GenericComparisonPredicate extends AbstractPredicate implements com
 }
 
 
-<T> comparison_predicate ::=
+<T> zComparisonPredicate ::=
     p1:row_value_predicand<T> EQ p2:row_value_predicand<T>
 		{
 		    return new GenericComparisonPredicate(EQ, p1, p2);
@@ -122,10 +122,10 @@ public class GenericComparisonPredicate extends AbstractPredicate implements com
 ;
 
 
-public interface in_predicate extends Scalar<Boolean> : Sql
+public interface zInPredicate extends Scalar<Boolean> : Sql
 {}
 
-class InPredicate implements in_predicate with SqlBuilder
+class InPredicate implements zInPredicate with SqlBuilder
 {}
 
 /*
@@ -140,96 +140,88 @@ class InPredicate implements in_predicate with SqlBuilder
 <in value list> ::= <row value expression> [ { <comma> <row value expression> }... ]
 */
 
-<T> in_predicate ::= p:row_value_predicand<T> IN v:in_predicate_value<T>
+<T> zInPredicate ::= p:row_value_predicand<T> IN v:zInPredicate_value<T>
     {
         return new AbstractInPredicate(p, v) {
             @Override
-            public Sql z$create$in_predicate(final SqlContext context) {
-                return new CompositeSql(IN, p.z$create$row_value_predicand(context), v.z$create$in_predicate_value(context));
+            public Sql z$create$zInPredicate(final SqlContext context) {
+                return new CompositeSql(IN, p.z$create$row_value_predicand(context), v.z$create$zInPredicate_value(context));
             }
         };
     }
     :: RowValuePredicand<T>
     {
-        public InPredicate in(in_predicate_value<T> v) {
+        public InPredicate in(zInPredicate_value<T> v) {
             return new InPredicate(_APPLY_RULE_(this, v));
         }
     }
-|   p:row_value_predicand<T> NOT IN v:in_predicate_value<T>
+|   p:row_value_predicand<T> NOT IN v:zInPredicate_value<T>
     {
         return new AbstractInPredicate(p, v) {
             @Override
-            public Sql z$create$in_predicate(final SqlContext context) {
-                return new CompositeSql(NOT, IN, p.z$create$row_value_predicand(context), v.z$create$in_predicate_value(context));
+            public Sql z$create$zInPredicate(final SqlContext context) {
+                return new CompositeSql(NOT, IN, p.z$create$row_value_predicand(context), v.z$create$zInPredicate_value(context));
             }
         };
     }
     :: RowValuePredicand<T>
     {
-        public InPredicate notIn(in_predicate_value<T> v) {
+        public InPredicate notIn(zInPredicate_value<T> v) {
             return new InPredicate(_APPLY_RULE_(this, v));
         }
     }
 ;
 
-public interface in_predicate_value<T> : Sql
+public interface zInPredicate_value<T> : Sql
 {}
 
-public class InPredicateValue<T> implements in_predicate_value<T> with sqlBuilder
+public class InPredicateValue<T> implements zInPredicate_value<T> with sqlBuilder
 {}
 
-<T> in_predicate_value<T> ::= sq:subquery<T>
+<T> zInPredicate_value<T> ::= sq:subquery<T>
     :: Subquery<T> mimics  InPredicateValue<T>
     {}
 |
-    LEFT_PAREN vl:in_value_list<T> RIGHT_PAREN
+    LEFT_PAREN vl:zInValueList<T> RIGHT_PAREN
     :: InValueList<T> mimics InPredicateValue<T>
     {}
 ;
 
-public interface in_value_list<T> : Sql
+public interface zInValueList<T> : Sql
 {}
 
-public class InValueList<T> implements in_value_list<T> with sqlBuilder
+public class InValueList<T> implements zInValueList<T> with sqlBuilder
 {}
 
-<T> in_value_list<T> ::= e:row_value_expression<T>
+<T> zInValueList<T> ::= e:row_value_expression<T>
      :: RowValue<T> mimics InValueList<T>
     {}
 ;
 
-<T, U> in_value_list<Pair<T, U>> ::= l:in_value_list<T> COMMA e:row_value_expression<U>
+<T> zInValueList<T> ::= e:row_value_expression<T> COMMA l:zInValueList<T>
+    :: RowValue<T>
      {
-         return new in_value_list<Pair<T, U>>() {
-             @Override
-             public Sql z$create$in_value_list(final SqlContext context) {
-                 return new CompositeSql(l.z$create$in_value_list(context), COMMA, e.z$create$row_value_expression(context));
-             }
-
-             @Override
-             public void z$prepare$in_value_list(final SqlContext context) {
-                 l.z$prepare$in_value_list(context);
-                 e.z$prepare$row_value_expression(context);
-             }
-         };
+        public InValueList orIn(final zInValueList l) {
+            return new InValueList(_APPLY_RULE_(this, l));
+        }
      }
 ;
 
-public abstract class AbstractInPredicate extends AbstractPredicate implements in_predicate
+public abstract class AbstractInPredicate extends AbstractPredicate implements zInPredicate
 {
     private final row_value_predicand<?> p;
-    private final in_predicate_value<?> v;
+    private final zInPredicate_value<?> v;
 
 
-    public AbstractInPredicate$(row_value_predicand<?> p, final in_predicate_value<?> v) {
+    public AbstractInPredicate$(row_value_predicand<?> p, final zInPredicate_value<?> v) {
         this.p = p;
         this.v = v;
     }
 
     @Override
-    public final void z$prepare$in_predicate(final SqlContext context) {
+    public final void z$prepare$zInPredicate(final SqlContext context) {
         p.z$prepare$row_value_predicand(context);
-        v.z$prepare$in_predicate_value(context);
+        v.z$prepare$zInPredicate_value(context);
     }
 
 }

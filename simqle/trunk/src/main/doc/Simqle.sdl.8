@@ -793,13 +793,13 @@ class Predicate<T> implements predicate<T> with sqlBuilder;
 
 /**
 predicate ::=
-		comparison_predicate
+		zComparisonPredicate
 	|	between_predicate - full release
-	|	in_predicate
+	|	zInPredicate
 	|	like_predicate - full release
 	|	similar_predicate -- not supported by MySql; skipped
 	|	null_predicate
-	|	quantified_comparison_predicate - full release
+	|	quantified_zComparisonPredicate - full release
 	|	exists_predicate
 	|	unique_predicate - full release
 	|	normalized_predicate - not supported
@@ -813,9 +813,9 @@ predicate ::=
 */
 
 <T> predicate<T> ::=
-		comparison_predicate<T>
+		zComparisonPredicate<T>
 		( Predicate<T> ::= ComparisonPredicate<T> )
-	|	in_predicate<T>
+	|	zInPredicate<T>
 		( Predicate<T> ::= InPredicate<T> )
 	|	null_predicate<T>
 		( Predicate<T> ::= NullPredicate<T> )
@@ -823,21 +823,21 @@ predicate ::=
 		( Predicate<T> ::= ExistsPredicate<T> )
 ;
 
-interface comparison_predicate<T> extends Scalar<T> ;
-interface in_predicate<T> extends Scalar<T> ;
+interface zComparisonPredicate<T> extends Scalar<T> ;
+interface zInPredicate<T> extends Scalar<T> ;
 interface null_predicate<T> extends Scalar<T> ;
 interface exists_predicate<T> extends Scalar<T> ;
 
-class ComparisonPredicate<T> implements comparison_predicate<T> with SqlBuilder;
-class InPredicate<T> implements in_predicate<T> with SqlBuilder;
+class ComparisonPredicate<T> implements zComparisonPredicate<T> with SqlBuilder;
+class InPredicate<T> implements zInPredicate<T> with SqlBuilder;
 class NullPredicate<T> implements null_predicate<T> with SqlBuilder;
 class ExistsPredicate<T> implements exists_predicate<T> with SqlBuilder;
 
 
 /*
-comparison_predicate ::= row_value_predicand comparison_predicate_part_2
+zComparisonPredicate ::= row_value_predicand zComparisonPredicate_part_2
 
-comparison_predicate_part_2 ::= comp_op row_value_predicand
+zComparisonPredicate_part_2 ::= comp_op row_value_predicand
 
 comp_op ::=
 		equals_operator
@@ -849,7 +849,7 @@ comp_op ::=
 
 */
 
-comparison_predicate<Boolean> ::=
+zComparisonPredicate<Boolean> ::=
     row_value_predicand<?> EQ row_value_predicand<?>
 		{
             public Boolean value(Element element) throws SQLException {
