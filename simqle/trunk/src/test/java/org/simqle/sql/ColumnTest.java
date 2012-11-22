@@ -245,17 +245,12 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT ALL T1.id FROM employee AS T1)", sql);
     }
 
-    public void testMalformedIn() throws Exception {
+    public void testIn() throws Exception {
         final LongColumn id  =  createId();
         // find all but the most old
-        final LongColumn id2 = new LongColumn("id", person2);
-        try {
-            String sql = id.where(id.in(id2)).show();
-            System.out.println(sql);
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Implicit cross join"));
-        }
+        final LongColumn id2 = new LongColumn("id", employee);
+        String sql = id.where(id.in(id2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
     public void testNotInAll() throws Exception {
@@ -272,8 +267,9 @@ public class ColumnTest extends TestCase {
 
         final zRowValueExpression<Long> expr = new LongParameter(1L);
         final zRowValueExpression<Long> expr2 = new LongParameter(2L);
-        String sql = id.where(id.in(expr, expr2)).show();
-        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?)", sql);
+        final zRowValueExpression<Long> expr3 = new LongParameter(3L);
+        String sql = id.where(id.in(expr, expr2, expr3)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?, ?)", sql);
 
     }
 

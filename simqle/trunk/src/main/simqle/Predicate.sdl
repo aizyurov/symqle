@@ -156,8 +156,9 @@ class InPredicate implements zInPredicate with SqlBuilder
             return new InPredicate(SqlFactory.getInstance().zInPredicate_IS_zRowValuePredicand_IN_zInPredicateValue(this, pv));
         }
 
-        public InPredicate in(zRowValueExpression<T> expr, zRowValueExpression<T>... more) {
-            zInValueList<T> vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression(expr);
+        public InPredicate in(zRowValueExpression<T> first, zRowValueExpression<T> second, zRowValueExpression<T>... more)   {
+            zInValueList<T> vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression(first);
+            vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression_COMMA_zInValueList(second, vl);
             for (zRowValueExpression<T> e: more) {
                 vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression_COMMA_zInValueList(e, vl);
             }
