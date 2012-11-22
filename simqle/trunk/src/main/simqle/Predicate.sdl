@@ -151,8 +151,18 @@ class InPredicate implements zInPredicate with SqlBuilder
     }
     :: RowValuePredicand<T>
     {
-        public InPredicate in(zInPredicateValue<T> v) {
-            return new InPredicate(_APPLY_RULE_(this, v));
+        public InPredicate in(zSubquery<T> v)   {
+        final zInPredicateValue<T> pv = SqlFactory.getInstance().zInPredicateValue_IS_zSubquery(v);
+            return new InPredicate(SqlFactory.getInstance().zInPredicate_IS_zRowValuePredicand_IN_zInPredicateValue(this, pv));
+        }
+
+        public InPredicate in(zRowValueExpression<T> expr, zRowValueExpression<T>... more) {
+            zInValueList<T> vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression(expr);
+            for (zRowValueExpression<T> e: more) {
+                vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression_COMMA_zInValueList(e, vl);
+            }
+            final zInPredicateValue<T> pv = SqlFactory.getInstance().zInPredicateValue_IS_LEFT_PAREN_zInValueList_RIGHT_PAREN(vl);
+            return new InPredicate(SqlFactory.getInstance().zInPredicate_IS_zRowValuePredicand_IN_zInPredicateValue(this, pv));
         }
     }
 |   p:zRowValuePredicand<T> NOT IN v:zInPredicateValue<T>
@@ -166,8 +176,18 @@ class InPredicate implements zInPredicate with SqlBuilder
     }
     :: RowValuePredicand<T>
     {
-        public InPredicate notIn(zInPredicateValue<T> v) {
-            return new InPredicate(_APPLY_RULE_(this, v));
+        public InPredicate notIn(zSubquery<T> v)   {
+        final zInPredicateValue<T> pv = SqlFactory.getInstance().zInPredicateValue_IS_zSubquery(v);
+            return new InPredicate(SqlFactory.getInstance().zInPredicate_IS_zRowValuePredicand_NOT_IN_zInPredicateValue(this, pv));
+        }
+
+        public InPredicate notIn(zRowValueExpression<T> expr, zRowValueExpression<T>... more) {
+            zInValueList<T> vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression(expr);
+            for (zRowValueExpression<T> e: more) {
+                vl = SqlFactory.getInstance().zInValueList_IS_zRowValueExpression_COMMA_zInValueList(e, vl);
+            }
+            final zInPredicateValue<T> pv = SqlFactory.getInstance().zInPredicateValue_IS_LEFT_PAREN_zInValueList_RIGHT_PAREN(vl);
+            return new InPredicate(SqlFactory.getInstance().zInPredicate_IS_zRowValuePredicand_NOT_IN_zInPredicateValue(this, pv));
         }
     }
 ;
@@ -201,8 +221,8 @@ public class InValueList<T> implements zInValueList<T> with sqlBuilder
 <T> zInValueList<T> ::= e:zRowValueExpression<T> COMMA l:zInValueList<T>
     :: RowValue<T>
      {
-        public InValueList orIn(final zInValueList l) {
-            return new InValueList(_APPLY_RULE_(this, l));
+        public InValueList<T> orIn(final zInValueList<T> l) {
+            return new InValueList<T>(_APPLY_RULE_(this, l));
         }
      }
 ;

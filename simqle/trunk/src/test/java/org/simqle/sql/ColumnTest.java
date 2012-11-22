@@ -2,6 +2,7 @@ package org.simqle.sql;
 
 import junit.framework.TestCase;
 import org.simqle.Element;
+import org.simqle.SqlParameters;
 
 import java.sql.SQLException;
 
@@ -250,9 +251,48 @@ public class ColumnTest extends TestCase {
         final LongColumn id2 = new LongColumn("id", person2);
         try {
             String sql = id.where(id.in(id2)).show();
+            System.out.println(sql);
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage(), e.getMessage().startsWith("Implicit cross join"));
+        }
+    }
+
+    public void testNotInAll() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn id2 = new LongColumn("id", employee);
+        String sql = id.where(id.notIn(id2.all())).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(SELECT ALL T1.id FROM employee AS T1)", sql);
+    }
+
+    public void testInList() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+
+        final zRowValueExpression<Long> expr = new LongParameter(1L);
+        final zRowValueExpression<Long> expr2 = new LongParameter(2L);
+        String sql = id.where(id.in(expr, expr2)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?)", sql);
+
+    }
+
+
+    private class LongParameter extends DynamicParameter<Long> {
+        private final Long value;
+
+        private LongParameter(final Long value) {
+            this.value = value;
+        }
+
+        @Override
+        protected void setParameter(final SqlParameters p) {
+            p.setLong(value);
+        }
+
+        @Override
+        public Long value(final Element element) throws SQLException {
+            return element.getLong();
         }
     }
 
