@@ -325,6 +325,15 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age DESC", sql);
     }
 
+    public void testOrderByAsc() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age.asc()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC", sql);
+    }
+
+
+
     private class LongParameter extends DynamicParameter<Long> {
         private final Long value;
 
