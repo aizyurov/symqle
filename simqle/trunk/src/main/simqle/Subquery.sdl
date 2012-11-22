@@ -65,5 +65,8 @@ class Subquery<T> implements zSubquery<T> with sqlBuilder
 }
     :: QueryExpression<T> mimics Subquery<T>
     {}
+| ss:zScalarSubquery<T>
+    :: ScalarSubquery<T> mimics Subquery<T>
+    {}
 ;
 

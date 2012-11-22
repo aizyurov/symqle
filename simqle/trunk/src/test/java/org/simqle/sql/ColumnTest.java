@@ -209,13 +209,13 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 FOR READ ONLY", col.forReadOnly().show());
     }
 
-    public void testSelectExists() throws Exception {
+    public void testExists() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         // find all but the most old
         final LongColumn age2 = new LongColumn("age", person2);
         String sql = id.where(age2.where(age2.gt(age)).exists()).show();
-        assertEquals("SELECT T0.id AS C0 FROM person AS T0 where exists (select T1.age FROM person T1 where T1.age > T0.age", sql);
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1 WHERE T1.age > T0.age)", sql);
 
     }
 

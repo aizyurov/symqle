@@ -140,45 +140,45 @@ class InPredicate implements zInPredicate with SqlBuilder
 <in value list> ::= <row value expression> [ { <comma> <row value expression> }... ]
 */
 
-<T> zInPredicate ::= p:zRowValuePredicand<T> IN v:zInPredicateÌalue<T>
+<T> zInPredicate ::= p:zRowValuePredicand<T> IN v:zInPredicateValue<T>
     {
         return new AbstractInPredicate(p, v) {
             @Override
             public Sql z$create$zInPredicate(final SqlContext context) {
-                return new CompositeSql(IN, p.z$create$zRowValuePredicand(context), v.z$create$zInPredicateÌalue(context));
+                return new CompositeSql(IN, p.z$create$zRowValuePredicand(context), v.z$create$zInPredicateValue(context));
             }
         };
     }
     :: RowValuePredicand<T>
     {
-        public InPredicate in(zInPredicateÌalue<T> v) {
+        public InPredicate in(zInPredicateValue<T> v) {
             return new InPredicate(_APPLY_RULE_(this, v));
         }
     }
-|   p:zRowValuePredicand<T> NOT IN v:zInPredicateÌalue<T>
+|   p:zRowValuePredicand<T> NOT IN v:zInPredicateValue<T>
     {
         return new AbstractInPredicate(p, v) {
             @Override
             public Sql z$create$zInPredicate(final SqlContext context) {
-                return new CompositeSql(NOT, IN, p.z$create$zRowValuePredicand(context), v.z$create$zInPredicateÌalue(context));
+                return new CompositeSql(NOT, IN, p.z$create$zRowValuePredicand(context), v.z$create$zInPredicateValue(context));
             }
         };
     }
     :: RowValuePredicand<T>
     {
-        public InPredicate notIn(zInPredicateÌalue<T> v) {
+        public InPredicate notIn(zInPredicateValue<T> v) {
             return new InPredicate(_APPLY_RULE_(this, v));
         }
     }
 ;
 
-public interface zInPredicateÌalue<T> : Sql
+public interface zInPredicateValue<T> : Sql
 {}
 
-public class InPredicateValue<T> implements zInPredicateÌalue<T> with sqlBuilder
+public class InPredicateValue<T> implements zInPredicateValue<T> with sqlBuilder
 {}
 
-<T> zInPredicateÌalue<T> ::= sq:zSubquery<T>
+<T> zInPredicateValue<T> ::= sq:zSubquery<T>
     :: Subquery<T> mimics  InPredicateValue<T>
     {}
 |
@@ -210,10 +210,10 @@ public class InValueList<T> implements zInValueList<T> with sqlBuilder
 public abstract class AbstractInPredicate extends AbstractPredicate implements zInPredicate
 {
     private final zRowValuePredicand<?> p;
-    private final zInPredicateÌalue<?> v;
+    private final zInPredicateValue<?> v;
 
 
-    public AbstractInPredicate$(zRowValuePredicand<?> p, final zInPredicateÌalue<?> v) {
+    public AbstractInPredicate$(zRowValuePredicand<?> p, final zInPredicateValue<?> v) {
         this.p = p;
         this.v = v;
     }
@@ -221,7 +221,7 @@ public abstract class AbstractInPredicate extends AbstractPredicate implements z
     @Override
     public final void z$prepare$zInPredicate(final SqlContext context) {
         p.z$prepare$zRowValuePredicand(context);
-        v.z$prepare$zInPredicateÌalue(context);
+        v.z$prepare$zInPredicateValue(context);
     }
 
 }
