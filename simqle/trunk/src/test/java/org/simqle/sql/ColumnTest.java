@@ -173,9 +173,17 @@ public class ColumnTest extends TestCase {
         }
     }
 
+    private static class Employee extends Table {
+        private Employee() {
+            super("employee");
+        }
+    }
+
     private static Person person = new Person();
 
     private static Person person2 = new Person();
+
+    private static Employee employee = new Employee();
 
     private static class LongColumn extends Column<Long> {
         private LongColumn(final String name, final Table owner) {
@@ -211,12 +219,41 @@ public class ColumnTest extends TestCase {
 
     public void testExists() throws Exception {
         final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn age2 = new LongColumn("age", person2);
+        String sql = id.where(age2.exists()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1)", sql);
+
+    }
+
+    public void testExistsWithCondition() throws Exception {
+        final LongColumn id  =  createId();
         final LongColumn age = createAge();
         // find all but the most old
         final LongColumn age2 = new LongColumn("age", person2);
         String sql = id.where(age2.where(age2.gt(age)).exists()).show();
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1 WHERE T1.age > T0.age)", sql);
 
+    }
+
+    public void testInAll() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn id2 = new LongColumn("id", employee);
+        String sql = id.where(id.in(id2.all())).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT ALL T1.id FROM employee AS T1)", sql);
+    }
+
+    public void testMalformedIn() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn id2 = new LongColumn("id", person2);
+        try {
+            String sql = id.where(id.in(id2)).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Implicit cross join"));
+        }
     }
 
 }

@@ -312,11 +312,11 @@ Simplified, generalized expression and target specification not supported
     :: Function<T>
     {
         protected RoutineInvocation<T> apply(zValueExpression<?> firstArg, zValueExpression<?>... otherArgs) {
-                ArgumentList al = new ArgumentList(SqlFactory.getInstance().zArgumentList_IS_zValueExpression(firstArg));
+                zArgumentList al = SqlFactory.getInstance().zArgumentList_IS_zValueExpression(firstArg);
                 for (zValueExpression ve: otherArgs) {
-                    al = al.appendArg(ve);
+                    al = SqlFactory.getInstance().zArgumentList_IS_zArgumentList_COMMA_zValueExpression(al, ve);
                 }
-                return new RoutineInvocation(SqlFactory.getInstance().zRoutineInvocation_IS_zRoutineName_LEFT_PAREN_zArgumentList_RIGHT_PAREN(this, al));
+                return new RoutineInvocation<T>(SqlFactory.getInstance().zRoutineInvocation_IS_zRoutineName_LEFT_PAREN_zArgumentList_RIGHT_PAREN(this, al));
         }
     }
 
@@ -324,7 +324,7 @@ Simplified, generalized expression and target specification not supported
     :: Function<T>
     {
         protected RoutineInvocation<T> apply() {
-                return new RoutineInvocation(_APPLY_RULE_(this));
+                return new RoutineInvocation<T>(_APPLY_RULE_(this));
         }
     }
 ;
@@ -335,21 +335,10 @@ public interface zRoutineName<T> extends Scalar<T> : Sql
 public interface zArgumentList : Sql
  {}
 
- zArgumentList ::= ve:zValueExpression<?>
-    :: Value<T> mimics ArgumentList
-    {}
-
+# zArgumentList is used only internally by Function; no implementing class
+zArgumentList ::= ve:zValueExpression<?>
     | al:zArgumentList COMMA ve:zValueExpression<?>
-    :: ArgumentList
-    {
-        public ArgumentList appendArg(final zValueExpression ve) {
-            return new ArgumentList(_APPLY_RULE_(this, ve));
-        }
-    }
 ;
-
-public class ArgumentList implements zArgumentList with SqlBuilder
-{}
 
 public class RoutineInvocation<T> implements zRoutineInvocation<T> with sqlBuilder
 {}

@@ -157,6 +157,7 @@ public interface zTableJoin  : Sql
 {}
 
 public abstract class Table implements zTable
+import java.util.*;
 {
     private boolean isJoined = false;
     private zTableJoin tableJoin;
@@ -189,6 +190,15 @@ public abstract class Table implements zTable
             }
 
     public Sql z$create$zTableJoin(final SqlContext context)          {
+                if (!isJoined) {
+                    final Set<zTable> allTables = context.get(FromClause.class).getAllTables();
+                    allTables.remove(this);
+                    final List<String> tableNames = new ArrayList<String>();
+                    for (zTable table: allTables) {
+                        tableNames.add(table.toString());
+                    }
+                    throw new IllegalStateException("Implicit cross join of "+ toString() + " to "+ tableNames);
+                }
                 return tableJoin.z$create$zTableJoin(context);
             }
 

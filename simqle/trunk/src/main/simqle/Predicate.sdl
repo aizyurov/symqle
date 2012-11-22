@@ -145,7 +145,7 @@ class InPredicate implements zInPredicate with SqlBuilder
         return new AbstractInPredicate(p, v) {
             @Override
             public Sql z$create$zInPredicate(final SqlContext context) {
-                return new CompositeSql(IN, p.z$create$zRowValuePredicand(context), v.z$create$zInPredicateValue(context));
+                return new CompositeSql(p.z$create$zRowValuePredicand(context), IN, v.z$create$zInPredicateValue(context));
             }
         };
     }
@@ -160,7 +160,7 @@ class InPredicate implements zInPredicate with SqlBuilder
         return new AbstractInPredicate(p, v) {
             @Override
             public Sql z$create$zInPredicate(final SqlContext context) {
-                return new CompositeSql(NOT, IN, p.z$create$zRowValuePredicand(context), v.z$create$zInPredicateValue(context));
+                return new CompositeSql(p.z$create$zRowValuePredicand(context), NOT, IN, v.z$create$zInPredicateValue(context));
             }
         };
     }
