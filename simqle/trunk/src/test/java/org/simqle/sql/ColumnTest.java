@@ -272,6 +272,59 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?, ?)", sql);
    }
 
+    public void testNotInList() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+
+        final zRowValueExpression<Long> expr = new LongParameter(1L);
+        final zRowValueExpression<Long> expr2 = new LongParameter(2L);
+        final zRowValueExpression<Long> expr3 = new LongParameter(3L);
+        String sql = id.where(id.notIn(expr, expr2, expr3)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(?, ?, ?)", sql);
+   }
+
+    public void testIsNull() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.where(age.isNull()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NULL", sql);
+   }
+
+    public void testIsNotNull() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.where(age.isNotNull()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NOT NULL", sql);
+   }
+
+    public void testOrderBy() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
+    }
+
+    public void testOrderByNullsFirst() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age.nullsFirst()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age NULLS FIRST", sql);
+    }
+
+    public void testOrderByNullsLast() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age.nullsLast()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age NULLS LAST", sql);
+    }
+
+    public void testOrderByDesc() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age.desc()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age DESC", sql);
+    }
+
     private class LongParameter extends DynamicParameter<Long> {
         private final Long value;
 
