@@ -4,22 +4,21 @@ public interface zValueExpression<T> extends Scalar<T> : Sql
 public class Value<T> implements zValueExpression<T> with valueExpression
 {}
 
-
+# No need on CommonValueExpression: different dialects have different ranks of operations
+# all operations shall take zValueExpressionPrimary and return zValueExpression
+# it may lead to some extra parentheses but is harmless.
+# operations have their own syntax not described in syntax rules,
+# e.g. <T extends Number> zValueExpression<T> ::= e1:zValueExpressionPrimary<T> PLUS e2:zValueExpressionPrimary<T>
+# it does not go to SqlFactory
 <T> zValueExpression<T> ::=
-		cve:zCommonValueExpression<T>
-		:: CommonValueExpression<T> mimics Value<T>
+		e:zValueExpressionPrimary<T>
+		:: ValueExpressionPrimary<T> mimics Value<T>
 		{}
 ;
 zValueExpression<Boolean> ::= bve: zBooleanValueExpression
 	    :: BooleanValueExpression mimics Value<Boolean>
 	    {}
 ;
-
-public interface zCommonValueExpression<T> extends Scalar<T> : Sql
-{}
-
-public class CommonValueExpression<T> implements zCommonValueExpression<T> with sqlBuilder
-{}
 
 
 /*
@@ -31,16 +30,6 @@ public interface zBooleanValueExpression extends Scalar<Boolean> : Sql
 
 public class BooleanValueExpression implements zBooleanValueExpression with sqlBuilder
 {}
-
-# zCommonValueExpression
-<T> zCommonValueExpression<T> ::=  LEFT_PAREN ve:zValueExpression<T> RIGHT_PAREN
-    :: Value<T> mimics CommonValueExpression<T>
-    {}
-
-    | vep: zValueExpressionPrimary<T>
-    :: ValueExpressionPrimary<T> mimics CommonValueExpression<T>
-    {}
-;
 
 
 # For zBooleanValueExpression syntax is very close to sql-2003
@@ -203,7 +192,10 @@ public interface zValueExpressionPrimary<T> extends Scalar<T> : Sql
 public class ValueExpressionPrimary<T> implements zValueExpressionPrimary<T>  with sqlBuilder
 {}
 
-<T> zValueExpressionPrimary<T> ::=
+<T> zValueExpressionPrimary<T> ::= LEFT_PAREN ve:zValueExpression<T> RIGHT_PAREN
+    :: Value<T> mimics ValueExpressionPrimary<T>
+    {}
+    |
 		dps:zDynamicParameterSpecification<T>
 		:: DynamicParameter<T> mimics ValueExpressionPrimary<T>
 		 {}

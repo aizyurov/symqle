@@ -1,8 +1,12 @@
 package org.simqle.sql;
 
 import junit.framework.TestCase;
+import org.simqle.CompositeSql;
 import org.simqle.Element;
+import org.simqle.Sql;
+import org.simqle.SqlContext;
 import org.simqle.SqlParameters;
+import org.simqle.SqlTerminal;
 
 import java.sql.SQLException;
 
@@ -332,6 +336,13 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC", sql);
     }
 
+    public void testOperation() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = mult(id, age).show();
+        assertEquals("SELECT T0.id * T0.age AS C0 FROM person AS T0", sql);
+    }
+
 
 
     private class LongParameter extends DynamicParameter<Long> {
@@ -350,6 +361,31 @@ public class ColumnTest extends TestCase {
         public Long value(final Element element) throws SQLException {
             return element.getLong();
         }
+    }
+
+    private Value<Long> mult(final zValueExpressionPrimary<Long> v1, final zValueExpressionPrimary<Long> v2) {
+        return new Value<Long>(
+                new zValueExpression<Long>() {
+                    @Override
+                    public Sql z$create$zValueExpression(final SqlContext context) {
+                        return new CompositeSql(v1.z$create$zValueExpressionPrimary(context),
+                                SqlTerminal.ASTERISK,
+                                v2.z$create$zValueExpressionPrimary(context));
+                    }
+
+                    @Override
+                    public void z$prepare$zValueExpression(final SqlContext context) {
+                        v1.z$prepare$zValueExpressionPrimary(context);
+                        v2.z$prepare$zValueExpressionPrimary(context);
+                    }
+
+                    @Override
+                    public Long value(final Element element) throws SQLException {
+                        // TODO implement
+                        throw new RuntimeException("Not implemented");
+                    }
+                }
+        );
     }
 
 }
