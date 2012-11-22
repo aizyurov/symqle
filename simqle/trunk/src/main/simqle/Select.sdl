@@ -73,12 +73,8 @@ class CursorSpecification<T> implements zCursorSpecification<T> with sqlBuilder
 
 #zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
 #updatability_clause moved to zSelectStatement
-#zCursorSpecificationScalar introduced
 
-<T> zCursorSpecification<T> ::= cspec:zCursorSpecificationScalar<T>
-    :: CursorSpecificationScalar<T> mimics CursorSpecification<T>
-    {}
-| qe:zQueryExpression<T>
+<T> zCursorSpecification<T> ::= qe:zQueryExpression<T>
     ::  QueryExpression<T> mimics CursorSpecification<T>
     {}
 
@@ -97,14 +93,6 @@ class CursorSpecification<T> implements zCursorSpecification<T> with sqlBuilder
         }
 ;
 
-public interface zCursorSpecificationScalar<T> extends Scalar<T> : Query<T>
- {}
-
-public class CursorSpecificationScalar<T> implements zCursorSpecificationScalar<T> with sqlBuilder
-import java.util.List;
-import java.sql.SQLException;
-{}
-
 public interface zQueryExpression<T> : Query<T>
 {}
 
@@ -112,25 +100,6 @@ public class QueryExpression<T> implements zQueryExpression<T> with sqlBuilder
 import java.util.List;
 import java.sql.SQLException;
 {}
-
-
-<T> zCursorSpecificationScalar<T> ::= qe:zQueryExpressionScalar<T>
-      :: QueryExpressionScalar<T> mimics CursorSpecificationScalar<T>
-      {}
-| qu:zQueryExpressionScalar<T> obc:zOrderByClause
-        :: QueryExpressionScalar<T>
-        {
-            public CursorSpecificationScalar<T> orderBy(zSortSpecification sort, zSortSpecification... additionalSort) {
-                final SqlFactory factory = SqlFactory.getInstance();
-                zSortSpecificationList sortList = factory.zSortSpecificationList_IS_zSortSpecification(sort);
-                for (zSortSpecification sortSpec: additionalSort) {
-                    sortList = factory.zSortSpecificationList_IS_zSortSpecificationList_COMMA_zSortSpecification(sortList, sortSpec);
-                }
-                zOrderByClause orderBy = factory.zOrderByClause_IS_ORDER_BY_zSortSpecificationList(sortList);
-                return new CursorSpecificationScalar<T>(factory.zCursorSpecificationScalar_IS_zQueryExpressionScalar_zOrderByClause(this, orderBy));
-            }
-        }
-;
 
 
 public interface zQueryExpressionScalar<T> extends Scalar<T> : Query<T>
@@ -156,6 +125,9 @@ import java.sql.SQLException;
             return new QueryExpression<T>(_APPLY_RULE_(this, condition));
         }
     }
+|   qes:zQueryExpressionScalar<T>
+    :: QueryExpressionScalar<T> mimics QueryExpression<T>
+    {}
 ;
 
 <T> zQueryExpressionScalar<T> ::= qt:zQueryTerm<T>
