@@ -10,7 +10,7 @@ import java.sql.SQLException;
  *
  * @author Alexander Izyurov
  */
-public class CompositeQuery<T> extends CompositeSql implements Query<T> {
+public class CompositeQuery<T> extends AbstractCompositeQuery<T> {
 
     final DataExtractor<T> extractor;
 
@@ -20,7 +20,7 @@ public class CompositeQuery<T> extends CompositeSql implements Query<T> {
     }
 
     /**
-     * Creates a JAvaType object frm Row data.
+     * Creates a JavaType object frm Row data.
      *
      * @param row the Row providing the data
      * @return constructed JAvaType object

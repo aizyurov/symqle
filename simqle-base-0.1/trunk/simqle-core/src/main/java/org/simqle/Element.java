@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  * details of position or label of the column and scrolling over result set. Unlike {@link java.sql.ResultSet}},
  * its methods return object wrappers rather than primitive values.
  * @author Alexander Izyurov
- * TODO addSort more methods (Blob etc.)
+ * TODO add more methods (Blob etc.)
  */
 public interface Element {
     /**
