@@ -7,27 +7,24 @@
 # 
 # #rephrased in trivial manner - see below
 # 
-# public interface zOrderByClause : Sql
-# {}
-# # no class OrderByClause!
-# 
-# zOrderByClause ::= ORDER BY ssl:zSortSpecificationList
-# ;
-# 
-# public interface zSortSpecificationList : Sql
-# {}
-# public class SortSpecificationList implements zSortSpecificationList with sortSpecificationListBuilder
-# {}
-# 
+
+public interface OrderByClause : Sql {}
+
+OrderByClause ::= ORDER BY ssl:SortSpecificationList :: implicit {}
+;
+
+public interface SortSpecificationList : Sql {}
+
 # zSortSpecificationList ::= ss:zSortSpecification
 # | ssl:zSortSpecificationList COMMA ss:zSortSpecification
 # ;
 # 
-# # we need not a class zSortSpecificationList: the user never constructs it directly, because
-# # CursorSpecification#orderBy accepts a list of zSortSpecification and constructs zSortSpecificationList internally
+# we need not AbstractSortSpecificationList: the user never constructs it directly.
+# She uses orderBy(SortSpecification, SortSpecification...
 # 
-# public interface zSortSpecification : Sql
-# {}
+
+public interface SortSpecification : Sql {}
+
 # public class SortSpecification implements zSortSpecification with sortSpec
 # {}
 # 
