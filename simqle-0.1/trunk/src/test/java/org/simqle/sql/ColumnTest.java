@@ -1,11 +1,7 @@
 package org.simqle.sql;
 
 import junit.framework.TestCase;
-import org.simqle.CompositeSql;
-import org.simqle.Element;
-import org.simqle.Sql;
-import org.simqle.SqlContext;
-import org.simqle.SqlTerminal;
+import org.simqle.*;
 
 import java.sql.SQLException;
 
@@ -309,7 +305,7 @@ public class ColumnTest extends TestCase {
                     @Override
                     public Sql z$create$zValueExpression(final SqlContext context) {
                         return new CompositeSql(v1.z$create$zValueExpressionPrimary(context),
-                                SqlTerminal.ASTERISK,
+                                SqlTerm.ASTERISK,
                                 v2.z$create$zValueExpressionPrimary(context));
                     }
 
