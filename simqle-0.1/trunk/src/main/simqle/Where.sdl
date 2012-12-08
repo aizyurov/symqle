@@ -1,4 +1,4 @@
-# public interface zWhereClause : Sql
+public interface WhereClause : Sql {}
 # {}
 # 
 # 

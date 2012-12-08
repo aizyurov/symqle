@@ -1,28 +1,25 @@
-# public interface zFromClause : Sql
-# {}
-# 
+public interface FromClause : Sql {}
+
+ 
 # import org.simqle.Sql;
 # import org.simqle.SqlContext;
 # /**
 #  * @author Alexander Izyurov
 #  */
-# public class ImplicitFromClause implements zFromClause {
-#     /**
-#      * Defines Sql produced by this syntactic element.
-#      * Implementations should produce Sql conforming to the productions specified above.
-#      *
-#      * @param context - construction context: dialect, tables available in this and enclosing contexts etc.
-#      * @return sql as required for zFromClause syntax
-#      */
-#     public Sql z$create$zFromClause(SqlContext context) {
-#         return context.get(FromClause.class).z$create$zFromClause(context);
-#     }
-# 
-#     public void z$prepare$zFromClause(SqlContext context) {
-#         // do nothing
-#     }
-# }
-# 
+public class ImplicitFromClause implements FromClause {
+     /**
+      * Defines Sql produced by this syntactic element.
+      * Implementations should produce Sql conforming to the productions specified above.
+      *
+      * @param context - construction context: dialect, tables available in this and enclosing contexts etc.
+      * @return sql as required for zFromClause syntax
+      */
+     public Sql z$create$FromClause(SqlContext context) {
+         return context.get(FromClause.class).z$create$FromClause(context);
+     }
+}
+
+#
 # class FromClause implements zFromClause
 # import java.util.*;
 # import org.simqle.util.TSort;

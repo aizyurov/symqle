@@ -1,0 +1,88 @@
+
+public interface SelectList<T> : Query<T> {}
+
+public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
+
+
+# public class SelectSublist<T> implements zSelectSublist<T> with builder
+# {}
+#
+# <T> zSelectList<T> ::= ssl:zSelectSublist<T>
+#     :: SelectSublist<T> mimics RowValue<T>
+#     {}
+# ;
+#
+#  // more naturally implemented as static method of Values class:
+#  // <L,R> RowValue<Pair<L,R> makePair(RowValue<L> l, RowValue<R> r);
+#  // so no class member method is defined for this production
+# <T,U> zSelectList<Pair<T,U>> ::= sl1:zSelectList<T> COMMA sl2:zSelectList<U>
+# {   return new zSelectList<Pair<T,U>>() {
+#         public void z$prepare$zSelectList(final SqlContext context) {
+#             sl1.z$prepare$zSelectList(context);
+#             sl2.z$prepare$zSelectList(context);
+#         }
+#         public Query<Pair<T,U>> z$create$zSelectList(final SqlContext context) {
+#             final Query<T> sql1 = sl1.z$create$zSelectList(context);
+#             final Query<U> sql2 = sl2.z$create$zSelectList(context);
+#             DataExtractor<Pair<T,U>> extractor = new DataExtractor<Pair<T, U>>() {
+#                 public Pair<T, U> extract(final Row row) throws SQLException {
+#                     final T first = sql1.extract(row);
+#                     final U second = sql2.extract(row);
+#                     return Pair.of(first, second);
+#                 }
+#             };
+#             return new CompoundQuery<Pair<T,U>>(extractor, new CompositeSql(sql1, SqlTerminal.COMMA, sql2));
+#         }
+#     };
+# }
+# ;
+#
+#
+# # <T> zSelectSublist<T> ::= zValueExpression<T> [ AS Identifier ]
+# # Identifier is added automatically when needed
+# # SqlFactory method does not know about [ AS Identifier ]
+#
+# <T> zSelectSublist<T> ::=  ve:zValueExpression<T>
+# {
+#     return new zSelectSublist<T>() {
+#
+#         public void z$prepare$zSelectSublist(SqlContext context) {
+#             ve.z$prepare$zValueExpression(context);
+#         }
+#
+#         public Query<T> z$create$zSelectSublist(SqlContext context) {
+#         final ColumnNameProvider columnNameProvider = context.get(ColumnNameProvider.class);
+#             final Identifier identifier = columnNameProvider.getUniqueName();
+#             if (identifier!=null) {
+#                 final DataExtractor<T> extractor = new DataExtractor<T>() {
+#                     @Override
+#                     public T extract(final Row row) throws SQLException {
+#                         return ve.value(row.getValue(identifier.toString()));
+#                     }
+#                 };
+#                 return new CompoundQuery<T>(extractor,
+#                         new CompositeSql(ve.z$create$zValueExpression(context), AS, identifier));
+#             } else {
+#                 // column names are not provided in this context
+#                 return new CompoundQuery<T>(new NullDataExtractor<T>(), ve.z$create$zValueExpression(context));
+#             }
+#         }
+#
+#         public T value(final Element element) throws SQLException {
+#             return ve.value(element);
+#         }
+#     };
+# }
+#     :: Value<T> mimics SelectSublist<T>
+#     {}
+# ;
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#

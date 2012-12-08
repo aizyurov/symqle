@@ -11,17 +11,26 @@ import org.simqle.Callback;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 :: public <T> void scroll(final SelectStatement<T> statement,
-                          final Callback<T, SQLException> callback,
-                          final DataSource datasource) throws SQLException {
+                          final DataSource datasource,
+                          final Callback<T, SQLException> callback
+                          ) throws SQLException {
         throw new RuntimeException("Not implemented");
     }
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
-:: public <T> List<T> list(final SelectStatement<T> statement,
+::
+public <T> List<T> list(final SelectStatement<T> statement,
                           final DataSource datasource) throws SQLException {
-        throw new RuntimeException("Not implemented");
+        final List<T> result = new LinkedList<T>();
+        scroll(statement,  datasource,
+            new Callback<T, SQLException>() {
+                public void iterate(T arg) {
+                    result.add(arg);
+                }
+             });
+        return result;
     }
 
 :: public String show(final SelectStatement<?> statement) {
@@ -80,8 +89,9 @@ import java.util.List;
 <T> SelectStatement<T> ::=
     cspec:CursorSpecification<T> :: implicit {}
 |
-    cspec:CursorSpecification<T>  FOR READ ONLY
-        :: public AbstractCursorSpecification<T> forReadOnly {}
+    cspec:CursorSpecification<T>  FOR READ ONLY ::
+        import java.util.LinkedList;
+        public AbstractCursorSpecification<T> forReadOnly {}
 |
     cspec:CursorSpecification<T> FOR UPDATE
         :: public AbstractCursorSpecification<T> forUpdate {}
