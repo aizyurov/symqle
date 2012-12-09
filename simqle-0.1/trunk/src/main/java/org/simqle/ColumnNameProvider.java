@@ -11,7 +11,7 @@ public class ColumnNameProvider {
 
     private int counter = 0;
 
-    public Identifier getUniqueName() {
-        return new Identifier("C"+(counter++));
+    public String getUniqueName() {
+        return "C"+(counter++);
     }
 }

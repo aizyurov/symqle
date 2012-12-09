@@ -1,4 +1,5 @@
-# public interface zValueExpression<T> extends Scalar<T> : Sql
+public interface ValueExpression<T> extends Scalar<T> : Sql {}
+
 # {}
 # 
 # public class Value<T> implements zValueExpression<T> with valueExpression

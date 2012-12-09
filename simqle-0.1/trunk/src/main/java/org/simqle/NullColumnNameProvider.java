@@ -1,7 +1,6 @@
 package org.simqle;
 
 import org.simqle.ColumnNameProvider;
-import org.simqle.Identifier;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +11,7 @@ import org.simqle.Identifier;
  */
 public class NullColumnNameProvider extends ColumnNameProvider {
     @Override
-    public Identifier getUniqueName() {
+    public String getUniqueName() {
         return null;
     }
 }

@@ -85,11 +85,8 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
 # public methods do not include FromClause
 
 <T> QueryBase<T> ::=
-    SELECT sl:SelectList<T> fc:FromClause :: protected AbstractQueryBase<T> from {}
+    SELECT sl:SelectList<T> fc:FromClause :: protected QueryBase<T> from {}
 |
-#    SELECT sl:SelectList<T> :: implicit {
-#    }
-#|
     SELECT ALL sl:SelectList<T> fc:FromClause ::
          protected AbstractQueryBase<T> all {
          }
@@ -98,6 +95,11 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
          protected AbstractQueryBase<T> distinct {
          }
 ;
+# implicit conversion from SelectList
+
+:: <T> QueryBase<T> implicit(final SelectList<T> sl) {
+    return from(sl, new ImplicitFromClause());
+}
 
 # public methods for construction of AbstractQueryBase
 :: public <T> AbstractQueryBase<T> all(final SelectList<T> sl) {
