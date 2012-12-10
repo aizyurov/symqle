@@ -1,0 +1,5 @@
+public interface ValueExpressionPrimary<T> extends ValueExpression<T> : Sql {}
+
+<T> ValueExpressionPrimary<T> ::=
+    LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
+;

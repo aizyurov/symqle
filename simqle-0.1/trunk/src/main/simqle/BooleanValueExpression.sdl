@@ -1,1 +1,80 @@
-public interface BooleanValueExpression extends Scalar<Boolean> : Sql {}
+public interface BooleanExpression extends Scalar<Boolean> : Sql {}
+
+public class AbstractBooleanExpression implements BooleanExpression {}
+
+# For BooleanValueExpression syntax is very close to sql-2003
+
+BooleanExpression ::=
+    bt:BooleanTerm :: implicit {}
+|
+    bve:BooleanExpression OR bvt:BooleanTerm
+        :: AbstractBooleanExpression or {}
+;
+
+public interface BooleanTerm extends Scalar<Boolean> : Sql {}
+
+public class AbstractBooleanTerm implements BooleanTerm {}
+
+BooleanTerm ::=
+    bf:BooleanFactor :: implicit {}
+|
+    bt:BooleanTerm AND bf:BooleanFactor
+        :: AbstractBooleanTerm and {}
+;
+
+public interface BooleanFactor extends Scalar<Boolean> : Sql {}
+
+public class AbstractBooleanFactor implements BooleanFactor {}
+
+BooleanFactor ::=
+    bt:BooleanTest :: implicit {}
+|
+    NOT bt:BooleanTest
+        :: AbstractBooleanFactor negate {}
+;
+
+public interface BooleanTest extends Scalar<Boolean> : Sql {}
+
+public class AbstractBooleanTest implements BooleanTest {}
+
+BooleanTest ::=
+    bp:BooleanPrimary :: implicit {}
+|
+    bp:BooleanPrimary  IS  NOT  TRUE
+        :: AbstractBooleanTest isNotTrue {}
+|
+    bp:BooleanPrimary  IS  TRUE
+        :: AbstractBooleanTest isTrue {}
+|
+    bp:BooleanPrimary  IS  NOT  FALSE
+        :: AbstractBooleanTest isNotFalse {}
+|
+    bp:BooleanPrimary  IS  FALSE
+        :: AbstractBooleanTest isFalse {}
+|
+    bp:BooleanPrimary  IS  NOT  UNKNOWN
+        :: AbstractBooleanTest isNotUnknown {}
+|
+    bp:BooleanPrimary  IS  UNKNOWN
+        :: AbstractBooleanTest isUnknown {}
+;
+
+interface BooleanPrimary extends Scalar<Boolean> : Sql {}
+
+class AbstractBooleanPrimary implements BooleanPrimary {}
+
+BooleanPrimary ::=
+    p:Predicate :: implicit {}
+|
+    LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit {}
+|
+    e:ValueExpressionPrimary<?>
+        :: AbstractBooleanPrimary booleanValue {
+            public Boolean value(final Element element) throws SQLException {
+                return element.getBoolean();
+            }
+        }
+;
+
+
+

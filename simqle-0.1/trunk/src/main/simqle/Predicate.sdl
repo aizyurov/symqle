@@ -1,4 +1,5 @@
-# public interface zPredicate extends Scalar<Boolean> :Sql
+public interface Predicate extends Scalar<Boolean> : Sql {}
+
 # {}
 # 
 # public class Predicate implements zPredicate with sqlBuilder

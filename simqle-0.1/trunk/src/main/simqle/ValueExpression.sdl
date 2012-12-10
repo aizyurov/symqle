@@ -11,7 +11,7 @@ public class AbstractValue<T> implements ValueExpression<T> {}
 ;
 
 # see BooleanValueExpression.sdl
-ValueExpression<Boolean> ::=  bve:BooleanValueExpression :: implicit {}
+ValueExpression<Boolean> ::=  bve:BooleanExpression :: implicit {}
 ;
 
 # no abstract class: no methods
@@ -27,17 +27,16 @@ public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
 #	|	<reference value expression>
 #	|	<collection value expression>
 # user-defined, reference and collection are not supported
-# others are supported with specific types
-# for sake of implicit conversions, types of interfaces are not bounded,
-# but arguments/return type of operations are
-# It means that operations cannot be members of corresponding classes;
-# they can be accessed via Simqle only.
-# we are making them protected; they will be exposed via Ops class.
+# datetime and <interval value> are not supported either (we cannot distinguish numeric and interval values)
+# so they all are just <value expression primary>
+# see NumerisExpression.sdl, ValueExpressionPrimary.sdl
 
 <T> CommonValueExpression<T> ::=
     nve:NumericExpression<T> :: implicit {}
 |
     sve:StringExpression<T> :: implicit {}
+|
+    vep:ValueExpressionPrimary<T> :: implicit {}
 ;
 
 
@@ -58,47 +57,7 @@ StringExpression<String> ::= e:StringExpression<?> CONCAT p:ValueExpressionPrima
 <T> StringExpression<T> ::= p:ValueExpressionPrimary<T> :: implicit {}
 ;
 
-public interface ValueExpressionPrimary<T> extends ValueExpression<T> : Sql {}
 
-<T> ValueExpressionPrimary<T> ::=
-    LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
-;
-
-# {}
-# 
-# # No need on CommonValueExpression: different dialects have different ranks of operations
-# # all operations shall take zValueExpressionPrimary and return zValueExpression
-# # it may lead to some extra parentheses but is harmless.
-# # operations have their own syntax not described in syntax rules,
-# # e.g. <T extends Number> zValueExpression<T> ::= e1:zValueExpressionPrimary<T> PLUS e2:zValueExpressionPrimary<T>
-# # it does not go to SqlFactory
-# # we add a few "universal" rules here to be used in operation utilities
-# <T> zValueExpression<T> ::=
-# 		e:zValueExpressionPrimary<T>
-# 		:: ValueExpressionPrimary<T> mimics Value<T>
-# 		{}
-# ;
-# zValueExpression<Boolean> ::= bve: zBooleanValueExpression
-# 	    :: BooleanValueExpression mimics Value<Boolean>
-# 	    {}
-# ;
-# <T extends Number> zValueExpression<T> ::= l:zValueExpressionPrimary<T> PLUS r:zValueExpressionPrimary<T>
-#     | l:zValueExpressionPrimary<T> MINUS r:zValueExpressionPrimary<T>
-#      | l:zValueExpressionPrimary<T> ASTERISK r:zValueExpressionPrimary<T>
-#      | l:zValueExpressionPrimary<T> SOLIDUS r:zValueExpressionPrimary<T>
-# ;
-# 
-# /*
-#  Most instances will be <Boolean>, but SQL allows any valid primary_zValueExpression
-#  and database boolean value may be mapped to another type in Java
-#  */
-# public interface zBooleanValueExpression extends Scalar<Boolean> : Sql
-# {}
-# 
-# public class BooleanValueExpression implements zBooleanValueExpression with sqlBuilder
-# {}
-# 
-# 
 # # For zBooleanValueExpression syntax is very close to sql-2003
 # # But not type paremeters: all methods do not have
 # # type parametes, return type is <Boolean> and arguments are <?>
