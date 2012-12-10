@@ -9,11 +9,20 @@ public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 
 # all operations accept <? extends Number> and return <Number>
 NumericExpression<Number> ::=
-    e:NumericExpression<? extends Number> PLUS t:Term<? extends Number>
-         :: protected AbstractNumericExpression<Number> plus {}
+    e:NumericExpression<?> PLUS t:Term<?>
+         :: public AbstractNumericExpression<Number> plus {
+            public Number value(final Element element) throws SQLException {
+                    return element.getBigDecimal();
+            }
+         }
 |
-    e:NumericExpression<? extends Number> MINUS t:Term<? extends Number>
-         :: protected AbstractNumericExpression<Number> minus {}
+    e:NumericExpression<?> MINUS t:Term<?>
+         :: public AbstractNumericExpression<Number> minus {
+            public Number value(final Element element) throws SQLException {
+                    return element.getBigDecimal();
+            }
+
+         }
 ;
 
 
@@ -25,11 +34,19 @@ public class AbstractTerm<T> implements Term<T> {}
 ;
 
 Term<Number> ::=
-    t:Term<? extends Number> ASTERISK f:Factor<? extends Number>
-        :: protected AbstractTerm<Number> mult {}
+    t:Term<?> ASTERISK f:Factor<?>
+        :: public AbstractTerm<Number> mult {
+                public Number value(final Element element) throws SQLException {
+                        return element.getBigDecimal();
+                }
+        }
 |
-    t:Term<? extends Number> SOLIDUS f:Factor<? extends Number>
-        :: protected AbstractTerm<Number> div {}
+    t:Term<?> SOLIDUS f:Factor<?>
+        :: public AbstractTerm<Number> div {
+            public Number value(final Element element) throws SQLException {
+                    return element.getBigDecimal();
+            }
+        }
 ;
 
 public interface Factor<T> extends Scalar<T> : Sql {}
@@ -51,6 +68,5 @@ public interface NumericPrimary<T> extends Scalar<T> : Sql {}
 # standard diffentiates <numeric function>. We do not create corresponding interface,
 # <numeric function> is just a <routine invocation>, which is <value expression>
 
-# ValueExpression is not explicitly convertable to NumericPrimary. Suxx!
 <T> NumericPrimary<T> ::= e:ValueExpressionPrimary<T> :: implicit {}
 ;

@@ -34,9 +34,29 @@ public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
 # they can be accessed via Simqle only.
 # we are making them protected; they will be exposed via Ops class.
 
-<T> CommonValueExpression<T> ::= nve:NumericExpression<T> :: implicit {}
+<T> CommonValueExpression<T> ::=
+    nve:NumericExpression<T> :: implicit {}
+|
+    sve:StringExpression<T> :: implicit {}
 ;
 
+
+public interface StringExpression<T> extends Scalar<T> : Sql {}
+
+public class AbstractStringExpression<T> implements StringExpression<T> {}
+
+# simplified syntax: <collate clause> not supported
+# unlike Numbers, we allow any type, so it is may be method of StringExpression class
+StringExpression<String> ::= e:StringExpression<?> CONCAT p:ValueExpressionPrimary<?>
+    :: public AbstractStringExpression<String> concat {
+            public String value(final Element element) throws SQLException {
+                return element.getString();
+            }
+    }
+;
+
+<T> StringExpression<T> ::= p:ValueExpressionPrimary<T> :: implicit {}
+;
 
 public interface ValueExpressionPrimary<T> extends ValueExpression<T> : Sql {}
 
