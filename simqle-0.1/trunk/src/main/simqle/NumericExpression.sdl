@@ -1,0 +1,56 @@
+public interface NumericExpression<T> extends Scalar<T> : Sql {}
+
+public class AbstractNumericExpression<T> implements NumericExpression<T> {}
+
+# implicit operations retain type argument
+<T> NumericExpression<T> ::=
+    t:Term<T> :: implicit {}
+;
+
+# all operations accept <? extends Number> and return <Number>
+NumericExpression<Number> ::=
+    e:NumericExpression<? extends Number> PLUS t:Term<? extends Number>
+         :: protected AbstractNumericExpression<Number> plus {}
+|
+    e:NumericExpression<? extends Number> MINUS t:Term<? extends Number>
+         :: protected AbstractNumericExpression<Number> minus {}
+;
+
+
+public interface Term<T> extends Scalar<T> : Sql {}
+
+public class AbstractTerm<T> implements Term<T> {}
+
+<T> Term<T> ::= f:Factor<T> :: implicit {}
+;
+
+Term<Number> ::=
+    t:Term<? extends Number> ASTERISK f:Factor<? extends Number>
+        :: protected AbstractTerm<Number> mult {}
+|
+    t:Term<? extends Number> SOLIDUS f:Factor<? extends Number>
+        :: protected AbstractTerm<Number> div {}
+;
+
+public interface Factor<T> extends Scalar<T> : Sql {}
+
+public class AbstractFactor<T> implements Scalar<T> {}
+
+# negate retains type argument
+<T> Factor<T> ::=
+    p:NumericPrimary<T> :: implicit {}
+;
+<T extends Number> Factor<T> ::=
+    MINUS p:NumericPrimary<T> :: protected AbstractFactor<T> negate {}
+;
+
+public interface NumericPrimary<T> extends Scalar<T> : Sql {}
+
+# no abstract class for NumericPrimary: no methods but implicit conversion
+
+# standard diffentiates <numeric function>. We do not create corresponding interface,
+# <numeric function> is just a <routine invocation>, which is <value expression>
+
+# ValueExpression is not explicitly convertable to NumericPrimary. Suxx!
+<T> NumericPrimary<T> ::= e:ValueExpressionPrimary<T> :: implicit {}
+;

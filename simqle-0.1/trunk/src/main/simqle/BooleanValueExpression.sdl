@@ -1,0 +1,1 @@
+public interface BooleanValueExpression extends Scalar<Boolean> : Sql {}

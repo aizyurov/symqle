@@ -1,8 +1,49 @@
 public interface ValueExpression<T> extends Scalar<T> : Sql {}
 
-# {}
-# 
-# public class Value<T> implements zValueExpression<T> with valueExpression
+public class AbstractValue<T> implements ValueExpression<T> {}
+
+# Hierarchy of ValueExpression approximately follws SQL standard.
+# For some interfaces type parameters are bounded
+# <row value expression> is not considered being <value expression>
+# it is not Scalar and we have different rules for RowValueExpression and ValueExpression
+
+<T> ValueExpression<T> ::= cve:CommonValueExpression<T> :: implicit {}
+;
+
+# see BooleanValueExpression.sdl
+ValueExpression<Boolean> ::=  bve:BooleanValueExpression :: implicit {}
+;
+
+# no abstract class: no methods
+public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
+
+#
+# <common value expression> ::=
+# 		<numeric value expression>
+# 	|	<string value expression>
+#	|	<datetime value expression>
+#	|	<interval value expression>
+#	|	<user-defined type value expression>
+#	|	<reference value expression>
+#	|	<collection value expression>
+# user-defined, reference and collection are not supported
+# others are supported with specific types
+# for sake of implicit conversions, types of interfaces are not bounded,
+# but arguments/return type of operations are
+# It means that operations cannot be members of corresponding classes;
+# they can be accessed via Simqle only.
+# we are making them protected; they will be exposed via Ops class.
+
+<T> CommonValueExpression<T> ::= nve:NumericExpression<T> :: implicit {}
+;
+
+
+public interface ValueExpressionPrimary<T> extends ValueExpression<T> : Sql {}
+
+<T> ValueExpressionPrimary<T> ::=
+    LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
+;
+
 # {}
 # 
 # # No need on CommonValueExpression: different dialects have different ranks of operations
