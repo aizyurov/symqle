@@ -7,9 +7,9 @@ package org.simqle;
  * Time: 19:54
  * To change this template use File | Settings | File Templates.
  */
-public class ColumnNameProvider extends PrefixedNameProvider {
+public class TableNameProvider extends PrefixedNameProvider {
 
-    public ColumnNameProvider() {
-        super("C");
+    public TableNameProvider() {
+        super("T");
     }
 }

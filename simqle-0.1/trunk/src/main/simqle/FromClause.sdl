@@ -83,27 +83,17 @@ Join ::=
     INNER JOIN t:TablePrimary ON c:BooleanExpression :: public Table innerJoin {}
 ;
 
-# implementing classes for Join and TablePrimary are AbstractJoin and Table
-
-
-
-
-
-
-
-
-
-
-
-
+import java.util.Map;
 public class AutoFromClause implements FromClause {
+    private final AutoFromClause parent;
+    private Map<Table, String> localNames;
 
     public AutoFromClause() {
-
+        this.parent = null;
     }
 
     public AutoFromClause(AutoFromClause parent) {
-
+        this.parent = parent;
     }
 
     public String getCorrelationName(Table owner) {
