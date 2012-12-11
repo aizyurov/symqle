@@ -19,7 +19,7 @@ public class AliveTest extends TestCase {
         final Person person = new Person();
         final StringColumn name = new StringColumn("name", person);
         final StringColumn surname = new StringColumn("surname", person);
-        assertEquals("SELECT concat(T0.name, T0.surname) AS C0 FROM person AS T0", concat(name, surname).show());
+        assertEquals("SELECT concat(T1.name, T1.surname) AS C1 FROM person AS T1", concat(name, surname).show());
 
     }
 
@@ -42,12 +42,18 @@ public class AliveTest extends TestCase {
         }
     }
 
-    private RoutineInvocation<String> concat(zValueExpression<String> v1, zValueExpression<String> v2) {
-        return new Function<String>("concat") {
-            @Override
-            public String value(final Element element) throws SQLException {
-                return element.getString();
-            }
-        }.apply(v1, v2);
+    private AbstractRoutineInvocation<String> concat(ValueExpression<String> v1, ValueExpression<String> v2) {
+        return new Concat().apply(v1, v2);
+    }
+
+    private static class Concat extends FunctionCall<String> {
+        public Concat() {
+            super("concat");
+        }
+
+        @Override
+        public String value(final Element element) throws SQLException {
+            return element.getString();
+        }
     }
 }

@@ -73,6 +73,14 @@ public class Table implements TableName, Join {
         this.name = name;
     }
 
+    public Set<TableName> dependsOn() {
+        if (join != null) {
+            return join.dependsOn();
+        } else {
+            return Collections.emptySet();
+        }
+    }
+
     /**
             * Creates an Sql representing <code>this</code>
             * @param context the Sql construction context
@@ -171,13 +179,14 @@ public class ImplicitFromClause implements FromClause {
 }
 
 import java.util.Map;
+import java.util.HashMap;
 import org.simqle.TableNameProvider;
 import org.simqle.util.TSort;
 public class AutoFromClause implements FromClause {
 
     private final AutoFromClause parent;
 
-    private Map<TableName, String> localNames;
+    private final Map<TableName, String> localNames = new HashMap<TableName, String>();
 
     private TableNameProvider tableNameProvider;
 
@@ -223,7 +232,7 @@ public class AutoFromClause implements FromClause {
      */
     private String findCorrelationName(TableName table) {
         final String found = localNames.get(table);
-        return found != null ? found : parent.findCorrelationName(table);
+        return found != null ? found : (parent == null ? null : parent.findCorrelationName(table));
     }
 
 
@@ -241,7 +250,7 @@ public class AutoFromClause implements FromClause {
         final List<TableName> sortedTables = tSort.sort();
         TableReference tableReference = simqle.z$TableReference$from$TablePrimary((TablePrimary) sortedTables.get(0));
         int i;
-        for (i=0; i<sortedTables.size(); i++) {
+        for (i = 1; i < sortedTables.size(); i++) {
             final TableName currentTable = sortedTables.get(i);
             Join join = (Join) currentTable;
             // although all Tables formally implement Join, it may be implicit cross join,

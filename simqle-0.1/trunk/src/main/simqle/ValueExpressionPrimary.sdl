@@ -90,25 +90,27 @@ public abstract class Column<T> implements ColumnReference<T> {
 
 public interface RoutineInvocation<T> extends Scalar<T>, Dependent : Sql {}
 
+public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
+
 import java.util.Set;
 import java.util.Collections;
 <T> RoutineInvocation<T> ::=
     rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
-        :: RoutineInvocation<T> invoke {
+        :: AbstractRoutineInvocation<T> invoke {
              public Set<TableName> dependsOn() {
                 return al.dependsOn();
              }
         }
 |
     rn:RoutineName<T> LEFT_PAREN RIGHT_PAREN
-        :: RoutineInvocation<T> invoke {
+        :: AbstractRoutineInvocation<T> invoke {
              public Set<TableName> dependsOn() {
                 return Collections.emptySet();
              }
         }
 ;
 
-:: <T> RoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
+:: <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
     if (arg.length == 0) {
         return invoke(routine);
     } else {
@@ -151,14 +153,10 @@ public abstract class FunctionCall<T> implements RoutineName<T> {
         this.name = name;
     }
 
-    /**
-    * Creates an Sql representing <code>this</code>
-    * @param context the Sql construction context
-    * @return sql conforming to <code>this</code> syntax
-    */
     public Sql z$create$RoutineName(SqlContext context) {
         return new CustomSql(name);
     }
+
 }
 
 

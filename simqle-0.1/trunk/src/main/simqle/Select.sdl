@@ -34,8 +34,24 @@ public <T> List<T> list(final SelectStatement<T> statement,
     }
 
 :: public String show(final SelectStatement<?> statement) {
-        throw new RuntimeException("Not implemented");
+        final AutoFromClause autoFromClause = new AutoFromClause();
+        {
+            final SqlContext context = new SqlContext();
+            context.set(ColumnNameProvider.class, new ColumnNameProvider());
+            context.set(AutoFromClause.class, autoFromClause);
+            statement.z$create$SelectStatement(context);
+        }
+        {
+            final SqlContext context = new SqlContext();
+            context.set(ColumnNameProvider.class, new ColumnNameProvider());
+            context.set(AutoFromClause.class, autoFromClause);
+            String sql = statement.z$create$SelectStatement(context).getSqlText();
+            sql = sql.replaceAll("([(.])\\s+", "$1");
+            sql = sql.replaceAll("\\s+([().,])", "$1");
+            return sql;
+        }
     }
+
 
 
 #

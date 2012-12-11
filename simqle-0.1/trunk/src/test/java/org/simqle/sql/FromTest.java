@@ -13,7 +13,8 @@ public class FromTest extends TestCase {
 
     public void testSimpleJoin() {
         final Person person = new Person();
-        final String sql = person.name().where(person.dept().deptName().isNotNull()).show();
+//        final String sql = person.name().where(person.dept().deptName().isNotNull()).show();
+        final String sql = person.name().show();
         assertEquals("SELECT T0.name AS C0 FROM person AS T0 LEFT OUTER JOIN department AS T1 ON T1.DEPT_ID = T0.dept_id WHERE T1.dept_name IS NOT NULL", sql);
     }
 
@@ -31,13 +32,13 @@ public class FromTest extends TestCase {
 
     }
 
-    public void testDoubleJoin() {
-        // dept should be joined only once
-        final Person person = new Person();
-        final String sql = person.dept().deptId().where(person.dept().deptName().isNotNull()).show();
-        System.out.println(sql);
-
-    }
+//    public void testDoubleJoin() {
+//        // dept should be joined only once
+//        final Person person = new Person();
+//        final String sql = person.dept().deptId().where(person.dept().deptName().isNotNull()).show();
+//        System.out.println(sql);
+//
+//    }
 
     private static class Person extends Table {
         private Person() {
@@ -54,7 +55,7 @@ public class FromTest extends TestCase {
 
         public Department dept() {
             final Department dept = new Department();
-            dept.leftJoin(dept.deptId().eq(deptId()));
+//            dept.leftJoin(dept.deptId().eq(deptId()));
             return dept;
         }
 
