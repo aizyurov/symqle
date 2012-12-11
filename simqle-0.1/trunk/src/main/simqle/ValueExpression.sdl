@@ -18,50 +18,6 @@ ValueExpression<Boolean> ::=  bve:BooleanExpression :: implicit {}
 public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
 
 #
-# public interface	zRoutineInvocation<T>  extends Scalar<T> : Sql
-# {}
-# 
-# # there are no default implementations or zRoutineInvocation
-# # should be created individually
-# # as factory methods
-# # to have type-check of arguments
-# 
-# /*
-# <routine invocation> ::= <routine name> <SQL argument list>
-# 
-# <routine name> ::= [ <schema name> <period> ] <qualified identifier>
-# 
-# <SQL argument list> ::= <left paren> [ <SQL argument> [ { <comma> <SQL argument> }... ] ] <right paren>
-# 
-# <SQL argument> ::=
-# 		<value expression>
-# 	|	<generalized expression>
-# 	|	<target specification>
-# 
-# Simplified, generalized expression and target specification not supported
-# */
-# 
-# <T> zRoutineInvocation<T> ::= rn:zRoutineName<T> LEFT_PAREN al:zArgumentList RIGHT_PAREN
-#     :: Function<T>
-#     {
-#         protected RoutineInvocation<T> apply(zValueExpression<?> firstArg, zValueExpression<?>... otherArgs) {
-#                 zArgumentList al = SqlFactory.getInstance().zArgumentList_IS_zValueExpression(firstArg);
-#                 for (zValueExpression ve: otherArgs) {
-#                     al = SqlFactory.getInstance().zArgumentList_IS_zArgumentList_COMMA_zValueExpression(al, ve);
-#                 }
-#                 return new RoutineInvocation<T>(SqlFactory.getInstance().zRoutineInvocation_IS_zRoutineName_LEFT_PAREN_zArgumentList_RIGHT_PAREN(this, al));
-#         }
-#     }
-# 
-#     | rn:zRoutineName<T> LEFT_PAREN RIGHT_PAREN
-#     :: Function<T>
-#     {
-#         protected RoutineInvocation<T> apply() {
-#                 return new RoutineInvocation<T>(_APPLY_RULE_(this));
-#         }
-#     }
-# ;
-# 
 # public interface zRoutineName<T> extends Scalar<T> : Sql
 # {}
 # 

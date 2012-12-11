@@ -77,3 +77,58 @@ public abstract class Column<T> implements ColumnReference<T> {
 
 
 public interface RoutineInvocation<T> extends Scalar<T> : Sql {}
+
+<T> RoutineInvocation<T> ::=
+    rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
+        :: RoutineInvocation<T> invoke {}
+|
+    rn:RoutineName<T> LEFT_PAREN RIGHT_PAREN
+        :: RoutineInvocation<T> invoke {}
+;
+
+:: <T> RoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
+    if (arg.length == 0) {
+        return invoke(routine);
+    } else {
+        ArgumentList al = z$ArgumentList$from$ValueExpression(arg[0]);
+        int i;
+        for (i=1; i<arg.length; i++) {
+            al = appendArgument(al, arg[i]);
+        }
+        return invoke(routine, al);
+    }
+}
+
+public interface RoutineName<T> extends Scalar<T> : Sql {}
+
+public interface ArgumentList : Sql {}
+
+ArgumentList ::=
+    e:ValueExpression<?> :: implicit {}
+|
+    al:ArgumentList COMMA e:ValueExpression<?>
+    :: protected ArgumentList appendArgument {}
+;
+
+import org.simqle.CustomSql;
+public abstract class FunctionCall<T> implements RoutineName<T> {
+    private final String name;
+
+    protected FunctionCall(String name) {
+        this.name = name;
+    }
+
+    /**
+    * Creates an Sql representing <code>this</code>
+    * @param context the Sql construction context
+    * @return sql conforming to <code>this</code> syntax
+    */
+    public Sql z$create$RoutineName(SqlContext context) {
+        return new CustomSql(name);
+    }
+}
+
+
+
+
+

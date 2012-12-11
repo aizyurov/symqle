@@ -2,8 +2,27 @@ public interface FromClause : Sql {}
 
 
 public class AutoFromClause implements FromClause {
-    public abstract String getCorrelationName(Table owner);
+
+    public AutoFromClause() {
+
+    }
+
+    public AutoFromClause(AutoFromClause parent) {
+
+    }
+
+    public String getCorrelationName(Table owner) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public Sql z$create$FromClause(final SqlContext context) {
+        // TODO implement
+        throw new RuntimeException("Not implemented");
+    }
 }
+
+
 
 public interface Table : Sql {}
 

@@ -1,9 +1,25 @@
 public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
 
-#
-# public class ScalarSubquery<T> implements zScalarSubquery<T> with sqlBuilder
-# {}
-# 
+public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
+
+<T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN ::
+        import org.simqle.ColumnNameProvider;
+        import org.simqle.NullColumnNameProvider;
+        implicit
+        {
+         public Sql z$create$zScalarSubquery(SqlContext context) {
+             SqlContext innerContext = new SqlContext();
+             innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
+             innerContext.set(Simqle.class, context.get(Simqle.class));
+             // create an empty FromClase for QueryExpressionScalar with current FromClause as enclosing
+             innerContext.set(FromClause.class, new AutoFromClause(context.get(AutoFromClause.class)));
+             final Sql base = qe.z$create$QueryExpressionScalar(innerContext);
+             return new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN);
+         }
+}
+;
+
+
 # interface zSubquery<T> : Sql
 # {}
 # 
