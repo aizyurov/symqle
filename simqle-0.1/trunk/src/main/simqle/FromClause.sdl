@@ -45,7 +45,11 @@ TablePrimary ::= t:TableName AS id:Identifier :: protected TablePrimary use {}
     };
 }
 
-public interface TableName : Sql {}
+# Table may be part of join and refer to other tables in its join condition
+# method dependsOn() lists dependencies
+public interface TableName : Sql {
+    Set<TableName> dependsOn();
+}
 
 # a simgle class Table implements both TableName and Join
 # Tables are handled specially bu AutoFromClause
