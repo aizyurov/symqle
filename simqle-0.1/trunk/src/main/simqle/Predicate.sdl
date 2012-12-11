@@ -1,4 +1,4 @@
-public interface Predicate extends Scalar<Boolean> : Sql {}
+public interface Predicate extends Scalar<Boolean>, Dependent : Sql {}
 
 # {}
 # 

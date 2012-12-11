@@ -1,4 +1,4 @@
-public interface NumericExpression<T> extends Scalar<T> : Sql {}
+public interface NumericExpression<T> extends Scalar<T>, Dependent : Sql {}
 
 public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 
@@ -14,6 +14,12 @@ NumericExpression<Number> ::=
             public Number value(final Element element) throws SQLException {
                     return element.getBigDecimal();
             }
+
+            public Set<TableName> dependsOn() {
+                Set<TableName> dependencies = new HashSet<TableName>(e.dependsOn());
+                dependencies.addAll(t.dependsOn());
+                return dependencies;
+            }
          }
 |
     e:NumericExpression<?> MINUS t:Term<?>
@@ -22,11 +28,16 @@ NumericExpression<Number> ::=
                     return element.getBigDecimal();
             }
 
+            public Set<TableName> dependsOn() {
+                Set<TableName> dependencies = new HashSet<TableName>(e.dependsOn());
+                dependencies.addAll(t.dependsOn());
+                return dependencies;
+            }
          }
 ;
 
 
-public interface Term<T> extends Scalar<T> : Sql {}
+public interface Term<T> extends Scalar<T>, Dependent : Sql {}
 
 public class AbstractTerm<T> implements Term<T> {}
 
@@ -39,6 +50,11 @@ Term<Number> ::=
                 public Number value(final Element element) throws SQLException {
                         return element.getBigDecimal();
                 }
+            public Set<TableName> dependsOn() {
+                Set<TableName> dependencies = new HashSet<TableName>(t.dependsOn());
+                dependencies.addAll(f.dependsOn());
+                return dependencies;
+            }
         }
 |
     t:Term<?> SOLIDUS f:Factor<?>
@@ -46,10 +62,15 @@ Term<Number> ::=
             public Number value(final Element element) throws SQLException {
                     return element.getBigDecimal();
             }
+            public Set<TableName> dependsOn() {
+                Set<TableName> dependencies = new HashSet<TableName>(t.dependsOn());
+                dependencies.addAll(f.dependsOn());
+                return dependencies;
+            }
         }
 ;
 
-public interface Factor<T> extends Scalar<T> : Sql {}
+public interface Factor<T> extends Scalar<T>, Dependent : Sql {}
 
 public class AbstractFactor<T> implements Scalar<T> {}
 
@@ -61,7 +82,7 @@ public class AbstractFactor<T> implements Scalar<T> {}
     MINUS p:NumericPrimary<T> :: protected AbstractFactor<T> negate {}
 ;
 
-public interface NumericPrimary<T> extends Scalar<T> : Sql {}
+public interface NumericPrimary<T> extends Scalar<T>, Dependent : Sql {}
 
 # no abstract class for NumericPrimary: no methods but implicit conversion
 

@@ -46,9 +46,15 @@ TablePrimary ::= t:TableName AS id:Identifier :: protected TablePrimary use {}
 }
 
 # Table may be part of join and refer to other tables in its join condition
+# We are introducing a Dependent interface, which can list dependencies. Both TableName and Join extend this interface
 # method dependsOn() lists dependencies
-public interface TableName : Sql {
+
+import java.util.Set;
+public interface Dependent {
     Set<TableName> dependsOn();
+}
+
+public interface TableName extends Dependent : Sql {
 }
 
 # a simgle class Table implements both TableName and Join
@@ -116,18 +122,46 @@ public interface JoinedTable : Sql {}
 JoinedTable ::= t:TableReference j:Join :: protected JoinedTable join {}
 ;
 
-public interface Join : Sql {}
+public interface Join extends Dependent : Sql {}
 
 Join ::=
-    CROSS JOIN t:TablePrimary ::public Join crossJoin {}
+    CROSS JOIN t:TablePrimary ::public Join crossJoin {
+        public Set<TableName> dependsOn() {
+            return Collections.emptySet();
+        }
+    }
 |
-    LEFT JOIN t:TablePrimary ON c:BooleanExpression ::public Join leftJoin {}
+    LEFT JOIN t:TablePrimary ON c:BooleanExpression ::public Join leftJoin {
+        public Set<TableName> dependsOn() {
+            Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
+            dependencies.remove(t);
+            return dependencies;
+        }
+    }
 |
-    RIGHT JOIN t:TablePrimary ON c:BooleanExpression :: public Join rightJoin {}
+    RIGHT JOIN t:TablePrimary ON c:BooleanExpression :: public Join rightJoin {
+        public Set<TableName> dependsOn() {
+            Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
+            dependencies.remove(t);
+            return dependencies;
+        }
+    }
 |
-    OUTER JOIN t:TablePrimary ON c:BooleanExpression :: public Join outerJoin {}
+    OUTER JOIN t:TablePrimary ON c:BooleanExpression :: public Join outerJoin {
+        public Set<TableName> dependsOn() {
+            Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
+            dependencies.remove(t);
+            return dependencies;
+        }
+    }
 |
-    INNER JOIN t:TablePrimary ON c:BooleanExpression :: public Join innerJoin {}
+    INNER JOIN t:TablePrimary ON c:BooleanExpression :: public Join innerJoin {
+        public Set<TableName> dependsOn() {
+            Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
+            dependencies.remove(t);
+            return dependencies;
+        }
+    }
 ;
 
 public class ImplicitFromClause implements FromClause {
