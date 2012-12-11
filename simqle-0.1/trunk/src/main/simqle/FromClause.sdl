@@ -87,13 +87,16 @@ import java.util.Map;
 public class AutoFromClause implements FromClause {
     private final AutoFromClause parent;
     private Map<Table, String> localNames;
+    private TableNameProvider tableNameProvider;
 
     public AutoFromClause() {
         this.parent = null;
+        this.tableNameProvider = new TableNameProvider();
     }
 
     public AutoFromClause(AutoFromClause parent) {
         this.parent = parent;
+        this.tableNameProvider = parent.tableNameProvider;
     }
 
     public String getCorrelationName(Table owner) {
