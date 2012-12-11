@@ -84,6 +84,7 @@ Join ::=
 ;
 
 import java.util.Map;
+import org.simqle.TableNameProvider;
 public class AutoFromClause implements FromClause {
     private final AutoFromClause parent;
     private Map<Table, String> localNames;
