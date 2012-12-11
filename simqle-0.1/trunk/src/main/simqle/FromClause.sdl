@@ -1,6 +1,12 @@
 public interface FromClause : Sql {}
 
- 
+
+public class AutoFromClause implements FromClause {
+    public abstract String getCorrelationName(Table owner);
+}
+
+public interface Table : Sql {}
+
 # import org.simqle.Sql;
 # import org.simqle.SqlContext;
 # /**

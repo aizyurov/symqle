@@ -15,7 +15,7 @@ public interface Sql {
 
     /**
      * Provide values for dynamic parameters.
-     * @param p SqlParameters interface to write parameter values into
+     * @param p SqlParameter interface to write parameter values into
      */
     void setParameters(SqlParameters p);
 

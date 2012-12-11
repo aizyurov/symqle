@@ -1,8 +1,5 @@
 package org.simqle;
 
-import org.simqle.Sql;
-import org.simqle.SqlParameters;
-
 /**
  * Created by IntelliJ IDEA.
  * User: aizyurov

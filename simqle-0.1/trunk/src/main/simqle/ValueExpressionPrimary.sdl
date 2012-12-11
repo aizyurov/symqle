@@ -1,5 +1,79 @@
-public interface ValueExpressionPrimary<T> extends ValueExpression<T> : Sql {}
+public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
+
+public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T>  {}
 
 <T> ValueExpressionPrimary<T> ::=
     LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
+|
+    p:DynamicParameterSpecification<T> :: implicit {}
+|
+	c:ColumnReference<T> :: implicit {}
+|
+	s:ScalarSubquery<T> :: implicit {}
+|
+	r:RoutineInvocation<T> :: implicit {}
 ;
+
+
+public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {}
+
+import org.simqle.SqlParameter;
+import org.simqle.SqlParameters;
+public abstract class DynamicParameter<T> implements DynamicParameterSpecification<T> {
+
+            /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public final Sql z$create$DynamicParameterSpecification(SqlContext context) {
+                return new Sql() {
+                    @Override
+                    public String getSqlText() {
+                        return "?";
+                    }
+
+                    @Override
+                    public void setParameters(final SqlParameters p) {
+                        set(p.next());
+                    }
+                };
+            }
+
+            /**
+            * Implement in derived classes
+            */
+            protected abstract void set(final SqlParameter p);
+            /**
+            * Implement in derived classes
+            */
+             public abstract T value(final Element element) throws SQLException ;
+
+}
+
+public interface ColumnReference<T> extends Scalar<T> : Sql {}
+
+import org.simqle.CompositeSql;
+import org.simqle.SqlTerm;
+public abstract class Column<T> implements ColumnReference<T> {
+     private final Identifier columnName;
+     private final Table owner;
+
+     protected Column(final String name,  final Table owner)  {
+             this.columnName = new DefinedIdentifier(name);
+             this.owner = owner;
+         }
+
+    public Sql z$create$ColumnReference(SqlContext context) {
+        final String correlationName = context.get(AutoFromClause.class).getCorrelationName(owner);
+        return new CompositeSql(new DefinedIdentifier(correlationName).z$create$Identifier(context),
+                            SqlTerm.PERIOD,
+                            columnName.z$create$Identifier(context));
+
+    }
+
+     public abstract T value(final Element element) throws SQLException ;
+}
+
+
+public interface RoutineInvocation<T> extends Scalar<T> : Sql {}

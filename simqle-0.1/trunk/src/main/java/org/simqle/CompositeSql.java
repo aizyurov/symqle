@@ -6,7 +6,7 @@ package org.simqle;
 
 /**
  * Represents an Sql element composed from a list of sub-elements.
- * Provides implementation of {@link #getSqlText()} and {@link #setParameters(SqlParameters)}}
+ * Provides implementation of {@link #getSqlText()} and {@link #setParameters(SqlParameter)}}
  * @author Alexander Izyurov
  */
 public class CompositeSql implements Sql {
@@ -52,8 +52,8 @@ public class CompositeSql implements Sql {
     }
 
     /**
-     * Sets SqlParameters by delegation to each member in turn.
-     * @param p SqlParameters interface to write parameter values into
+     * Sets SqlParameter by delegation to each member in turn.
+     * @param p SqlParameter interface to write parameter values into
      */
     public final void setParameters(final SqlParameters p) {
         first.setParameters(p);

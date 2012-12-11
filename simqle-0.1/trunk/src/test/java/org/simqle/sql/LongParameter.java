@@ -1,7 +1,7 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
-import org.simqle.SqlParameters;
+import org.simqle.SqlParameter;
 
 import java.sql.SQLException;
 
@@ -20,7 +20,7 @@ public class LongParameter extends DynamicParameter<Long> {
     }
 
     @Override
-    protected void setParameter(final SqlParameters p) {
+    protected void setParameter(final SqlParameter p) {
         p.setLong(value);
     }
 

@@ -1,6 +1,6 @@
-# public interface	zScalarSubquery<T> extends Scalar<T> : Sql
-# {}
-# 
+public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
+
+#
 # public class ScalarSubquery<T> implements zScalarSubquery<T> with sqlBuilder
 # {}
 # 
