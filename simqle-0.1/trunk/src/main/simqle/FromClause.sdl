@@ -35,12 +35,55 @@ public interface TablePrimary : Sql {}
 TablePrimary ::= t:TableName AS id:Identifier :: protected TablePrimary use {}
 ;
 
+:: TablePrimary implicit(final TableName t) {
+    return new TablePrimary() {
+        @Override
+        public Sql z$create$TablePrimary(final SqlContext context) {
+            final String correlationName = context.get(AutoFromClause.class).getCorrelationName(t);
+            return use(t, new DefinedIdentifier(correlationName)).z$create$TablePrimary(context);
+        }
+    };
+}
+
 public interface TableName : Sql {}
 
 # a simgle class Table implements both TableName and Join
 # Tables are handled specially bu AutoFromClause
 
-public class Table implements TableName, Join {}
+import org.simqle.CustomSql;
+public class Table implements TableName, Join {
+    private final String name;
+
+    /**
+     * Delegates to this member to implement Join.
+     */
+    private Join join;
+
+    protected Table(final String name) {
+        this.name = name;
+    }
+
+    /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public Sql z$create$Join(SqlContext context) {
+                if (join != null) {
+                    return join.z$create$Join(context);
+                } else {
+                    throw new IllegalStateException("Not joined");
+                }
+            }
+            /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public Sql z$create$TableName(SqlContext context) {
+                return new CustomSql(name);
+            }
+}
 
 # <joined table> ::=
 #		<cross join>
@@ -72,50 +115,82 @@ JoinedTable ::= t:TableReference j:Join :: protected JoinedTable join {}
 public interface Join : Sql {}
 
 Join ::=
-    CROSS JOIN t:TablePrimary ::public Table crossJoin {}
+    CROSS JOIN t:TablePrimary ::public Join crossJoin {}
 |
-    LEFT JOIN t:TablePrimary ON c:BooleanExpression ::public Table leftJoin {}
+    LEFT JOIN t:TablePrimary ON c:BooleanExpression ::public Join leftJoin {}
 |
-    RIGHT JOIN t:TablePrimary ON c:BooleanExpression :: public Table rightJoin {}
+    RIGHT JOIN t:TablePrimary ON c:BooleanExpression :: public Join rightJoin {}
 |
-    OUTER JOIN t:TablePrimary ON c:BooleanExpression :: public Table outerJoin {}
+    OUTER JOIN t:TablePrimary ON c:BooleanExpression :: public Join outerJoin {}
 |
-    INNER JOIN t:TablePrimary ON c:BooleanExpression :: public Table innerJoin {}
+    INNER JOIN t:TablePrimary ON c:BooleanExpression :: public Join innerJoin {}
 ;
-
-import java.util.Map;
-import org.simqle.TableNameProvider;
-public class AutoFromClause implements FromClause {
-    private final AutoFromClause parent;
-    private Map<Table, String> localNames;
-    private TableNameProvider tableNameProvider;
-
-    public AutoFromClause() {
-        this.parent = null;
-        this.tableNameProvider = new TableNameProvider();
-    }
-
-    public AutoFromClause(AutoFromClause parent) {
-        this.parent = parent;
-        this.tableNameProvider = parent.tableNameProvider;
-    }
-
-    public String getCorrelationName(Table owner) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public Sql z$create$FromClause(final SqlContext context) {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
-    }
-}
 
 public class ImplicitFromClause implements FromClause {
             public Sql z$create$FromClause(SqlContext context) {
                 return context.get(AutoFromClause.class).z$create$FromClause(context);
             }
 }
+
+import java.util.Map;
+import org.simqle.TableNameProvider;
+public class AutoFromClause implements FromClause {
+
+    private final AutoFromClause parent;
+
+    private Map<TableName, String> localNames;
+
+    private TableNameProvider tableNameProvider;
+
+
+    public AutoFromClause() {
+        this.parent = null;
+        this.tableNameProvider = new TableNameProvider();
+    }
+
+
+    public AutoFromClause(AutoFromClause parent) {
+        this.parent = parent;
+        this.tableNameProvider = parent.tableNameProvider;
+    }
+
+
+    /**
+     * Creates correlation name if not found
+     * @param table
+     * @return
+     */
+    public String getCorrelationName(TableName table) {
+        // find it somewhere;
+        // if not found, assume it is local and create
+        final String found = findCorrelationName(table);
+        if (found != null) {
+            return found;
+        } else {
+            final String newName = tableNameProvider.getUniqueName();
+            localNames.put(table, newName);
+            return newName;
+        }
+    }
+
+    /**
+     * Returns null if not found
+     * @param table
+     * @return
+     */
+    private String findCorrelationName(TableName table) {
+        final String found = localNames.get(table);
+        return found != null ? found : parent.findCorrelationName(table);
+    }
+
+
+    public Sql z$create$FromClause(final SqlContext context) {
+        // TODO implement
+        throw new RuntimeException("Not implemented");
+    }
+
+}
+
 
 
 
