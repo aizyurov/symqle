@@ -1,15 +1,6 @@
 public interface WhereClause : Sql {}
-# {}
-# 
-# 
-# 
-# public class WhereClause implements zWhereClause with builder
-# {}
-# 
-# zWhereClause ::= WHERE cond:zBooleanValueExpression
-#         :: BooleanValueExpression mimics WhereClause
-#         {}
-# ;
-# 
-# 
-# 
+
+public class AbstractWhereClause implements WhereClause {}
+
+WhereClause ::= WHERE cond:BooleanValueExpression :: implicit {}
+;
