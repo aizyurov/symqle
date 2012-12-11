@@ -23,7 +23,13 @@ public class AbstractComparisonPredicate extends AbstractPredicate implements Co
 
 <T> ComparisonPredicate ::=
      p1:ValueExpression<T> EQ p2:ValueExpression<T>
-        :: public AbstractComparisonPredicate eq {}
+        :: public AbstractComparisonPredicate eq {
+            public Set<TableName> dependsOn() {
+                Set<TableName> dependencies = new HashSet<TableName>(p1.dependsOn());
+                dependencies.addAll(p2.dependsOn());
+                return dependencies;
+            }
+        }
 ;
 
 public interface InPredicate extends Scalar<Boolean>, Dependent : Sql {}
