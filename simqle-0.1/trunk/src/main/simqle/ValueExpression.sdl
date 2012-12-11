@@ -7,7 +7,8 @@ public class AbstractValue<T> implements ValueExpression<T> {}
 # <row value expression> is not considered being <value expression>
 # it is not Scalar and we have different rules for RowValueExpression and ValueExpression
 
-<T> ValueExpression<T> ::= cve:CommonValueExpression<T> :: implicit {}
+<T> ValueExpression<T> ::=
+    e:CommonValueExpression<T> :: implicit {}
 ;
 
 # see BooleanValueExpression.sdl
@@ -17,59 +18,28 @@ ValueExpression<Boolean> ::=  bve:BooleanExpression :: implicit {}
 # no abstract class: no methods
 public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
 
-#
-# public interface zRoutineName<T> extends Scalar<T> : Sql
-# {}
-# 
-# public interface zArgumentList : Sql
-#  {}
-# 
-# # zArgumentList is used only internally by Function; no implementing class
-# zArgumentList ::= ve:zValueExpression<?>
-#     | al:zArgumentList COMMA ve:zValueExpression<?>
-# ;
-# 
-# public class RoutineInvocation<T> implements zRoutineInvocation<T> with sqlBuilder
-# {}
-# 
-# public abstract class Function<T> implements zRoutineName<T>
-# {
-#     private final zRoutineName routineName;
-#     protected Function$(final String name) {
-#         routineName = new zRoutineName<T>() {
-#             @Override
-#             public Sql z$create$zRoutineName(final SqlContext context) {
-#                 return new Identifier(name);
-#             }
-# 
-#             @Override
-#             public void z$prepare$zRoutineName(final SqlContext context) {
-#                 // do nothing
-#             }
-# 
-#             @Override
-#             public T value(final Element element) throws SQLException {
-#                 return Function$.this.value(element);
-#             }
-#         };
-#     }
-# 
-#     @Override
-#     public final void z$prepare$zRoutineName(final SqlContext context) {
-#        routineName.z$prepare$zRoutineName(context);
-#     }
-# 
-#     @Override
-#     public final Sql z$create$zRoutineName(final SqlContext context) {
-#         return routineName.z$create$zRoutineName(context);
-#     }
-# 
-# 
-#         /**
-#         * To be implemented in derived classes.
-#         *
-#         */
-#     public abstract T value(final Element element) throws SQLException ;
-# 
-# }
-# 
+<T> CommonValueExpression<T> ::=
+    e:NumericExpression<T> :: implicit {}
+|
+    e:StringExpression<T> :: implicit {}
+|
+    e:ValueExpressionPrimary<T> :: implicit {}
+;
+
+public interface StringExpression<T> extends Scalar<T> : Sql {}
+
+public class AbstractStringExpression<T> implements StringExpression<T> {}
+
+<T> StringExpression<T> ::=
+    p:ValueExpressionPrimary<T> :: implicit {}
+;
+
+StringExpression<String> ::=
+    s:StringExpression<?> CONCAT e:ValueExpressionPrimary<?>
+        :: public AbstractStringExpression<String> concat {
+            public String value(final Element element) throws SQLException {
+                return element.getString();
+            }
+        }
+;
+

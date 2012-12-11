@@ -1,11 +1,11 @@
-# #zOrderByClause ::= ORDER BY zSortSpecificationList
-# #zSortSpecificationList ::= zSortSpecification [ { comma zSortSpecification }... ]
-# #zSortSpecification ::= zSortKey [ ordering_specification ] [ null_ordering ]
-# #zSortKey ::= zValueExpression
-# #ordering_specification ::= ASC | DESC
-# #null_ordering ::= NULLS FIRST | NULLS LAST
+# OrderByClause ::= ORDER BY zSortSpecificationList
+# SortSpecificationList ::= SortSpecification [ { comma zSortSpecification }... ]
+# SortSpecification ::= SortKey [ ordering_specification ] [ null_ordering ]
+# SortKey ::= ValueExpression
+# ordering_specification ::= ASC | DESC
+# null_ordering ::= NULLS FIRST | NULLS LAST
 # 
-# #rephrased in trivial manner - see below
+# rephrased in trivial manner - see below
 # 
 
 public interface OrderByClause : Sql {}
@@ -15,77 +15,33 @@ OrderByClause ::= ORDER BY ssl:SortSpecificationList :: implicit {}
 
 public interface SortSpecificationList : Sql {}
 
-# zSortSpecificationList ::= ss:zSortSpecification
-# | ssl:zSortSpecificationList COMMA ss:zSortSpecification
-# ;
-# 
-# we need not AbstractSortSpecificationList: the user never constructs it directly.
-# She uses orderBy(SortSpecification, SortSpecification...
-# 
+SortSpecificationList ::=
+    ss:SortSpecification :: implicit {}
+|
+    ssl:SortSpecificationList COMMA ss:SortSpecification :: protected SortSpecificationList appendSortSpecification {}
+;
 
 public interface SortSpecification : Sql {}
 
-# public class SortSpecification implements zSortSpecification with sortSpec
-# {}
-# 
-# zSortSpecification ::= sos:zSortOrderingSpecification
-#     :: SortOrderingSpecification mimics SortSpecification
-#     {}
-# |   sos:zSortOrderingSpecification NULLS FIRST
-#     :: SortOrderingSpecification
-#     {
-#         public SortSpecification nullsFirst() {
-#             return new SortSpecification(
-#                 _APPLY_RULE_(this)
-#                 );
-#         }
-#     }
-# |   sos:zSortOrderingSpecification NULLS LAST
-#     :: SortOrderingSpecification
-#     {
-#         public SortSpecification nullsLast() {
-#             return new SortSpecification(
-#                 _APPLY_RULE_(this)
-#                 );
-#         }
-# 
-#     }
-# ;
-# 
-# public interface zSortOrderingSpecification : Sql
-# {}
-# public class SortOrderingSpecification implements zSortOrderingSpecification with sortOderingSpecBuilder
-# {}
-# 
-# zSortOrderingSpecification ::= key:zSortKey
-#     :: SortKey mimics SortOrderingSpecification
-#     {}
-# | key:zSortKey ASC
-#     :: SortKey
-#     {
-#         public SortOrderingSpecification asc() {
-#             return new SortOrderingSpecification(
-#                 _APPLY_RULE_(this)
-#                 );
-#         }
-#     }
-# | key:zSortKey DESC
-#     :: SortKey
-#     {
-#         public SortOrderingSpecification desc() {
-#             return new SortOrderingSpecification(
-#                 _APPLY_RULE_(this)
-#                 );
-#         }
-#     }
-# ;
-# 
-# public interface zSortKey : Sql
-# {}
-# class SortKey implements zSortKey with sortKeyBuilder
-# {}
-# 
-# zSortKey ::= ve:zValueExpression<?>
-#     :: Value<T> mimics SortKey
-#     {}
-# ;
+public class AbstractSortSpecification implements SortSpecification {}
+
+SortSpecification ::=
+    sos:SortOrderingSpecification :: implicit {}
+|
+    sos:SortOrderingSpecification NULLS FIRST :: public AbstractSortSpecification nullsFirst {}
+|
+    sos:SortOrderingSpecification NULLS LAST :: public AbstractSortSpecification nullsLast {}
+;
+
+public interface SortOrderingSpecification : Sql {}
+
+public class AbstractSortOrderingSpecification implements SortOrderingSpecification {}
+
+SortOrderingSpecification ::=
+    key:ValueExpression<?> :: implicit {}
+|
+    key:ValueExpression<?> ASC
+     :: AbstractSortOrderingSpecification asc {}
+|  key:ValueExpression<?> DESC
+     :: AbstractSortOrderingSpecification desc {}
+;

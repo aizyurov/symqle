@@ -113,11 +113,14 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
     qe:QueryExpression<T> obc:OrderByClause :: protected AbstractCursorSpecification<T> orderBy {}
 ;
 
-:: public <T> AbstractCursorSpecification<T> orderBy(QueryExpression<T> qe,
-                                                    SortSpecification sort,
-                                                    SortSpecification... additionalSort) {
-    throw new RuntimeException("Not implemented");
+::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpression<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+    SortSpecificationList list = z$SortSpecificationList$from$SortSpecification(sort);
+     for (SortSpecification add: additionalSort) {
+         list = appendSortSpecification(list, add);
+     }
+     return  orderBy(qe, z$OrderByClause$from$SortSpecificationList(list));
 }
+
 
 #         {
 #             public CursorSpecification<T> orderBy(zSortSpecification sort, zSortSpecification... additionalSort) {
