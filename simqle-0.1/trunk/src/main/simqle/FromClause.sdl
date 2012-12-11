@@ -172,6 +172,7 @@ public class ImplicitFromClause implements FromClause {
 
 import java.util.Map;
 import org.simqle.TableNameProvider;
+import org.simqle.util.TSort;
 public class AutoFromClause implements FromClause {
 
     private final AutoFromClause parent;
@@ -180,6 +181,7 @@ public class AutoFromClause implements FromClause {
 
     private TableNameProvider tableNameProvider;
 
+    boolean crossJoinsAllowed;
 
     public AutoFromClause() {
         this.parent = null;
@@ -192,6 +194,9 @@ public class AutoFromClause implements FromClause {
         this.tableNameProvider = parent.tableNameProvider;
     }
 
+    void allowImplicitCrossJoins(boolean allow) {
+        crossJoinsAllowed = allow;
+    }
 
     /**
      * Creates correlation name if not found
@@ -223,8 +228,37 @@ public class AutoFromClause implements FromClause {
 
 
     public Sql z$create$FromClause(final SqlContext context) {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        final TSort<TableName> tSort = new TSort<TableName>();
+        final Simqle simqle = Simqle.get();
+        if (localNames.keySet().isEmpty()) {
+            throw new IllegalStateException("From clause cannot be empty");
+//            return simqle.createEmptyFromClause();
+        }
+        for (TableName table: localNames.keySet()) {
+            final Set<TableName> dependencies = table.dependsOn();
+            tSort.add(table, dependencies.toArray(new TableName[dependencies.size()]));
+        }
+        final List<TableName> sortedTables = tSort.sort();
+        TableReference tableReference = simqle.z$TableReference$from$TablePrimary((TablePrimary) sortedTables.get(0));
+        int i;
+        for (i=0; i<sortedTables.size(); i++) {
+            final TableName currentTable = sortedTables.get(i);
+            Join join = (Join) currentTable;
+            // although all Tables formally implement Join, it may be implicit cross join,
+            // make sure that it does not throw exception
+            try {
+                join.z$create$Join(context);
+            } catch (IllegalStateException e) {
+                if (crossJoinsAllowed) {
+                    // make cross join
+                    join = simqle.crossJoin((TablePrimary) currentTable);
+                } else {
+                    throw e;
+                }
+            }
+            tableReference = simqle.z$TableReference$from$JoinedTable(simqle.join(tableReference, join));
+        }
+        return simqle.z$FromClause$from$TableReference(tableReference).z$create$FromClause(context);
     }
 
 }
