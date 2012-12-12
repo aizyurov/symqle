@@ -16,9 +16,7 @@ NumericExpression<Number> ::=
             }
 
             public Set<TableName> dependsOn() {
-                Set<TableName> dependencies = new HashSet<TableName>(e.dependsOn());
-                dependencies.addAll(t.dependsOn());
-                return dependencies;
+                return dependsAs(e, t);
             }
          }
 |
@@ -29,9 +27,7 @@ NumericExpression<Number> ::=
             }
 
             public Set<TableName> dependsOn() {
-                Set<TableName> dependencies = new HashSet<TableName>(e.dependsOn());
-                dependencies.addAll(t.dependsOn());
-                return dependencies;
+                return dependsAs(e, t);
             }
          }
 ;
@@ -51,9 +47,7 @@ Term<Number> ::=
                         return element.getBigDecimal();
                 }
             public Set<TableName> dependsOn() {
-                Set<TableName> dependencies = new HashSet<TableName>(t.dependsOn());
-                dependencies.addAll(f.dependsOn());
-                return dependencies;
+                return dependsAs(t, f);
             }
         }
 |
@@ -63,9 +57,7 @@ Term<Number> ::=
                     return element.getBigDecimal();
             }
             public Set<TableName> dependsOn() {
-                Set<TableName> dependencies = new HashSet<TableName>(t.dependsOn());
-                dependencies.addAll(f.dependsOn());
-                return dependencies;
+                return dependsAs(t, f);
             }
         }
 ;

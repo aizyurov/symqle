@@ -39,9 +39,7 @@ StringExpression<String> ::=
         :: public AbstractStringExpression<String> concat {
 
             public Set<TableName> dependsOn() {
-                Set<TableName> dependencies = new HashSet<TableName>(s.dependsOn());
-                dependencies.addAll(e.dependsOn());
-                return dependencies;
+                return dependsAs(s, e);
             }
 
             public String value(final Element element) throws SQLException {

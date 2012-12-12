@@ -98,7 +98,7 @@ import java.util.Collections;
     rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
         :: AbstractRoutineInvocation<T> invoke {
              public Set<TableName> dependsOn() {
-                return al.dependsOn();
+                return dependsAs(al);
              }
         }
 |
@@ -138,9 +138,7 @@ ArgumentList ::=
     {
         // collect all dependencies
          public Set<TableName> dependsOn() {
-             Set<TableName> dependencies = new HashSet<TableName>(al.dependsOn());
-             dependencies.addAll(e.dependsOn());
-             return dependencies;
+            return dependsAs(al, e);
          }
     }
 ;

@@ -45,15 +45,6 @@ TablePrimary ::= t:TableName AS id:Identifier :: protected TablePrimary use {}
     };
 }
 
-# Table may be part of join and refer to other tables in its join condition
-# We are introducing a Dependent interface, which can list dependencies. Both TableName and Join extend this interface
-# method dependsOn() lists dependencies
-
-import java.util.Set;
-public interface Dependent {
-    Set<TableName> dependsOn();
-}
-
 public interface TableName extends Dependent : Sql {
 }
 

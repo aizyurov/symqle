@@ -10,6 +10,18 @@ Predicate ::=
         p:ExistsPredicate :: implicit {}
 ;
 
+# All predicates use Predicand (<row value predicand>)
+# in current version of Simqle it can be only scalar
+
+public interface Predicand<T> extends Scalar<T>, Dependent : Sql {}
+
+<T> Predicand<T> ::= e: CommonValueExpression<T> :: implicit {}
+;
+
+Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {}
+;
+
+
 public interface ComparisonPredicate extends Scalar<Boolean>, Dependent : Sql {}
 
 import java.sql.SQLException;
@@ -22,17 +34,119 @@ public class AbstractPredicate implements Scalar<Boolean> {
 public class AbstractComparisonPredicate extends AbstractPredicate implements ComparisonPredicate {}
 
 <T> ComparisonPredicate ::=
-     p1:ValueExpression<T> EQ p2:ValueExpression<T>
+     p1:Predicand<T> EQ p2:Predicand<T>
         :: public AbstractComparisonPredicate eq {
             public Set<TableName> dependsOn() {
-                Set<TableName> dependencies = new HashSet<TableName>(p1.dependsOn());
-                dependencies.addAll(p2.dependsOn());
+                return dependsAs(p1, p2);
+            }
+        }
+|
+     p1:Predicand<T> NE p2:Predicand<T>
+        :: public AbstractComparisonPredicate ne {
+            public Set<TableName> dependsOn() {
+                return dependsAs(p1, p2);
+            }
+        }
+|
+     p1:Predicand<T> GT p2:Predicand<T>
+        :: public AbstractComparisonPredicate gt {
+            public Set<TableName> dependsOn() {
+                return dependsAs(p1, p2);
+            }
+        }
+|
+     p1:Predicand<T> GE p2:Predicand<T>
+        :: public AbstractComparisonPredicate ge {
+            public Set<TableName> dependsOn() {
+                return dependsAs(p1, p2);
+            }
+        }
+|
+     p1:Predicand<T> LT p2:Predicand<T>
+        :: public AbstractComparisonPredicate lt {
+            public Set<TableName> dependsOn() {
+                return dependsAs(p1, p2);
+            }
+        }
+|
+     p1:Predicand<T> LE p2:Predicand<T>
+        :: public AbstractComparisonPredicate le {
+            public Set<TableName> dependsOn() {
+                return dependsAs(p1, p2);
+            }
+        }
+;
+
+
+public interface InPredicate extends Scalar<Boolean>, Dependent : Sql {}
+
+public class AbstractInPredicate extends AbstractPredicate implements InPredicate {
+}
+
+<T> InPredicate ::=
+    p:Predicand<T> IN v:InPredicateValue<T> :: protected AbstractInPredicate inValues {
+        public Set<TableName> dependsOn() {
+            return dependsAs(p, v);
+        }
+    }
+|
+        p:Predicand<T> NOT IN v:InPredicateValue<T> :: protected AbstractInPredicate notInValues {
+            public Set<TableName> dependsOn() {
+                Set<TableName> dependencies = new HashSet<TableName>(p.dependsOn());
+                dependencies.addAll(v.dependsOn());
                 return dependencies;
             }
         }
 ;
 
-public interface InPredicate extends Scalar<Boolean>, Dependent : Sql {}
+public interface InPredicateValue<T> extends Scalar<T>, Dependent : Sql {}
+
+<T> InPredicateValue<T> ::=
+    s:ScalarSubquery<T> :: implicit {}
+|
+    LEFT_PAREN l:InValueList<T> RIGHT_PAREN :: implicit {}
+;
+
+public interface InValueList<T> extends Scalar<T>, Dependent : Sql {}
+
+public class AbstractInValueList<T> implements InValueList<T> {}
+
+<T>  InValueList<T> ::=
+    e:ValueExpression<T> :: implicit {}
+|
+    l:InValueList<T> COMMA e:ValueExpression<T> :: protected AbstractInValueList<T> append {
+        public final Set<TableName> dependsOn() {
+            return dependsAs(l, e);
+        }
+    }
+;
+
+# public method for construction of InPredicate from list of ValueExpression
+
+:: public <T> AbstractInPredicate in(final Predicand<T> p, final ScalarSubquery<T> s) {
+        return inValues(p, z$InPredicateValue$from$ScalarSubquery(s));
+    }
+
+:: public <T> AbstractInPredicate notIn(final Predicand<T> p, final ScalarSubquery<T> s) {
+        return notInValues(p, z$InPredicateValue$from$ScalarSubquery(s));
+    }
+
+:: public <T> AbstractInPredicate in(final Predicand<T> p, ValueExpression<T> first, ValueExpression<T>... other) {
+     return inValues(p, prepareInPredicateValue(first, other));
+}
+
+:: public <T> AbstractInPredicate notIn(final Predicand<T> p, ValueExpression<T> first, ValueExpression<T>... other) {
+     return notInValues(p, prepareInPredicateValue(first, other));
+}
+
+:: protected <T> InPredicateValue<T> prepareInPredicateValue(ValueExpression<T> first, ValueExpression<T>... other) {
+     InValueList<T> list = z$InValueList$from$ValueExpression(first);
+     for (ValueExpression<T> e: other) {
+         list = append(list, e);
+     }
+     return z$InPredicateValue$from$InValueList(list);
+}
+
 
 public interface NullPredicate extends Scalar<Boolean>, Dependent : Sql {}
 
@@ -41,71 +155,6 @@ public interface ExistsPredicate extends Scalar<Boolean>, Dependent : Sql {}
 
 
 
-# |
-#     p1:zRowValuePredicand<T> NE p2:zRowValuePredicand<T>
-# 		{
-# 		    return new GenericComparisonPredicate(NE, p1, p2);
-# 		}
-#         :: RowValuePredicand<T>
-#         {
-# 		    public ComparisonPredicate ne(zRowValuePredicand<T> other) {
-# 		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
-# 		    }
-#         }
-# |
-#     p1:zRowValuePredicand<T> GT p2:zRowValuePredicand<T>
-# 		{
-# 		    return new GenericComparisonPredicate(GT, p1, p2);
-# 		}
-#         :: RowValuePredicand<T>
-#         {
-# 		    public ComparisonPredicate gt(zRowValuePredicand<T> other) {
-# 		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
-# 		    }
-#         }
-# |
-#     p1:zRowValuePredicand<T> LT p2:zRowValuePredicand<T>
-# 		{
-# 		    return new GenericComparisonPredicate(LT, p1, p2);
-# 		}
-#         :: RowValuePredicand<T>
-#         {
-# 		    public ComparisonPredicate lt(zRowValuePredicand<T> other) {
-# 		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
-# 		    }
-#         }
-# |
-#     p1:zRowValuePredicand<T> GE p2:zRowValuePredicand<T>
-# 		{
-# 		    return new GenericComparisonPredicate(GE, p1, p2);
-# 		}
-#         :: RowValuePredicand<T>
-#         {
-# 		    public ComparisonPredicate ge(zRowValuePredicand<T> other) {
-# 		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
-# 		    }
-#         }
-# |
-#     p1:zRowValuePredicand<T> LE p2:zRowValuePredicand<T>
-# 		{
-# 		    return new GenericComparisonPredicate(LE, p1, p2);
-# 		}
-#         :: RowValuePredicand<T>
-#         {
-# 		    public ComparisonPredicate le(zRowValuePredicand<T> other) {
-# 		        return new ComparisonPredicate(_APPLY_RULE_(this, other));
-# 		    }
-#         }
-# ;
-# 
-# 
-# public interface zInPredicate extends Scalar<Boolean> : Sql
-# {}
-# 
-# class InPredicate implements zInPredicate with SqlBuilder
-# {}
-# 
-# /*
 # <in zPredicate> ::= <row value predicand> <in zPredicate part 2>
 # 
 # <in zPredicate part 2> ::= [ NOT ] IN <in zPredicate value>
