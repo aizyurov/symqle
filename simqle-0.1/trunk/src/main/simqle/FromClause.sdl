@@ -192,6 +192,7 @@ public class AutoFromClause implements FromClause {
     public AutoFromClause(AutoFromClause parent) {
         this.parent = parent;
         this.tableNameProvider = parent.tableNameProvider;
+        this.crossJoinsAllowed = parent.crossJoinsAllowed;
     }
 
     void allowImplicitCrossJoins(boolean allow) {

@@ -177,14 +177,14 @@ public class ColumnTest extends TestCase {
 //        assertEquals("SELECT T0.id AS C0 FROM person AS T0 FOR READ ONLY", col.forReadOnly().show());
 //    }
 //
-//    public void testExists() throws Exception {
-//        final LongColumn id  =  createId();
-//        // find all but the most old
-//        final LongColumn age2 = new LongColumn("age", person2);
-//        String sql = id.where(age2.exists()).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1)", sql);
-//
-//    }
+    public void testExists() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn age2 = new LongColumn("age", person2);
+        String sql = id.where(age2.exists()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1)", sql);
+
+    }
 //
 //    public void testExistsWithCondition() throws Exception {
 //        final LongColumn id  =  createId();
@@ -204,13 +204,13 @@ public class ColumnTest extends TestCase {
 //        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT ALL T1.id FROM employee AS T1)", sql);
 //    }
 //
-//    public void testIn() throws Exception {
-//        final LongColumn id  =  createId();
-//        // find all but the most old
-//        final LongColumn id2 = new LongColumn("id", employee);
-//        String sql = id.where(id.in(id2)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1)", sql);
-//    }
+    public void testIn() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn id2 = new LongColumn("id", employee);
+        String sql = id.where(id.in(id2)).show();
+        assertEquals("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id IN(SELECT T2.id FROM employee AS T2)", sql);
+    }
 //
 //    public void testNotInAll() throws Exception {
 //        final LongColumn id  =  createId();

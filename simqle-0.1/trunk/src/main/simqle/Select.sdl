@@ -39,12 +39,14 @@ public <T> List<T> list(final SelectStatement<T> statement,
             final SqlContext context = new SqlContext();
             context.set(ColumnNameProvider.class, new ColumnNameProvider());
             context.set(AutoFromClause.class, autoFromClause);
+            autoFromClause.allowImplicitCrossJoins(true);
             statement.z$create$SelectStatement(context);
         }
         {
             final SqlContext context = new SqlContext();
             context.set(ColumnNameProvider.class, new ColumnNameProvider());
             context.set(AutoFromClause.class, autoFromClause);
+            autoFromClause.allowImplicitCrossJoins(false);
             String sql = statement.z$create$SelectStatement(context).getSqlText();
             sql = sql.replaceAll("([(.])\\s+", "$1");
             sql = sql.replaceAll("\\s+([().,])", "$1");
