@@ -1,4 +1,4 @@
-# OrderByClause ::= ORDER BY zSortSpecificationList
+# OrderByClause ::= ORDER BY SortSpecificationList
 # SortSpecificationList ::= SortSpecification [ { comma zSortSpecification }... ]
 # SortSpecification ::= SortKey [ ordering_specification ] [ null_ordering ]
 # SortKey ::= ValueExpression

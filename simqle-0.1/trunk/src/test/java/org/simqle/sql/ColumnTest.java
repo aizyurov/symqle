@@ -24,7 +24,7 @@ public class ColumnTest extends TestCase {
             }
         };
         assertEquals(Long.valueOf(1), col.value(element));
-        assertEquals("SELECT T0.id AS C0 FROM person AS T0", col.show());
+        assertEquals("SELECT T1.id AS C1 FROM person AS T1", col.show());
 
     }
 
@@ -79,47 +79,47 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
-//    public void testEq() throws Exception {
-//        final LongColumn id = createId();
-//        final LongColumn age = createAge();
-//        final String sql = id.where(id.eq(age)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id = T0.age", sql);
-//    }
+    public void testEq() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(id.eq(age)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id = T0.age", sql);
+    }
 
-//    public void testNe() throws Exception {
-//        final LongColumn column = createId();
-//        final LongColumn age = createAge();
-//        final String sql = column.where(column.ne(age)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <> T0.age", sql);
-//    }
-//
-//    public void testGt() throws Exception {
-//        final LongColumn column = createId();
-//        final LongColumn age = createAge();
-//        final String sql = column.where(column.gt(age)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id > T0.age", sql);
-//    }
-//
-//    public void testGe() throws Exception {
-//        final LongColumn column = createId();
-//        final LongColumn age = createAge();
-//        final String sql = column.where(column.ge(age)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id >= T0.age", sql);
-//    }
-//
-//    public void testLt() throws Exception {
-//        final LongColumn column = createId();
-//        final LongColumn age = createAge();
-//        final String sql = column.where(column.lt(age)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id < T0.age", sql);
-//    }
-//
-//    public void testLe() throws Exception {
-//        final LongColumn column = createId();
-//        final LongColumn age = createAge();
-//        final String sql = column.where(column.le(age)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <= T0.age", sql);
-//    }
+    public void testNe() throws Exception {
+        final LongColumn column = createId();
+        final LongColumn age = createAge();
+        final String sql = column.where(column.ne(age)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <> T0.age", sql);
+    }
+
+    public void testGt() throws Exception {
+        final LongColumn column = createId();
+        final LongColumn age = createAge();
+        final String sql = column.where(column.gt(age)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id > T0.age", sql);
+    }
+
+    public void testGe() throws Exception {
+        final LongColumn column = createId();
+        final LongColumn age = createAge();
+        final String sql = column.where(column.ge(age)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id >= T0.age", sql);
+    }
+
+    public void testLt() throws Exception {
+        final LongColumn column = createId();
+        final LongColumn age = createAge();
+        final String sql = column.where(column.lt(age)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id < T0.age", sql);
+    }
+
+    public void testLe() throws Exception {
+        final LongColumn column = createId();
+        final LongColumn age = createAge();
+        final String sql = column.where(column.le(age)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <= T0.age", sql);
+    }
 
 //    public void testExceptAll() throws Exception {
 //        final LongColumn column = createId();
@@ -167,16 +167,16 @@ public class ColumnTest extends TestCase {
 //
 //    }
 //
-//    public void testSelectForUpdate() throws Exception {
-//        final LongColumn col = createId();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 FOR UPDATE", col.forUpdate().show());
-//    }
-//
-//    public void testSelectForReadOnly() throws Exception {
-//        final LongColumn col = createId();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 FOR READ ONLY", col.forReadOnly().show());
-//    }
-//
+    public void testSelectForUpdate() throws Exception {
+        final LongColumn col = createId();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 FOR UPDATE", col.forUpdate().show());
+    }
+
+    public void testSelectForReadOnly() throws Exception {
+        final LongColumn col = createId();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 FOR READ ONLY", col.forReadOnly().show());
+    }
+
     public void testExists() throws Exception {
         final LongColumn id  =  createId();
         // find all but the most old
@@ -185,25 +185,25 @@ public class ColumnTest extends TestCase {
         assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1)", sql);
 
     }
-//
-//    public void testExistsWithCondition() throws Exception {
-//        final LongColumn id  =  createId();
-//        final LongColumn age = createAge();
-//        // find all but the most old
-//        final LongColumn age2 = new LongColumn("age", person2);
-//        String sql = id.where(age2.where(age2.gt(age)).exists()).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1 WHERE T1.age > T0.age)", sql);
-//
-//    }
-//
-//    public void testInAll() throws Exception {
-//        final LongColumn id  =  createId();
-//        // find all but the most old
-//        final LongColumn id2 = new LongColumn("id", employee);
-//        String sql = id.where(id.in(id2.all())).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT ALL T1.id FROM employee AS T1)", sql);
-//    }
-//
+
+    public void testExistsWithCondition() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        // find all but the most old
+        final LongColumn age2 = new LongColumn("age", person2);
+        String sql = id.where(age2.where(age2.gt(age)).exists()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1 WHERE T1.age > T0.age)", sql);
+
+    }
+
+    public void testInAll() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn id2 = new LongColumn("id", employee);
+        String sql = id.where(id.in(id2.all())).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT ALL T1.id FROM employee AS T1)", sql);
+    }
+
     public void testIn() throws Exception {
         final LongColumn id  =  createId();
         // find all but the most old
@@ -211,50 +211,50 @@ public class ColumnTest extends TestCase {
         String sql = id.where(id.in(id2)).show();
         assertEquals("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id IN(SELECT T2.id FROM employee AS T2)", sql);
     }
-//
-//    public void testNotInAll() throws Exception {
-//        final LongColumn id  =  createId();
-//        // find all but the most old
-//        final LongColumn id2 = new LongColumn("id", employee);
-//        String sql = id.where(id.notIn(id2.all())).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(SELECT ALL T1.id FROM employee AS T1)", sql);
-//    }
-//
-//    public void testInList() throws Exception {
-//        final LongColumn id  =  createId();
-//        // find all but the most old
-//
-//        final zRowValueExpression<Long> expr = new LongParameter(1L);
-//        final zRowValueExpression<Long> expr2 = new LongParameter(2L);
-//        final zRowValueExpression<Long> expr3 = new LongParameter(3L);
-//        String sql = id.where(id.in(expr, expr2, expr3)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?, ?)", sql);
-//   }
-//
-//    public void testNotInList() throws Exception {
-//        final LongColumn id  =  createId();
-//        // find all but the most old
-//
-//        final zRowValueExpression<Long> expr = new LongParameter(1L);
-//        final zRowValueExpression<Long> expr2 = new LongParameter(2L);
-//        final zRowValueExpression<Long> expr3 = new LongParameter(3L);
-//        String sql = id.where(id.notIn(expr, expr2, expr3)).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(?, ?, ?)", sql);
-//   }
-//
-//    public void testIsNull() throws Exception {
-//        final LongColumn id  =  createId();
-//        final LongColumn age = createAge();
-//        String sql = id.where(age.isNull()).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NULL", sql);
-//   }
-//
-//    public void testIsNotNull() throws Exception {
-//        final LongColumn id  =  createId();
-//        final LongColumn age = createAge();
-//        String sql = id.where(age.isNotNull()).show();
-//        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NOT NULL", sql);
-//   }
+
+    public void testNotInAll() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+        final LongColumn id2 = new LongColumn("id", employee);
+        String sql = id.where(id.notIn(id2.all())).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(SELECT ALL T1.id FROM employee AS T1)", sql);
+    }
+
+    public void testInList() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+
+        final ValueExpression<Long> expr = new LongParameter(1L);
+        final ValueExpression<Long> expr2 = new LongParameter(2L);
+        final ValueExpression<Long> expr3 = new LongParameter(3L);
+        String sql = id.where(id.in(expr, expr2, expr3)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?, ?)", sql);
+   }
+
+    public void testNotInList() throws Exception {
+        final LongColumn id  =  createId();
+        // find all but the most old
+
+        final ValueExpression<Long> expr = new LongParameter(1L);
+        final ValueExpression<Long> expr2 = new LongParameter(2L);
+        final ValueExpression<Long> expr3 = new LongParameter(3L);
+        String sql = id.where(id.notIn(expr, expr2, expr3)).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(?, ?, ?)", sql);
+   }
+
+    public void testIsNull() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.where(age.isNull()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NULL", sql);
+   }
+
+    public void testIsNotNull() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.where(age.isNotNull()).show();
+        assertEquals("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NOT NULL", sql);
+   }
 
     public void testOrderBy() throws Exception {
         final LongColumn id  =  createId();

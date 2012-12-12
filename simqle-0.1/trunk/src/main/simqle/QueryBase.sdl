@@ -59,3 +59,11 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     return from(sl, new ImplicitFromClause());
 }
 
+# public methods for construction of AbstractQueryBaseScalar
+:: public <T> AbstractQueryBaseScalar<T> all(final SelectSublist<T> sl) {
+    return all(sl, new ImplicitFromClause());
+}
+
+:: public <T> AbstractQueryBaseScalar<T> distinct(final SelectSublist<T> sl) {
+    return distinct(sl, new ImplicitFromClause());
+}

@@ -7,12 +7,7 @@ public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
         implicit
         {
          public Sql z$create$ScalarSubquery(SqlContext context) {
-             SqlContext innerContext = new SqlContext();
-             innerContext.set(ColumnNameProvider.class, null);
-             innerContext.set(Simqle.class, context.get(Simqle.class));
-             // create an empty FromClase for QueryExpressionScalar with current FromClause as enclosing
-             innerContext.set(AutoFromClause.class, new AutoFromClause(context.get(AutoFromClause.class)));
-             final Sql base = qe.z$create$QueryExpressionScalar(innerContext);
+             final Sql base = qe.z$create$QueryExpressionScalar(createInnerContext(context));
              return new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN);
          }
             // does not depend on any tables in the subquery context
