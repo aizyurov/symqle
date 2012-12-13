@@ -88,6 +88,20 @@ public class Table implements TableName, Join {
         join = Simqle.get().leftJoin(this, condition);
     }
 
+    public void rightJoin(BooleanExpression condition) {
+        checkNotJoined();
+        join = Simqle.get().rightJoin(this, condition);
+    }
+
+    public void outerJoin(BooleanExpression condition) {
+        checkNotJoined();
+        join = Simqle.get().outerJoin(this, condition);
+    }
+
+    public void innerJoin(BooleanExpression condition) {
+        checkNotJoined();
+        join = Simqle.get().innerJoin(this, condition);
+    }
     /**
             * Creates an Sql representing <code>this</code>
             * @param context the Sql construction context
