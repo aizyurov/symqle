@@ -380,7 +380,7 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn age1 = new LongColumn("age", person1);
         final LongColumn age2 = new LongColumn("age", person2);
         person2.leftJoin(parentId1.eq(id2));
-        // find all people who are oler that parent
+        // find all people who are older that parent
         final String sql = id1.where(age1.gt(age2)).show();
         System.out.println(sql);
         assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
