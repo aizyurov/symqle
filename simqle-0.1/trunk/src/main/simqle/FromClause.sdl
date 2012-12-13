@@ -72,6 +72,22 @@ public class Table implements TableName, Join {
         }
     }
 
+    private void checkNotJoined() {
+        if (join != null) {
+            throw new IllegalStateException("Already joined");
+        }
+    }
+
+    public void crossJoin() {
+        checkNotJoined();
+        join = Simqle.get().crossJoin(this);
+    }
+
+    public void leftJoin(BooleanExpression condition) {
+        checkNotJoined();
+        join = Simqle.get().leftJoin(this, condition);
+    }
+
     /**
             * Creates an Sql representing <code>this</code>
             * @param context the Sql construction context
@@ -124,13 +140,13 @@ JoinedTable ::= t:TableReference j:Join :: protected JoinedTable join {}
 public interface Join extends Dependent : Sql {}
 
 Join ::=
-    CROSS JOIN t:TablePrimary ::public Join crossJoin {
+    CROSS JOIN t:TablePrimary ::protected Join crossJoin {
         public Set<TableName> dependsOn() {
             return Collections.emptySet();
         }
     }
 |
-    LEFT JOIN t:TablePrimary ON c:BooleanExpression ::public Join leftJoin {
+    LEFT JOIN t:TablePrimary ON c:BooleanExpression ::protected Join leftJoin {
         public Set<TableName> dependsOn() {
             Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
             dependencies.remove(t);
@@ -138,7 +154,7 @@ Join ::=
         }
     }
 |
-    RIGHT JOIN t:TablePrimary ON c:BooleanExpression :: public Join rightJoin {
+    RIGHT JOIN t:TablePrimary ON c:BooleanExpression :: protected Join rightJoin {
         public Set<TableName> dependsOn() {
             Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
             dependencies.remove(t);
@@ -146,7 +162,7 @@ Join ::=
         }
     }
 |
-    OUTER JOIN t:TablePrimary ON c:BooleanExpression :: public Join outerJoin {
+    OUTER JOIN t:TablePrimary ON c:BooleanExpression :: protected Join outerJoin {
         public Set<TableName> dependsOn() {
             Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
             dependencies.remove(t);
@@ -154,7 +170,7 @@ Join ::=
         }
     }
 |
-    INNER JOIN t:TablePrimary ON c:BooleanExpression :: public Join innerJoin {
+    INNER JOIN t:TablePrimary ON c:BooleanExpression :: protected Join innerJoin {
         public Set<TableName> dependsOn() {
             Set<TableName> dependencies = new HashSet<TableName>(c.dependsOn());
             dependencies.remove(t);
@@ -162,6 +178,7 @@ Join ::=
         }
     }
 ;
+
 
 public class ImplicitFromClause implements FromClause {
             public Sql z$create$FromClause(SqlContext context) {

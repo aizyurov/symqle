@@ -94,7 +94,7 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qp:QueryPrimary<T> :: implicit {}
 |
     qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
-        public QueryTerm<T> intersectAll {
+        public AbstractQueryTerm<T> intersectAll {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
                 final Query<T> left = qt.z$create$QueryTerm(createInnerContext(context));
                 final Query<T> right = qp.z$create$QueryPrimary(createInnerContext(context));
@@ -103,7 +103,7 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
         }
 |
     qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
-          public QueryTerm<T> intersectDistinct {
+          public AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
                 final Query<T> left = qt.z$create$QueryTerm(createInnerContext(context));
                 final Query<T> right = qp.z$create$QueryPrimary(createInnerContext(context));
@@ -112,7 +112,7 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
           }
 |
     qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
-          public QueryTerm<T> intersect {
+          public AbstractQueryTerm<T> intersect {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
                 final Query<T> left = qt.z$create$QueryTerm(createInnerContext(context));
                 final Query<T> right = qp.z$create$QueryPrimary(createInnerContext(context));
