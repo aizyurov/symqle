@@ -134,7 +134,7 @@ public class ColumnTest extends SqlTestCase {
 
     public void testExcept() throws Exception {
         final LongColumn column = createId();
-        final String sql = column.exceptDistinct(new LongColumn("age", person2)).show();
+        final String sql = column.except(new LongColumn("age", person2)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 EXCEPT SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
@@ -333,42 +333,42 @@ public class ColumnTest extends SqlTestCase {
             }
         };
         String sql = sumOf.apply(id, age).show();
-        assertSimilar("SELECT SUM_OF(T0.id, T0.age FROM person AS T0", sql);
+        assertSimilar("SELECT SUM_OF(T0.id, T0.age) AS C0 FROM person AS T0", sql);
     }
 
     public void testPlus() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = id.plus(age).show();
-        assertSimilar("SELECT T0.id + T0.age FROM person AS T0", sql);
+        assertSimilar("SELECT T0.id + T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = id.minus(age).show();
-        assertSimilar("SELECT T0.id - T0.age FROM person AS T0", sql);
+        assertSimilar("SELECT T0.id - T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = id.mult(age).show();
-        assertSimilar("SELECT T0.id * T0.age FROM person AS T0", sql);
+        assertSimilar("SELECT T0.id * T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = id.div(age).show();
-        assertSimilar("SELECT T0.id / T0.age FROM person AS T0", sql);
+        assertSimilar("SELECT T0.id / T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = id.concat(age).show();
-        assertSimilar("SELECT T0.id || T0.age FROM person AS T0", sql);
+        assertSimilar("SELECT T0.id || T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testJoin() throws Exception {
@@ -383,7 +383,7 @@ public class ColumnTest extends SqlTestCase {
         // find all people who are oler that parent
         final String sql = id1.where(age1.gt(age2)).show();
         System.out.println(sql);
-        assertSimilar("SELECT T1.id AS C0 FROM PERSON T1 LEFT JOIN PERSON T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
+        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
 
     }
 

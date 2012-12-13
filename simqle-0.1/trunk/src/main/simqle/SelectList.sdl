@@ -104,7 +104,7 @@ public class DefinedIdentifier implements Identifier {
     return new SelectSublist<T>(){
         @Override
         public Query<T> z$create$SelectSublist(SqlContext context) {
-            final ColumnNameProvider nameProvider = context.get(ColumnNameProvider.class);
+            final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
             if (nameProvider == null) {
                 return makeSelectSublist(ve).z$create$SelectSublist(context);
             } else {

@@ -10,13 +10,14 @@
 
 public interface OrderByClause : Sql {}
 
-OrderByClause ::= ORDER BY ssl:SortSpecificationList :: implicit {}
+OrderByClause ::= ORDER BY ssl:SortSpecificationList :: protected OrderByClause createOrderByClause {}
 ;
 
 public interface SortSpecificationList : Sql {}
 
+#
 SortSpecificationList ::=
-    ss:SortSpecification :: implicit {}
+    ss:SortSpecification :: protected SortSpecificationList createSortSpecificationList {}
 |
     ssl:SortSpecificationList COMMA ss:SortSpecification :: protected SortSpecificationList appendSortSpecification {}
 ;

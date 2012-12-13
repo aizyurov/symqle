@@ -37,14 +37,14 @@ public <T> List<T> list(final SelectStatement<T> statement,
         final AutoFromClause autoFromClause = new AutoFromClause();
         {
             final SqlContext context = new SqlContext();
-            context.set(ColumnNameProvider.class, new ColumnNameProvider());
+            context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(AutoFromClause.class, autoFromClause);
             autoFromClause.allowImplicitCrossJoins(true);
             statement.z$create$SelectStatement(context);
         }
         {
             final SqlContext context = new SqlContext();
-            context.set(ColumnNameProvider.class, new ColumnNameProvider());
+            context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(AutoFromClause.class, autoFromClause);
             autoFromClause.allowImplicitCrossJoins(false);
             String sql = statement.z$create$SelectStatement(context).getSqlText();
@@ -132,11 +132,11 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 ;
 
 ::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpression<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
-    SortSpecificationList list = z$SortSpecificationList$from$SortSpecification(sort);
+    SortSpecificationList list = createSortSpecificationList(sort);
      for (SortSpecification add: additionalSort) {
          list = appendSortSpecification(list, add);
      }
-     return  orderBy(qe, z$OrderByClause$from$SortSpecificationList(list));
+     return  orderBy(qe, createOrderByClause(list));
 }
 
 

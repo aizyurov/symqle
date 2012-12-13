@@ -12,6 +12,7 @@ public abstract class PrefixedNameProvider implements UniqueNameProvider {
         this.prefix = prefix;
     }
 
+    @Override
     public final String getUniqueName() {
         return prefix + (++counter);
     }

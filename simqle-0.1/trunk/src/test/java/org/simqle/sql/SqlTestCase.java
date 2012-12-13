@@ -37,9 +37,13 @@ public class SqlTestCase extends TestCase {
             positions.add(i++);
         }
         final Set<String> usedExpectedAliases = new HashSet<String>();
+        final Map<String, String> actualAliasToExpected = new HashMap<String, String>();
         for (String alias: actualAliases.keySet()) {
             final HashSet<String> mapping = new HashSet<String>();
             for (Integer position: actualAliases.get(alias)) {
+                if (position >= aliases.size()) {
+                    fail("Does not match: \""+expected+"\" to \""+actual+"\"");
+                }
                 mapping.add(aliases.get(position));
             }
             if (mapping.size() != 1) {
@@ -49,7 +53,14 @@ public class SqlTestCase extends TestCase {
                 if (!usedExpectedAliases.add(expectedAlias)) {
                     fail("Does not match: \""+expected+"\" to \""+actual+"\"");
                 }
+                actualAliasToExpected.put(alias, expectedAlias);
             }
         }
+
+        String actualWithReplacedAliases = actual;
+        for (String alias: actualAliasToExpected.keySet()) {
+            actualWithReplacedAliases = actualWithReplacedAliases.replaceAll(alias, actualAliasToExpected.get(alias));
+        }
+        assertEquals(expected, actualWithReplacedAliases);
     }
 }

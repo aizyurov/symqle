@@ -3,7 +3,6 @@ public interface ScalarSubquery<T> extends Scalar<T>, Dependent : Sql {}
 public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
 
 <T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN ::
-        import org.simqle.ColumnNameProvider;
         implicit
         {
          public Sql z$create$ScalarSubquery(SqlContext context) {

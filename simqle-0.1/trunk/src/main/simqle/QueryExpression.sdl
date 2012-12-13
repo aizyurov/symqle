@@ -27,8 +27,8 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> unionAll {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createInnerContext(context));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, UNION, ALL, right);
             }
         }
@@ -37,8 +37,8 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> unionDistinct {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createInnerContext(context));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, UNION, DISTINCT, right);
             }
         }
@@ -47,8 +47,8 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> union {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createInnerContext(context));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, UNION, right);
             }
         }
@@ -57,8 +57,8 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> exceptAll {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createInnerContext(context));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, EXCEPT, ALL, right);
             }
         }
@@ -67,8 +67,8 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> exceptDistinct {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createInnerContext(context));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, EXCEPT, DISTINCT, right);
             }
         }
@@ -77,8 +77,8 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> except {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createInnerContext(context));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, EXCEPT, right);
             }
         }
@@ -96,8 +96,8 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
         public AbstractQueryTerm<T> intersectAll {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
-                final Query<T> left = qt.z$create$QueryTerm(createInnerContext(context));
-                final Query<T> right = qp.z$create$QueryPrimary(createInnerContext(context));
+                final Query<T> left = qt.z$create$QueryTerm(createScalarInnerContext(context));
+                final Query<T> right = qp.z$create$QueryPrimary(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, INTERSECT, ALL, right);
             }
         }
@@ -105,8 +105,8 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
-                final Query<T> left = qt.z$create$QueryTerm(createInnerContext(context));
-                final Query<T> right = qp.z$create$QueryPrimary(createInnerContext(context));
+                final Query<T> left = qt.z$create$QueryTerm(createScalarInnerContext(context));
+                final Query<T> right = qp.z$create$QueryPrimary(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, INTERSECT, DISTINCT, right);
             }
           }
@@ -114,8 +114,8 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersect {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
-                final Query<T> left = qt.z$create$QueryTerm(createInnerContext(context));
-                final Query<T> right = qp.z$create$QueryPrimary(createInnerContext(context));
+                final Query<T> left = qt.z$create$QueryTerm(createScalarInnerContext(context));
+                final Query<T> right = qp.z$create$QueryPrimary(createScalarInnerContext(context));
                 return new CompositeQuery<T>(left, INTERSECT, right);
             }
           }

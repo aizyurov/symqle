@@ -27,9 +27,18 @@ import java.util.HashSet;
 
 ::     private SqlContext createInnerContext(SqlContext context) {
         SqlContext innerContext = new SqlContext();
-        innerContext.set(ColumnNameProvider.class, null);
+        innerContext.set(UniqueNameProvider.class, null);
         innerContext.set(Simqle.class, context.get(Simqle.class));
         // create an empty AbstractFromClause for QueryExpressionScalar with current FromClause as enclosing
+        innerContext.set(AutoFromClause.class, new AutoFromClause(context.get(AutoFromClause.class)));
+        return innerContext;
+    }
+
+::     private SqlContext createScalarInnerContext(SqlContext context) {
+        SqlContext innerContext = new SqlContext();
+        innerContext.set(UniqueNameProvider.class, new ScalarNameProvider());
+        innerContext.set(Simqle.class, context.get(Simqle.class));
+        // create an empty AbstractFromClause with current FromClause as enclosing
         innerContext.set(AutoFromClause.class, new AutoFromClause(context.get(AutoFromClause.class)));
         return innerContext;
     }

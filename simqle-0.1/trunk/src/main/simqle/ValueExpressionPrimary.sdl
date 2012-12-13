@@ -114,7 +114,7 @@ import java.util.Collections;
     if (arg.length == 0) {
         return invoke(routine);
     } else {
-        ArgumentList al = z$ArgumentList$from$ValueExpression(arg[0]);
+        ArgumentList al = createArgument(arg[0]);
         int i;
         for (i=1; i<arg.length; i++) {
             al = appendArgument(al, arg[i]);
@@ -128,7 +128,7 @@ public interface RoutineName<T> extends Scalar<T> : Sql {}
 public interface ArgumentList extends Dependent : Sql {}
 
 ArgumentList ::=
-    e:ValueExpression<?> :: implicit {}
+    e:ValueExpression<?> :: protected ArgumentList createArgument {}
 |
     al:ArgumentList COMMA e:ValueExpression<?>
     ::
