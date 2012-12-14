@@ -34,19 +34,19 @@ public <T> List<T> list(final SelectStatement<T> statement,
     }
 
 :: public String show(final SelectStatement<?> statement) {
-        final AutoFromClause autoFromClause = new AutoFromClause();
+        final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
+        // training: learn all tables participating in query
         {
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
-            context.set(AutoFromClause.class, autoFromClause);
-            autoFromClause.allowImplicitCrossJoins(true);
+            context.set(TableRegistry.class, tableRegistry);
             statement.z$create$SelectStatement(context);
         }
+        // real generation of Sql
         {
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
-            context.set(AutoFromClause.class, autoFromClause);
-            autoFromClause.allowImplicitCrossJoins(false);
+            context.set(TableRegistry.class, tableRegistry);
             String sql = statement.z$create$SelectStatement(context).getSqlText();
             sql = beautifySql(sql);
             return sql;

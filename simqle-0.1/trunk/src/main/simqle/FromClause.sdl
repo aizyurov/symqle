@@ -50,7 +50,7 @@ public interface TableName : Sql {
 }
 
 # a simgle class Table implements both TableName and Join
-# Tables are handled specially bu AutoFromClause
+# Tables are handled specially by SelectTableRegistry
 
 # Table implements TableReference by having a TableReference inside
 import org.simqle.CustomSql;
@@ -136,7 +136,7 @@ public class Table implements TableName, TablePrimary, TableReference {
             */
             public Sql z$create$TablePrimary(SqlContext context) {
                 return Simqle.get().createTablePrimary(this,
-                        new DefinedIdentifier(context.get(AutoFromClause.class).getCorrelationName(this)))
+                        new DefinedIdentifier(context.get(TableRegistry.class).getCorrelationName(this)))
                         .z$create$TablePrimary(context);
             }
             /**
@@ -174,11 +174,25 @@ public class Table implements TableName, TablePrimary, TableReference {
 
 public class ImplicitFromClause implements FromClause {
             public Sql z$create$FromClause(SqlContext context) {
-                return context.get(AutoFromClause.class)
+                return context.get(TableRegistry.class)
                         .generateFromClause()
                         .z$create$FromClause(context);
             }
 }
+
+
+public interface TableRegistry {
+
+    FromClause generateFromClause();
+
+    String getCorrelationName(Table table);
+
+    String generateUniqueName();
+
+    String findCorrelationName(Table table);
+
+}
+
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -186,28 +200,68 @@ import java.util.HashSet;
 import java.util.Iterator;
 import org.simqle.TableNameProvider;
 import org.simqle.UniqueNameProvider;
-public class AutoFromClause {
+public class SelectTableRegistry implements TableRegistry {
     private Map<Table, String> localTables = new LinkedHashMap<Table, String>();
-    private final AutoFromClause parent;
+
+    private final TableRegistry parent;
+
     private final UniqueNameProvider nameProvider;
 
-    private boolean implicitCrossJoinsAllowed;
 
-
-
-
-    public AutoFromClause() {
-        this(null);
+    public SelectTableRegistry(UniqueNameProvider nameProvider) {
+        parent = null;
+        this.nameProvider = nameProvider;
     }
 
 
-    public AutoFromClause(final AutoFromClause parent) {
+
+    public SelectTableRegistry(final TableRegistry parent) {
         this.parent = parent;
-        this.nameProvider = parent == null ? new TableNameProvider() : parent.nameProvider;
+        this.nameProvider = null;
     }
 
-    public void allowImplicitCrossJoins(boolean allow) {
-        implicitCrossJoinsAllowed = allow;
+    @Override
+    public String generateUniqueName() {
+        return parent != null ? parent.generateUniqueName() : nameProvider.getUniqueName();
+    }
+
+
+    private void addToLocalTables(Table table) {
+        if (!localTables.containsKey(table)) {
+            final String newName = generateUniqueName();
+            localTables.put(table, newName);
+        }
+    }
+
+
+    @Override
+    public String findCorrelationName(Table table) {
+        // first search in parent
+        final String nameFromParent = parent == null ? null :
+                parent.findCorrelationName(table);
+        return nameFromParent != null ? nameFromParent : localTables.get(table);
+    }
+
+
+    protected FromClause generateEmptyFromClause() {
+        throw new IllegalStateException("Generic dialect does not support selects with no tables");
+    }
+
+
+    public FromClause generateFromClause() {
+        if (localTables.isEmpty()) {
+            return generateEmptyFromClause();
+        }
+        final Set<Table> roots = new HashSet<Table>();
+        for (Table t: localTables.keySet()) {
+            roots.add(t.joinedTableRoot());
+        }
+        final Iterator<Table> iterator = roots.iterator();
+        TableReferenceList tableReferenceList = Simqle.get().createTableReferenceList(iterator.next());
+        while (iterator.hasNext()) {
+            tableReferenceList = Simqle.get().appendTableReferenceList(tableReferenceList, iterator.next());
+        }
+        return Simqle.get().createFrom(tableReferenceList);
     }
 
 
@@ -223,45 +277,8 @@ public class AutoFromClause {
         }
     }
 
-    private void addToLocalTables(Table table) {
-        if (!localTables.containsKey(table)) {
-            final String newName = nameProvider.getUniqueName();
-            localTables.put(table, newName);
-        }
-    }
-
-    private String findCorrelationName(Table table) {
-        // first search in parent
-        final String nameFromParent = parent == null ? null :
-                parent.findCorrelationName(table);
-        return nameFromParent != null ? nameFromParent : localTables.get(table);
-    }
-
-    public FromClause generateFromClause() {
-        if (localTables.isEmpty()) {
-            return generateEmptyFromClause();
-        }
-        final Set<Table> roots = new HashSet<Table>();
-        for (Table t: localTables.keySet()) {
-            roots.add(t.joinedTableRoot());
-        }
-        final Iterator<Table> iterator = roots.iterator();
-        TableReferenceList tableReferenceList = Simqle.get().createTableReferenceList(iterator.next());
-        if (roots.size() > 1 && !implicitCrossJoinsAllowed) {
-            throw new IllegalStateException("Implicit cross joins not allowed");
-        }
-        while (iterator.hasNext()) {
-            tableReferenceList = Simqle.get().appendTableReferenceList(tableReferenceList, iterator.next());
-        }
-        return Simqle.get().createFrom(tableReferenceList);
-    }
-
-    protected FromClause generateEmptyFromClause() {
-        throw new IllegalStateException("Generic dialect does not support selects with no tables");
-    }
-
-
 }
+
 
 
 

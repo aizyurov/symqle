@@ -10,7 +10,7 @@ public interface Scalar<T>
         innerContext.set(UniqueNameProvider.class, null);
         innerContext.set(Simqle.class, context.get(Simqle.class));
         // create an empty AbstractFromClause for QueryExpressionScalar with current FromClause as enclosing
-        innerContext.set(AutoFromClause.class, new AutoFromClause(context.get(AutoFromClause.class)));
+        innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;
     }
 
@@ -19,6 +19,6 @@ public interface Scalar<T>
         innerContext.set(UniqueNameProvider.class, new ScalarNameProvider());
         innerContext.set(Simqle.class, context.get(Simqle.class));
         // create an empty AbstractFromClause with current FromClause as enclosing
-        innerContext.set(AutoFromClause.class, new AutoFromClause(context.get(AutoFromClause.class)));
+        innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;
     }
