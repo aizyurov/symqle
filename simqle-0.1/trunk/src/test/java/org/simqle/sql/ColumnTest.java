@@ -379,7 +379,7 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn parentId1 = new LongColumn("parent_id", person1);
         final LongColumn age1 = new LongColumn("age", person1);
         final LongColumn age2 = new LongColumn("age", person2);
-        person2.leftJoin(parentId1.eq(id2));
+        person1.leftJoin(person2, parentId1.eq(id2));
         // find all people who are older that parent
         final String sql = id1.where(age1.gt(age2)).show();
         System.out.println(sql);

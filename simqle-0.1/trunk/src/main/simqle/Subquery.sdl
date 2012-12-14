@@ -1,4 +1,4 @@
-public interface ScalarSubquery<T> extends Scalar<T>, Dependent : Sql {}
+public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
 
 public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
 
@@ -9,12 +9,6 @@ public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
              final Sql base = qe.z$create$QueryExpressionScalar(createInnerContext(context));
              return new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN);
          }
-            // does not depend on any tables in the subquery context
-            // (although qe has its dependencies in inner context)
-            public Set<TableName> dependsOn() {
-                return Collections.emptySet();
-            }
-
 }
 ;
 

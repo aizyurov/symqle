@@ -5,26 +5,6 @@ public interface Scalar<T>
     T value(final Element element) throws SQLException;
 }
 
-# Table may be part of join and refer to other tables in its join condition
-# We are introducing a Dependent interface, which can list dependencies. Both TableName and Join extend this interface
-# method dependsOn() lists dependencies
-
-import java.util.Set;
-public interface Dependent {
-    Set<TableName> dependsOn();
-}
-
-import java.util.Set;
-import java.util.HashSet;
-
-:: protected Set<TableName> dependsAs(Dependent... deps) {
-        final Set<TableName> dependencies = new HashSet<TableName>();
-        for (Dependent d: deps) {
-            dependencies.addAll(d.dependsOn());
-        }
-        return dependencies;
-}
-
 ::     private SqlContext createInnerContext(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         innerContext.set(UniqueNameProvider.class, null);

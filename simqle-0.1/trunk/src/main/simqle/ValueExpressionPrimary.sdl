@@ -1,6 +1,6 @@
-public interface ValueExpressionPrimary<T> extends Scalar<T>, Dependent : Sql {}
+public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 
-public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T>, Dependent  {}
+public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T>  {}
 
 <T> ValueExpressionPrimary<T> ::=
     LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
@@ -15,17 +15,12 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
 ;
 
 
-public interface DynamicParameterSpecification<T> extends Scalar<T>, Dependent : Sql {
+public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 }
 
 import org.simqle.SqlParameter;
 import org.simqle.SqlParameters;
 public abstract class DynamicParameter<T> implements DynamicParameterSpecification<T> {
-
-            // does not depend on any tables
-            public Set<TableName> dependsOn() {
-                return Collections.emptySet();
-            }
 
             /**
             * Creates an Sql representing <code>this</code>
@@ -57,19 +52,13 @@ public abstract class DynamicParameter<T> implements DynamicParameterSpecificati
 
 }
 
-public interface ColumnReference<T> extends Scalar<T>, Dependent : Sql {}
+public interface ColumnReference<T> extends Scalar<T> : Sql {}
 
 import org.simqle.CompositeSql;
 import org.simqle.SqlTerm;
 public abstract class Column<T> implements ColumnReference<T> {
      private final Identifier columnName;
      private final Table owner;
-
-
-     public Set<TableName> dependsOn() {
-         return Collections.singleton((TableName)owner);
-     }
-
 
      protected Column(final String name,  final Table owner)  {
              this.columnName = new DefinedIdentifier(name);
@@ -88,7 +77,7 @@ public abstract class Column<T> implements ColumnReference<T> {
 }
 
 
-public interface RoutineInvocation<T> extends Scalar<T>, Dependent : Sql {}
+public interface RoutineInvocation<T> extends Scalar<T> : Sql {}
 
 public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
 
@@ -96,18 +85,10 @@ import java.util.Set;
 import java.util.Collections;
 <T> RoutineInvocation<T> ::=
     rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
-        :: AbstractRoutineInvocation<T> invoke {
-             public Set<TableName> dependsOn() {
-                return dependsAs(al);
-             }
-        }
+        :: AbstractRoutineInvocation<T> invoke {}
 |
     rn:RoutineName<T> LEFT_PAREN RIGHT_PAREN
-        :: AbstractRoutineInvocation<T> invoke {
-             public Set<TableName> dependsOn() {
-                return Collections.emptySet();
-             }
-        }
+        :: AbstractRoutineInvocation<T> invoke {}
 ;
 
 :: <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
@@ -125,22 +106,13 @@ import java.util.Collections;
 
 public interface RoutineName<T> extends Scalar<T> : Sql {}
 
-public interface ArgumentList extends Dependent : Sql {}
+public interface ArgumentList : Sql {}
 
 ArgumentList ::=
     e:ValueExpression<?> :: protected ArgumentList createArgument {}
 |
     al:ArgumentList COMMA e:ValueExpression<?>
-    ::
-    import java.util.Set;
-    import java.util.HashSet;
-    protected ArgumentList appendArgument
-    {
-        // collect all dependencies
-         public Set<TableName> dependsOn() {
-            return dependsAs(al, e);
-         }
-    }
+        :: protected ArgumentList appendArgument {}
 ;
 
 import org.simqle.CustomSql;

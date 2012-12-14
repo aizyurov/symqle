@@ -1,4 +1,4 @@
-public interface ValueExpression<T> extends Scalar<T>, Dependent : Sql {}
+public interface ValueExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractValue<T> implements ValueExpression<T> {}
 
@@ -16,7 +16,7 @@ ValueExpression<Boolean> ::=  bve:BooleanExpression :: implicit {}
 ;
 
 # no abstract class: no methods
-public interface CommonValueExpression<T> extends Scalar<T>, Dependent : Sql {}
+public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
 
 <T> CommonValueExpression<T> ::=
     e:NumericExpression<T> :: implicit {}
@@ -26,7 +26,7 @@ public interface CommonValueExpression<T> extends Scalar<T>, Dependent : Sql {}
     e:ValueExpressionPrimary<T> :: implicit {}
 ;
 
-public interface StringExpression<T> extends Scalar<T>, Dependent : Sql {}
+public interface StringExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractStringExpression<T> implements StringExpression<T> {}
 
@@ -37,14 +37,9 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
 StringExpression<String> ::=
     s:StringExpression<?> CONCAT e:ValueExpressionPrimary<?>
         :: public AbstractStringExpression<String> concat {
-
-            public Set<TableName> dependsOn() {
-                return dependsAs(s, e);
-            }
-
-            public String value(final Element element) throws SQLException {
-                return element.getString();
-            }
+                public String value(final Element element) throws SQLException {
+                    return element.getString();
+                }
         }
 ;
 
