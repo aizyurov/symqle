@@ -206,6 +206,10 @@ public class AutoFromClause {
         this.nameProvider = parent == null ? new TableNameProvider() : parent.nameProvider;
     }
 
+    public void allowImplicitCrossJoins(boolean allow) {
+        implicitCrossJoinsAllowed = allow;
+    }
+
 
     public String getCorrelationName(Table table) {
         final String found = findCorrelationName(table);
