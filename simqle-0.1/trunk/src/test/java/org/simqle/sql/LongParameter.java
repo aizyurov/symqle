@@ -20,7 +20,7 @@ public class LongParameter extends DynamicParameter<Long> {
     }
 
     @Override
-    protected void set(final SqlParameter p) {
+    protected void set(final SqlParameter p) throws SQLException {
         p.setLong(value);
     }
 

@@ -35,7 +35,7 @@ public abstract class DynamicParameter<T> implements DynamicParameterSpecificati
                     }
 
                     @Override
-                    public void setParameters(final SqlParameters p) {
+                    public void setParameters(final SqlParameters p) throws SQLException {
                         set(p.next());
                     }
                 };
@@ -44,7 +44,7 @@ public abstract class DynamicParameter<T> implements DynamicParameterSpecificati
             /**
             * Implement in derived classes
             */
-            protected abstract void set(final SqlParameter p);
+            protected abstract void set(final SqlParameter p) throws SQLException;
             /**
             * Implement in derived classes
             */

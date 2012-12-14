@@ -1,5 +1,7 @@
 package org.simqle;
 
+import java.sql.SQLException;
+
 /**
  * This interface represents text of a syntax element of SQL language, which may contain dynamic parameters.
  * The interface also provides values for the parameters.
@@ -17,6 +19,7 @@ public interface Sql {
      * Provide values for dynamic parameters.
      * @param p SqlParameter interface to write parameter values into
      */
-    void setParameters(SqlParameters p);
+    void setParameters(SqlParameters p) throws SQLException;
+;
 
 }

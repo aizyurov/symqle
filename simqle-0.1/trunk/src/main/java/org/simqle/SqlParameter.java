@@ -5,6 +5,7 @@ package org.simqle;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 
@@ -26,72 +27,72 @@ public interface SqlParameter {
      * Sets Boolean value to parameter.
      * @param x the value, null is OK
      */
-    void setBoolean(Boolean x);
+    void setBoolean(Boolean x) throws SQLException;
 
     /**
      * Sets Byte value to parameter.
      * @param x the value, null is OK
      */
-    void setByte(Byte x);
+    void setByte(Byte x) throws SQLException;
 
     /**
      * Sets Short value to parameter.
      * @param x the value, null is OK
      */
-    void setShort(Short x);
+    void setShort(Short x) throws SQLException;
 
     /**
      * Sets Integer value to parameter.
      * @param x the value, null is OK
      */
-    void setInt(Integer x);
+    void setInt(Integer x) throws SQLException;
 
     /**
      * Sets Long value to parameter.
      * @param x the value, null is OK
      */
-    void setLong(Long x);
+    void setLong(Long x) throws SQLException;
 
     /**
      * Sets Float value to parameter.
      * @param x the value, null is OK
      */
-    void setFloat(Float x);
+    void setFloat(Float x) throws SQLException;
 
     /**
      * Sets Double value to parameter.
      * @param x the value, null is OK
      */
-    void setDouble(Double x);
+    void setDouble(Double x) throws SQLException;
 
     /**
      * Sets BigDecimal value to parameter.
      * @param x the value, null is OK
      */
-    void setBigDecimal(BigDecimal x);
+    void setBigDecimal(BigDecimal x) throws SQLException;
 
     /**
      * Sets String value to parameter.
      * @param x the value, null is OK
      */
-    void setString(String x);
+    void setString(String x) throws SQLException;
 
     /**
      * Sets Date value to parameter.
      * @param x the value, null is OK
      */
-    void setDate(Date x);
+    void setDate(Date x) throws SQLException;
 
     /**
      * Sets Time value to parameter.
      * @param x the value, null is OK
      */
-    void setTime(Time x);
+    void setTime(Time x) throws SQLException;
 
     /**
      * Sets Timestamp value to parameter.
      * @param x the value, null is OK
      */
-    void setTimestamp(Timestamp x);
+    void setTimestamp(Timestamp x) throws SQLException;
 
 }

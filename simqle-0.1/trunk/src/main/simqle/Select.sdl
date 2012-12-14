@@ -10,12 +10,46 @@ public class AbstractSelectStatement<T> implements SelectStatement<T>
 import org.simqle.Callback;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import org.simqle.Callback;
+import org.simqle.Row;
+import org.simqle.jdbc.ResultSetRow;
+import org.simqle.jdbc.StatementParameters;
 :: public <T> void scroll(final SelectStatement<T> statement,
                           final DataSource datasource,
                           final Callback<T, SQLException> callback
                           ) throws SQLException {
-        throw new RuntimeException("Not implemented");
-    }
+     final SqlContext context = new SqlContext();
+     context.set(TableRegistry.class, new SelectTableRegistry(new TableNameProvider()));
+     context.set(UniqueNameProvider.class, new ColumnNameProvider());
+     final Query<T> query = statement.z$create$SelectStatement(context);
+     final Connection connection = datasource.getConnection();
+     try {
+         final PreparedStatement preparedStatement = connection.prepareStatement(query.getSqlText());
+         try {
+             query.setParameters(new StatementParameters(preparedStatement));
+             final ResultSet resultSet = preparedStatement.executeQuery();
+             final Row row = new ResultSetRow(resultSet);
+             try {
+                 while (resultSet.next()) {
+                     try {
+                         callback.iterate(query.extract(row));
+                     } catch (Callback.BreakException e) {
+                         break;
+                     }
+                 }
+             } finally {
+                 resultSet.close();
+             }
+         } finally {
+             preparedStatement.close();
+         }
+     } finally {
+         connection.close();
+     }
+}
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

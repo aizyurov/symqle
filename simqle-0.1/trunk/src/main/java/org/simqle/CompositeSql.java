@@ -3,6 +3,8 @@
 */
 package org.simqle;
 
+import java.sql.SQLException;
+
 
 /**
  * Represents an Sql element composed from a list of sub-elements.
@@ -55,7 +57,7 @@ public class CompositeSql implements Sql {
      * Sets SqlParameter by delegation to each member in turn.
      * @param p SqlParameter interface to write parameter values into
      */
-    public final void setParameters(final SqlParameters p) {
+    public final void setParameters(final SqlParameters p) throws SQLException {
         first.setParameters(p);
         for (Sql element : this.other) {
             element.setParameters(p);

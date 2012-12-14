@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 /**
  * @author lvovich
  */
-public class SqlTestCase extends TestCase {
+public abstract class SqlTestCase extends TestCase {
     protected final void assertSimilar(String expected, String actual) {
         final String asPattern = "([A-Za-z]+[0-9]+)";
         final Pattern aliasMatcher = Pattern.compile(asPattern);
