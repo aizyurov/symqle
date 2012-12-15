@@ -27,7 +27,7 @@ import org.simqle.jdbc.StatementParameters;
      final Query<T> query = statement.z$create$SelectStatement(context);
      final Connection connection = datasource.getConnection();
      try {
-         final PreparedStatement preparedStatement = connection.prepareStatement(query.getSqlText());
+         final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
          try {
              query.setParameters(new StatementParameters(preparedStatement));
              final ResultSet resultSet = preparedStatement.executeQuery();
