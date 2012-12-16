@@ -97,19 +97,13 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.5</version>
 	<configuration>
-          <configLocation>${basedir}/src/main/resources/yur_checks.xml</configLocation>
+          <!--configLocation>${basedir}/src/main/resources/yur_checks.xml</configLocation-->
         </configuration>
       </plugin>
       <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <configuration>
-                    <instrumentation>
-                        <excludes>
-                            <exclude>ru/yandex/common/util/application/extras/UncaughExceptionKillsProcess.class
-                            </exclude>
-                        </excludes>
-                    </instrumentation>
                     <formats>
                         <format>html</format>
                     </formats>
