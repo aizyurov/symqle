@@ -50,14 +50,14 @@ Term<Number> ::=
 
 public interface Factor<T> extends Scalar<T> : Sql {}
 
-public class AbstractFactor<T> implements Scalar<T> {}
+public class AbstractFactor<T> implements Factor<T> {}
 
 # negate retains type argument
 <T> Factor<T> ::=
     p:NumericPrimary<T> :: implicit {}
 ;
-<T extends Number> Factor<T> ::=
-    MINUS p:NumericPrimary<T> :: protected AbstractFactor<T> negate {}
+<T> Factor<T> ::= 
+    MINUS p:NumericPrimary<T> :: public AbstractFactor<T> negate {}
 ;
 
 public interface NumericPrimary<T> extends Scalar<T> : Sql {}
