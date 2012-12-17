@@ -1,6 +1,7 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
+import org.simqle.Function;
 
 import java.sql.SQLException;
 
@@ -384,6 +385,25 @@ public class ColumnTest extends SqlTestCase {
         final String sql = id1.where(age1.gt(age2)).show();
         System.out.println(sql);
         assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
+
+    }
+
+    public void testPair() throws Exception {
+        final Person person = new Person();
+        final LongColumn id = new LongColumn("id", person);
+        final LongColumn age = new LongColumn("age", person);
+        assertSimilar("SELECT T1.id AS C1, T1.age AS C2 FROM person AS T1", id.pair(age).show());
+    }
+
+    public void testConvert() throws Exception {
+        final Person person = new Person();
+        final LongColumn id = new LongColumn("id", person);
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1", id.convert(new Function<Long, String>() {
+            @Override
+            public String apply(final Long arg) {
+                return String.valueOf(arg);
+            }
+        }).show());
 
     }
 

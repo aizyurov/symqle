@@ -191,6 +191,8 @@ public interface TableRegistry {
 
     String findCorrelationName(Table table);
 
+    boolean isInTestMode();
+
 }
 
 
@@ -200,6 +202,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import org.simqle.TableNameProvider;
 import org.simqle.UniqueNameProvider;
+import org.simqle.Sql;
+import org.simqle.CustomSql;
+import org.simqle.SqlContext;
 public class SelectTableRegistry implements TableRegistry {
     private Map<Table, String> localTables = new LinkedHashMap<Table, String>();
 
@@ -243,8 +248,28 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
 
+    private boolean inTestMode = false;
+
+    protected void setTestMode(boolean test) {
+        inTestMode = test;
+    }
+
+    public boolean isInTestMode() {
+        return parent != null ? parent.isInTestMode() : inTestMode;
+    }
+
+
+
     protected FromClause generateEmptyFromClause() {
-        throw new IllegalStateException("Generic dialect does not support selects with no tables");
+        if (isInTestMode()) {
+            return new FromClause() {
+                public Sql z$create$FromClause(final SqlContext context) {
+                    return new CustomSql("");
+                }
+            };
+        } else {
+            throw new IllegalStateException("Generic dialect does not support selects with no tables");
+        }
     }
 
 

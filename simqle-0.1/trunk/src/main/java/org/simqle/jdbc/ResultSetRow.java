@@ -148,7 +148,7 @@ public class ResultSetRow implements Row {
 
         @Override
         public String getString() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            return resultSet.getString(label);
         }
 
         @Override

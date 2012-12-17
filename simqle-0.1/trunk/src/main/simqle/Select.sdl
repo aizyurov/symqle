@@ -21,10 +21,7 @@ import org.simqle.jdbc.StatementParameters;
                           final DataSource datasource,
                           final Callback<T, SQLException> callback
                           ) throws SQLException {
-     final SqlContext context = new SqlContext();
-     context.set(TableRegistry.class, new SelectTableRegistry(new TableNameProvider()));
-     context.set(UniqueNameProvider.class, new ColumnNameProvider());
-     final Query<T> query = statement.z$create$SelectStatement(context);
+     final Query<T> query = prepareQuery(statement);
      final Connection connection = datasource.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
@@ -68,24 +65,32 @@ public <T> List<T> list(final SelectStatement<T> statement,
     }
 
 :: public String show(final SelectStatement<?> statement) {
+     String sql = prepareQuery(statement).getSqlText();
+     return beautifySql(sql);
+    }
+
+:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement) {
         final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
         // training: learn all tables participating in query
         {
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
+            tableRegistry.setTestMode(true);
             statement.z$create$SelectStatement(context);
         }
         // real generation of Sql
+        final Query<T> query;
         {
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
-            String sql = statement.z$create$SelectStatement(context).getSqlText();
-            sql = beautifySql(sql);
-            return sql;
+            tableRegistry.setTestMode(false);
+            query = statement.z$create$SelectStatement(context);
         }
+        return query;
     }
+
 
 :: private String beautifySql(final String source) {
         return source
