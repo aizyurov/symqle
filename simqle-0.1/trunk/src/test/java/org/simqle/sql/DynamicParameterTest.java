@@ -45,11 +45,23 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
-    public void testSelect() throws Exception {
+    public void testWhere() throws Exception {
         final LongColumn id = createId();
         final LongParameter param = new LongParameter(1L);
         final String sql = param.where(id.eq(param)).show();
         assertSimilar("SELECT ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
+    }
+
+    public void testInvalidIn() throws Exception {
+        final LongColumn id = createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql;
+        try {
+            sql = id.in(param).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
     }
 
     public void testAsFunctionArgument() throws Exception {

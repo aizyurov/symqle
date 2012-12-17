@@ -66,7 +66,7 @@ public class StatementParameters implements SqlParameters {
             if (x == null) {
                 statement.setNull(position, Types.BIGINT);
             } else {
-                statement.setLong(position, x);
+                    statement.setLong(position, x);
             }
         }
 

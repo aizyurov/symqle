@@ -146,4 +146,30 @@ public class QueryTest extends SqlTestCase {
         assertEquals("123", list.get(0));
 
     }
+
+    public void testListWithParameter() throws Exception {
+        Table person = new Table("person");
+        final LongColumn id = new LongColumn("id", person);
+        final LongParameter param = new LongParameter(123L);
+        final String queryString = id.where(id.eq(param)).show();
+        System.out.println(queryString);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setLong(1, 123L);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replayAll();
+        final List<Long> list = id.where(id.eq(param)).list(datasource);
+        assertEquals(1, list.size());
+        assertEquals(Long.valueOf(123), list.get(0));
+
+    }
+
+
 }

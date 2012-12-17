@@ -85,10 +85,10 @@ import java.util.Set;
 import java.util.Collections;
 <T> RoutineInvocation<T> ::=
     rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
-        :: AbstractRoutineInvocation<T> invoke {}
+        :: private AbstractRoutineInvocation<T> invoke {}
 |
     rn:RoutineName<T> LEFT_PAREN RIGHT_PAREN
-        :: AbstractRoutineInvocation<T> invoke {}
+        :: private AbstractRoutineInvocation<T> invoke {}
 ;
 
 :: <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
