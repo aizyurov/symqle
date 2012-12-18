@@ -142,8 +142,8 @@ public class FactorTest extends SqlTestCase {
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.id.opposite().in(person2.id)).show();
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE - T1.id IN(SELECT T2.id FROM person AS T2)", sql);
+        String sql = person.id.where(person.id.opposite().in(person2.id.opposite())).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE - T1.id IN(SELECT - T2.id FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
@@ -162,8 +162,8 @@ public class FactorTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.id.opposite().orderBy(person.smart.booleanValue()).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 ORDER BY T0.smart", sql);
+        String sql = person.id.opposite().orderBy(person.id.opposite()).show();
+        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 ORDER BY - T0.id", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
