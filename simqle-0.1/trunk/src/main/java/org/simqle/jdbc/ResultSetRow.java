@@ -143,7 +143,8 @@ public class ResultSetRow implements Row {
 
         @Override
         public BigDecimal getBigDecimal() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final BigDecimal result = resultSet.getBigDecimal(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override

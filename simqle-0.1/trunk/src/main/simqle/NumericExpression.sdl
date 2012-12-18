@@ -60,3 +60,10 @@ public class AbstractFactor<T> implements Factor<T> {}
     MINUS e:ValueExpressionPrimary<T> :: public AbstractFactor<T> opposite {}
 ;
 
+<T> Factor<Number> ::=
+    e:ValueExpressionPrimary<T> :: public AbstractFactor<Number> numericValue {
+        public Number value(final Element element) throws SQLException {
+            return element.getBigDecimal();
+        }
+    }
+;
