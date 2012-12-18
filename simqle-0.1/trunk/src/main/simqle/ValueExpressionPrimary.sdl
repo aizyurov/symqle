@@ -1,7 +1,5 @@
 public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 
-public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T>  {}
-
 <T> ValueExpressionPrimary<T> ::=
     LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
 |
