@@ -32,11 +32,6 @@ public class BooleanFactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT(NOT T0.alive)", sql);
     }
 
-    public void testnegate() throws Exception {
-        final String sql = person.id.where(person.alive.booleanValue().negate().negate()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT(NOT T0.alive)", sql);
-    }
-
     public void testIsNotTrue() throws Exception {
         final String sql = person.id.where(person.alive.booleanValue().negate().isNotTrue()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(NOT T0.alive) IS NOT TRUE", sql);
@@ -240,6 +235,12 @@ public class BooleanFactorTest extends SqlTestCase {
         String sql = person.id.orderBy(person.smart.booleanValue().negate().asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY NOT T0.smart ASC", sql);
     }
+
+    public void testOpposite() throws Exception {
+        final String sql = person.smart.booleanValue().negate().opposite().show();
+        assertSimilar("SELECT -(NOT T0.smart) AS C0 FROM person AS T0", sql);
+    }
+
 
     public void testPlus() throws Exception {
         String sql = person.smart.booleanValue().negate().plus(person.alive.booleanValue().negate()).show();

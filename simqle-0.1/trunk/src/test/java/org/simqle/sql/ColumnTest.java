@@ -337,7 +337,7 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT SUM_OF(T0.id, T0.age) AS C0 FROM person AS T0", sql);
     }
 
-    public void testNegate() throws Exception {
+    public void testOpposite() throws Exception {
         final LongColumn id  =  createId();
         String sql = id.opposite().show();
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);

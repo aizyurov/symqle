@@ -291,6 +291,13 @@ public class BooleanPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart ASC", sql);
     }
 
+
+    public void testOpposite() throws Exception {
+        final String sql = person.smart.booleanValue().opposite().show();
+        assertSimilar("SELECT -(T0.smart) AS C0 FROM person AS T0", sql);
+    }
+
+
     public void testPlus() throws Exception {
         String sql = person.smart.booleanValue().plus(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart) +(T0.alive) AS C0 FROM person AS T0", sql);

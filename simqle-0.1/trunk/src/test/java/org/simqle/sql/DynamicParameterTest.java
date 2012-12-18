@@ -360,7 +360,7 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? * T0.id AS C0 FROM person AS T0", sql);
     }
 
-    public void testNegate() throws Exception {
+    public void testOpposite() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         String sql = param.opposite().where(id.booleanValue()).show();

@@ -241,6 +241,12 @@ public class BooleanExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute ASC", sql);
     }
 
+    public void testOpposite() throws Exception {
+        final String sql = person.smart.booleanValue().or(person.cute.booleanValue()).opposite().show();
+        assertSimilar("SELECT -(T0.smart OR T0.cute) AS C0 FROM person AS T0", sql);
+    }
+
+
     public void testPlus() throws Exception {
         String sql = person.smart.booleanValue().or(person.cute.booleanValue()).plus(person.alive.booleanValue().or(person.cute.booleanValue())).show();
         assertSimilar("SELECT(T0.smart OR T0.cute) +(T0.alive OR T0.cute) AS C0 FROM person AS T0", sql);
