@@ -24,6 +24,14 @@ NumericExpression<Number> ::=
          }
 ;
 
+:: public AbstractNumericExpression<Number> plus(final NumericExpression<?> e, final Number n) {
+    return plus(e, createNumberParameter(n));
+}
+
+:: public AbstractNumericExpression<Number> minus(final NumericExpression<?> e, final Number n) {
+    return minus(e, createNumberParameter(n));
+}
+
 
 public interface Term<T> extends Scalar<T> : Sql {}
 
@@ -48,6 +56,15 @@ Term<Number> ::=
         }
 ;
 
+:: public AbstractTerm<Number> mult(final Term<?> t, final Number n) {
+    return mult(t, createNumberParameter(n));
+ }
+
+:: public AbstractTerm<Number> div(final Term<?> t, final Number n) {
+    return div(t, createNumberParameter(n));
+ }
+
+
 public interface Factor<T> extends Scalar<T> : Sql {}
 
 public class AbstractFactor<T> implements Factor<T> {}
@@ -67,3 +84,16 @@ public class AbstractFactor<T> implements Factor<T> {}
         }
     }
 ;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+:: protected DynamicParameter<Number> createNumberParameter(final Number n) {
+    return new DynamicParameter<Number>() {
+        protected void set(final SqlParameter p) throws SQLException {
+            p.setBigDecimal(new BigDecimal(n.toString()));
+        }
+        public Number value(final Element element) throws SQLException {
+            return element.getBigDecimal();
+        }
+     };
+}
