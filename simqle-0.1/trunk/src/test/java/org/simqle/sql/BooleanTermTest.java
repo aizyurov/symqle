@@ -28,8 +28,13 @@ public class BooleanTermTest extends SqlTestCase {
     }
 
     public void testNegate() throws Exception {
-        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).and(person.cute.booleanValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive AND T0.cute AND T0.cute", sql);
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).negate()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT (T0.alive AND T0.cute)", sql);
+    }
+
+    public void testIsTrue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).isTrue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) IS TRUE", sql);
     }
 
     public void testIsNotTrue() throws Exception {
