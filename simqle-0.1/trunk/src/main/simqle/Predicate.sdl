@@ -80,12 +80,10 @@ public interface InPredicateValue<T> extends Scalar<T> : Sql {}
 
 public interface InValueList<T> extends Scalar<T> : Sql {}
 
-public class AbstractInValueList<T> implements InValueList<T> {}
-
 <T>  InValueList<T> ::=
-    e1:ValueExpression<T> COMMA e2:ValueExpression<T> :: protected AbstractInValueList<T> createInValueList {}
+    e1:ValueExpression<T> COMMA e2:ValueExpression<T> :: protected InValueList<T> createInValueList {}
 |
-    l:InValueList<T> COMMA e:ValueExpression<T> :: protected AbstractInValueList<T> append {}
+    l:InValueList<T> COMMA e:ValueExpression<T> :: protected InValueList<T> append {}
 ;
 
 # public convenience methods for construction of InPredicate from list of ValueExpression

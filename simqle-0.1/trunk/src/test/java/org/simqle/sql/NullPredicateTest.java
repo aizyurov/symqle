@@ -191,14 +191,14 @@ public class NullPredicateTest extends SqlTestCase {
 
 
     public void testExists() throws Exception {
-        String sql = person.id.where(person2.smart.eq(person2.cute).exists()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.smart = T1.cute FROM person AS T1)", sql);
+        String sql = person.id.where(person2.smart.isNull().exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.smart IS NULL FROM person AS T1)", sql);
 
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.smart.isNull().in(person2.alive.eq(person2.cute))).show();
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS NULL) IN(SELECT T2.alive = T2.cute FROM person AS T2)", sql);
+        String sql = person.id.where(person.smart.isNull().in(person2.alive.isNull())).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS NULL) IN(SELECT T2.alive IS NULL FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
