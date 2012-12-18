@@ -1,7 +1,6 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
-import org.simqle.Function;
 
 import java.sql.SQLException;
 
@@ -293,6 +292,11 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) ASC", sql);
     }
 
+    public void testNegate() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).negate().show();
+        assertSimilar("SELECT - abs(T0.id) AS C0 FROM person AS T0", sql);
+    }
 
     public void testPlus() throws Exception {
         final LongColumn id  =  createId();

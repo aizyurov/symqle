@@ -8,7 +8,11 @@ public class AbstractValue<T> implements ValueExpression<T> {}
 # it is not Scalar and we have different rules for RowValueExpression and ValueExpression
 
 <T> ValueExpression<T> ::=
-    e:CommonValueExpression<T> :: implicit {}
+    e:NumericExpression<T> :: implicit {}
+|
+    e:StringExpression<T> :: implicit {}
+|
+    e:ValueExpressionPrimary<T> :: implicit {}
 ;
 
 # see BooleanValueExpression.sdl
@@ -17,14 +21,6 @@ ValueExpression<Boolean> ::=  bve:BooleanExpression :: implicit {}
 
 # no abstract class: no methods
 public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
-
-<T> CommonValueExpression<T> ::=
-    e:NumericExpression<T> :: implicit {}
-|
-    e:StringExpression<T> :: implicit {}
-|
-    e:ValueExpressionPrimary<T> :: implicit {}
-;
 
 public interface StringExpression<T> extends Scalar<T> : Sql {}
 

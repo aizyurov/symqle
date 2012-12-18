@@ -15,7 +15,12 @@ Predicate ::=
 
 public interface Predicand<T> extends Scalar<T> : Sql {}
 
-<T> Predicand<T> ::= e: CommonValueExpression<T> :: implicit {}
+<T> Predicand<T> ::=
+    e:NumericExpression<T> :: implicit {}
+|
+    e:StringExpression<T> :: implicit {}
+|
+    e:ValueExpressionPrimary<T> :: implicit {}
 ;
 
 Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {}

@@ -360,6 +360,13 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? * T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testNegate() throws Exception {
+        final LongColumn id  =  createId();
+        final LongParameter param = new LongParameter(1L);
+        String sql = param.negate().where(id.booleanValue()).show();
+        assertSimilar("SELECT - ? AS C0 FROM person AS T0 WHERE T0.id", sql);
+    }
+
     public void testPlus() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
