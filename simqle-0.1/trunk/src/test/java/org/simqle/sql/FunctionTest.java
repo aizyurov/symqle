@@ -294,7 +294,7 @@ public class FunctionTest extends SqlTestCase {
 
     public void testNegate() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).negate().show();
+        String sql = abs(id).opposite().show();
         assertSimilar("SELECT - abs(T0.id) AS C0 FROM person AS T0", sql);
     }
 

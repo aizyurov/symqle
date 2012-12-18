@@ -339,7 +339,7 @@ public class ColumnTest extends SqlTestCase {
 
     public void testNegate() throws Exception {
         final LongColumn id  =  createId();
-        String sql = id.negate().show();
+        String sql = id.opposite().show();
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
     }
 

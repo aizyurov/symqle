@@ -8,7 +8,7 @@ BooleanExpression ::=
     bt:BooleanTerm :: implicit {}
 |
     bve:BooleanExpression OR bvt:BooleanTerm
-        :: AbstractBooleanExpression or {}
+        :: public AbstractBooleanExpression or {}
 ;
 
 public interface BooleanTerm extends Scalar<Boolean> : Sql {}
@@ -19,7 +19,7 @@ BooleanTerm ::=
     bf:BooleanFactor :: implicit {}
 |
     bt:BooleanTerm AND bf:BooleanFactor
-        :: AbstractBooleanTerm and {}
+        :: public AbstractBooleanTerm and {}
 ;
 
 public interface BooleanFactor extends Scalar<Boolean> : Sql {}
@@ -30,7 +30,7 @@ BooleanFactor ::=
     bt:BooleanTest :: implicit {}
 |
     NOT bt:BooleanTest
-        :: AbstractBooleanFactor negate {}
+        :: public AbstractBooleanFactor negate {}
 ;
 
 public interface BooleanTest extends Scalar<Boolean> : Sql {}
@@ -41,22 +41,22 @@ BooleanTest ::=
     bp:BooleanPrimary :: implicit {}
 |
     bp:BooleanPrimary  IS  NOT  TRUE
-        :: AbstractBooleanTest isNotTrue {}
+        :: public AbstractBooleanTest isNotTrue {}
 |
     bp:BooleanPrimary  IS  TRUE
-        :: AbstractBooleanTest isTrue {}
+        :: public AbstractBooleanTest isTrue {}
 |
     bp:BooleanPrimary  IS  NOT  FALSE
-        :: AbstractBooleanTest isNotFalse {}
+        :: public AbstractBooleanTest isNotFalse {}
 |
     bp:BooleanPrimary  IS  FALSE
-        :: AbstractBooleanTest isFalse {}
+        :: public AbstractBooleanTest isFalse {}
 |
     bp:BooleanPrimary  IS  NOT  UNKNOWN
-        :: AbstractBooleanTest isNotUnknown {}
+        :: public AbstractBooleanTest isNotUnknown {}
 |
     bp:BooleanPrimary  IS  UNKNOWN
-        :: AbstractBooleanTest isUnknown {}
+        :: public AbstractBooleanTest isUnknown {}
 ;
 
 interface BooleanPrimary extends Scalar<Boolean> : Sql {}

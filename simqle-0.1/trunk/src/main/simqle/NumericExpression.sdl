@@ -54,18 +54,9 @@ public class AbstractFactor<T> implements Factor<T> {}
 
 # negate retains type argument
 <T> Factor<T> ::=
-    p:NumericPrimary<T> :: implicit {}
+    e:ValueExpressionPrimary<T> :: implicit {}
 ;
 <T> Factor<T> ::= 
-    MINUS p:NumericPrimary<T> :: public AbstractFactor<T> negate {}
+    MINUS e:ValueExpressionPrimary<T> :: public AbstractFactor<T> opposite {}
 ;
 
-public interface NumericPrimary<T> extends Scalar<T> : Sql {}
-
-# no abstract class for NumericPrimary: no methods but implicit conversion
-
-# standard diffentiates <numeric function>. We do not create corresponding interface,
-# <numeric function> is just a <routine invocation>, which is <value expression>
-
-<T> NumericPrimary<T> ::= e:ValueExpressionPrimary<T> :: implicit {}
-;
