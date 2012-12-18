@@ -149,7 +149,8 @@ public class ResultSetRow implements Row {
 
         @Override
         public String getString() throws SQLException {
-            return resultSet.getString(label);
+            final String result = resultSet.getString(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override

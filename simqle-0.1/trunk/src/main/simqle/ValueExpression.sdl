@@ -2,7 +2,7 @@ public interface ValueExpression<T> extends Scalar<T> : Sql {}
 
 // public class AbstractValue<T> implements ValueExpression<T> {}
 
-# Hierarchy of ValueExpression approximately follws SQL standard.
+# Hierarchy of ValueExpression approximately follows SQL standard.
 # For some interfaces type parameters are bounded
 # <row value expression> is not considered being <value expression>
 # it is not Scalar and we have different rules for RowValueExpression and ValueExpression

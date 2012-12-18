@@ -87,7 +87,7 @@ public class StatementParameters implements SqlParameters {
 
         @Override
         public void setString(String x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            statement.setString(position, x);
         }
 
         @Override
