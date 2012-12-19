@@ -67,7 +67,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsFunctionArgument() throws Exception {
         final LongParameter param = new LongParameter(1L);
         final LongColumn id = createId();
-        final String sql = new FunctionCall<Long>("abs") {
+        final String sql = new SqlFunction<Long>("abs") {
             @Override
             public Long value(final Element element) throws SQLException {
                 return element.getLong();
@@ -360,6 +360,13 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? * T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testMultNumber() throws Exception {
+        final LongColumn id  =  createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql = param.mult(5).plus(id).show();
+        assertSimilar("SELECT ? * ? + T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testOpposite() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
@@ -374,11 +381,25 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        final LongColumn id  =  createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql = param.plus(2).plus(id).show();
+        assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testMinus() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         final String sql = param.minus(id).show();
         assertSimilar("SELECT ? - T0.id AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMinusNumber() throws Exception {
+        final LongColumn id  =  createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql = param.minus(1.3).plus(id).show();
+        assertSimilar("SELECT ? - ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
@@ -388,11 +409,25 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? / T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        final LongColumn id  =  createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql = param.div(4L).plus(id).show();
+        assertSimilar("SELECT ? / ? + T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         final String sql = param.concat(id).show();
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
+    }
+
+    public void testString() throws Exception {
+        final LongColumn id  =  createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql = param.concat(" ").concat(id).show();
+        assertSimilar("SELECT ? || ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {

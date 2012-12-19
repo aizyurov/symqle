@@ -53,7 +53,7 @@ public class ColumnTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = new FunctionCall<Long>("abs") {
+        final String sql = new SqlFunction<Long>("abs") {
             @Override
             public Long value(final Element element) throws SQLException {
                 return element.getLong();
@@ -64,7 +64,7 @@ public class ColumnTest extends SqlTestCase {
 
     public void testAsFunctionMultipleArguments() throws Exception {
         final LongColumn column = createId();
-        final String sql = new FunctionCall<Long>("max") {
+        final String sql = new SqlFunction<Long>("max") {
             @Override
             public Long value(final Element element) throws SQLException {
                 return element.getLong();
@@ -327,7 +327,7 @@ public class ColumnTest extends SqlTestCase {
     public void testFunction() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        FunctionCall<Long> sumOf = new FunctionCall<Long>("SUM_OF") {
+        SqlFunction<Long> sumOf = new SqlFunction<Long>("SUM_OF") {
             @Override
             public Long value(final Element element) throws SQLException {
                 return element.getLong();

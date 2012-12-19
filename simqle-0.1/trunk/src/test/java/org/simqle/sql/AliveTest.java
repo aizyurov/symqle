@@ -45,7 +45,7 @@ public class AliveTest extends SqlTestCase {
         return new Concat().apply(v1, v2);
     }
 
-    private static class Concat extends FunctionCall<String> {
+    private static class Concat extends SqlFunction<String> {
         public Concat() {
             super("concat");
         }

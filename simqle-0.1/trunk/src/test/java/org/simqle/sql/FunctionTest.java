@@ -1,15 +1,24 @@
 package org.simqle.sql;
 
+import org.simqle.Callback;
 import org.simqle.Element;
+import org.simqle.Function;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
  */
 public class FunctionTest extends SqlTestCase {
 
-    public static class Concat extends FunctionCall<String> {
+    public static class Concat extends SqlFunction<String> {
 
         public Concat() {
             super("concat");
@@ -26,7 +35,7 @@ public class FunctionTest extends SqlTestCase {
     }
 
     private AbstractRoutineInvocation<Long> abs(ValueExpression<Long> e) {
-        return new FunctionCall<Long>("abs"){
+        return new SqlFunction<Long>("abs"){
 
             public AbstractRoutineInvocation<Long> apply(ValueExpression<?> arg) {
                 return super.apply(arg);
@@ -56,7 +65,7 @@ public class FunctionTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = new FunctionCall<Long>("abs") {
+        final String sql = new SqlFunction<Long>("abs") {
             @Override
             public Long value(final Element element) throws SQLException {
                 return element.getLong();
@@ -209,8 +218,8 @@ public class FunctionTest extends SqlTestCase {
         final LongColumn id  =  createId();
         // find all but the most old
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(abs(id).in(id2)).show();
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE abs(T1.id) IN(SELECT T2.id FROM employee AS T2)", sql);
+        String sql = id.where(abs(id).in(abs(id2))).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE abs(T1.id) IN(SELECT abs(T2.id) FROM employee AS T2)", sql);
     }
 
     public void testNotInAll() throws Exception {
@@ -292,6 +301,12 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) ASC", sql);
     }
 
+    public void testNumericValue() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).where(id.plus(0).eq(abs(id).numericValue())).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 WHERE T0.id + ? = abs(T0.id)", sql);
+    }
+
     public void testOpposite() throws Exception {
         final LongColumn id  =  createId();
         String sql = abs(id).opposite().show();
@@ -305,11 +320,23 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) + T0.age AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).plus(1).show();
+        assertSimilar("SELECT abs(T0.id) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMinus() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = abs(id).minus(age).show();
         assertSimilar("SELECT abs(T0.id) - T0.age AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMinusNumber() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).minus(2).show();
+        assertSimilar("SELECT abs(T0.id) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
@@ -319,11 +346,23 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) * T0.age AS C0 FROM person AS T0", sql);
     }
 
+    public void testMultNumber() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).mult(2).show();
+        assertSimilar("SELECT abs(T0.id) * ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testDiv() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
         String sql = abs(id).div(age).show();
         assertSimilar("SELECT abs(T0.id) / T0.age AS C0 FROM person AS T0", sql);
+    }
+
+    public void testDivNumber() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).div(3).show();
+        assertSimilar("SELECT abs(T0.id) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
@@ -332,6 +371,90 @@ public class FunctionTest extends SqlTestCase {
         String sql = abs(id).concat(age).show();
         assertSimilar("SELECT abs(T0.id) || T0.age AS C0 FROM person AS T0", sql);
     }
+
+    public void testConcatString() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).concat(" id").show();
+        assertSimilar("SELECT abs(T0.id) || ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPair() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = abs(id).pair(age).show();
+        assertSimilar("SELECT abs(T0.id) AS C0, T0.age AS C1 FROM person AS T0", sql);
+
+    }
+
+    public void testConvert() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = abs(id).convert(new Function<Long, String>() {
+            @Override
+            public String apply(final Long arg) {
+                return String.valueOf(arg);
+            }
+        }).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", sql);
+
+    }
+
+    public void testList() throws Exception {
+        final DataSource datasource = createMock(DataSource.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        final String queryString = abs(createId()).show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        final List<Long> list = abs(createId()).list(datasource);
+        assertEquals(1, list.size());
+        assertEquals(123L, list.get(0).longValue());
+        verify(datasource, connection, statement, resultSet);
+    }
+
+
+    public void testScroll() throws Exception {
+        final DataSource datasource = createMock(DataSource.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        final String queryString = abs(createId()).show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        abs(createId()).scroll(datasource, new Callback<Long, SQLException>() {
+            int callCount = 0;
+
+            @Override
+            public void iterate(final Long aLong) throws SQLException, BreakException {
+                if (callCount++ != 0) {
+                    fail("One call expected, actually " + callCount);
+                }
+                assertEquals(123L, aLong.longValue());
+            }
+        });
+        verify(datasource, connection,  statement, resultSet);
+    }
+
 
     private static class Person extends Table {
         private Person() {

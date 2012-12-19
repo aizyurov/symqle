@@ -114,10 +114,10 @@ ArgumentList ::=
 ;
 
 import org.simqle.CustomSql;
-public abstract class FunctionCall<T> implements RoutineName<T> {
+public abstract class SqlFunction<T> implements RoutineName<T> {
     private final String name;
 
-    protected FunctionCall(String name) {
+    protected SqlFunction(String name) {
         this.name = name;
     }
 
