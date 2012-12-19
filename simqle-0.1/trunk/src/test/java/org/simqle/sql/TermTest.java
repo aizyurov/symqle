@@ -204,6 +204,11 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id * ? + T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        String sql = person.id.mult(two).plus(2).show();
+        assertSimilar("SELECT T0.id * ? + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(person.id.mult(two).booleanValue()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id * ?)", sql);
@@ -214,19 +219,40 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id * ? - T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testMinusNumber() throws Exception {
+        String sql = person.id.mult(two).minus(2).show();
+        assertSimilar("SELECT T0.id * ? - ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMult() throws Exception {
         String sql = person.id.mult(two).mult(person.id.mult(two)).show();
         assertSimilar("SELECT T0.id * ? *(T0.id * ?) AS C0 FROM person AS T0", sql);
     }
+
+    public void testMultNumber() throws Exception {
+        String sql = person.id.mult(two).mult(2).show();
+        assertSimilar("SELECT T0.id * ? * ? AS C0 FROM person AS T0", sql);
+    }
+
 
     public void testDiv() throws Exception {
         String sql = person.id.mult(two).div(person.id.mult(two)).show();
         assertSimilar("SELECT T0.id * ? /(T0.id * ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        String sql = person.id.mult(two).div(2).show();
+        assertSimilar("SELECT T0.id * ? / ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.id.mult(two).concat(person.id.mult(two)).show();
         assertSimilar("SELECT(T0.id * ?) ||(T0.id * ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = person.id.mult(two).concat(" ids").show();
+        assertSimilar("SELECT(T0.id * ?) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {

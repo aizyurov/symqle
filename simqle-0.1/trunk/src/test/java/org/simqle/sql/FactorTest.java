@@ -187,6 +187,11 @@ public class FactorTest extends SqlTestCase {
     }
 
 
+    public void testNumericValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().numericValue().eq(person.id.opposite().numericValue())).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(- T0.id) =(- T0.id)", sql);
+    }
+
     public void testOpposite() throws Exception {
         final String sql = person.id.opposite().opposite().show();
         assertSimilar("SELECT -(- T0.id) AS C0 FROM person AS T0", sql);
