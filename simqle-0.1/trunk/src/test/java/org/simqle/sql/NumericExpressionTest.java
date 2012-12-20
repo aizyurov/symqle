@@ -199,6 +199,11 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id + ? +(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        String sql = person.id.plus(2).plus(3).show();
+        assertSimilar("SELECT T0.id + ? + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(person.id.plus(two).booleanValue()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id + ?)", sql);
@@ -209,9 +214,19 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id + ? -(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testMinusNumber() throws Exception {
+        String sql = person.id.plus(two).minus(2).show();
+        assertSimilar("SELECT T0.id + ? - ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMult() throws Exception {
         String sql = person.id.plus(two).mult(person.id.plus(two)).show();
         assertSimilar("SELECT(T0.id + ?) *(T0.id + ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMultNumber() throws Exception {
+        String sql = person.id.plus(two).mult(2).show();
+        assertSimilar("SELECT(T0.id + ?) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
@@ -219,9 +234,19 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(T0.id + ?) /(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        String sql = person.id.plus(two).div(2).show();
+        assertSimilar("SELECT(T0.id + ?) / ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.id.plus(two).concat(person.id.plus(two)).show();
         assertSimilar("SELECT(T0.id + ?) ||(T0.id + ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = person.id.plus(two).concat(" id").show();
+        assertSimilar("SELECT(T0.id + ?) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {

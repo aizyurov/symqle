@@ -247,6 +247,11 @@ public class BooleanFactorTest extends SqlTestCase {
         assertSimilar("SELECT(NOT T0.smart) +(NOT T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        String sql = person.smart.booleanValue().negate().plus(2).show();
+        assertSimilar("SELECT(NOT T0.smart) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.smart.booleanValue().negate().booleanValue().show();
         assertSimilar("SELECT(NOT T0.smart) AS C0 FROM person AS T0", sql);
@@ -257,9 +262,19 @@ public class BooleanFactorTest extends SqlTestCase {
         assertSimilar("SELECT(NOT T0.smart) -(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testMinusNumber() throws Exception {
+        String sql = person.smart.booleanValue().negate().minus(2).show();
+        assertSimilar("SELECT(NOT T0.smart) - ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMult() throws Exception {
         String sql = person.smart.booleanValue().negate().mult(person.alive.booleanValue().negate()).show();
         assertSimilar("SELECT(NOT T0.smart) *(NOT T0.alive) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMultNumber() throws Exception {
+        String sql = person.smart.booleanValue().negate().mult(2).show();
+        assertSimilar("SELECT(NOT T0.smart) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
@@ -267,9 +282,19 @@ public class BooleanFactorTest extends SqlTestCase {
         assertSimilar("SELECT(NOT T0.smart) /(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        String sql = person.smart.booleanValue().negate().div(2).show();
+        assertSimilar("SELECT(NOT T0.smart) / ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.smart.booleanValue().negate().concat(person.alive.booleanValue()).show();
         assertSimilar("SELECT(NOT T0.smart) ||(T0.alive) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = person.smart.booleanValue().negate().concat(" test").show();
+        assertSimilar("SELECT(NOT T0.smart) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {

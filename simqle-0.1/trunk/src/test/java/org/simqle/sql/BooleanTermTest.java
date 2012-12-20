@@ -252,6 +252,11 @@ public class BooleanTermTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart AND T0.cute) +(T0.alive AND T0.cute) AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        String sql = person.smart.booleanValue().and(person.cute.booleanValue()).plus(2).show();
+        assertSimilar("SELECT(T0.smart AND T0.cute) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.smart.booleanValue().and(person.cute.booleanValue()).booleanValue().show();
         assertSimilar("SELECT(T0.smart AND T0.cute) AS C0 FROM person AS T0", sql);
@@ -262,9 +267,19 @@ public class BooleanTermTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart AND T0.cute) -(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testMinusNumber() throws Exception {
+        String sql = person.smart.booleanValue().and(person.cute.booleanValue()).minus(2).show();
+        assertSimilar("SELECT(T0.smart AND T0.cute) - ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMult() throws Exception {
         String sql = person.smart.booleanValue().and(person.cute.booleanValue()).mult(person.alive.booleanValue().and(person.cute.booleanValue())).show();
         assertSimilar("SELECT(T0.smart AND T0.cute) *(T0.alive AND T0.cute) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMultNumber() throws Exception {
+        String sql = person.smart.booleanValue().and(person.cute.booleanValue()).mult(2).show();
+        assertSimilar("SELECT(T0.smart AND T0.cute) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
@@ -272,9 +287,19 @@ public class BooleanTermTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart AND T0.cute) /(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        String sql = person.smart.booleanValue().and(person.cute.booleanValue()).div(2).show();
+        assertSimilar("SELECT(T0.smart AND T0.cute) / ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.smart.booleanValue().and(person.cute.booleanValue()).concat(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart AND T0.cute) ||(T0.alive) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = person.smart.booleanValue().and(person.cute.booleanValue()).concat(" test").show();
+        assertSimilar("SELECT(T0.smart AND T0.cute) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {
