@@ -301,12 +301,6 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) ASC", sql);
     }
 
-    public void testNumericValue() throws Exception {
-        final LongColumn id  =  createId();
-        String sql = abs(id).where(id.plus(0).eq(abs(id).numericValue())).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 WHERE T0.id + ? = abs(T0.id)", sql);
-    }
-
     public void testOpposite() throws Exception {
         final LongColumn id  =  createId();
         String sql = abs(id).opposite().show();

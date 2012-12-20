@@ -187,11 +187,6 @@ public class FactorTest extends SqlTestCase {
     }
 
 
-    public void testNumericValue() throws Exception {
-        final String sql = person.id.where(person.id.opposite().numericValue().eq(person.id.opposite().numericValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(- T0.id) =(- T0.id)", sql);
-    }
-
     public void testOpposite() throws Exception {
         final String sql = person.id.opposite().opposite().show();
         assertSimilar("SELECT -(- T0.id) AS C0 FROM person AS T0", sql);
@@ -201,6 +196,11 @@ public class FactorTest extends SqlTestCase {
     public void testPlus() throws Exception {
         String sql = person.id.opposite().plus(person.id.opposite()).show();
         assertSimilar("SELECT - T0.id + - T0.id AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPlusNumber() throws Exception {
+        String sql = person.id.opposite().plus(2).show();
+        assertSimilar("SELECT - T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testBooleanValue() throws Exception {
@@ -213,9 +213,19 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT - T0.id - - T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testMinusNumber() throws Exception {
+        String sql = person.id.opposite().minus(2).show();
+        assertSimilar("SELECT - T0.id - ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMult() throws Exception {
         String sql = person.id.opposite().mult(person.id.opposite()).show();
         assertSimilar("SELECT - T0.id * - T0.id AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMultNumber() throws Exception {
+        String sql = person.id.opposite().mult(-2).show();
+        assertSimilar("SELECT - T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
@@ -223,9 +233,19 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT - T0.id / - T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        String sql = person.id.opposite().div(2).show();
+        assertSimilar("SELECT - T0.id / ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.id.opposite().concat(person.id.opposite()).show();
         assertSimilar("SELECT(- T0.id) ||(- T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = person.id.opposite().concat(" id").show();
+        assertSimilar("SELECT(- T0.id) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {

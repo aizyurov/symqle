@@ -66,11 +66,6 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
     }
 
-    public void testNumericValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).numericValue().eq(person.id.numericValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(? || T0.id) = T0.id", sql);
-    }
-
     public void testNe() throws Exception {
         final String sql = person.id.where(numberSign.concat(person.id).ne(numberSign)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <> ?", sql);
