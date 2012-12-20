@@ -252,6 +252,11 @@ public class NullPredicateTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart IS NULL) +(T0.alive IS NULL) AS C0 FROM person AS T0", sql);
     }
 
+    public void testPlusNumber() throws Exception {
+        String sql = person.smart.isNull().plus(2).show();
+        assertSimilar("SELECT(T0.smart IS NULL) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.smart.isNull().booleanValue().show();
         assertSimilar("SELECT(T0.smart IS NULL) AS C0 FROM person AS T0", sql);
@@ -262,19 +267,38 @@ public class NullPredicateTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart IS NULL) -(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testMinusNumber() throws Exception {
+        String sql = person.smart.isNull().minus(2).show();
+        assertSimilar("SELECT(T0.smart IS NULL) - ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testMult() throws Exception {
         String sql = person.smart.isNull().mult(person.alive.isNull()).show();
         assertSimilar("SELECT(T0.smart IS NULL) *(T0.alive IS NULL) AS C0 FROM person AS T0", sql);
     }
 
+    public void testMultNumber() throws Exception {
+        String sql = person.smart.isNull().mult(2).show();
+        assertSimilar("SELECT(T0.smart IS NULL) * ? AS C0 FROM person AS T0", sql);
+    }
     public void testDiv() throws Exception {
         String sql = person.smart.isNull().div(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart IS NULL) /(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
+    public void testDivNumber() throws Exception {
+        String sql = person.smart.isNull().div(2).show();
+        assertSimilar("SELECT(T0.smart IS NULL) / ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.smart.isNull().concat(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart IS NULL) ||(T0.alive) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = person.smart.isNull().concat(" test").show();
+        assertSimilar("SELECT(T0.smart IS NULL) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {
