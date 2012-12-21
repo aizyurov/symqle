@@ -6,7 +6,13 @@ public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
         implicit
         {
          public Sql z$create$ScalarSubquery(SqlContext context) {
-             final Sql base = qe.z$create$QueryExpressionScalar(createInnerContext(context));
+            final SqlContext innerContext = createInnerContext(context);
+            // learning
+            innerContext.get(TableRegistry.class).setTestMode(true);
+            qe.z$create$QueryExpressionScalar(innerContext);
+            // real Sql generation
+            innerContext.get(TableRegistry.class).setTestMode(false);
+             final Sql base = qe.z$create$QueryExpressionScalar(innerContext);
              return new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN);
          }
 }

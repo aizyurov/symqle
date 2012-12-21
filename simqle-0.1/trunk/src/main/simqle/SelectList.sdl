@@ -100,8 +100,8 @@ public class DefinedIdentifier implements Identifier {
 # implicit conversion of ValueExpression to SelectSublist
 # adds AS if needed (in outer context)
 # in inner contexts does not add AS
-:: <T> SelectSublist<T> implicit (final ValueExpression<T> ve) {
-    return new SelectSublist<T>(){
+:: <T> AbstractSelectSublist<T> select (final ValueExpression<T> ve) {
+    return new AbstractSelectSublist<T>(){
         @Override
         public Query<T> z$create$SelectSublist(SqlContext context) {
             final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
@@ -118,4 +118,10 @@ public class DefinedIdentifier implements Identifier {
         }
     };
 }
+
+# a convenience method: need not explicit select()
+::     public <T> AbstractQuerySpecification<T> where(final ValueExpression<T> ve, final WhereClause wc) {
+        return where(z$QueryBaseScalar$from$SelectSublist(select(ve)), wc);
+    }
+
 

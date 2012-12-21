@@ -193,6 +193,8 @@ public interface TableRegistry {
 
     boolean isInTestMode();
 
+    public void setTestMode(boolean test);
+
 }
 
 
@@ -251,12 +253,12 @@ public class SelectTableRegistry implements TableRegistry {
 
     private boolean inTestMode = false;
 
-    protected void setTestMode(boolean test) {
+    public void setTestMode(boolean test) {
         inTestMode = test;
     }
 
     public boolean isInTestMode() {
-        return parent != null ? parent.isInTestMode() : inTestMode;
+        return (parent != null ? parent.isInTestMode() : false ) || inTestMode;
     }
 
 
