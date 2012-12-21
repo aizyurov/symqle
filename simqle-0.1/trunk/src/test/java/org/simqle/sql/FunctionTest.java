@@ -2,7 +2,6 @@ package org.simqle.sql;
 
 import org.simqle.Callback;
 import org.simqle.Element;
-import org.simqle.Function;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -50,7 +49,7 @@ public class FunctionTest extends SqlTestCase {
 
     public void testSelectStatementFunctionality() throws Exception {
         final LongColumn col = createId();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", abs(col).show());
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", abs(col).select().show());
     }
 
     public void testSelectAll() throws Exception {
@@ -70,7 +69,7 @@ public class FunctionTest extends SqlTestCase {
             public Long value(final Element element) throws SQLException {
                 return element.getLong();
             }
-        }.apply(abs(createId())).show();
+        }.apply(abs(createId())).select().show();
         assertSimilar("SELECT abs(abs(T0.id)) AS C0 FROM person AS T0", sql);
     }
 
@@ -122,90 +121,6 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) <= T0.age", sql);
     }
 
-    public void testExceptAll() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).exceptAll(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.age AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).exceptDistinct(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExcept() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).except(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 EXCEPT SELECT T1.age AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionAll() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).unionAll(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION ALL SELECT T1.age AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).unionDistinct(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnion() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).union(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION SELECT T1.age AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectAll() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).intersectAll(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.age AS C0 FROM person AS T1", sql);
-
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).intersectDistinct(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
-
-    }
-
-    public void testIntersect() throws Exception {
-        final LongColumn column = createId();
-        final String sql = abs(column).intersect(new LongColumn("age", person2)).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT SELECT T1.age AS C0 FROM person AS T1", sql);
-
-    }
-
-    public void testUseSameTableInDistinct() throws Exception {
-        final LongColumn column = createId();
-        final LongColumn age = createAge();
-        final String sql = abs(column).intersectDistinct(age).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
-
-    }
-
-    public void testSelectForUpdate() throws Exception {
-        final LongColumn col = createId();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FOR UPDATE", abs(col).forUpdate().show());
-    }
-
-    public void testSelectForReadOnly() throws Exception {
-        final LongColumn col = createId();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FOR READ ONLY", abs(col).forReadOnly().show());
-    }
-
-    public void testExists() throws Exception {
-        final LongColumn id  =  createId();
-        // find all but the most old
-        final LongColumn age2 = new LongColumn("age", person2);
-        String sql = abs(id).where(abs(age2).exists()).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 WHERE EXISTS(SELECT abs(T1.age) FROM person AS T1)", sql);
-
-    }
-
     public void testInAll() throws Exception {
         final LongColumn id  =  createId();
         // find all but the most old
@@ -218,7 +133,7 @@ public class FunctionTest extends SqlTestCase {
         final LongColumn id  =  createId();
         // find all but the most old
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(abs(id).in(abs(id2))).show();
+        String sql = id.where(abs(id).in(abs(id2).select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE abs(T1.id) IN(SELECT abs(T2.id) FROM employee AS T2)", sql);
     }
 
@@ -303,93 +218,73 @@ public class FunctionTest extends SqlTestCase {
 
     public void testOpposite() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).opposite().show();
+        String sql = abs(id).opposite().select().show();
         assertSimilar("SELECT - abs(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testPlus() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = abs(id).plus(age).show();
+        String sql = abs(id).plus(age).select().show();
         assertSimilar("SELECT abs(T0.id) + T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testPlusNumber() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).plus(1).show();
+        String sql = abs(id).plus(1).select().show();
         assertSimilar("SELECT abs(T0.id) + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = abs(id).minus(age).show();
+        String sql = abs(id).minus(age).select().show();
         assertSimilar("SELECT abs(T0.id) - T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testMinusNumber() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).minus(2).show();
+        String sql = abs(id).minus(2).select().show();
         assertSimilar("SELECT abs(T0.id) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = abs(id).mult(age).show();
+        String sql = abs(id).mult(age).select().show();
         assertSimilar("SELECT abs(T0.id) * T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).mult(2).show();
+        String sql = abs(id).mult(2).select().show();
         assertSimilar("SELECT abs(T0.id) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = abs(id).div(age).show();
+        String sql = abs(id).div(age).select().show();
         assertSimilar("SELECT abs(T0.id) / T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).div(3).show();
+        String sql = abs(id).div(3).select().show();
         assertSimilar("SELECT abs(T0.id) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = abs(id).concat(age).show();
+        String sql = abs(id).concat(age).select().show();
         assertSimilar("SELECT abs(T0.id) || T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
         final LongColumn id  =  createId();
-        String sql = abs(id).concat(" id").show();
+        String sql = abs(id).concat(" id").select().show();
         assertSimilar("SELECT abs(T0.id) || ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testPair() throws Exception {
-        final LongColumn id  =  createId();
-        final LongColumn age = createAge();
-        String sql = abs(id).pair(age).show();
-        assertSimilar("SELECT abs(T0.id) AS C0, T0.age AS C1 FROM person AS T0", sql);
-
-    }
-
-    public void testConvert() throws Exception {
-        final LongColumn id  =  createId();
-        String sql = abs(id).convert(new Function<Long, String>() {
-            @Override
-            public String apply(final Long arg) {
-                return String.valueOf(arg);
-            }
-        }).show();
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", sql);
-
     }
 
     public void testList() throws Exception {
@@ -397,7 +292,7 @@ public class FunctionTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = abs(createId()).show();
+        final String queryString = abs(createId()).select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -410,7 +305,7 @@ public class FunctionTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = abs(createId()).list(datasource);
+        final List<Long> list = abs(createId()).select().list(datasource);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
@@ -422,7 +317,7 @@ public class FunctionTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = abs(createId()).show();
+        final String queryString = abs(createId()).select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -435,7 +330,7 @@ public class FunctionTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        abs(createId()).scroll(datasource, new Callback<Long, SQLException>() {
+        abs(createId()).select().scroll(datasource, new Callback<Long, SQLException>() {
             int callCount = 0;
 
             @Override

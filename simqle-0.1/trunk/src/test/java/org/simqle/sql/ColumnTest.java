@@ -1,7 +1,6 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
-import org.simqle.Function;
 
 import java.sql.SQLException;
 
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 public class ColumnTest extends SqlTestCase {
 
 
-    public void testValueFunctionality() throws Exception {
+    public void testShow() throws Exception {
         final LongColumn col = createId();
         Element element = new ElementAdapter() {
             @Override
@@ -43,13 +42,13 @@ public class ColumnTest extends SqlTestCase {
 
     public void testSelectAll() throws Exception {
         final LongColumn col = createId();
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0", col.select().all().show());
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0", col.all().show());
 
     }
 
     public void testSelectDistinct() throws Exception {
         final LongColumn col = createId();
-        assertSimilar("SELECT DISTINCT T0.id AS C0 FROM person AS T0", col.select().distinct().show());
+        assertSimilar("SELECT DISTINCT T0.id AS C0 FROM person AS T0", col.distinct().show());
     }
 
     public void testAsFunctionArgument() throws Exception {
@@ -219,7 +218,7 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn id  =  createId();
         // find all but the most old
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(id.in(id2.select().all())).show();
+        String sql = id.where(id.in(id2.all())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(SELECT ALL T1.id FROM employee AS T1)", sql);
     }
 
@@ -235,7 +234,7 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn id  =  createId();
         // find all but the most old
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(id.notIn(id2.select().all())).show();
+        String sql = id.where(id.notIn(id2.all())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(SELECT ALL T1.id FROM employee AS T1)", sql);
     }
 
@@ -278,42 +277,42 @@ public class ColumnTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.select().orderBy(age).show();
+        String sql = id.orderBy(age).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
     }
 
     public void testOrderByTwoColumns() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.select().orderBy(age, id).show();
+        String sql = id.orderBy(age, id).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age, T0.id", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.select().orderBy(age.nullsFirst()).show();
+        String sql = id.orderBy(age.nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.select().orderBy(age.nullsLast()).show();
+        String sql = id.orderBy(age.nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.select().orderBy(age.desc()).show();
+        String sql = id.orderBy(age.desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.select().orderBy(age.asc()).show();
+        String sql = id.orderBy(age.asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC", sql);
     }
 
@@ -417,26 +416,6 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
 
     }
-
-    public void testPair() throws Exception {
-        final Person person = new Person();
-        final LongColumn id = new LongColumn("id", person);
-        final LongColumn age = new LongColumn("age", person);
-        assertSimilar("SELECT T1.id AS C1, T1.age AS C2 FROM person AS T1", id.select().pair(age.select()).show());
-    }
-
-    public void testConvert() throws Exception {
-        final Person person = new Person();
-        final LongColumn id = new LongColumn("id", person);
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1", id.select().convert(new Function<Long, String>() {
-            @Override
-            public String apply(final Long arg) {
-                return String.valueOf(arg);
-            }
-        }).show());
-
-    }
-
 
     private static class Person extends Table {
         private Person() {

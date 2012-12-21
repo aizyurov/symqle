@@ -1,7 +1,6 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
-import org.simqle.Function;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -29,7 +28,7 @@ public class FactorTest extends SqlTestCase {
 
 
     public void testSelect() throws Exception {
-        final String sql = person.id.opposite().show();
+        final String sql = person.id.opposite().select().show();
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
     }
 
@@ -41,16 +40,6 @@ public class FactorTest extends SqlTestCase {
     public void testSelectDistinct() throws Exception {
         final String sql = person.id.opposite().distinct().show();
         assertSimilar("SELECT DISTINCT - T0.id AS C0 FROM person AS T0", sql);
-    }
-
-    public void testSelectForUpdate() throws Exception {
-        final String sql = person.id.opposite().forUpdate().show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
-    }
-
-    public void testSelectForReadOnly() throws Exception {
-        final String sql = person.id.opposite().forReadOnly().show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testWhere() throws Exception {
@@ -89,65 +78,13 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id <= T0.id", sql);
     }
 
-    public void testExcept() throws Exception {
-        final String sql = person.id.opposite().except(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 EXCEPT SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptAll() throws Exception {
-        final String sql = person.id.opposite().exceptAll(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final String sql = person.id.opposite().exceptDistinct(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnion() throws Exception {
-        final String sql = person.id.opposite().union(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 UNION SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionAll() throws Exception {
-        final String sql = person.id.opposite().unionAll(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 UNION ALL SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final String sql = person.id.opposite().unionDistinct(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersect() throws Exception {
-        final String sql = person.id.opposite().intersect(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 INTERSECT SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectAll() throws Exception {
-        final String sql = person.id.opposite().intersectAll(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final String sql = person.id.opposite().intersectDistinct(person2.id).show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.id AS C0 FROM person AS T1", sql);
-    }
-
-
-    public void testExists() throws Exception {
-        String sql = person.id.where(person2.id.opposite().exists()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1)", sql);
-
-    }
-
     public void testIn() throws Exception {
-        String sql = person.id.where(person.id.opposite().in(person2.id.opposite())).show();
+        String sql = person.id.where(person.id.opposite().in(person2.id.opposite().select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE - T1.id IN(SELECT - T2.id FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.id.opposite().notIn(person2.id)).show();
+        String sql = person.id.where(person.id.opposite().notIn(person2.id.select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE - T1.id NOT IN(SELECT T2.id FROM person AS T2)", sql);
     }
 
@@ -188,18 +125,18 @@ public class FactorTest extends SqlTestCase {
 
 
     public void testOpposite() throws Exception {
-        final String sql = person.id.opposite().opposite().show();
+        final String sql = person.id.opposite().opposite().select().show();
         assertSimilar("SELECT -(- T0.id) AS C0 FROM person AS T0", sql);
     }
 
 
     public void testPlus() throws Exception {
-        String sql = person.id.opposite().plus(person.id.opposite()).show();
+        String sql = person.id.opposite().plus(person.id.opposite()).select().show();
         assertSimilar("SELECT - T0.id + - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testPlusNumber() throws Exception {
-        String sql = person.id.opposite().plus(2).show();
+        String sql = person.id.opposite().plus(2).select().show();
         assertSimilar("SELECT - T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
@@ -209,58 +146,43 @@ public class FactorTest extends SqlTestCase {
     }
 
     public void testMinus() throws Exception {
-        String sql = person.id.opposite().minus(person.id.opposite()).show();
+        String sql = person.id.opposite().minus(person.id.opposite()).select().show();
         assertSimilar("SELECT - T0.id - - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMinusNumber() throws Exception {
-        String sql = person.id.opposite().minus(2).show();
+        String sql = person.id.opposite().minus(2).select().show();
         assertSimilar("SELECT - T0.id - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = person.id.opposite().mult(person.id.opposite()).show();
+        String sql = person.id.opposite().mult(person.id.opposite()).select().show();
         assertSimilar("SELECT - T0.id * - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        String sql = person.id.opposite().mult(-2).show();
+        String sql = person.id.opposite().mult(-2).select().show();
         assertSimilar("SELECT - T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        String sql = person.id.opposite().div(person.id.opposite()).show();
+        String sql = person.id.opposite().div(person.id.opposite()).select().show();
         assertSimilar("SELECT - T0.id / - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        String sql = person.id.opposite().div(2).show();
+        String sql = person.id.opposite().div(2).select().show();
         assertSimilar("SELECT - T0.id / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = person.id.opposite().concat(person.id.opposite()).show();
+        String sql = person.id.opposite().concat(person.id.opposite()).select().show();
         assertSimilar("SELECT(- T0.id) ||(- T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        String sql = person.id.opposite().concat(" id").show();
+        String sql = person.id.opposite().concat(" id").select().show();
         assertSimilar("SELECT(- T0.id) || ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testPair() throws Exception {
-        final String sql = person.id.opposite().pair(person.id.opposite()).show();
-        assertSimilar("SELECT - T1.id AS C1, - T1.id AS C2 FROM person AS T1", sql);
-    }
-
-    public void testConvert() throws Exception {
-        assertSimilar("SELECT - T1.id AS C1 FROM person AS T1", person.id.opposite().convert(new Function<Long, String>() {
-            @Override
-            public String apply(final Long arg) {
-                return String.valueOf(arg);
-            }
-        }).show());
-
     }
 
     public void testList() throws Exception {
@@ -268,7 +190,7 @@ public class FactorTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.opposite().show();
+        final String queryString = person.id.opposite().select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -281,7 +203,7 @@ public class FactorTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = person.id.opposite().list(datasource);
+        final List<Long> list = person.id.opposite().select().list(datasource);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
         verify(datasource, connection, statement, resultSet);
@@ -293,7 +215,7 @@ public class FactorTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.opposite().show();
+        final String queryString = person.id.opposite().select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -306,7 +228,7 @@ public class FactorTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.id.opposite().scroll(datasource, new Callback<Long, SQLException>() {
+        person.id.opposite().select().scroll(datasource, new Callback<Long, SQLException>() {
             int callCount = 0;
 
             @Override

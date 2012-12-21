@@ -2,7 +2,6 @@ package org.simqle.sql;
 
 import org.simqle.Callback;
 import org.simqle.Element;
-import org.simqle.Function;
 import org.simqle.SqlParameter;
 
 import javax.sql.DataSource;
@@ -31,7 +30,7 @@ public class StringExpressionTest extends SqlTestCase {
 
 
     public void testSelect() throws Exception {
-        final String sql = numberSign.concat(person.id).show();
+        final String sql = numberSign.concat(person.id).select().show();
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
@@ -43,16 +42,6 @@ public class StringExpressionTest extends SqlTestCase {
     public void testSelectDistinct() throws Exception {
         final String sql = numberSign.concat(person.id).distinct().show();
         assertSimilar("SELECT DISTINCT ? || T0.id AS C0 FROM person AS T0", sql);
-    }
-
-    public void testSelectForUpdate() throws Exception {
-        final String sql = numberSign.concat(person.id).forUpdate().show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
-    }
-
-    public void testSelectForReadOnly() throws Exception {
-        final String sql = numberSign.concat(person.id).forReadOnly().show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testWhere() throws Exception {
@@ -91,65 +80,13 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <= ?", sql);
     }
 
-    public void testExcept() throws Exception {
-        final String sql = numberSign.concat(person.id).except(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 EXCEPT SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptAll() throws Exception {
-        final String sql = numberSign.concat(person.id).exceptAll(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 EXCEPT ALL SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final String sql = numberSign.concat(person.id).exceptDistinct(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnion() throws Exception {
-        final String sql = numberSign.concat(person.id).union(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 UNION SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionAll() throws Exception {
-        final String sql = numberSign.concat(person.id).unionAll(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 UNION ALL SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final String sql = numberSign.concat(person.id).unionDistinct(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 UNION DISTINCT SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersect() throws Exception {
-        final String sql = numberSign.concat(person.id).intersect(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 INTERSECT SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectAll() throws Exception {
-        final String sql = numberSign.concat(person.id).intersectAll(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 INTERSECT ALL SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final String sql = numberSign.concat(person.id).intersectDistinct(numberSign.concat(person2.id)).show();
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT ? || T1.id AS C0 FROM person AS T1", sql);
-    }
-
-
-    public void testExists() throws Exception {
-        String sql = person.id.where(numberSign.concat(person2.id).exists()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT ? || T1.id FROM person AS T1)", sql);
-
-    }
-
     public void testIn() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).in(numberSign.concat(person2.id))).show();
+        String sql = person.id.where(numberSign.concat(person.id).in(numberSign.concat(person2.id).select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? || T1.id IN(SELECT ? || T2.id FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).notIn(numberSign.concat(person2.id))).show();
+        String sql = person.id.where(numberSign.concat(person.id).notIn(numberSign.concat(person2.id).select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? || T1.id NOT IN(SELECT ? || T2.id FROM person AS T2)", sql);
     }
 
@@ -190,13 +127,13 @@ public class StringExpressionTest extends SqlTestCase {
 
 
     public void testOpposite() throws Exception {
-        final String sql = numberSign.concat(person.id).opposite().show();
+        final String sql = numberSign.concat(person.id).opposite().select().show();
         assertSimilar("SELECT -(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
 
     public void testPlus() throws Exception {
-        String sql = numberSign.concat(person.id).plus(numberSign.concat(person.id)).show();
+        String sql = numberSign.concat(person.id).plus(numberSign.concat(person.id)).select().show();
         assertSimilar("SELECT(? || T0.id) +(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
@@ -206,38 +143,23 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testMinus() throws Exception {
-        String sql = numberSign.concat(person.id).minus(numberSign.concat(person.id)).show();
+        String sql = numberSign.concat(person.id).minus(numberSign.concat(person.id)).select().show();
         assertSimilar("SELECT(? || T0.id) -(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = numberSign.concat(person.id).mult(numberSign.concat(person.id)).show();
+        String sql = numberSign.concat(person.id).mult(numberSign.concat(person.id)).select().show();
         assertSimilar("SELECT(? || T0.id) *(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        String sql = numberSign.concat(person.id).div(numberSign.concat(person.id)).show();
+        String sql = numberSign.concat(person.id).div(numberSign.concat(person.id)).select().show();
         assertSimilar("SELECT(? || T0.id) /(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = numberSign.concat(person.id).concat(numberSign.concat(person.id)).show();
+        String sql = numberSign.concat(person.id).concat(numberSign.concat(person.id)).select().show();
         assertSimilar("SELECT ? || T0.id ||(? || T0.id) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testPair() throws Exception {
-        final String sql = numberSign.concat(person.id).pair(numberSign.concat(person.id)).show();
-        assertSimilar("SELECT ? || T1.id AS C1, ? || T1.id AS C2 FROM person AS T1", sql);
-    }
-
-    public void testConvert() throws Exception {
-        assertSimilar("SELECT ? || T1.id AS C1 FROM person AS T1", numberSign.concat(person.id).convert(new Function<String, String>() {
-            @Override
-            public String apply(final String arg) {
-                return arg;
-            }
-        }).show());
-
     }
 
     public void testList() throws Exception {
@@ -245,7 +167,7 @@ public class StringExpressionTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = numberSign.concat(person.id).show();
+        final String queryString = numberSign.concat(person.id).select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setString(1, "#");
@@ -259,7 +181,7 @@ public class StringExpressionTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<String> list = numberSign.concat(person.id).list(datasource);
+        final List<String> list = numberSign.concat(person.id).select().list(datasource);
         assertEquals(1, list.size());
         assertEquals("#123", list.get(0));
         verify(datasource, connection, statement, resultSet);
@@ -271,7 +193,7 @@ public class StringExpressionTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = numberSign.concat(person.id).show();
+        final String queryString = numberSign.concat(person.id).select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setString(1, "#");
@@ -285,7 +207,7 @@ public class StringExpressionTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        numberSign.concat(person.id).scroll(datasource, new Callback<String, SQLException>() {
+        numberSign.concat(person.id).select().scroll(datasource, new Callback<String, SQLException>() {
             int callCount = 0;
 
             @Override

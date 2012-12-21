@@ -5,9 +5,10 @@ package org.simqle.sql;
  */
 public class ExistsPredicateTest extends SqlTestCase {
 
+
     public void testSelect() throws Exception {
         try {
-            final String sql = two.exists().show();
+            final String sql = person.id.select().exists().select().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -15,21 +16,14 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testSelectAll() throws Exception {
-        try {
-            final String sql = two.exists().all().show();
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
+        final Person person2 = new Person();
 
-    public void testSelectDistinct() throws Exception {
-        try {
-            final String sql = two.exists().distinct().show();
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
+//        try {
+//            final String sql = two.exists().all().show();
+//            fail ("IllegalStateException expected but produced: "+sql);
+//        } catch (IllegalStateException e) {
+//            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+//        }
     }
 
     public void testPredicate() throws Exception {
@@ -127,10 +121,6 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) <=(T0.married)", sql);
     }
 
-    public void testExcept() throws Exception {
-        final String sql = manager.id.where(employee.name.eq(manager.name)).exists().except(manager.retired.booleanValue()).where(person.name.isNotNull()).show();
-        assertSimilar("SELECT EXISTS(SELECT T0.id FROM employee AS T0 WHERE T0.name = T1.name) AS C0 FROM person AS T1 WHERE T1.name IS NOT NULL", sql);
-    }
 
 
 

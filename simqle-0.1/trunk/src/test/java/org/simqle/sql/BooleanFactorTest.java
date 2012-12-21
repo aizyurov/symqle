@@ -1,7 +1,6 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
-import org.simqle.Function;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -79,7 +78,7 @@ public class BooleanFactorTest extends SqlTestCase {
     }
 
     public void testSelect() throws Exception {
-        final String sql = person.alive.booleanValue().negate().show();
+        final String sql = person.alive.booleanValue().negate().select().show();
         assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0", sql);
     }
 
@@ -91,16 +90,6 @@ public class BooleanFactorTest extends SqlTestCase {
     public void testSelectDistinct() throws Exception {
         final String sql = person.alive.booleanValue().negate().distinct().show();
         assertSimilar("SELECT DISTINCT NOT T0.alive AS C0 FROM person AS T0", sql);
-    }
-
-    public void testSelectForUpdate() throws Exception {
-        final String sql = person.alive.booleanValue().negate().forUpdate().show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 FOR UPDATE", sql);
-    }
-
-    public void testSelectForReadOnly() throws Exception {
-        final String sql = person.alive.booleanValue().negate().forReadOnly().show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testWhere() throws Exception {
@@ -139,65 +128,13 @@ public class BooleanFactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(NOT T0.alive) <=(T0.smart)", sql);
     }
 
-    public void testExcept() throws Exception {
-        final String sql = person.alive.booleanValue().negate().except(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 EXCEPT SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptAll() throws Exception {
-        final String sql = person.alive.booleanValue().negate().exceptAll(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().negate().exceptDistinct(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnion() throws Exception {
-        final String sql = person.alive.booleanValue().negate().union(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 UNION SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionAll() throws Exception {
-        final String sql = person.alive.booleanValue().negate().unionAll(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 UNION ALL SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().negate().unionDistinct(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersect() throws Exception {
-        final String sql = person.alive.booleanValue().negate().intersect(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 INTERSECT SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectAll() throws Exception {
-        final String sql = person.alive.booleanValue().negate().intersectAll(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().negate().intersectDistinct(person2.smart.booleanValue()).show();
-        assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.smart AS C0 FROM person AS T1", sql);
-    }
-
-
-    public void testExists() throws Exception {
-        String sql = person.id.where(person2.smart.booleanValue().negate().exists()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT NOT T1.smart FROM person AS T1)", sql);
-
-    }
-
     public void testIn() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().negate().in(person2.alive.booleanValue().negate())).show();
+        String sql = person.id.where(person.smart.booleanValue().negate().in(person2.alive.booleanValue().negate().select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(NOT T1.smart) IN(SELECT NOT T2.alive FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().negate().notIn(person2.alive.booleanValue())).show();
+        String sql = person.id.where(person.smart.booleanValue().negate().notIn(person2.alive.booleanValue().select())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(NOT T1.smart) NOT IN(SELECT T2.alive FROM person AS T2)", sql);
     }
 
@@ -237,79 +174,64 @@ public class BooleanFactorTest extends SqlTestCase {
     }
 
     public void testOpposite() throws Exception {
-        final String sql = person.smart.booleanValue().negate().opposite().show();
+        final String sql = person.smart.booleanValue().negate().opposite().select().show();
         assertSimilar("SELECT -(NOT T0.smart) AS C0 FROM person AS T0", sql);
     }
 
 
     public void testPlus() throws Exception {
-        String sql = person.smart.booleanValue().negate().plus(person.alive.booleanValue().negate()).show();
+        String sql = person.smart.booleanValue().negate().plus(person.alive.booleanValue().negate()).select().show();
         assertSimilar("SELECT(NOT T0.smart) +(NOT T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testPlusNumber() throws Exception {
-        String sql = person.smart.booleanValue().negate().plus(2).show();
+        String sql = person.smart.booleanValue().negate().plus(2).select().show();
         assertSimilar("SELECT(NOT T0.smart) + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.smart.booleanValue().negate().booleanValue().show();
+        String sql = person.smart.booleanValue().negate().booleanValue().select().show();
         assertSimilar("SELECT(NOT T0.smart) AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
-        String sql = person.smart.booleanValue().negate().minus(person.alive.booleanValue()).show();
+        String sql = person.smart.booleanValue().negate().minus(person.alive.booleanValue()).select().show();
         assertSimilar("SELECT(NOT T0.smart) -(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testMinusNumber() throws Exception {
-        String sql = person.smart.booleanValue().negate().minus(2).show();
+        String sql = person.smart.booleanValue().negate().minus(2).select().show();
         assertSimilar("SELECT(NOT T0.smart) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = person.smart.booleanValue().negate().mult(person.alive.booleanValue().negate()).show();
+        String sql = person.smart.booleanValue().negate().mult(person.alive.booleanValue().negate()).select().show();
         assertSimilar("SELECT(NOT T0.smart) *(NOT T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        String sql = person.smart.booleanValue().negate().mult(2).show();
+        String sql = person.smart.booleanValue().negate().mult(2).select().show();
         assertSimilar("SELECT(NOT T0.smart) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        String sql = person.smart.booleanValue().negate().div(person.alive.booleanValue()).show();
+        String sql = person.smart.booleanValue().negate().div(person.alive.booleanValue()).select().show();
         assertSimilar("SELECT(NOT T0.smart) /(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        String sql = person.smart.booleanValue().negate().div(2).show();
+        String sql = person.smart.booleanValue().negate().div(2).select().show();
         assertSimilar("SELECT(NOT T0.smart) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = person.smart.booleanValue().negate().concat(person.alive.booleanValue()).show();
+        String sql = person.smart.booleanValue().negate().concat(person.alive.booleanValue()).select().show();
         assertSimilar("SELECT(NOT T0.smart) ||(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        String sql = person.smart.booleanValue().negate().concat(" test").show();
+        String sql = person.smart.booleanValue().negate().concat(" test").select().show();
         assertSimilar("SELECT(NOT T0.smart) || ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testPair() throws Exception {
-        final String sql = person.smart.booleanValue().negate().pair(person.alive.booleanValue()).show();
-        assertSimilar("SELECT NOT T1.smart AS C1, T1.alive AS C2 FROM person AS T1", sql);
-    }
-
-    public void testConvert() throws Exception {
-        assertSimilar("SELECT NOT T1.alive AS C1 FROM person AS T1", person.alive.booleanValue().negate().convert(new Function<Boolean, String>() {
-            @Override
-            public String apply(final Boolean arg) {
-                return String.valueOf(arg);
-            }
-        }).show());
-
     }
 
     public void testList() throws Exception {
@@ -317,7 +239,7 @@ public class BooleanFactorTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.booleanValue().negate().show();
+        final String queryString = person.alive.booleanValue().negate().select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -330,7 +252,7 @@ public class BooleanFactorTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Boolean> list = person.alive.booleanValue().negate().list(datasource);
+        final List<Boolean> list = person.alive.booleanValue().negate().select().list(datasource);
         assertEquals(1, list.size());
         assertEquals(Boolean.TRUE, list.get(0));
         verify(datasource, connection, statement, resultSet);
@@ -342,7 +264,7 @@ public class BooleanFactorTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.booleanValue().negate().show();
+        final String queryString = person.alive.booleanValue().negate().select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -355,7 +277,7 @@ public class BooleanFactorTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.alive.booleanValue().negate().scroll(datasource, new Callback<Boolean, SQLException>() {
+        person.alive.booleanValue().negate().select().scroll(datasource, new Callback<Boolean, SQLException>() {
             int callCount = 0;
 
             @Override

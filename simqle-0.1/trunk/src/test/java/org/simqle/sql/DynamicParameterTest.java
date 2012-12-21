@@ -2,7 +2,6 @@ package org.simqle.sql;
 
 import org.simqle.Callback;
 import org.simqle.Element;
-import org.simqle.Function;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -20,7 +19,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testSelectStatementNoFrom() throws Exception {
         final LongParameter param = new LongParameter(1L);
         try {
-            param.show();
+            param.select().show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -57,7 +56,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final LongParameter param = new LongParameter(1L);
         final String sql;
         try {
-            sql = id.in(param).show();
+            sql = id.in(param.select()).select().show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -125,143 +124,11 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <= T0.id", sql);
     }
 
-    public void testExceptAll() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.exceptAll(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.exceptDistinct(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testExcept() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.except(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testUnionAll() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.unionAll(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.unionDistinct(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testUnion() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.union(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testIntersectAll() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.intersectAll(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.intersectDistinct(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testIntersect() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.intersect(id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testSelectForUpdate() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.forUpdate().show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testSelectForReadOnly() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            param.forReadOnly().show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
-    public void testExists() throws Exception {
-        final LongColumn id = createId();
-        final LongParameter param = new LongParameter(1L);
-        try {
-            id.where(param.exists()).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
     public void testIn() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(param.in(id2)).show();
+        String sql = id.where(param.in(id2.select())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
@@ -269,7 +136,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(param.notIn(id2)).show();
+        String sql = id.where(param.notIn(id2.select())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
@@ -356,14 +223,14 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testMult() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.mult(id).show();
+        final String sql = param.mult(id).select().show();
         assertSimilar("SELECT ? * T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.mult(5).plus(id).show();
+        final String sql = param.mult(5).plus(id).select().show();
         assertSimilar("SELECT ? * ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
@@ -377,78 +244,57 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testPlus() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.plus(id).show();
+        final String sql = param.plus(id).select().show();
         assertSimilar("SELECT ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testPlusNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.plus(2).plus(id).show();
+        final String sql = param.plus(2).plus(id).select().show();
         assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.minus(id).show();
+        final String sql = param.minus(id).select().show();
         assertSimilar("SELECT ? - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMinusNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.minus(1.3).plus(id).show();
+        final String sql = param.minus(1.3).plus(id).select().show();
         assertSimilar("SELECT ? - ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.div(id).show();
+        final String sql = param.div(id).select().show();
         assertSimilar("SELECT ? / T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.div(4L).plus(id).show();
+        final String sql = param.div(4L).plus(id).select().show();
         assertSimilar("SELECT ? / ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.concat(id).show();
+        final String sql = param.concat(id).select().show();
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testString() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.concat(" ").concat(id).show();
+        final String sql = param.concat(" ").concat(id).select().show();
         assertSimilar("SELECT ? || ? || T0.id AS C0 FROM person AS T0", sql);
-    }
-
-    public void testPair() throws Exception {
-        final Person person = new Person();
-        final LongColumn id = new LongColumn("id", person);
-        final LongParameter param = new LongParameter(1L);
-        assertSimilar("SELECT ? AS C1, T1.id AS C2 FROM person AS T1", param.pair(id).show());
-    }
-
-    public void testConvert() throws Exception {
-        final Person person = new Person();
-        final LongColumn id = new LongColumn("id", person);
-        final LongParameter param = new LongParameter(1L);
-        final String sql = param.convert(new Function<Long, String>() {
-            @Override
-            public String apply(final Long arg) {
-                return String.valueOf(arg);
-            }
-        }).pair(id).show();
-        assertSimilar("SELECT ? AS C0, T1.id AS C1 FROM person AS T1", sql);
-
     }
 
     public void testList() throws Exception {
@@ -457,7 +303,7 @@ public class DynamicParameterTest extends SqlTestCase {
         // dataSource should never be called
         org.easymock.EasyMock.replay(dataSource);
         try {
-            param.list(dataSource);
+            param.select().list(dataSource);
             fail ("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -471,7 +317,7 @@ public class DynamicParameterTest extends SqlTestCase {
         // dataSource should never be called
         org.easymock.EasyMock.replay(dataSource);
         try {
-            param.scroll(dataSource, new Callback<Long, SQLException>() {
+            param.select().scroll(dataSource, new Callback<Long, SQLException>() {
                 @Override
                 public void iterate(final Long aLong) throws SQLException, BreakException {
                     fail("Must not get here");

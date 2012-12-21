@@ -52,7 +52,7 @@ public class QueryTest extends SqlTestCase {
     public void testScrollWithEmptyResultSet() throws Exception {
         Table person = new Table("person");
         final LongColumn id = new LongColumn("id", person);
-        final String queryString = id.show();
+        final String queryString = id.select().show();
         System.out.println("Show: " + queryString);
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -62,7 +62,7 @@ public class QueryTest extends SqlTestCase {
         statement.close();
         connection.close();
         replayAll();
-        id.scroll(datasource, new Callback<Long, SQLException>() {
+        id.select().scroll(datasource, new Callback<Long, SQLException>() {
             @Override
             public void iterate(Long aLong) throws SQLException, BreakException {
                 fail("Must not be called");
@@ -73,7 +73,7 @@ public class QueryTest extends SqlTestCase {
     public void testScroll() throws Exception {
         Table person = new Table("person");
         final LongColumn id = new LongColumn("id", person);
-        final String queryString = id.show();
+        final String queryString = id.select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -85,7 +85,7 @@ public class QueryTest extends SqlTestCase {
         statement.close();
         connection.close();
         replayAll();
-        id.scroll(datasource, new Callback<Long, SQLException>() {
+        id.select().scroll(datasource, new Callback<Long, SQLException>() {
             private int callCount = 0;
             @Override
             public void iterate(Long aLong) throws SQLException, BreakException {
@@ -102,7 +102,7 @@ public class QueryTest extends SqlTestCase {
     public void testList() throws Exception {
         Table person = new Table("person");
         final LongColumn id = new LongColumn("id", person);
-        final String queryString = id.show();
+        final String queryString = id.select().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -114,7 +114,7 @@ public class QueryTest extends SqlTestCase {
         statement.close();
         connection.close();
         replayAll();
-        final List<Long> list = id.list(datasource);
+        final List<Long> list = id.select().list(datasource);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
 
@@ -123,7 +123,7 @@ public class QueryTest extends SqlTestCase {
     public void testConvertAndList() throws Exception {
         Table person = new Table("person");
         final LongColumn id = new LongColumn("id", person);
-        final AbstractSelectList<String> convertedToString = id.convert(new Function<Long, String>() {
+        final AbstractSelectList<String> convertedToString = id.select().convert(new Function<Long, String>() {
             @Override
             public String apply(final Long arg) {
                 return String.valueOf(arg);
