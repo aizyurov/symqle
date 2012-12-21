@@ -224,6 +224,11 @@ public class ComparisonPredicateTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart = T0.cute) / ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testDiv() throws Exception {
+        String sql = person.smart.eq(person.cute).div(person.alive).select().show();
+        assertSimilar("SELECT(T0.smart = T0.cute) / T0.alive AS C0 FROM person AS T0", sql);
+    }
+
     public void testConcat() throws Exception {
         String sql = person.smart.eq(person.cute).concat(person.alive.booleanValue()).select().show();
         assertSimilar("SELECT(T0.smart = T0.cute) ||(T0.alive) AS C0 FROM person AS T0", sql);

@@ -15,15 +15,22 @@ public class ExistsPredicateTest extends SqlTestCase {
         }
     }
 
-    public void testSelectAll() throws Exception {
-        final Person person2 = new Person();
+    public void testAll() throws Exception {
+        try {
+            final String sql = person.id.select().exists().all().show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
 
-//        try {
-//            final String sql = two.exists().all().show();
-//            fail ("IllegalStateException expected but produced: "+sql);
-//        } catch (IllegalStateException e) {
-//            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-//        }
+    public void testDistinct() throws Exception {
+        try {
+            final String sql = person.id.select().exists().distinct().show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
     }
 
     public void testPredicate() throws Exception {
@@ -121,6 +128,47 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) <=(T0.married)", sql);
     }
 
+    public void testPlus() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().plus(two).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) + ?)", sql);
+    }
+
+    public void testPlusNumber() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().plus(2).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) + ?)", sql);
+    }
+
+
+    public void testMinus() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().minus(two).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) - ?)", sql);
+    }
+
+    public void testMinusNumber() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().minus(2).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) - ?)", sql);
+    }
+
+
+    public void testMult() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().mult(two).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) * ?)", sql);
+    }
+
+    public void testMultNumber() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().mult(2).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) * ?)", sql);
+    }
+
+    public void testDiv() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().div(two).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) / ?)", sql);
+    }
+
+    public void testDivNumber() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().div(2).booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE((EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) / ?)", sql);
+    }
 
 
 
