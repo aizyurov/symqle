@@ -8,27 +8,27 @@ public class AbstractSelectList<T> implements SelectList<T> {}
 ;
 
 # non-trivial construction of resulting Query; cannot be derived automatically
-import org.simqle.Pair;
-<T, U> SelectList<Pair<T, U>> ::= sl1:SelectList<T> COMMA sl2:SelectList<U> ::
-    public AbstractSelectList<Pair<T, U>> pair {
-            /**
-            * Creates a Query representing <code>this</code>
-            * @param context the Sql construction context
-            * @return query conforming to <code>this</code> syntax
-            */
-            public Query<Pair<T, U>> z$create$SelectList(final SqlContext context) {
-                final Query<T> query1 = sl1.z$create$SelectList(context);
-                final Query<U> query2 = sl2.z$create$SelectList(context);
-                DataExtractor<Pair<T, U>> extractor = new DataExtractor<Pair<T, U>>() {
-                    @Override
-                    public Pair<T, U> extract(Row row) throws SQLException {
-                        return Pair.of(query1.extract(row), query2.extract(row));
-                    }
-                };
-                return new ComplexQuery<Pair<T, U>>(extractor, query1, COMMA, query2);
-            }/*delegation*/
-    }
-;
+#import org.simqle.Pair;
+#<T, U> SelectList<Pair<T, U>> ::= sl1:SelectList<T> COMMA sl2:SelectList<U> ::
+#    public AbstractSelectList<Pair<T, U>> pair {
+#            /**
+#            * Creates a Query representing <code>this</code>
+#            * @param context the Sql construction context
+#            * @return query conforming to <code>this</code> syntax
+#            */
+#            public Query<Pair<T, U>> z$create$SelectList(final SqlContext context) {
+#                final Query<T> query1 = sl1.z$create$SelectList(context);
+#                final Query<U> query2 = sl2.z$create$SelectList(context);
+#                DataExtractor<Pair<T, U>> extractor = new DataExtractor<Pair<T, U>>() {
+#                    @Override
+#                    public Pair<T, U> extract(Row row) throws SQLException {
+#                        return Pair.of(query1.extract(row), query2.extract(row));
+#                    }
+#                };
+#                return new ComplexQuery<Pair<T, U>>(extractor, query1, COMMA, query2);
+#            }/*delegation*/
+#    }
+#;
 
 import org.simqle.Function;
 :: public <T, U> AbstractSelectList<U> convert(final SelectList<T> source, final Function<T, U> converter) {

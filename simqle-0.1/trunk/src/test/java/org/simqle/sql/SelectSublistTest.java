@@ -162,6 +162,20 @@ public class SelectSublistTest extends SqlTestCase {
     }
 
 
+    public void testWhere() throws Exception {
+        final String sql = person.id.select().where(person.name.isNotNull()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
+    }
+
+    public void testOrderBy() throws Exception {
+        final String sql = person.id.select().orderBy(person.name).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.name", sql);
+    }
+
+    public void testSelectSelect() throws Exception {
+        final String sql = person.id.select().select().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
 
 
 
