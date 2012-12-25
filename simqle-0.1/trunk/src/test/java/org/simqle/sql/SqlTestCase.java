@@ -4,10 +4,8 @@ import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,48 +17,51 @@ public abstract class SqlTestCase extends TestCase {
         final String asPattern = "([A-Za-z]+[0-9]+)";
         final Pattern aliasMatcher = Pattern.compile(asPattern);
         final Matcher matcher = aliasMatcher.matcher(expected);
-        final List<String> aliases = new ArrayList<String>();
+        final List<String> expectedAliases = new ArrayList<String>();
+        StringBuilder patternBuilder = new StringBuilder();
+        int lastMatchEnd = 0;
         while(matcher.find()) {
-            aliases.add(matcher.group(1));
+            expectedAliases.add(matcher.group(1));
+            patternBuilder.append(escapeSpecialSymbols(expected.substring(lastMatchEnd, matcher.start())));
+            patternBuilder.append(asPattern);
+            lastMatchEnd = matcher.end();
         }
-        matcher.replaceAll(asPattern);
-        final Map<String, List<Integer>> actualAliases = new HashMap<String, List<Integer>>();
-        final Matcher actualMatcher = aliasMatcher.matcher(actual);
-        int i = 0;
-        while (actualMatcher.find()) {
-            final String alias = actualMatcher.group(1);
-            List<Integer> positions = actualAliases.get(alias);
-            if (positions == null) {
-                positions = new ArrayList<Integer>();
-                actualAliases.put(alias, positions);
-            }
-            positions.add(i++);
+        if (lastMatchEnd < expected.length()) {
+            patternBuilder.append(escapeSpecialSymbols(expected.substring(lastMatchEnd, expected.length())));
         }
-        final Set<String> usedExpectedAliases = new HashSet<String>();
-        final Map<String, String> actualAliasToExpected = new HashMap<String, String>();
-        for (String alias: actualAliases.keySet()) {
-            final HashSet<String> mapping = new HashSet<String>();
-            for (Integer position: actualAliases.get(alias)) {
-                if (position >= aliases.size()) {
-                    fail("Does not match: \""+expected+"\" to \""+actual+"\"");
-                }
-                mapping.add(aliases.get(position));
-            }
-            if (mapping.size() != 1) {
-                fail("Does not match: \""+expected+"\" to \""+actual+"\"");
+        final Map<String, String> knownMappings = new HashMap<String, String>();
+        Pattern sqlPattern = Pattern.compile(patternBuilder.toString());
+        final Matcher actualMatcher = sqlPattern.matcher(actual);
+        assertTrue("Pattern does not match, actual: "+actual, actualMatcher.matches());
+        for (int i=1; i<= actualMatcher.groupCount(); i++) {
+            final String expectedAlias = expectedAliases.get(i-1);
+            final String mapped = knownMappings.get(expectedAlias);
+            if (mapped != null) {
+                assertEquals("Group " + i +" does not match: expected "+ mapped +" but was " + actualMatcher.group(i),
+                        mapped, actualMatcher.group(i));
             } else {
-                final String expectedAlias = mapping.iterator().next();
-                if (!usedExpectedAliases.add(expectedAlias)) {
-                    fail("Does not match: \""+expected+"\" to \""+actual+"\"");
-                }
-                actualAliasToExpected.put(alias, expectedAlias);
+                knownMappings.put(expectedAlias, mapped);
             }
         }
+    }
 
-        String actualWithReplacedAliases = actual;
-        for (String alias: actualAliasToExpected.keySet()) {
-            actualWithReplacedAliases = actualWithReplacedAliases.replaceAll(alias, actualAliasToExpected.get(alias));
+    public static String escapeSpecialSymbols(String source) {
+        StringBuilder builder = new StringBuilder();
+        for (int i=0; i<source.length(); i++) {
+            final char c = source.charAt(i);
+            switch (c) {
+                case '*':
+                case '.':
+                case '+':
+                case '?':
+                case '(':
+                case ')':
+                case '|':
+                    builder.append('\\');
+                // and fall through
+                default: builder.append(c);
+            }
         }
-        assertEquals(expected, actualWithReplacedAliases);
+        return builder.toString();
     }
 }

@@ -51,6 +51,10 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT T0.id AS C0 FROM person AS T0", col.distinct().show());
     }
 
+    public void testEscapeSpecialSymbols() {
+        assertEquals("abs\\(T0\\.id\\)", escapeSpecialSymbols("abs(T0.id)"));
+    }
+
     public void testAsFunctionArgument() throws Exception {
         final String sql = new SqlFunction<Long>("abs") {
             @Override

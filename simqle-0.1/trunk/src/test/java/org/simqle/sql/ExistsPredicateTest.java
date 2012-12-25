@@ -58,6 +58,12 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)", sql);
     }
 
+    public void testIn() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().in(employee2.id.isNotNull().where(employee2.name.eq(person.name)))).show();
+        System.out.println(sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(SELECT T2.id IS NOT NULL FROM employee AS T2 WHERE T2.name = T0.name)", sql);
+    }
+
     public void testIsTrue() throws Exception {
         final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().isTrue()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) IS TRUE", sql);
@@ -180,6 +186,11 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) || T0.name AS C0 FROM person AS T0", sql);
     }
 
+    public void testOrderBy() throws Exception {
+        final String sql = employee.id.where(employee.name.eq(person.name)).exists().orderBy(person.name).show();
+        assertSimilar("SELECT EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
+    }
+
     public void testConcatString() throws Exception {
         final String sql = employee.id.where(employee.name.eq(person.name)).exists().concat(" exists").where(person.name.isNotNull()).show();
         assertSimilar("SELECT(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) || ? AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
@@ -242,6 +253,7 @@ public class ExistsPredicateTest extends SqlTestCase {
 
     private static Person person = new Person();
     private static Employee employee = new Employee();
+    private static Employee employee2 = new Employee();
     private static Manager manager = new Manager();
 
     private DynamicParameter<Long> two = new LongParameter(2L);
