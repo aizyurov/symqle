@@ -126,9 +126,40 @@ public class SelectSublistTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) / ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
+    public void testConcat() throws Exception {
+        final String sql = employee.name.select().concat(person.id).orderBy(person.name).show();
+        assertSimilar("SELECT(SELECT T3.name FROM employee AS T3) || T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
+    }
 
+    public void testConcatString() throws Exception {
+        final String sql = employee.name.select().concat(" test").orderBy(person.name).show();
+        assertSimilar("SELECT(SELECT T3.name FROM employee AS T3) || ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
+    }
 
+    public void testSort() throws Exception {
+        final String sql = person.name.orderBy(employee.name.select()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1)", sql);
+    }
 
+    public void testSortAsc() throws Exception {
+        final String sql = person.name.orderBy(employee.name.select().asc()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1) ASC", sql);
+    }
+
+    public void testSortDesc() throws Exception {
+        final String sql = person.name.orderBy(employee.name.select().desc()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1) DESC", sql);
+    }
+
+    public void testSortNullsFirst() throws Exception {
+        final String sql = person.name.orderBy(employee.name.select().nullsFirst()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1) NULLS FIRST", sql);
+    }
+
+    public void testSortNullsLast() throws Exception {
+        final String sql = person.name.orderBy(employee.name.select().nullsLast()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1) NULLS LAST", sql);
+    }
 
 
 
