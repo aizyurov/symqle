@@ -81,23 +81,23 @@ public interface InPredicateValue<T> extends Scalar<T> : Sql {}
 public interface InValueList<T> extends Scalar<T> : Sql {}
 
 <T>  InValueList<T> ::=
-    e1:ValueExpression<T> COMMA e2:ValueExpression<T> :: protected InValueList<T> createInValueList {}
+    e1:ValueExpression<T> :: protected InValueList<T> createInValueList {}
 |
     l:InValueList<T> COMMA e:ValueExpression<T> :: protected InValueList<T> append {}
 ;
 
 # public convenience methods for construction of InPredicate from list of ValueExpression
 
-:: public <T> AbstractInPredicate in(final Predicand<T> p, ValueExpression<T> first, ValueExpression<T> second, ValueExpression<T>... other) {
-     return in(p, prepareInPredicateValue(first, second, other));
+:: public <T> AbstractInPredicate in(final Predicand<T> p, final ValueExpression<T> first, final ValueExpression<T>... other) {
+     return in(p, prepareInPredicateValue(first, other));
 }
 
-:: public <T> AbstractInPredicate notIn(final Predicand<T> p, ValueExpression<T> first, ValueExpression<T> second, ValueExpression<T>... other) {
-     return notIn(p, prepareInPredicateValue(first, second, other));
+:: public <T> AbstractInPredicate notIn(final Predicand<T> p, final ValueExpression<T> first, final ValueExpression<T>... other) {
+     return notIn(p, prepareInPredicateValue(first, other));
 }
 
-:: protected <T> InPredicateValue<T> prepareInPredicateValue(ValueExpression<T> first, ValueExpression<T> second, ValueExpression<T>... other) {
-     InValueList<T> list = createInValueList(first, second);
+:: protected <T> InPredicateValue<T> prepareInPredicateValue(ValueExpression<T> first, ValueExpression<T>... other) {
+     InValueList<T> list = createInValueList(first);
      for (ValueExpression<T> e: other) {
          list = append(list, e);
      }

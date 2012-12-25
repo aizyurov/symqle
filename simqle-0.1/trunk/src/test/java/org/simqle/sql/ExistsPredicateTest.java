@@ -64,10 +64,22 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(SELECT T2.id IS NOT NULL FROM employee AS T2 WHERE T2.name = T0.name)", sql);
     }
 
+    public void testInList() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().in(person.name.isNotNull())).show();
+        System.out.println(sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(T0.name IS NOT NULL)", sql);
+    }
+
     public void testNotIn() throws Exception {
         final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().notIn(employee2.id.isNotNull().where(employee2.name.eq(person.name)))).show();
         System.out.println(sql);
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) NOT IN(SELECT T2.id IS NOT NULL FROM employee AS T2 WHERE T2.name = T0.name)", sql);
+    }
+
+    public void testNotInList() throws Exception {
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().notIn(person.name.isNotNull())).show();
+        System.out.println(sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) NOT IN(T0.name IS NOT NULL)", sql);
     }
 
     public void testIsTrue() throws Exception {
@@ -190,6 +202,11 @@ public class ExistsPredicateTest extends SqlTestCase {
     public void testConcat() throws Exception {
         final String sql = employee.id.where(employee.name.eq(person.name)).exists().concat(person.name).select().show();
         assertSimilar("SELECT(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) || T0.name AS C0 FROM person AS T0", sql);
+    }
+
+    public void testOpposite() throws Exception {
+        final String sql = employee.id.where(employee.name.eq(person.name)).exists().opposite().orderBy(person.name).show();
+        assertSimilar("SELECT -(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
     public void testOrderBy() throws Exception {
