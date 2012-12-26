@@ -158,6 +158,33 @@ public class FactorTest extends SqlTestCase {
         String sql = person.id.opposite().concat(" id").select().show();
         assertSimilar("SELECT(- T0.id) || ? AS C0 FROM person AS T0", sql);
     }
+    
+    public void testOrderBy() throws Exception {
+        String sql = person.id.opposite().select().orderBy(person.id.opposite()).show();
+        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 ORDER BY - T0.id", sql);
+    }
+
+    public void testOrderByNullsFirst() throws Exception {
+        String sql = person.id.select().orderBy(person.id.opposite().nullsFirst()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY - T0.id NULLS FIRST", sql);
+    }
+
+    public void testOrderByNullsLast() throws Exception {
+        String sql = person.id.select().orderBy(person.id.opposite().nullsLast()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY - T0.id NULLS LAST", sql);
+    }
+
+    public void testOrderByDesc() throws Exception {
+        String sql = person.id.select().orderBy(person.id.opposite().desc()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY - T0.id DESC", sql);
+    }
+
+    public void testOrderByAsc() throws Exception {
+        String sql = person.id.select().orderBy(person.id.opposite().asc()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY - T0.id ASC", sql);
+    }
+
+    
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);

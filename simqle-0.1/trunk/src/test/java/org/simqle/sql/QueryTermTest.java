@@ -205,7 +205,11 @@ public class QueryTermTest extends SqlTestCase {
     public void testIntersect() throws Exception {
         final String sql = employee.id.select().intersect(manager.id.select()).intersect(person.id.select()).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT SELECT T0.id AS C0 FROM person AS T0", sql);
+    }
 
+    public void testIntersectWithIntersection() throws Exception {
+        final String sql = employee.id.select().intersect((manager.id.select()).intersect(person.id.select())).show();
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT(SELECT T2.id AS C0 FROM manager AS T2 INTERSECT SELECT T0.id AS C0 FROM person AS T0)", sql);
     }
 
     public void testIntersectAll() throws Exception {

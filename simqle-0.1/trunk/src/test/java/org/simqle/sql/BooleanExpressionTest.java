@@ -213,6 +213,32 @@ public class BooleanExpressionTest extends SqlTestCase {
         String sql = person.smart.booleanValue().or(person.cute.booleanValue()).concat(" test").select().show();
         assertSimilar("SELECT(T0.smart OR T0.cute) || ? AS C0 FROM person AS T0", sql);
     }
+    
+    public void testOrderBy() throws Exception {
+        String sql = person.alive.booleanValue().or(person.cute.booleanValue()).select().orderBy(person.smart.booleanValue().or(person.cute.booleanValue())).show();
+        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute", sql);
+    }
+
+    public void testOrderByNullsFirst() throws Exception {
+        String sql = person.id.select().orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).nullsFirst()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute NULLS FIRST", sql);
+    }
+
+    public void testOrderByNullsLast() throws Exception {
+        String sql = person.id.select().orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).nullsLast()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute NULLS LAST", sql);
+    }
+
+    public void testOrderByDesc() throws Exception {
+        String sql = person.id.select().orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).desc()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute DESC", sql);
+    }
+
+    public void testOrderByAsc() throws Exception {
+        String sql = person.id.select().orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).asc()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute ASC", sql);
+    }
+    
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
