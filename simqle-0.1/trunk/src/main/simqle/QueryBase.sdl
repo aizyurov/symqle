@@ -19,6 +19,7 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
          protected AbstractQueryBase<T> distinct {
          }
 ;
+
 # implicit conversion from SelectList
 
 :: <T> QueryBase<T> implicit(final SelectList<T> sl) {

@@ -173,6 +173,8 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 <T> CursorSpecification<T> ::=
     qe:QueryExpression<T> :: implicit {}
 |
+    qe:QueryExpressionScalar<T> :: implicit {}
+|
     qe:QueryExpression<T> obc:OrderByClause :: protected AbstractCursorSpecification<T> orderBy {}
 ;
 
@@ -185,16 +187,5 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 }
 
 
-#         {
-#             public CursorSpecification<T> orderBy(zSortSpecification sort, zSortSpecification... additionalSort) {
-#                 final SqlFactory factory = SqlFactory.getInstance();
-#                 zSortSpecificationList sortList = factory.zSortSpecificationList_IS_zSortSpecification(sort);
-#                 for (zSortSpecification sortSpec: additionalSort) {
-#                     sortList = factory.zSortSpecificationList_IS_zSortSpecificationList_COMMA_zSortSpecification(sortList, sortSpec);
-#                 }
-#                 zOrderByClause orderBy = factory.zOrderByClause_IS_ORDER_BY_zSortSpecificationList(sortList);
-#                 return new CursorSpecification<T>(factory.zCursorSpecification_IS_zQueryExpression_zOrderByClause(this, orderBy));
-#             }
-#         }
 
 

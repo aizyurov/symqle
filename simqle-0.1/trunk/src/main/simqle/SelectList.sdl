@@ -132,6 +132,7 @@ public class DefinedIdentifier implements Identifier {
         return distinct((SelectSublist<T>) select(ve));
     }
 
-::     public <T> AbstractCursorSpecification<T> orderBy(final ValueExpression<T> ve, final SortSpecification sort, final SortSpecification... additionalSort) {
+:: public <T> AbstractCursorSpecification<T> orderBy(final ValueExpression<T> ve, final SortSpecification sort, final SortSpecification... additionalSort) {
         return orderBy((QueryExpression<T>) select(ve), sort, additionalSort);
-    }
+     }
+

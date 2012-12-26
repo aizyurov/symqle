@@ -16,7 +16,8 @@ public interface Scalar<T>
 
 ::     private SqlContext createScalarInnerContext(SqlContext context) {
         SqlContext innerContext = new SqlContext();
-        innerContext.set(UniqueNameProvider.class, new ScalarNameProvider());
+        // if already in inner context, do not provide column labels
+        innerContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider());
         innerContext.set(Simqle.class, context.get(Simqle.class));
         // create an empty AbstractFromClause with current FromClause as enclosing
         innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));

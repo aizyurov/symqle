@@ -13,7 +13,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 |
     qb:QueryBase<T> wc:WhereClause :: public AbstractQueryExpression<T> where {}
 |
-    qes:QueryExpressionScalar<T> :: implicit {}
+    qs:QuerySpecification<T> :: implicit {}
 ;
 
 public interface QueryExpressionScalar<T> extends Scalar<T> : Query<T> {}
