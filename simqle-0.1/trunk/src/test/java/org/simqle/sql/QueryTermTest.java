@@ -225,27 +225,27 @@ public class QueryTermTest extends SqlTestCase {
     }
 
     public void testSort() throws Exception {
-        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id)))).show();
+        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id)))).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
     }
 
     public void testSortAsc() throws Exception {
-        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).asc()).show();
+        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).asc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) ASC", sql);
     }
 
     public void testSortDesc() throws Exception {
-        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).desc()).show();
+        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).desc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) DESC", sql);
     }
 
     public void testSortNullsFirst() throws Exception {
-        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).nullsFirst()).show();
+        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).nullsFirst()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) NULLS FIRST", sql);
     }
 
     public void testSortNullsLast() throws Exception {
-        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).nullsLast()).show();
+        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).nullsLast()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) NULLS LAST", sql);
     }
 

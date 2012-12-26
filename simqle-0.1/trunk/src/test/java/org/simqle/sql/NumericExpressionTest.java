@@ -100,27 +100,27 @@ public class NumericExpressionTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.id.plus(two).orderBy(person.id.plus(two)).show();
+        String sql = person.id.plus(two).select().orderBy(person.id.plus(two)).show();
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 ORDER BY T0.id + ?", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).nullsFirst()).show();
+        String sql = person.id.select().orderBy(person.id.plus(two).nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).nullsLast()).show();
+        String sql = person.id.select().orderBy(person.id.plus(two).nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).desc()).show();
+        String sql = person.id.select().orderBy(person.id.plus(two).desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).asc()).show();
+        String sql = person.id.select().orderBy(person.id.plus(two).asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? ASC", sql);
     }
 

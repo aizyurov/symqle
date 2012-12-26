@@ -203,31 +203,6 @@ public class BooleanPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart) NOT IN(T0.alive, T0.friendly)", sql);
    }
 
-    public void testOrderBy() throws Exception {
-        String sql = person.alive.booleanValue().orderBy(person.smart.booleanValue()).show();
-        assertSimilar("SELECT T0.alive AS C0 FROM person AS T0 ORDER BY T0.smart", sql);
-    }
-
-    public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().nullsFirst()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart NULLS FIRST", sql);
-    }
-
-    public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().nullsLast()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart NULLS LAST", sql);
-    }
-
-    public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().desc()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart DESC", sql);
-    }
-
-    public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().asc()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart ASC", sql);
-    }
-
 
     public void testOpposite() throws Exception {
         final String sql = person.smart.booleanValue().opposite().select().show();

@@ -18,12 +18,12 @@ public class CursorSpecificationTest extends SqlTestCase {
 
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.orderBy(person.id).forUpdate().show();
+        final String sql = person.id.select().orderBy(person.id).forUpdate().show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.orderBy(person.id).forReadOnly().show();
+        final String sql = person.id.select().orderBy(person.id).forReadOnly().show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR READ ONLY", sql);
     }
 
@@ -32,7 +32,7 @@ public class CursorSpecificationTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.orderBy(person.id).show();
+        final String queryString = person.id.select().orderBy(person.id).show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -45,7 +45,7 @@ public class CursorSpecificationTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = person.id.orderBy(person.id).list(datasource);
+        final List<Long> list = person.id.select().orderBy(person.id).list(datasource);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
@@ -57,7 +57,7 @@ public class CursorSpecificationTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.orderBy(person.id).show();
+        final String queryString = person.id.select().orderBy(person.id).show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -70,7 +70,7 @@ public class CursorSpecificationTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.id.orderBy(person.id).scroll(datasource, new Callback<Long, SQLException>() {
+        person.id.select().orderBy(person.id).scroll(datasource, new Callback<Long, SQLException>() {
             int callCount = 0;
 
             @Override

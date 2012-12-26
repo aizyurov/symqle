@@ -101,27 +101,27 @@ public class StringExpressionTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        String sql = numberSign.concat(person.id).orderBy(numberSign.concat(person.id)).show();
+        String sql = numberSign.concat(person.id).select().orderBy(numberSign.concat(person.id)).show();
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).nullsFirst()).show();
+        String sql = person.id.select().orderBy(numberSign.concat(person.id).nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).nullsLast()).show();
+        String sql = person.id.select().orderBy(numberSign.concat(person.id).nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).desc()).show();
+        String sql = person.id.select().orderBy(numberSign.concat(person.id).desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).asc()).show();
+        String sql = person.id.select().orderBy(numberSign.concat(person.id).asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id ASC", sql);
     }
 

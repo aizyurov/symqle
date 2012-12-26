@@ -149,27 +149,27 @@ public class BooleanFactorTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.alive.booleanValue().negate().orderBy(person.smart.booleanValue().negate()).show();
+        String sql = person.alive.booleanValue().negate().select().orderBy(person.smart.booleanValue().negate()).show();
         assertSimilar("SELECT NOT T0.alive AS C0 FROM person AS T0 ORDER BY NOT T0.smart", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().negate().nullsFirst()).show();
+        String sql = person.id.select().orderBy(person.smart.booleanValue().negate().nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY NOT T0.smart NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().negate().nullsLast()).show();
+        String sql = person.id.select().orderBy(person.smart.booleanValue().negate().nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY NOT T0.smart NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().negate().desc()).show();
+        String sql = person.id.select().orderBy(person.smart.booleanValue().negate().desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY NOT T0.smart DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().negate().asc()).show();
+        String sql = person.id.select().orderBy(person.smart.booleanValue().negate().asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY NOT T0.smart ASC", sql);
     }
 

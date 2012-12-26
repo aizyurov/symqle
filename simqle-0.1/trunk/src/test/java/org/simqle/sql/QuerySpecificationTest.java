@@ -83,83 +83,83 @@ public class QuerySpecificationTest extends SqlTestCase {
     }
 
     public void testOpposite() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).opposite().orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).opposite().select().orderBy(person.name).show();
         assertSimilar("SELECT -(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testPlus() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).plus(person.id).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).plus(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) + T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMinus() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).minus(person.id).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).minus(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) - T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMult() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).mult(person.id).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).mult(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) * T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testDiv() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).div(person.id).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).div(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) / T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
 
     public void testPlusNumber() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).plus(2).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).plus(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) + ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMinusNumber() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).minus(2).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).minus(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) - ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMultNumber() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).mult(2).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).mult(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) * ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testDivNumber() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).div(2).orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).div(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) / ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testConcat() throws Exception {
-        final String sql = employee.name.where(employee.name.isNotNull()).concat(person.id).orderBy(person.name).show();
+        final String sql = employee.name.where(employee.name.isNotNull()).concat(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.name FROM employee AS T3 WHERE T3.name IS NOT NULL) || T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testConcatString() throws Exception {
-        final String sql = employee.name.where(employee.name.isNotNull()).concat(" test").orderBy(person.name).show();
+        final String sql = employee.name.where(employee.name.isNotNull()).concat(" test").select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.name FROM employee AS T3 WHERE T3.name IS NOT NULL) || ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testSort() throws Exception {
-        final String sql = person.name.orderBy(employee.name.where(employee.name.isNotNull())).show();
+        final String sql = person.name.select().orderBy(employee.name.where(employee.name.isNotNull())).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1 WHERE T1.name IS NOT NULL)", sql);
     }
 
     public void testSortAsc() throws Exception {
-        final String sql = person.name.orderBy(employee.name.where(employee.name.isNotNull()).asc()).show();
+        final String sql = person.name.select().orderBy(employee.name.where(employee.name.isNotNull()).asc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1 WHERE T1.name IS NOT NULL) ASC", sql);
     }
 
     public void testSortDesc() throws Exception {
-        final String sql = person.name.orderBy(employee.name.where(employee.name.isNotNull()).desc()).show();
+        final String sql = person.name.select().orderBy(employee.name.where(employee.name.isNotNull()).desc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1 WHERE T1.name IS NOT NULL) DESC", sql);
     }
 
     public void testSortNullsFirst() throws Exception {
-        final String sql = person.name.orderBy(employee.name.where(employee.name.isNotNull()).nullsFirst()).show();
+        final String sql = person.name.select().orderBy(employee.name.where(employee.name.isNotNull()).nullsFirst()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1 WHERE T1.name IS NOT NULL) NULLS FIRST", sql);
     }
 
     public void testSortNullsLast() throws Exception {
-        final String sql = person.name.orderBy(employee.name.where(employee.name.isNotNull()).nullsLast()).show();
+        final String sql = person.name.select().orderBy(employee.name.where(employee.name.isNotNull()).nullsLast()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.name FROM employee AS T1 WHERE T1.name IS NOT NULL) NULLS LAST", sql);
     }
 

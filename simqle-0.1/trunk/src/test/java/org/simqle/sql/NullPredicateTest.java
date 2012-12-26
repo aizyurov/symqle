@@ -154,27 +154,27 @@ public class NullPredicateTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.alive.isNull().orderBy(person.smart.isNull()).show();
+        String sql = person.alive.isNull().select().orderBy(person.smart.isNull()).show();
         assertSimilar("SELECT T0.alive IS NULL AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.smart.isNull().nullsFirst()).show();
+        String sql = person.id.select().orderBy(person.smart.isNull().nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.smart.isNull().nullsLast()).show();
+        String sql = person.id.select().orderBy(person.smart.isNull().nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.smart.isNull().desc()).show();
+        String sql = person.id.select().orderBy(person.smart.isNull().desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.smart.isNull().asc()).show();
+        String sql = person.id.select().orderBy(person.smart.isNull().asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL ASC", sql);
     }
 

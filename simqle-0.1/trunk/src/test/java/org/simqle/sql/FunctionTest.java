@@ -184,35 +184,35 @@ public class FunctionTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = abs(id).orderBy(abs(age)).show();
+        String sql = abs(id).select().orderBy(abs(age)).show();
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 ORDER BY abs(T0.age)", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(abs(age).nullsFirst()).show();
+        String sql = id.select().orderBy(abs(age).nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(abs(age).nullsLast()).show();
+        String sql = id.select().orderBy(abs(age).nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(abs(age).desc()).show();
+        String sql = id.select().orderBy(abs(age).desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(abs(age).asc()).show();
+        String sql = id.select().orderBy(abs(age).asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY abs(T0.age) ASC", sql);
     }
 

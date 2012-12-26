@@ -180,7 +180,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final LongColumn id = createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.orderBy(id).show();
+        final String sql = param.select().orderBy(id).show();
         System.out.println(sql);
         assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY T1.id", sql);
     }
@@ -188,35 +188,35 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsSortSpecification() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.orderBy(param).show();
+        final String sql = id.select().orderBy(param).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ?", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.orderBy(param.nullsFirst()).show();
+        final String sql = id.select().orderBy(param.nullsFirst()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.orderBy(param.nullsLast()).show();
+        final String sql = id.select().orderBy(param.nullsLast()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.orderBy(param.desc()).show();
+        final String sql = id.select().orderBy(param.desc()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.orderBy(param.asc()).show();
+        final String sql = id.select().orderBy(param.asc()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? ASC", sql);
     }
 

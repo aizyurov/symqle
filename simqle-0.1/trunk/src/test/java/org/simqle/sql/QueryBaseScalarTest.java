@@ -83,83 +83,83 @@ public class QueryBaseScalarTest extends SqlTestCase {
     }
 
     public void testOpposite() throws Exception {
-        final String sql = employee.id.distinct().opposite().orderBy(person.name).show();
+        final String sql = employee.id.distinct().opposite().select().orderBy(person.name).show();
         assertSimilar("SELECT -(SELECT DISTINCT T3.id FROM employee AS T3) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testPlus() throws Exception {
-        final String sql = employee.id.distinct().plus(person.id).orderBy(person.name).show();
+        final String sql = employee.id.distinct().plus(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT DISTINCT T3.id FROM employee AS T3) + T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMinus() throws Exception {
-        final String sql = employee.id.distinct().minus(person.id).orderBy(person.name).show();
+        final String sql = employee.id.distinct().minus(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT DISTINCT T3.id FROM employee AS T3) - T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMult() throws Exception {
-        final String sql = employee.id.distinct().mult(person.id).orderBy(person.name).show();
+        final String sql = employee.id.distinct().mult(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT DISTINCT T3.id FROM employee AS T3) * T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testDiv() throws Exception {
-        final String sql = employee.id.distinct().div(person.id).orderBy(person.name).show();
+        final String sql = employee.id.distinct().div(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT DISTINCT T3.id FROM employee AS T3) / T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
 
     public void testPlusNumber() throws Exception {
-        final String sql = employee.id.all().plus(2).orderBy(person.name).show();
+        final String sql = employee.id.all().plus(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT ALL T3.id FROM employee AS T3) + ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMinusNumber() throws Exception {
-        final String sql = employee.id.all().minus(2).orderBy(person.name).show();
+        final String sql = employee.id.all().minus(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT ALL T3.id FROM employee AS T3) - ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testMultNumber() throws Exception {
-        final String sql = employee.id.all().mult(2).orderBy(person.name).show();
+        final String sql = employee.id.all().mult(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT ALL T3.id FROM employee AS T3) * ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testDivNumber() throws Exception {
-        final String sql = employee.id.all().div(2).orderBy(person.name).show();
+        final String sql = employee.id.all().div(2).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT ALL T3.id FROM employee AS T3) / ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testConcat() throws Exception {
-        final String sql = employee.name.all().concat(person.id).orderBy(person.name).show();
+        final String sql = employee.name.all().concat(person.id).select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT ALL T3.name FROM employee AS T3) || T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testConcatString() throws Exception {
-        final String sql = employee.name.all().concat(" test").orderBy(person.name).show();
+        final String sql = employee.name.all().concat(" test").select().orderBy(person.name).show();
         assertSimilar("SELECT(SELECT ALL T3.name FROM employee AS T3) || ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testSort() throws Exception {
-        final String sql = person.name.orderBy(employee.name.all()).show();
+        final String sql = person.name.select().orderBy(employee.name.all()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT ALL T1.name FROM employee AS T1)", sql);
     }
 
     public void testSortAsc() throws Exception {
-        final String sql = person.name.orderBy(employee.name.all().asc()).show();
+        final String sql = person.name.select().orderBy(employee.name.all().asc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT ALL T1.name FROM employee AS T1) ASC", sql);
     }
 
     public void testSortDesc() throws Exception {
-        final String sql = person.name.orderBy(employee.name.all().desc()).show();
+        final String sql = person.name.select().orderBy(employee.name.all().desc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT ALL T1.name FROM employee AS T1) DESC", sql);
     }
 
     public void testSortNullsFirst() throws Exception {
-        final String sql = person.name.orderBy(employee.name.all().nullsFirst()).show();
+        final String sql = person.name.select().orderBy(employee.name.all().nullsFirst()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT ALL T1.name FROM employee AS T1) NULLS FIRST", sql);
     }
 
     public void testSortNullsLast() throws Exception {
-        final String sql = person.name.orderBy(employee.name.all().nullsLast()).show();
+        final String sql = person.name.select().orderBy(employee.name.all().nullsLast()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT ALL T1.name FROM employee AS T1) NULLS LAST", sql);
     }
 

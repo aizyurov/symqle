@@ -200,32 +200,32 @@ public class InPredicateTest extends SqlTestCase {
     }
 
     public void testOrderBy() throws Exception {
-        final String sql = person.id.in(employee.id.select()).orderBy(person.name).show();
+        final String sql = person.id.in(employee.id.select()).select().orderBy(person.name).show();
         assertSimilar("SELECT T1.id IN(SELECT T3.id FROM employee AS T3) AS C1 FROM person AS T1 ORDER BY T1.name", sql);
     }
 
     public void testSort() throws Exception {
-        final String sql = person.name.orderBy(person.id.in(employee.id.select())).show();
+        final String sql = person.name.select().orderBy(person.id.in(employee.id.select())).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.id IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
     public void testSortAsc() throws Exception {
-        final String sql = person.name.orderBy(person.id.in(employee.id.select()).asc()).show();
+        final String sql = person.name.select().orderBy(person.id.in(employee.id.select()).asc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.id IN(SELECT T1.id FROM employee AS T1) ASC", sql);
     }
 
     public void testSortDesc() throws Exception {
-        final String sql = person.name.orderBy(person.id.in(employee.id.select()).desc()).show();
+        final String sql = person.name.select().orderBy(person.id.in(employee.id.select()).desc()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.id IN(SELECT T1.id FROM employee AS T1) DESC", sql);
     }
 
     public void testSortNullsFirst() throws Exception {
-        final String sql = person.name.orderBy(person.id.in(employee.id.select()).nullsFirst()).show();
+        final String sql = person.name.select().orderBy(person.id.in(employee.id.select()).nullsFirst()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.id IN(SELECT T1.id FROM employee AS T1) NULLS FIRST", sql);
     }
 
     public void testSortNullsLast() throws Exception {
-        final String sql = person.name.orderBy(person.id.in(employee.id.select()).nullsLast()).show();
+        final String sql = person.name.select().orderBy(person.id.in(employee.id.select()).nullsLast()).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.id IN(SELECT T1.id FROM employee AS T1) NULLS LAST", sql);
     }
 

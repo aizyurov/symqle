@@ -281,42 +281,42 @@ public class ColumnTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(age).show();
+        String sql = id.select().orderBy(age).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
     }
 
     public void testOrderByTwoColumns() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(age, id).show();
+        String sql = id.select().orderBy(age, id).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age, T0.id", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(age.nullsFirst()).show();
+        String sql = id.select().orderBy(age.nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(age.nullsLast()).show();
+        String sql = id.select().orderBy(age.nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(age.desc()).show();
+        String sql = id.select().orderBy(age.desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();
-        String sql = id.orderBy(age.asc()).show();
+        String sql = id.select().orderBy(age.asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC", sql);
     }
 
