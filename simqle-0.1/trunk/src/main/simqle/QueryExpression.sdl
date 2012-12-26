@@ -143,8 +143,6 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 
 public interface QueryPrimary<T> extends Scalar<T>  : Query<T> {}
 
-public class AbstractQueryPrimary<T> implements QueryPrimary<T> {}
-
 <T> QueryPrimary<T> ::=
     qs:QuerySpecification<T> :: implicit {}
 |

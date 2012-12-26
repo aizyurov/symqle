@@ -132,14 +132,14 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
 
-    public void testPlus() throws Exception {
-        String sql = numberSign.concat(person.id).plus(numberSign.concat(person.id)).select().show();
-        assertSimilar("SELECT(? || T0.id) +(? || T0.id) AS C0 FROM person AS T0", sql);
-    }
-
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(numberSign.concat(person.id).booleanValue()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(? || T0.id)", sql);
+    }
+
+    public void testPlus() throws Exception {
+        String sql = numberSign.concat(person.id).plus(numberSign.concat(person.id)).select().show();
+        assertSimilar("SELECT(? || T0.id) +(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
@@ -160,6 +160,31 @@ public class StringExpressionTest extends SqlTestCase {
     public void testConcat() throws Exception {
         String sql = numberSign.concat(person.id).concat(numberSign.concat(person.id)).select().show();
         assertSimilar("SELECT ? || T0.id ||(? || T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPlusNumber() throws Exception {
+        String sql = numberSign.concat(person.id).plus(2).select().show();
+        assertSimilar("SELECT(? || T0.id) + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMinusNumber() throws Exception {
+        String sql = numberSign.concat(person.id).minus(2).select().show();
+        assertSimilar("SELECT(? || T0.id) - ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMultNumber() throws Exception {
+        String sql = numberSign.concat(person.id).mult(2).select().show();
+        assertSimilar("SELECT(? || T0.id) * ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testDivNumber() throws Exception {
+        String sql = numberSign.concat(person.id).div(2).select().show();
+        assertSimilar("SELECT(? || T0.id) / ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testConcatString() throws Exception {
+        String sql = numberSign.concat(person.id).concat(" test").select().show();
+        assertSimilar("SELECT ? || T0.id || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testList() throws Exception {
