@@ -228,6 +228,37 @@ public class QueryExpressionScalarTest extends SqlTestCase {
 
     }
 
+    public void testSort() throws Exception {
+        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).except(manager.id.where(manager.id.eq(person.id)))).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id EXCEPT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
+    }
+
+    public void testSortAsc() throws Exception {
+        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).except(manager.id.where(manager.id.eq(person.id))).asc()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id EXCEPT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) ASC", sql);
+    }
+
+    public void testSortDesc() throws Exception {
+        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).except(manager.id.where(manager.id.eq(person.id))).desc()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id EXCEPT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) DESC", sql);
+    }
+
+    public void testSortNullsFirst() throws Exception {
+        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).except(manager.id.where(manager.id.eq(person.id))).nullsFirst()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id EXCEPT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) NULLS FIRST", sql);
+    }
+
+    public void testSortNullsLast() throws Exception {
+        final String sql = person.name.orderBy(employee.id.where(employee.id.eq(person.id)).except(manager.id.where(manager.id.eq(person.id))).nullsLast()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id EXCEPT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) NULLS LAST", sql);
+    }
+
+    public void testAsInSublist() throws Exception {
+        final String sql = person.name.where(person.id.in(employee.id.select().except(manager.id.select()))).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 EXCEPT SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);

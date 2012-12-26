@@ -101,43 +101,6 @@ public <T> List<T> list(final SelectStatement<T> statement,
 
 
 
-#
-# import java.util.List;
-# import java.util.LinkedList;
-# import java.sql.SQLException;
-# {
-#     // TODO add scroll
-#     // TODO uncomment when ready (requires FromClause)
-#     /*
-#     public List<T> list(final Database database)  throws SQLException {
-#         final SqlContext context = new SqlContext();
-#         context.set(FromClause.class, new FromClause());
-#         context.set(ColumnNameProvider.class, new ColumnNameProvider());
-#         this.z$prepare$zSelectStatement(context);
-#         final List<T> list = new LinkedList<T>();
-#         final Query<T> query = this.z$create$zSelectStatement(context);
-#         database.query(query, new IteratorCallback<Row>() {
-#             public int iterate(final Row row) throws SQLException {
-#                 list.add(query.extract(row));
-#                 return 1;
-#             }
-#         });
-#         return list;
-#     }
-#     */
-# public String show() {
-#     final SqlContext context = new SqlContext();
-#     context.set(FromClause.class, new FromClause());
-#     context.set(ColumnNameProvider.class, new ColumnNameProvider());
-#     context.set(SqlFactory.class, new GenericSqlFactory());
-#     z$prepare$zSelectStatement(context);
-#     final String sqlText = z$create$zSelectStatement(context).getSqlText();
-#     return sqlText.replaceAll("([.(])(\\s+)", "$1").replaceAll("(\\s+)(([.,)(]))", "$2");
-# }
-# }
-# 
-# 
-# 
 
 # # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification
 # # zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
@@ -154,10 +117,10 @@ public <T> List<T> list(final SelectStatement<T> statement,
 |
     cspec:CursorSpecification<T>  FOR READ ONLY ::
         import java.util.LinkedList;
-        public AbstractCursorSpecification<T> forReadOnly {}
+        public AbstractSelectStatement<T> forReadOnly {}
 |
     cspec:CursorSpecification<T> FOR UPDATE
-        :: public AbstractCursorSpecification<T> forUpdate {}
+        :: public AbstractSelectStatement<T> forUpdate {}
 ;
 
 
