@@ -22,7 +22,7 @@ public class SelectStatementTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.select().forUpdate().show();
+        final String queryString = person.id.forUpdate().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -35,7 +35,7 @@ public class SelectStatementTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = person.id.select().forUpdate().list(datasource);
+        final List<Long> list = person.id.forUpdate().list(datasource);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
@@ -47,7 +47,7 @@ public class SelectStatementTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.select().forUpdate().show();
+        final String queryString = person.id.forUpdate().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -60,7 +60,7 @@ public class SelectStatementTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.id.select().forUpdate().scroll(datasource, new Callback<Long, SQLException>() {
+        person.id.forUpdate().scroll(datasource, new Callback<Long, SQLException>() {
             int callCount = 0;
 
             @Override

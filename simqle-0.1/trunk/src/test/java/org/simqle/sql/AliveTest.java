@@ -18,7 +18,7 @@ public class AliveTest extends SqlTestCase {
         final Person person = new Person();
         final StringColumn name = new StringColumn("name", person);
         final StringColumn surname = new StringColumn("surname", person);
-        assertSimilar("SELECT concat(T1.name, T1.surname) AS C1 FROM person AS T1", concat(name, surname).select().show());
+        assertSimilar("SELECT concat(T1.name, T1.surname) AS C1 FROM person AS T1", concat(name, surname).show());
 
     }
 

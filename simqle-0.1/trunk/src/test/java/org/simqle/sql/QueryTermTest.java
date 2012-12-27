@@ -17,208 +17,72 @@ import static org.easymock.EasyMock.*;
 public class QueryTermTest extends SqlTestCase {
 
 
-    public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(employee.id.select().intersect(manager.id.select()).booleanValue()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
-    }
-
-    public void testIn() throws Exception {
-        final String sql = person.id.where(employee.id.select().intersect(manager.id.select()).in(person2.id.all())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) IN(SELECT ALL T3.id FROM person AS T3)", sql);
-    }
-
-    public void testNotIn() throws Exception {
-        final String sql = person.id.where(employee.id.select().intersect(manager.id.select()).notIn(person2.id.all())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) NOT IN(SELECT ALL T3.id FROM person AS T3)", sql);
-    }
-
-    public void testInList() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).in(person.id)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) IN(T0.id)", sql);
-    }
-
-    public void testNotInList() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).notIn(person.id)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) NOT IN(T0.id)", sql);
-    }
-
-    public void testIsNull() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).isNull()).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) IS NULL", sql);
-    }
-
-    public void testIsNotNull() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).isNotNull()).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) IS NOT NULL", sql);
-    }
-
-    public void testEq() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).eq(two)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) = ?", sql);
-    }
-
-    public void testNe() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).ne(two)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) <> ?", sql);
-    }
-
-    public void testLt() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).lt(two)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) < ?", sql);
-    }
-
-    public void testLe() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).le(two)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) <= ?", sql);
-    }
-
-    public void testGt() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).gt(two)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) > ?", sql);
-    }
-
-    public void testGe() throws Exception {
-        final String sql = person.name.where(employee.id.select().intersect(manager.id.select()).ge(two)).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) >= ?", sql);
-    }
-
-    public void testOpposite() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).opposite().where(person.name.isNull()).show();
-        assertSimilar("SELECT -(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C1 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testPlus() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).plus(person.id).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) + T3.id AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testMinus() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).minus(person.id).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) - T3.id AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testMult() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).mult(person.id).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) * T3.id AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testDiv() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).div(person.id).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) / T3.id AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-
-    public void testPlusNumber() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).plus(2).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) + ? AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testMinusNumber() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).minus(2).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) - ? AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testMultNumber() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).mult(2).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) * ? AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testDivNumber() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).div(2).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) / ? AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testConcat() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).concat(person.id).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) || T3.id AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testConcatString() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).concat(" test").where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) || ? AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testWhere() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).where(person.name.isNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C0 FROM person AS T3 WHERE T3.name IS NULL", sql);
-    }
-
-    public void testIntersectSelect() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).select().where(person.name.isNotNull()).show();
-        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
-    }
-
-    public void testDistinct() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).distinct().where(person.name.isNotNull()).show();
-        assertSimilar("SELECT DISTINCT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
-    }
-
-    public void testWhereAll() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).all().where(person.name.isNotNull()).show();
-        assertSimilar("SELECT ALL(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
+    public void testQueryValue() throws Exception {
+        final String sql = employee.id.intersect(manager.id).queryValue().where(person.name.isNull()).show();
+        assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C1 FROM person AS T3 WHERE T3.name IS NULL", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).forUpdate().show();
+        final String sql = employee.id.intersect(manager.id).forUpdate().show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).forReadOnly().show();
+        final String sql = employee.id.intersect(manager.id).forReadOnly().show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 FOR READ ONLY", sql);
     }
 
     public void testUnion() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).union(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).union(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).unionAll(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).unionAll(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testUnionDistinct() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).unionDistinct(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).unionDistinct(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExcept() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).except(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).except(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 EXCEPT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).exceptAll(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).exceptAll(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 EXCEPT ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testExceptDistinct() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).exceptDistinct(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).exceptDistinct(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 EXCEPT DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testIntersect() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).intersect(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).intersect(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT SELECT T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testIntersectWithIntersection() throws Exception {
-        final String sql = employee.id.select().intersect((manager.id.select()).intersect(person.id.select())).show();
+        final String sql = employee.id.intersect((manager.id).intersect(person.id)).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT(SELECT T2.id AS C0 FROM manager AS T2 INTERSECT SELECT T0.id AS C0 FROM person AS T0)", sql);
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).intersectAll(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).intersectAll(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testIntersectDistinct() throws Exception {
-        final String sql = employee.id.select().intersect(manager.id.select()).intersectDistinct(person.id.select()).show();
+        final String sql = employee.id.intersect(manager.id).intersectDistinct(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
@@ -228,33 +92,8 @@ public class QueryTermTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
     }
 
-    public void testSort() throws Exception {
-        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id)))).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
-    }
-
-    public void testSortAsc() throws Exception {
-        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).asc()).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) ASC", sql);
-    }
-
-    public void testSortDesc() throws Exception {
-        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).desc()).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) DESC", sql);
-    }
-
-    public void testSortNullsFirst() throws Exception {
-        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).nullsFirst()).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) NULLS FIRST", sql);
-    }
-
-    public void testSortNullsLast() throws Exception {
-        final String sql = person.name.select().orderBy(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).nullsLast()).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id) NULLS LAST", sql);
-    }
-
     public void testAsInSublist() throws Exception {
-        final String sql = person.name.where(person.id.in(employee.id.select().intersect(manager.id.select()))).show();
+        final String sql = person.name.where(person.id.in(employee.id.intersect(manager.id))).show();
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
     }
 
@@ -264,7 +103,7 @@ public class QueryTermTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = employee.id.select().intersect(manager.id.select()).show();
+        final String queryString = employee.id.intersect(manager.id).show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -277,7 +116,7 @@ public class QueryTermTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = employee.id.select().intersect(manager.id.select()).list(datasource);
+        final List<Long> list = employee.id.intersect(manager.id).list(datasource);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
@@ -289,7 +128,7 @@ public class QueryTermTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = employee.id.select().intersect(manager.id.select()).show();
+        final String queryString = employee.id.intersect(manager.id).show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -302,7 +141,7 @@ public class QueryTermTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        employee.id.select().intersect(manager.id.select()).scroll(datasource, new Callback<Long, SQLException>() {
+        employee.id.intersect(manager.id).scroll(datasource, new Callback<Long, SQLException>() {
             int callCount = 0;
 
             @Override

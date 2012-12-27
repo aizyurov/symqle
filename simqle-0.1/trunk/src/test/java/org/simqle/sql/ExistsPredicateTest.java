@@ -8,7 +8,7 @@ public class ExistsPredicateTest extends SqlTestCase {
 
     public void testSelect() throws Exception {
         try {
-            final String sql = person.id.select().exists().select().show();
+            final String sql = person.id.exists().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -17,7 +17,7 @@ public class ExistsPredicateTest extends SqlTestCase {
 
     public void testAll() throws Exception {
         try {
-            final String sql = person.id.select().exists().all().show();
+            final String sql = person.id.exists().all().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -26,7 +26,7 @@ public class ExistsPredicateTest extends SqlTestCase {
 
     public void testDistinct() throws Exception {
         try {
-            final String sql = person.id.select().exists().distinct().show();
+            final String sql = person.id.exists().distinct().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -65,9 +65,9 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().in(person.name.isNotNull())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().in(person.name.isNotNull(), person.name.isNull())).show();
         System.out.println(sql);
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(T0.name IS NOT NULL)", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(T0.name IS NOT NULL, T0.name IS NULL)", sql);
     }
 
     public void testNotIn() throws Exception {
@@ -77,9 +77,9 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().notIn(person.name.isNotNull())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().notIn(person.name.isNotNull(), person.name.isNull())).show();
         System.out.println(sql);
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) NOT IN(T0.name IS NOT NULL)", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) NOT IN(T0.name IS NOT NULL, T0.name IS NULL)", sql);
     }
 
     public void testIsTrue() throws Exception {
@@ -200,12 +200,12 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testConcat() throws Exception {
-        final String sql = employee.id.where(employee.name.eq(person.name)).exists().concat(person.name).select().show();
+        final String sql = employee.id.where(employee.name.eq(person.name)).exists().concat(person.name).show();
         assertSimilar("SELECT(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) || T0.name AS C0 FROM person AS T0", sql);
     }
 
     public void testOpposite() throws Exception {
-        final String sql = employee.id.where(employee.name.eq(person.name)).exists().opposite().select().orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.eq(person.name)).exists().opposite().orderBy(person.name).show();
         assertSimilar("SELECT -(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
@@ -215,27 +215,27 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testSort() throws Exception {
-        final String sql = person.id.select().orderBy(employee.id.where(employee.name.eq(person.name)).exists()).show();
+        final String sql = person.id.orderBy(employee.id.where(employee.name.eq(person.name)).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)", sql);
     }
 
     public void testSortAsc() throws Exception {
-        final String sql = person.id.select().orderBy(employee.id.where(employee.name.eq(person.name)).exists().asc()).show();
+        final String sql = person.id.orderBy(employee.id.where(employee.name.eq(person.name)).exists().asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) ASC", sql);
     }
 
     public void testSortDesc() throws Exception {
-        final String sql = person.id.select().orderBy(employee.id.where(employee.name.eq(person.name)).exists().desc()).show();
+        final String sql = person.id.orderBy(employee.id.where(employee.name.eq(person.name)).exists().desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) DESC", sql);
     }
 
     public void testNullsFirst() throws Exception {
-        final String sql = person.id.select().orderBy(employee.id.where(employee.name.eq(person.name)).exists().nullsFirst()).show();
+        final String sql = person.id.orderBy(employee.id.where(employee.name.eq(person.name)).exists().nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) NULLS FIRST", sql);
     }
 
     public void testNullsLast() throws Exception {
-        final String sql = person.id.select().orderBy(employee.id.where(employee.name.eq(person.name)).exists().nullsLast()).show();
+        final String sql = person.id.orderBy(employee.id.where(employee.name.eq(person.name)).exists().nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) NULLS LAST", sql);
     }
 

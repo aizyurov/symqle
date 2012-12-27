@@ -83,7 +83,7 @@ public class NullPredicateTest extends SqlTestCase {
     }
 
     public void testSelect() throws Exception {
-        final String sql = person.alive.isNull().select().show();
+        final String sql = person.alive.isNull().show();
         assertSimilar("SELECT T0.alive IS NULL AS C0 FROM person AS T0", sql);
     }
 
@@ -134,12 +134,12 @@ public class NullPredicateTest extends SqlTestCase {
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.smart.isNull().in(person2.alive.isNull().select())).show();
+        String sql = person.id.where(person.smart.isNull().in(person2.alive.isNull())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS NULL) IN(SELECT T2.alive IS NULL FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.smart.isNull().notIn(person2.alive.booleanValue().select())).show();
+        String sql = person.id.where(person.smart.isNull().notIn(person2.alive.booleanValue())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS NULL) NOT IN(SELECT T2.alive FROM person AS T2)", sql);
     }
 
@@ -154,87 +154,87 @@ public class NullPredicateTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.alive.isNull().select().orderBy(person.smart.isNull()).show();
+        String sql = person.alive.isNull().orderBy(person.smart.isNull()).show();
         assertSimilar("SELECT T0.alive IS NULL AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.select().orderBy(person.smart.isNull().nullsFirst()).show();
+        String sql = person.id.orderBy(person.smart.isNull().nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.select().orderBy(person.smart.isNull().nullsLast()).show();
+        String sql = person.id.orderBy(person.smart.isNull().nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.select().orderBy(person.smart.isNull().desc()).show();
+        String sql = person.id.orderBy(person.smart.isNull().desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.select().orderBy(person.smart.isNull().asc()).show();
+        String sql = person.id.orderBy(person.smart.isNull().asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart IS NULL ASC", sql);
     }
 
     public void testOpposite() throws Exception {
-        final String sql = person.smart.isNull().opposite().select().show();
+        final String sql = person.smart.isNull().opposite().show();
         assertSimilar("SELECT -(T0.smart IS NULL) AS C0 FROM person AS T0", sql);
     }
 
 
     public void testPlus() throws Exception {
-        String sql = person.smart.isNull().plus(person.alive.isNull()).select().show();
+        String sql = person.smart.isNull().plus(person.alive.isNull()).show();
         assertSimilar("SELECT(T0.smart IS NULL) +(T0.alive IS NULL) AS C0 FROM person AS T0", sql);
     }
 
     public void testPlusNumber() throws Exception {
-        String sql = person.smart.isNull().plus(2).select().show();
+        String sql = person.smart.isNull().plus(2).show();
         assertSimilar("SELECT(T0.smart IS NULL) + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.smart.isNull().booleanValue().select().show();
+        String sql = person.smart.isNull().booleanValue().show();
         assertSimilar("SELECT(T0.smart IS NULL) AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
-        String sql = person.smart.isNull().minus(person.alive.booleanValue()).select().show();
+        String sql = person.smart.isNull().minus(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart IS NULL) -(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testMinusNumber() throws Exception {
-        String sql = person.smart.isNull().minus(2).select().show();
+        String sql = person.smart.isNull().minus(2).show();
         assertSimilar("SELECT(T0.smart IS NULL) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = person.smart.isNull().mult(person.alive.isNull()).select().show();
+        String sql = person.smart.isNull().mult(person.alive.isNull()).show();
         assertSimilar("SELECT(T0.smart IS NULL) *(T0.alive IS NULL) AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        String sql = person.smart.isNull().mult(2).select().show();
+        String sql = person.smart.isNull().mult(2).show();
         assertSimilar("SELECT(T0.smart IS NULL) * ? AS C0 FROM person AS T0", sql);
     }
     public void testDiv() throws Exception {
-        String sql = person.smart.isNull().div(person.alive.booleanValue()).select().show();
+        String sql = person.smart.isNull().div(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart IS NULL) /(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        String sql = person.smart.isNull().div(2).select().show();
+        String sql = person.smart.isNull().div(2).show();
         assertSimilar("SELECT(T0.smart IS NULL) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = person.smart.isNull().concat(person.alive.booleanValue()).select().show();
+        String sql = person.smart.isNull().concat(person.alive.booleanValue()).show();
         assertSimilar("SELECT(T0.smart IS NULL) ||(T0.alive) AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        String sql = person.smart.isNull().concat(" test").select().show();
+        String sql = person.smart.isNull().concat(" test").show();
         assertSimilar("SELECT(T0.smart IS NULL) || ? AS C0 FROM person AS T0", sql);
     }
 
@@ -243,7 +243,7 @@ public class NullPredicateTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.isNull().select().show();
+        final String queryString = person.alive.isNull().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -256,7 +256,7 @@ public class NullPredicateTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Boolean> list = person.alive.isNull().select().list(datasource);
+        final List<Boolean> list = person.alive.isNull().list(datasource);
         assertEquals(1, list.size());
         assertEquals(Boolean.TRUE, list.get(0));
         verify(datasource, connection, statement, resultSet);
@@ -268,7 +268,7 @@ public class NullPredicateTest extends SqlTestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.isNull().select().show();
+        final String queryString = person.alive.isNull().show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -281,7 +281,7 @@ public class NullPredicateTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.alive.isNull().select().scroll(datasource, new Callback<Boolean, SQLException>() {
+        person.alive.isNull().scroll(datasource, new Callback<Boolean, SQLException>() {
             int callCount = 0;
 
             @Override

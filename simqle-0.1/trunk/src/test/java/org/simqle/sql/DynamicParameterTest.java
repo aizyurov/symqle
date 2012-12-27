@@ -19,7 +19,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testSelectStatementNoFrom() throws Exception {
         final LongParameter param = new LongParameter(1L);
         try {
-            param.select().show();
+            param.show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -56,7 +56,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final LongParameter param = new LongParameter(1L);
         final String sql;
         try {
-            sql = id.in(param.select()).select().show();
+            sql = id.in(param).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -128,7 +128,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(param.in(id2.select())).show();
+        String sql = id.where(param.in(id2)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
@@ -136,7 +136,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
         final LongColumn id2 = new LongColumn("id", employee);
-        String sql = id.where(param.notIn(id2.select())).show();
+        String sql = id.where(param.notIn(id2)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
@@ -180,7 +180,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final LongColumn id = createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.select().orderBy(id).show();
+        final String sql = param.orderBy(id).show();
         System.out.println(sql);
         assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY T1.id", sql);
     }
@@ -188,49 +188,49 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsSortSpecification() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.select().orderBy(param).show();
+        final String sql = id.orderBy(param).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ?", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.select().orderBy(param.nullsFirst()).show();
+        final String sql = id.orderBy(param.nullsFirst()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.select().orderBy(param.nullsLast()).show();
+        final String sql = id.orderBy(param.nullsLast()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.select().orderBy(param.desc()).show();
+        final String sql = id.orderBy(param.desc()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = id.select().orderBy(param.asc()).show();
+        final String sql = id.orderBy(param.asc()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? ASC", sql);
     }
 
     public void testMult() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.mult(id).select().show();
+        final String sql = param.mult(id).show();
         assertSimilar("SELECT ? * T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.mult(5).plus(id).select().show();
+        final String sql = param.mult(5).plus(id).show();
         assertSimilar("SELECT ? * ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
@@ -244,56 +244,56 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testPlus() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.plus(id).select().show();
+        final String sql = param.plus(id).show();
         assertSimilar("SELECT ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testPlusNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.plus(2).plus(id).select().show();
+        final String sql = param.plus(2).plus(id).show();
         assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMinus() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.minus(id).select().show();
+        final String sql = param.minus(id).show();
         assertSimilar("SELECT ? - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMinusNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.minus(1.3).plus(id).select().show();
+        final String sql = param.minus(1.3).plus(id).show();
         assertSimilar("SELECT ? - ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.div(id).select().show();
+        final String sql = param.div(id).show();
         assertSimilar("SELECT ? / T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.div(4L).plus(id).select().show();
+        final String sql = param.div(4L).plus(id).show();
         assertSimilar("SELECT ? / ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.concat(id).select().show();
+        final String sql = param.concat(id).show();
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testString() throws Exception {
         final LongColumn id  =  createId();
         final LongParameter param = new LongParameter(1L);
-        final String sql = param.concat(" ").concat(id).select().show();
+        final String sql = param.concat(" ").concat(id).show();
         assertSimilar("SELECT ? || ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
@@ -303,7 +303,7 @@ public class DynamicParameterTest extends SqlTestCase {
         // dataSource should never be called
         org.easymock.EasyMock.replay(dataSource);
         try {
-            param.select().list(dataSource);
+            param.list(dataSource);
             fail ("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -317,7 +317,7 @@ public class DynamicParameterTest extends SqlTestCase {
         // dataSource should never be called
         org.easymock.EasyMock.replay(dataSource);
         try {
-            param.select().scroll(dataSource, new Callback<Long, SQLException>() {
+            param.scroll(dataSource, new Callback<Long, SQLException>() {
                 @Override
                 public void iterate(final Long aLong) throws SQLException, BreakException {
                     fail("Must not get here");

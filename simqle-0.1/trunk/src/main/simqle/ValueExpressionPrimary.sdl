@@ -7,10 +7,12 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 |
 	c:ColumnReference<T> :: implicit {}
 |
-	s:ScalarSubquery<T> :: implicit {}
+	s:ScalarSubquery<T> :: AbstractValueExpressionPrimary<T> queryValue {}
 |
 	r:RoutineInvocation<T> :: implicit {}
 ;
+
+public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T> {}
 
 
 public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {

@@ -88,16 +88,17 @@ public interface InValueList<T> extends Scalar<T> : Sql {}
 
 # public convenience methods for construction of InPredicate from list of ValueExpression
 
-:: public <T> AbstractInPredicate in(final Predicand<T> p, final ValueExpression<T> first, final ValueExpression<T>... other) {
-     return in(p, prepareInPredicateValue(first, other));
+:: public <T> AbstractInPredicate in(final Predicand<T> p, final ValueExpression<T> first, final ValueExpression<T> second, final ValueExpression<T>... other) {
+     return in(p, prepareInPredicateValue(first, second, other));
 }
 
-:: public <T> AbstractInPredicate notIn(final Predicand<T> p, final ValueExpression<T> first, final ValueExpression<T>... other) {
-     return notIn(p, prepareInPredicateValue(first, other));
+:: public <T> AbstractInPredicate notIn(final Predicand<T> p, final ValueExpression<T> first, final ValueExpression<T> second, final ValueExpression<T>... other) {
+     return notIn(p, prepareInPredicateValue(first, second, other));
 }
 
-:: protected <T> InPredicateValue<T> prepareInPredicateValue(ValueExpression<T> first, ValueExpression<T>... other) {
+:: protected <T> InPredicateValue<T> prepareInPredicateValue(ValueExpression<T> first, final ValueExpression<T> second, ValueExpression<T>... other) {
      InValueList<T> list = createInValueList(first);
+     list = append(list, second);
      for (ValueExpression<T> e: other) {
          list = append(list, e);
      }
