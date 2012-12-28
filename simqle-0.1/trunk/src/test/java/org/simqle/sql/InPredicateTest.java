@@ -229,6 +229,60 @@ public class InPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.id IN(SELECT T1.id FROM employee AS T1) NULLS LAST", sql);
     }
 
+    public void testUnion() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).union(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 UNION SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testUnionAll() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).unionAll(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 UNION ALL SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).unionDistinct(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 UNION DISTINCT SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testExcept() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).except(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 EXCEPT SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testExceptAll() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).exceptAll(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 EXCEPT ALL SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).exceptDistinct(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 EXCEPT DISTINCT SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testIntersect() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).intersect(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 INTERSECT SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testIntersectAll() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).intersectAll(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 INTERSECT ALL SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final String sql = person.name.where(manager.id.in(employee.id).intersectDistinct(person.name.eq(employee.name)).exists()).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id IN(SELECT T2.id FROM employee AS T2) FROM manager AS T1 INTERSECT DISTINCT SELECT T0.name = T3.name FROM employee AS T3)", sql);
+
+    }
+
 
 
 

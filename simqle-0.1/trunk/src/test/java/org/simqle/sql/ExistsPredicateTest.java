@@ -305,7 +305,7 @@ public class ExistsPredicateTest extends SqlTestCase {
 
     public void testIntersect() throws Exception {
             try {
-                final String sql = person.id.exists().union(employee.retired.booleanValue()).show();
+                final String sql = person.id.exists().intersect(employee.retired.booleanValue()).show();
                 fail ("IllegalStateException expected but produced: "+sql);
             } catch (IllegalStateException e) {
                 assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -371,7 +371,7 @@ public class ExistsPredicateTest extends SqlTestCase {
         final DataSource datasource = createMock(DataSource.class);
         replay(datasource);
         try {
-            final List<Boolean> list = person.id.exists().queryValue().where(employee.retired.booleanValue()).list(datasource);
+            final List<Boolean> list = person.id.exists().list(datasource);
             fail ("IllegalStateException expected but produced: "+ list);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -382,7 +382,7 @@ public class ExistsPredicateTest extends SqlTestCase {
         final DataSource datasource = createMock(DataSource.class);
         replay(datasource);
         try {
-            person.id.exists().queryValue().where(employee.retired.booleanValue()).scroll(datasource, new Callback<Boolean, SQLException>() {
+            person.id.exists().scroll(datasource, new Callback<Boolean, SQLException>() {
                 @Override
                 public void iterate(final Boolean aBoolean) throws SQLException, BreakException {
                     fail("must not get here");
