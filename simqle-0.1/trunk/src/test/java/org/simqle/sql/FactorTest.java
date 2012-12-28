@@ -184,7 +184,73 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY - T0.id ASC", sql);
     }
 
-    
+    public void testUnion() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().union(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 UNION SELECT T2.id FROM person AS T2 WHERE T2.name = T0.name)", sql);
+    }
+
+    public void testUnionAll() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().unionAll(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 UNION ALL SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().unionDistinct(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 UNION DISTINCT SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testExcept() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().except(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 EXCEPT SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testExceptAll() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().exceptAll(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 EXCEPT ALL SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().exceptDistinct(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 EXCEPT DISTINCT SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+
+    public void testIntersect() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().intersect(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 INTERSECT SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testIntersectAll() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().intersectAll(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 INTERSECT ALL SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().intersectDistinct(person2.id.where(person2.name.eq(employee.name))).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1 INTERSECT DISTINCT SELECT T2.id FROM person AS T2 WHERE T2.name = t0.name)", sql);
+    }
+
+    public void testExists() throws Exception {
+        final String sql = employee.id.where(person.id.opposite().exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT - T1.id FROM person AS T1)", sql);
+    }
+
+    public void testForUpdate() throws Exception {
+        final String sql = person.id.opposite().forUpdate().show();
+        assertSimilar("SELECT - T1.id AS C1 FROM person AS T1 FOR UPDATE", sql);
+    }
+
+    public void testForReadOnly() throws Exception {
+        final String sql = person.id.opposite().forReadOnly().show();
+        assertSimilar("SELECT - T1.id AS C1 FROM person AS T1 FOR READ ONLY", sql);
+    }
+
+    public void testQueryValue() throws Exception {
+        final String sql = person.id.opposite().queryValue().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT(SELECT - T0.id FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
@@ -250,15 +316,22 @@ public class FactorTest extends SqlTestCase {
             super("person");
         }
         public Column<Long> id = new LongColumn("id", this);
-        public Column<Long> alive = new LongColumn("alive", this);
+        public Column<String> name = new StringColumn("name", this);
         public Column<Long> smart = new LongColumn("smart", this);
-        public Column<Long> cute = new LongColumn("cute", this);
-        public Column<Long> speaksJapan = new LongColumn("speaks_japan", this);
-        public Column<Long> friendly = new LongColumn("friendly", this);
+    }
+
+    private static class Employee extends Table {
+        private Employee() {
+            super("employee");
+        }
+        public Column<Long> id = new LongColumn("id", this);
+        public Column<String> name = new StringColumn("name", this);
     }
 
     private static Person person = new Person();
     private static Person person2 = new Person();
+
+    private static Employee employee = new Employee();
 
 
 }

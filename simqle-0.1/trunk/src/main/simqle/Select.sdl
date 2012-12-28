@@ -140,7 +140,7 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 |
     qe:QueryExpression<T> obc:OrderByClause :: protected AbstractCursorSpecification<T> orderBy {}
 |
-    qe:QueryExpressionScalar<T> obc:OrderByClause :: protected AbstractCursorSpecification<T> orderBy {}
+    qe:QuerySpecification<T> obc:OrderByClause :: protected AbstractCursorSpecification<T> orderBy {}
 ;
 
 ::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpression<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
@@ -151,7 +151,7 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
      return  orderBy(qe, createOrderByClause(list));
 }
 
-::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpressionScalar<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+::  public <T> AbstractCursorSpecification<T> orderBy(final QuerySpecification<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
     SortSpecificationList list = createSortSpecificationList(sort);
      for (SortSpecification add: additionalSort) {
          list = appendSortSpecification(list, add);

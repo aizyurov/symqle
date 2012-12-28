@@ -1,5 +1,15 @@
 package org.simqle.sql;
 
+import org.simqle.Callback;
+
+import javax.sql.DataSource;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+
 /**
  * @author lvovich
  */
@@ -239,9 +249,149 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) NULLS LAST", sql);
     }
 
+    public void testUnion() throws Exception {
+            try {
+                final String sql = person.id.exists().union(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
 
+    public void testUnionAll() throws Exception {
+            try {
+                final String sql = person.id.exists().unionAll(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
 
+    public void testUnionDistinct() throws Exception {
+            try {
+                final String sql = person.id.exists().unionDistinct(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
 
+    public void testExcept() throws Exception {
+            try {
+                final String sql = person.id.exists().except(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
+
+    public void testExceptAll() throws Exception {
+            try {
+                final String sql = person.id.exists().exceptAll(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
+
+    public void testExceptDistinct() throws Exception {
+            try {
+                final String sql = person.id.exists().exceptDistinct(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
+
+    public void testIntersect() throws Exception {
+            try {
+                final String sql = person.id.exists().union(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
+
+    public void testIntersectAll() throws Exception {
+            try {
+                final String sql = person.id.exists().intersectAll(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+            try {
+                final String sql = person.id.exists().intersectDistinct(employee.retired.booleanValue()).show();
+                fail ("IllegalStateException expected but produced: "+sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            }
+    }
+
+    public void testExists() throws Exception {
+        try {
+            final String sql = employee.id.where(employee.name.eq(person.name)).exists().exists().orderBy(person.name).show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+
+    }
+
+    public void testForUpdate() throws Exception {
+        try {
+            final String sql = person.id.exists().forUpdate().show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testForReadOnly() throws Exception {
+        try {
+            final String sql = person.id.exists().forReadOnly().show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testQueryValue() throws Exception {
+        try {
+            final String sql = person.id.exists().queryValue().where(employee.retired.booleanValue()).show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testList() throws Exception {
+        final DataSource datasource = createMock(DataSource.class);
+        replay(datasource);
+        try {
+            final List<Boolean> list = person.id.exists().queryValue().where(employee.retired.booleanValue()).list(datasource);
+            fail ("IllegalStateException expected but produced: "+ list);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testScroll() throws Exception {
+        final DataSource datasource = createMock(DataSource.class);
+        replay(datasource);
+        try {
+            person.id.exists().queryValue().where(employee.retired.booleanValue()).scroll(datasource, new Callback<Boolean, SQLException>() {
+                @Override
+                public void iterate(final Boolean aBoolean) throws SQLException, BreakException {
+                    fail("must not get here");
+                }
+            });
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
     private static class Person extends Table {
         private Person() {
             super("person");
