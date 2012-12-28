@@ -2,10 +2,8 @@ package org.simqle.sql;
 
 
 import org.simqle.Callback;
-import org.simqle.Function;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -117,33 +115,6 @@ public class QueryTest extends SqlTestCase {
         final List<Long> list = id.list(datasource);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
-
-    }
-
-    public void testConvertAndList() throws Exception {
-        Table person = new Table("person");
-        final LongColumn id = new LongColumn("id", person);
-        final AbstractSelectList<String> convertedToString = id.convert(new Function<Long, String>() {
-            @Override
-            public String apply(final Long arg) {
-                return String.valueOf(arg);
-            }
-        });
-        final String queryString = convertedToString.show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replayAll();
-        final List<String> list = convertedToString.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals("123", list.get(0));
 
     }
 

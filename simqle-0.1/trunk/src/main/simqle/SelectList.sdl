@@ -30,23 +30,6 @@ public class AbstractSelectList<T> implements SelectList<T> {}
 #    }
 #;
 
-import org.simqle.Function;
-:: public <T, U> AbstractSelectList<U> convert(final SelectList<T> source, final Function<T, U> converter) {
-    return new AbstractSelectList<U>(){
-        @Override
-        public Query<U> z$create$SelectList(SqlContext context) {
-            final Query<T> query = source.z$create$SelectList(context);
-            final DataExtractor<U> extractor = new DataExtractor<U>() {
-                @Override
-                public U extract(Row row) throws SQLException {
-                    return converter.apply(query.extract(row));
-                }
-            };
-            return new ComplexQuery<U>(extractor, query);
-        }
-    };
-}
-
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
 
 public class AbstractSelectSublist<T> implements SelectSublist<T> {}

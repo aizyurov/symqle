@@ -300,6 +300,72 @@ public class BooleanTestTest extends SqlTestCase {
         });
         verify(datasource, connection,  statement, resultSet);
     }
+    
+    public void testUnion() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().union(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 UNION SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+    
+    public void testUnionAll() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().unionAll(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 UNION ALL SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().unionDistinct(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExcept() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().except(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 EXCEPT SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptAll() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().exceptAll(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().exceptDistinct(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersect() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().intersect(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 INTERSECT SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersectAll() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().intersectAll(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().intersectDistinct(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.alive AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExists() throws Exception {
+        final String sql = person2.id.where(person.alive.booleanValue().isTrue().exists()).show();
+        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 WHERE EXISTS(SELECT T0.alive IS TRUE FROM person AS T0)", sql);
+    }
+
+    public void testForUpdate() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().forUpdate().show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 FOR UPDATE", sql);
+    }
+
+    public void testForReadOnly() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().forReadOnly().show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0 FOR READ ONLY", sql);
+    }
+
+    public void testSubquery() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().queryValue().where(person2.alive.booleanValue()).show();
+        assertSimilar("SELECT(SELECT T0.alive IS TRUE FROM person AS T0) AS C1 FROM person AS T1 WHERE T1.alive", sql);
+    }
+    
 
 
 
