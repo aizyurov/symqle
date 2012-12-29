@@ -307,6 +307,106 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
+    public void testUnionAll() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.unionAll(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.unionDistinct(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testExcept() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.except(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.exceptDistinct(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testExceptAll() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.exceptAll(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testIntersect() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.intersect(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testIntersectAll() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.intersectAll(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.intersectDistinct(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testExists() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            person.id.where(param.exists()).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testQueryValue() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            person.id.where(param.queryValue().eq(param)).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
 
     public void testList() throws Exception {
         final DataSource dataSource = org.easymock.EasyMock.createMock(DataSource.class);
