@@ -1,6 +1,4 @@
 public interface WhereClause : Sql {}
 
-public class AbstractWhereClause implements WhereClause {}
-
 WhereClause ::= WHERE cond:BooleanExpression :: implicit {}
 ;

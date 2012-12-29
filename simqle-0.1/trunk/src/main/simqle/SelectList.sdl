@@ -32,8 +32,6 @@ public class AbstractSelectList<T> implements SelectList<T> {}
 
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
 
-public class AbstractSelectSublist<T> implements SelectSublist<T> {}
-
 public interface Identifier : Sql {}
 
 import org.simqle.CustomSql;

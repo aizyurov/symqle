@@ -297,6 +297,17 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? || ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testUnion() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.union(person.id).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+
     public void testList() throws Exception {
         final DataSource dataSource = org.easymock.EasyMock.createMock(DataSource.class);
         final LongParameter param = new LongParameter(1L);
@@ -335,6 +346,7 @@ public class DynamicParameterTest extends SqlTestCase {
         private Person() {
             super("person");
         }
+        private Column<Long> id = new LongColumn("id", this);
     }
 
     private static class Employee extends Table {
