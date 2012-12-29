@@ -187,6 +187,71 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testUnion() throws Exception {
+        final String sql = person.id.concat(" test").union(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 UNION SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionAll() throws Exception {
+        final String sql = person.id.concat(" test").unionAll(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 UNION ALL SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final String sql = person.id.concat(" test").unionDistinct(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExcept() throws Exception {
+        final String sql = person.id.concat(" test").except(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 EXCEPT SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptAll() throws Exception {
+        final String sql = person.id.concat(" test").exceptAll(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final String sql = person.id.concat(" test").exceptDistinct(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersect() throws Exception {
+        final String sql = person.id.concat(" test").intersect(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 INTERSECT SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersectAll() throws Exception {
+        final String sql = person.id.concat(" test").intersectAll(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final String sql = person.id.concat(" test").intersectDistinct(person2.id.concat(" test2")).show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.id || ? AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExists() throws Exception {
+        final String sql = person.id.where(person2.id.concat(" test").exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id || ? FROM person AS T1)", sql);
+    }
+
+    public void testForUpdate() throws Exception {
+        final String sql = person.id.concat(" test").forUpdate().show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 FOR UPDATE", sql);
+    }
+
+    public void testForReadOnly() throws Exception {
+        final String sql = person.id.concat(" test").forReadOnly().show();
+        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 FOR READ ONLY", sql);
+    }
+
+    public void testQueryValue() {
+        final String sql = person.id.concat(" test").queryValue().orderBy(person2.id).show();
+        assertSimilar("SELECT(SELECT T0.id || ? FROM person AS T0) AS C0 FROM person AS T1 ORDER BY T1.id", sql);
+    }
+
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);

@@ -307,6 +307,11 @@ public class NullPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE EXISTS(SELECT T0.smart IS NULL FROM person AS T0)", sql);
     }
 
+    public void testQueryValue() {
+        final String sql = person.smart.isNull().queryValue().where(person2.alive.isNotNull()).show();
+        assertSimilar("SELECT(SELECT T0.smart IS NULL FROM person AS T0) AS C0 FROM person AS T1 WHERE T1.alive IS NOT NULL", sql);
+    }
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);

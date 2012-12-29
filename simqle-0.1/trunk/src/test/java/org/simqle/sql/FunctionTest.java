@@ -287,6 +287,71 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testUnion() throws Exception {
+        final String sql = abs(person.id).union(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionAll() throws Exception {
+        final String sql = abs(person.id).unionAll(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION ALL SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final String sql = abs(person.id).unionDistinct(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExcept() throws Exception {
+        final String sql = abs(person.id).except(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 EXCEPT SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptAll() throws Exception {
+        final String sql = abs(person.id).exceptAll(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final String sql = abs(person.id).exceptDistinct(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersect() throws Exception {
+        final String sql = abs(person.id).intersect(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersectAll() throws Exception {
+        final String sql = abs(person.id).intersectAll(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final String sql = abs(person.id).intersectDistinct(person2.id).show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.id AS C0 FROM person AS T1", sql);
+    }
+
+    public void testForUpdate() throws Exception {
+        final String sql = abs(person.id).forUpdate().show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FOR UPDATE", sql);
+    }
+
+    public void testForReadOnly() throws Exception {
+        final String sql = abs(person.id).forReadOnly().show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FOR READ ONLY", sql);
+    }
+
+    public void testExists() throws Exception {
+        final String sql = person2.id.where(abs(person.id).exists()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT abs(T1.id) FROM person AS T1)", sql);
+    }
+
+    public void testQueryValue() throws Exception {
+        final String sql = abs(person.id).queryValue().orderBy(person2.age).show();
+        assertSimilar("SELECT(SELECT abs(T0.id) FROM person AS T0) AS C0 FROM person AS T1 ORDER BY T1.age", sql);
+
+    }
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
@@ -349,6 +414,9 @@ public class FunctionTest extends SqlTestCase {
         private Person() {
             super("person");
         }
+
+        private Column<Long> id = new LongColumn("id", this);
+        private Column<Long> age = new LongColumn("age", this);
     }
 
     private static class Employee extends Table {
