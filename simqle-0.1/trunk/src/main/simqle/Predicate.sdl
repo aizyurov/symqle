@@ -13,7 +13,7 @@ Predicate ::=
 # All predicates use Predicand (<row value predicand>)
 # in current version of Simqle it can be only scalar
 
-public interface Predicand<T> extends Scalar<T> : Sql {}
+public interface Predicand<T> : Sql {}
 
 <T> Predicand<T> ::=
     e:NumericExpression<T> :: implicit {}
@@ -70,7 +70,7 @@ public class AbstractInPredicate extends AbstractPredicate implements InPredicat
         p:Predicand<T> NOT IN v:InPredicateValue<T> :: public AbstractInPredicate notIn {}
 ;
 
-public interface InPredicateValue<T> extends Scalar<T> : Sql {}
+public interface InPredicateValue<T> : Sql {}
 
 <T> InPredicateValue<T> ::=
     s:ScalarSubquery<T> :: implicit {}
@@ -78,7 +78,7 @@ public interface InPredicateValue<T> extends Scalar<T> : Sql {}
     LEFT_PAREN l:InValueList<T> RIGHT_PAREN :: implicit {}
 ;
 
-public interface InValueList<T> extends Scalar<T> : Sql {}
+public interface InValueList<T> : Sql {}
 
 <T>  InValueList<T> ::=
     e1:ValueExpression<T> :: protected InValueList<T> createInValueList {}

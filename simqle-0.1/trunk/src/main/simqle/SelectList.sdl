@@ -57,7 +57,7 @@ public class DefinedIdentifier implements Identifier {
                 final DataExtractor<T> extractor = new DataExtractor<T>() {
                     @Override
                     public T extract(Row row) throws SQLException {
-                        return ve.value(row.getValue(name));
+                        return value(row.getValue(name));
                     }
                 };
                 return new ComplexQuery<T>(extractor, ve.z$create$ValueExpression(context), AS, id.z$create$Identifier(context));
