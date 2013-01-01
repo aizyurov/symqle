@@ -17,7 +17,7 @@ import org.simqle.Callback;
 import org.simqle.Row;
 import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
-:: public <T> void scroll(final SelectStatement<T> statement,
+:: public <T> int scroll(final SelectStatement<T> statement,
                           final DataSource datasource,
                           final Callback<T, SQLException> callback
                           ) throws SQLException {
@@ -30,13 +30,16 @@ import org.simqle.jdbc.StatementParameters;
              final ResultSet resultSet = preparedStatement.executeQuery();
              final Row row = new ResultSetRow(resultSet);
              try {
+                int count = 0;
                  while (resultSet.next()) {
                      try {
                          callback.iterate(query.extract(row));
+                         count++;
                      } catch (Callback.BreakException e) {
                          break;
                      }
                  }
+                 return count;
              } finally {
                  resultSet.close();
              }
