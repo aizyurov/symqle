@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -259,28 +260,33 @@ public class NumericExpressionTest extends SqlTestCase {
     
 
     public void testList() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.plus(two).show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setLong(1, 2L);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        final List<AbstractNumericExpression<Number>> expressions = new ArrayList<AbstractNumericExpression<Number>>();
+        expressions.add(person.id.plus(two));
+        expressions.add(person.id.minus(two));
+        for (final AbstractNumericExpression<Number> numericExpression : expressions) {
+            final String queryString = numericExpression.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            statement.setLong(1, 2L);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
 
-        final List<Number> list = person.id.plus(two).list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(123L, list.get(0).longValue());
-        verify(datasource, connection, statement, resultSet);
+            final List<Number> list = numericExpression.list(datasource);
+            assertEquals(1, list.size());
+            assertEquals(123L, list.get(0).longValue());
+            verify(datasource, connection, statement, resultSet);
+        }
     }
 
 

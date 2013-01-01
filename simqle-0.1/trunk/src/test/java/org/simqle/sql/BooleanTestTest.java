@@ -250,27 +250,37 @@ public class BooleanTestTest extends SqlTestCase {
     
 
     public void testList() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.booleanValue().isTrue().show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        final AbstractBooleanTest[] tests = {
+                person.alive.booleanValue().isTrue(),
+                person.alive.booleanValue().isNotTrue(),
+                person.alive.booleanValue().isFalse(),
+                person.alive.booleanValue().isNotFalse(),
+                person.alive.booleanValue().isUnknown(),
+                person.alive.booleanValue().isNotUnknown()
+        };
+        for (final AbstractBooleanTest booleanTest : tests) {
+            final String queryString = booleanTest.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
 
-        final List<Boolean> list = person.alive.booleanValue().isTrue().list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Boolean.TRUE, list.get(0));
-        verify(datasource, connection, statement, resultSet);
+            final List<Boolean> list = booleanTest.list(datasource);
+            assertEquals(1, list.size());
+            assertEquals(Boolean.TRUE, list.get(0));
+            verify(datasource, connection, statement, resultSet);
+        }
     }
 
 

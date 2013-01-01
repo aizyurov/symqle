@@ -310,11 +310,20 @@ public class ComparisonPredicateTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
+        final AbstractComparisonPredicate[] predicates = {
+                person.alive.eq(person.cute),
+                person.alive.ne(person.cute),
+                person.alive.gt(person.cute),
+                person.alive.ge(person.cute),
+                person.alive.lt(person.cute),
+                person.alive.le(person.cute),
+        };
+        for (final AbstractComparisonPredicate comparisonPredicate : predicates) {
+        final String queryString = comparisonPredicate.show();
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.eq(person.cute).show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -327,10 +336,11 @@ public class ComparisonPredicateTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Boolean> list = person.alive.eq(person.cute).list(datasource);
+        final List<Boolean> list = comparisonPredicate.list(datasource);
         assertEquals(1, list.size());
         assertEquals(Boolean.TRUE, list.get(0));
         verify(datasource, connection, statement, resultSet);
+        }
     }
 
 

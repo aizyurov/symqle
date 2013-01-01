@@ -27,6 +27,17 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
+    public void testPairChain() throws Exception {
+        final String sql = person.id.pair(person.name).pair(person.age).show();
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1, T0.age AS C2 FROM person AS T0", sql);
+
+    }
+
+    public void testPairArgument() throws Exception {
+        final String sql = person.id.pair(person.name.pair(person.age)).show();
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1, T0.age AS C2 FROM person AS T0", sql);
+    }
+
     public void testAll() throws Exception {
         final String sql = person.id.pair(person.name).all().show();
         assertSimilar("SELECT ALL T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
@@ -301,6 +312,8 @@ public class PairTest extends SqlTestCase {
         }
         public Column<Long> id = new LongColumn("id", this);
         public Column<String> name = new StringColumn("name", this);
+        public Column<Long> age = new LongColumn("age", this);
+        public Column<String> address = new StringColumn("address", this);
     }
 
     private static Person person = new Person();

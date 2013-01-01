@@ -2,7 +2,15 @@ package org.simqle.sql;
 
 import org.simqle.Element;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
+import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.verify;
 
 /**
  * Created by IntelliJ IDEA.
@@ -433,6 +441,32 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
 
     }
+
+    public void testList() throws Exception {
+        final LongColumn column = createId();
+        final String queryString = column.show();
+        final DataSource datasource = createMock(DataSource.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        final List<Long> list = column.list(datasource);
+        assertEquals(1, list.size());
+        assertEquals(123L, list.get(0).longValue());
+        verify(datasource, connection, statement, resultSet);
+    }
+
 
     private static class Person extends Table {
         private Person() {
