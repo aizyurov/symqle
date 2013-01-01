@@ -320,6 +320,20 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC", sql);
     }
 
+    public void testOrderByAscNullsFirst() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age.asc().nullsFirst()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC NULLS FIRST", sql);
+    }
+
+    public void testOrderByAscNullsLast() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.orderBy(age.asc().nullsLast()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC NULLS LAST", sql);
+    }
+
     public void testOperation() throws Exception {
         final LongColumn id  =  createId();
         final LongColumn age = createAge();

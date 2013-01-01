@@ -407,6 +407,25 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
+    public void testForUpdate() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.forUpdate().show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testForReadOnly() throws Exception {
+        final LongParameter param = new LongParameter(1L);
+        try {
+            param.forReadOnly().show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
 
     public void testList() throws Exception {
         final DataSource dataSource = org.easymock.EasyMock.createMock(DataSource.class);

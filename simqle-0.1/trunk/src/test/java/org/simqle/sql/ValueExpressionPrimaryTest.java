@@ -4,11 +4,14 @@ import org.simqle.Callback;
 
 import javax.sql.DataSource;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author lvovich
@@ -302,6 +305,29 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
+    }
+
+    public void testQuery() throws Exception {
+        final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.eq(employee.name)).queryValue().where(employee.name.isNotNull());
+        final DataSource datasource = createMock(DataSource.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        final String queryString = querySpecification.show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+        final List<Long> list = querySpecification.list(datasource);
+        assertEquals(1, list.size());
+        assertEquals(123L, list.get(0).longValue());
     }
 
     public void testScroll() throws Exception {
