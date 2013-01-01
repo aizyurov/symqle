@@ -81,6 +81,10 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) <= T1.id AS C0 FROM employee AS T1", sql);
     }
 
+    public void testPair() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().pair(employee.id).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0, T1.id AS C1 FROM employee AS T1", sql);
+    }
     public void testPlus() throws Exception {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().plus(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) + T1.id AS C0 FROM employee AS T1", sql);

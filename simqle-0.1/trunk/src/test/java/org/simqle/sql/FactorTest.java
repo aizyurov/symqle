@@ -48,6 +48,11 @@ public class FactorTest extends SqlTestCase {
 
     }
 
+    public void testPair() throws Exception {
+        final String sql = person.id.opposite().pair(person.name).show();
+        assertSimilar("SELECT - T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
+    }
+
     public void testEq() throws Exception {
         final String sql = person.id.where(person.id.opposite().eq(person.id)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id = T0.id", sql);

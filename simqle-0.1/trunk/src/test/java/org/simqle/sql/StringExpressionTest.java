@@ -137,6 +137,11 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(? || T0.id)", sql);
     }
 
+    public void testPair() throws Exception {
+        String sql = numberSign.concat(person.id).pair(person.name).show();
+        assertSimilar("SELECT ? || T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
+    }
+
     public void testPlus() throws Exception {
         String sql = numberSign.concat(person.id).plus(numberSign.concat(person.id)).show();
         assertSimilar("SELECT(? || T0.id) +(? || T0.id) AS C0 FROM person AS T0", sql);
@@ -318,6 +323,7 @@ public class StringExpressionTest extends SqlTestCase {
             super("person");
         }
         public Column<Long> id = new LongColumn("id", this);
+        public Column<String> name = new StringColumn("name", this);
     }
     
     private static DynamicParameter<String> numberSign = new DynamicParameter<String>() {

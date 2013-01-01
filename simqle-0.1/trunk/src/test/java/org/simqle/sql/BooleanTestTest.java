@@ -26,6 +26,11 @@ public class BooleanTestTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS TRUE OR T0.smart", sql);
     }
 
+    public void testPair() throws Exception {
+        final String sql = person.alive.booleanValue().isTrue().pair(person.smart.booleanValue()).show();
+        assertSimilar("SELECT T0.alive IS TRUE AS C0, T0.smart AS C1 FROM person AS T0", sql);
+    }
+
     public void testNegate() throws Exception {
         final String sql = person.id.where(person.alive.booleanValue().isTrue().negate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.alive IS TRUE", sql);

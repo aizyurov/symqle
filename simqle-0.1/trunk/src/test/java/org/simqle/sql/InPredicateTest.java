@@ -161,6 +161,12 @@ public class InPredicateTest extends SqlTestCase {
 
     }
 
+    public void testPair() throws Exception {
+        final String sql = person.id.in(employee.id).pair(person.name).show();
+        assertSimilar("SELECT T1.id IN(SELECT T3.id FROM employee AS T3) AS C1, T1.name AS C2 FROM person AS T1", sql);
+
+    }
+
     public void testMinus() throws Exception {
         final String sql = person.id.in(employee.id).minus(two).show();
         assertSimilar("SELECT(T1.id IN(SELECT T3.id FROM employee AS T3)) - ? AS C1 FROM person AS T1", sql);

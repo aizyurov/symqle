@@ -26,6 +26,11 @@ public class ComparisonPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute OR T0.smart", sql);
     }
 
+    public void testPair() throws Exception {
+        final String sql = person.alive.eq(person.cute).pair(person.smart.booleanValue()).show();
+        assertSimilar("SELECT T0.alive = T0.cute AS C0, T0.smart AS C1 FROM person AS T0", sql);
+    }
+
     public void testNegate() throws Exception {
         final String sql = person.id.where(person.alive.eq(person.cute).negate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.alive = T0.cute", sql);

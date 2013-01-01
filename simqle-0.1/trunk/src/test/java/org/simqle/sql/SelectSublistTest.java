@@ -90,6 +90,10 @@ public class SelectSublistTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) + T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
+    public void testPair() throws Exception {
+        final String sql = employee.id.queryValue().pair(person.id).orderBy(person.name).show();
+        assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) AS C0, T2.id AS C1 FROM person AS T2 ORDER BY T2.name", sql);
+    }
     public void testMinus() throws Exception {
         final String sql = employee.id.queryValue().minus(person.id).orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) - T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);

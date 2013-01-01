@@ -33,6 +33,20 @@ public class FunctionTest extends SqlTestCase {
         }
     }
 
+    private AbstractRoutineInvocation<String> currentUser() {
+        return new SqlFunction<String>("user"){
+
+            public AbstractRoutineInvocation<String> apply(ValueExpression<?> arg) {
+                return super.apply(arg);
+            }
+
+            @Override
+            public String value(Element element) throws SQLException {
+                return element.getString();
+            }
+        }.apply();
+    }
+
     private AbstractRoutineInvocation<Long> abs(ValueExpression<Long> e) {
         return new SqlFunction<Long>("abs"){
 
@@ -220,6 +234,19 @@ public class FunctionTest extends SqlTestCase {
         final LongColumn id  =  createId();
         String sql = abs(id).opposite().show();
         assertSimilar("SELECT - abs(T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPair() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = abs(id).pair(age).show();
+        assertSimilar("SELECT abs(T0.id) AS C0, T0.age AS C1 FROM person AS T0", sql);
+    }
+
+    public void testNoArgFunction() throws Exception {
+        final LongColumn id  =  createId();
+        String sql = currentUser().pair(id).show();
+        assertSimilar("SELECT user() AS C0, T0.id AS C1 FROM person AS T0", sql);
     }
 
     public void testPlus() throws Exception {

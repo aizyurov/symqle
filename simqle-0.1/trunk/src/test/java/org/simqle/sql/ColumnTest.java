@@ -16,15 +16,7 @@ public class ColumnTest extends SqlTestCase {
 
     public void testShow() throws Exception {
         final LongColumn col = createId();
-        Element element = new ElementAdapter() {
-            @Override
-            public Long getLong() throws SQLException {
-                return 1L;
-            }
-        };
-        assertEquals(Long.valueOf(1), col.value(element));
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.show());
-
     }
 
     public void testSelectStatementFunctionality() throws Exception {
@@ -339,6 +331,13 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn age = createAge();
         String sql = id.mult(age).show();
         assertSimilar("SELECT T0.id * T0.age AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPair() throws Exception {
+        final LongColumn id  =  createId();
+        final LongColumn age = createAge();
+        String sql = id.pair(age).show();
+        assertSimilar("SELECT T0.id AS C0, T0.age AS C1 FROM person AS T0", sql);
     }
 
     public void testFunction() throws Exception {

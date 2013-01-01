@@ -189,6 +189,11 @@ public class NullPredicateTest extends SqlTestCase {
         assertSimilar("SELECT(T0.smart IS NULL) +(T0.alive IS NULL) AS C0 FROM person AS T0", sql);
     }
 
+    public void testPair() throws Exception {
+        String sql = person.smart.isNull().pair(person.alive).show();
+        assertSimilar("SELECT T0.smart IS NULL AS C0, T0.alive AS C1 FROM person AS T0", sql);
+    }
+
     public void testPlusNumber() throws Exception {
         String sql = person.smart.isNull().plus(2).show();
         assertSimilar("SELECT(T0.smart IS NULL) + ? AS C0 FROM person AS T0", sql);

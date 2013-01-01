@@ -44,6 +44,13 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
+    public void testPair() throws Exception {
+        final LongColumn id = createId();
+        final LongParameter param = new LongParameter(1L);
+        final String sql = param.pair(id).show();
+        assertSimilar("SELECT ? AS C1, T1.id AS C2 FROM person AS T1", sql);
+    }
+
     public void testWhere() throws Exception {
         final LongColumn id = createId();
         final LongParameter param = new LongParameter(1L);
