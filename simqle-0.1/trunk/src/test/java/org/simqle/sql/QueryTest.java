@@ -98,6 +98,39 @@ public class QueryTest extends SqlTestCase {
         });
     }
 
+    public void testScrollWithBreak() throws Exception {
+        Table person = new Table("person");
+        final LongColumn id = new LongColumn("id", person);
+        final String queryString = id.show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(254L);
+        expect(resultSet.wasNull()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replayAll();
+        int callNum = id.scroll(datasource, new Callback<Long, SQLException>() {
+            private int callCount = 0;
+            @Override
+            public void iterate(Long aLong) throws SQLException, BreakException {
+                if (callCount > 0) {
+                    assertEquals(254, aLong.longValue());
+                    throw new BreakException();
+                } else {
+                    callCount ++;
+                    assertEquals(123, aLong.longValue());
+                }
+            }
+        });
+        assertEquals(1, callNum);
+    }
+
     public void testList() throws Exception {
         Table person = new Table("person");
         final LongColumn id = new LongColumn("id", person);

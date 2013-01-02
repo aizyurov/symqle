@@ -45,72 +45,31 @@ public class DefinedIdentifier implements Identifier {
     }
 }
 
-<T> SelectSublist<T> ::= ve:ValueExpression<T> AS id:Identifier ::
-    protected SelectSublist<T> makeSelectSublist {
+<T> SelectSublist<T> ::= ve:ValueExpression<T> ::
+    implicit {
             /**
             * Creates a Query representing <code>this</code>
             * @param context the Sql construction context
             * @return query conforming to <code>this</code> syntax
             */
             public Query<T> z$create$SelectSublist(final SqlContext context) {
-                final String name = id.z$create$Identifier(context).getSqlText();
-                final DataExtractor<T> extractor = new DataExtractor<T>() {
-                    @Override
-                    public T extract(Row row) throws SQLException {
-                        return getElementMapper().value(row.getValue(name));
-                    }
-                };
-                return new ComplexQuery<T>(extractor, ve.z$create$ValueExpression(context), AS, id.z$create$Identifier(context));
-            }/*delegation*/
-    }
-|
-# overloaded
-    ve:ValueExpression<T> ::
-    protected SelectSublist<T> makeSelectSublist {
-            /**
-            * Creates a Query representing <code>this</code>
-            * @param context the Sql construction context
-            * @return query conforming to <code>this</code> syntax
-            */
-            public Query<T> z$create$SelectSublist(final SqlContext context) {
-                return new ComplexQuery<T>(new NullDataExtractor(), ve.z$create$ValueExpression(context));
-            }/*delegation*/
+                final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                if (nameProvider == null) {
+                    return new ComplexQuery<T>(new NullDataExtractor(), ve.z$create$ValueExpression(context));
+                } else {
+                    final String name = nameProvider.getUniqueName();
+                    return new ComplexQuery<T>(new DataExtractor<T>(){
+                                @Override
+                                public T extract(Row row) throws SQLException {
+                                    return getElementMapper().value(row.getValue(name));
+                                }
+                            },
+                            ve.z$create$ValueExpression(context),
+                            AS,
+                            new CustomSql(name));
+                }           
+            }
     }
 ;
-
-# implicit conversion of ValueExpression to SelectSublist.
-# adds AS if needed (in outer context)
-# in inner contexts does not add AS
-:: <T> SelectSublist<T> implicit(final ValueExpression<T> ve) {
-    return new SelectSublist<T>(){
-        @Override
-        public Query<T> z$create$SelectSublist(SqlContext context) {
-            final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
-            if (nameProvider == null) {
-                return makeSelectSublist(ve).z$create$SelectSublist(context);
-            } else {
-                return makeSelectSublist(ve, new DefinedIdentifier(nameProvider.getUniqueName())).z$create$SelectSublist(context);
-            }
-        }
-
-        @Override
-        public ElementMapper<T> getElementMapper() {
-            return ve.getElementMapper();
-        }
-    };
-}
-
-# a convenience methods: need not explicit select()
-#::     public <T> AbstractQuerySpecification<T> where(final ValueExpression<T> ve, final WhereClause wc) {
-#        return where((QueryBaseScalar<T>) select(ve), wc);
-#    }
-
-#::     public <T>  AbstractQueryBaseScalar<T> all(final ValueExpression<T> ve) {
-#        return all((SelectSublist<T>) select(ve));
-#    }
-
-# ::     public <T>  AbstractQueryBaseScalar<T> distinct(final ValueExpression<T> ve) {
-#        return distinct((SelectSublist<T>) select(ve));
-#    }
 
 
