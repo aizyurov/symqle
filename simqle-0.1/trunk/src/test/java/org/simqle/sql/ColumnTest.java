@@ -1,6 +1,8 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
+import org.simqle.ElementMapper;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,8 +60,8 @@ public class ColumnTest extends SqlTestCase {
     public void testAsFunctionArgument() throws Exception {
         final String sql = new SqlFunction<Long>("abs") {
             @Override
-            public Long value(final Element element) throws SQLException {
-                return element.getLong();
+            public ElementMapper<Long> getElementMapper() {
+                return Mappers.LONG;
             }
         }.apply(createId()).show();
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", sql);
@@ -69,8 +71,8 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn column = createId();
         final String sql = new SqlFunction<Long>("max") {
             @Override
-            public Long value(final Element element) throws SQLException {
-                return element.getLong();
+            public ElementMapper<Long> getElementMapper() {
+                return Mappers.LONG;
             }
         }.apply(column, column).show();
         assertSimilar("SELECT max(T0.id, T0.id) AS C0 FROM person AS T0", sql);
@@ -353,8 +355,8 @@ public class ColumnTest extends SqlTestCase {
         final LongColumn age = createAge();
         SqlFunction<Long> sumOf = new SqlFunction<Long>("SUM_OF") {
             @Override
-            public Long value(final Element element) throws SQLException {
-                return element.getLong();
+            public ElementMapper<Long> getElementMapper() {
+                return Mappers.LONG;
             }
         };
         String sql = sumOf.apply(id, age).show();

@@ -70,8 +70,8 @@ BooleanPrimary ::=
 |
     e:ValueExpressionPrimary<?>
         :: AbstractBooleanPrimary booleanValue {
-            public Boolean value(final Element element) throws SQLException {
-                return element.getBoolean();
+            public ElementMapper<Boolean> getElementMapper() {
+                return Mappers.BOOLEAN;
             }
         }
 ;

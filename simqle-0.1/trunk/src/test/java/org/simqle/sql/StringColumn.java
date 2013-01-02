@@ -1,6 +1,8 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
+import org.simqle.ElementMapper;
+import org.simqle.Mappers;
 
 import java.sql.SQLException;
 
@@ -17,7 +19,7 @@ public class StringColumn extends Column<String> {
     }
 
     @Override
-    public String value(final Element element) throws SQLException {
-        return element.getString();
+    public ElementMapper<String> getElementMapper() {
+        return Mappers.STRING;
     }
 }

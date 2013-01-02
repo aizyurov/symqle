@@ -11,15 +11,15 @@ public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 NumericExpression<Number> ::=
     e:NumericExpression<?> PLUS t:Term<?>
          :: public AbstractNumericExpression<Number> plus {
-            public Number value(final Element element) throws SQLException {
-                    return element.getBigDecimal();
+            public ElementMapper<Number> getElementMapper() {
+                    return Mappers.NUMBER;
             }
          }
 |
     e:NumericExpression<?> MINUS t:Term<?>
          :: public AbstractNumericExpression<Number> minus {
-            public Number value(final Element element) throws SQLException {
-                    return element.getBigDecimal();
+            public ElementMapper<Number> getElementMapper() {
+                    return Mappers.NUMBER;
             }
          }
 ;
@@ -43,15 +43,15 @@ public class AbstractTerm<T> implements Term<T> {}
 Term<Number> ::=
     t:Term<?> ASTERISK f:Factor<?>
         :: public AbstractTerm<Number> mult {
-                public Number value(final Element element) throws SQLException {
-                        return element.getBigDecimal();
-                }
+            public ElementMapper<Number> getElementMapper() {
+                    return Mappers.NUMBER;
+            }
         }
 |
     t:Term<?> SOLIDUS f:Factor<?>
         :: public AbstractTerm<Number> div {
-            public Number value(final Element element) throws SQLException {
-                    return element.getBigDecimal();
+            public ElementMapper<Number> getElementMapper() {
+                    return Mappers.NUMBER;
             }
         }
 ;
@@ -84,8 +84,8 @@ import java.sql.SQLException;
         protected void set(final SqlParameter p) throws SQLException {
             p.setBigDecimal(new BigDecimal(n.toString()));
         }
-        public Number value(final Element element) throws SQLException {
-            return element.getBigDecimal();
-        }
+            public ElementMapper<Number> getElementMapper() {
+                    return Mappers.NUMBER;
+            }
      };
 }

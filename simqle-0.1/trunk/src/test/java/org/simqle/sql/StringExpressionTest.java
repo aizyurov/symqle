@@ -1,8 +1,6 @@
 package org.simqle.sql;
 
-import org.simqle.Callback;
-import org.simqle.Element;
-import org.simqle.SqlParameter;
+import org.simqle.*;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -333,8 +331,8 @@ public class StringExpressionTest extends SqlTestCase {
         }
 
         @Override
-        public String value(final Element element) throws SQLException {
-            return element.getString();
+        public ElementMapper<String> getElementMapper() {
+            return Mappers.STRING;
         }
     };
 

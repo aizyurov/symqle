@@ -1,6 +1,8 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
+import org.simqle.ElementMapper;
+import org.simqle.Mappers;
 import org.simqle.SqlParameter;
 
 import java.sql.SQLException;
@@ -25,7 +27,7 @@ public class LongParameter extends DynamicParameter<Long> {
     }
 
     @Override
-    public Long value(final Element element) throws SQLException {
-        return element.getLong();
+    public ElementMapper<Long> getElementMapper() {
+        return Mappers.LONG;
     }
 }

@@ -2,6 +2,8 @@ package org.simqle.sql;
 
 import org.simqle.Callback;
 import org.simqle.Element;
+import org.simqle.ElementMapper;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -28,8 +30,8 @@ public class FunctionTest extends SqlTestCase {
         }
 
         @Override
-        public String value(final Element element) throws SQLException {
-            return element.getString();
+        public ElementMapper<String> getElementMapper() {
+            return Mappers.STRING;
         }
     }
 
@@ -41,8 +43,8 @@ public class FunctionTest extends SqlTestCase {
             }
 
             @Override
-            public String value(Element element) throws SQLException {
-                return element.getString();
+            public ElementMapper<String> getElementMapper() {
+                return Mappers.STRING;
             }
         }.apply();
     }
@@ -55,8 +57,8 @@ public class FunctionTest extends SqlTestCase {
             }
 
             @Override
-            public Long value(Element element) throws SQLException {
-                return element.getLong();
+            public ElementMapper<Long> getElementMapper() {
+                return Mappers.LONG;
             }
         }.apply(e);
     }
@@ -80,8 +82,8 @@ public class FunctionTest extends SqlTestCase {
     public void testAsFunctionArgument() throws Exception {
         final String sql = new SqlFunction<Long>("abs") {
             @Override
-            public Long value(final Element element) throws SQLException {
-                return element.getLong();
+            public ElementMapper<Long> getElementMapper() {
+                return Mappers.LONG;
             }
         }.apply(abs(createId())).show();
         assertSimilar("SELECT abs(abs(T0.id)) AS C0 FROM person AS T0", sql);

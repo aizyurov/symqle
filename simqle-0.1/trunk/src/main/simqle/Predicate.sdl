@@ -30,9 +30,10 @@ Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {}
 public interface ComparisonPredicate extends Scalar<Boolean> : Sql {}
 
 import java.sql.SQLException;
+import org.simqle.Mappers;
 public class AbstractPredicate implements Scalar<Boolean> {
-    public Boolean value(final Element element) throws SQLException {
-        return element.getBoolean();
+    public ElementMapper<Boolean> getElementMapper() {
+        return Mappers.BOOLEAN;
     }
 }
 

@@ -33,8 +33,8 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
 StringExpression<String> ::=
     s:StringExpression<?> CONCAT e:ValueExpressionPrimary<?>
         :: public AbstractStringExpression<String> concat {
-                public String value(final Element element) throws SQLException {
-                    return element.getString();
+                public ElementMapper<String> getElementMapper() {
+                    return Mappers.STRING;
                 }
         }
 ;
@@ -48,8 +48,8 @@ StringExpression<String> ::=
         protected final void set(final SqlParameter p) throws SQLException {
             p.setString(s);
         }
-        public String value(final Element element) throws SQLException {
-            return element.getString();
-        }
+                public ElementMapper<String> getElementMapper() {
+                    return Mappers.STRING;
+                }
     };
 }

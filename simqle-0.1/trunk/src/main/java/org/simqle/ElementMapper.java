@@ -1,5 +1,7 @@
 package org.simqle;
 
+import java.sql.SQLException;
+
 /**
  * Extracts value from an Element.
  * @author lvovich
@@ -11,5 +13,7 @@ public interface ElementMapper<T> {
      * @param element the element to extract value from
      * @return the value
      */
-    T value(Element element);
+    T value(Element element) throws SQLException;
+    
+    void setValue(SqlParameter param, T value) throws SQLException;
 }

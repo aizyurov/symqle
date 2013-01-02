@@ -48,7 +48,7 @@ public abstract class DynamicParameter<T> implements DynamicParameterSpecificati
             /**
             * Implement in derived classes
             */
-             public abstract T value(final Element element) throws SQLException ;
+             public abstract ElementMapper<T> getElementMapper();
 
 }
 
@@ -73,7 +73,7 @@ public abstract class Column<T> implements ColumnReference<T> {
 
     }
 
-     public abstract T value(final Element element) throws SQLException ;
+             public abstract ElementMapper<T> getElementMapper();
 }
 
 

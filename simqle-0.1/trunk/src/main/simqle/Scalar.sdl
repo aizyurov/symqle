@@ -1,8 +1,8 @@
 import java.sql.SQLException;
-import org.simqle.Element;
+import org.simqle.ElementMapper;
 public interface Scalar<T>
 {
-    T value(final Element element) throws SQLException;
+    ElementMapper<T> getElementMapper();
 }
 
 ::     private SqlContext createInnerContext(SqlContext context) {

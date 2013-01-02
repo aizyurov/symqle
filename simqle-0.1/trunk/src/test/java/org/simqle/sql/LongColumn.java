@@ -1,6 +1,8 @@
 package org.simqle.sql;
 
 import org.simqle.Element;
+import org.simqle.ElementMapper;
+import org.simqle.Mappers;
 
 import java.sql.SQLException;
 
@@ -17,7 +19,7 @@ public class LongColumn extends Column<Long> {
     }
 
     @Override
-    public Long value(final Element element) throws SQLException {
-        return element.getLong();
+    public ElementMapper<Long> getElementMapper() {
+        return Mappers.LONG;
     }
 }

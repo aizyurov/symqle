@@ -2,6 +2,8 @@ package org.simqle.sql;
 
 import org.simqle.Callback;
 import org.simqle.Element;
+import org.simqle.ElementMapper;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -75,8 +77,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final LongColumn id = createId();
         final String sql = new SqlFunction<Long>("abs") {
             @Override
-            public Long value(final Element element) throws SQLException {
-                return element.getLong();
+            public ElementMapper<Long> getElementMapper() {
+                return Mappers.LONG;
             }
         }.apply(param).where(id.booleanValue()).show();
         assertSimilar("SELECT abs(?) AS C1 FROM person AS T1 WHERE T1.id", sql);
