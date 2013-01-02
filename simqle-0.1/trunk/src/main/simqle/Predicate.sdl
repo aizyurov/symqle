@@ -13,7 +13,7 @@ Predicate ::=
 # All predicates use Predicand (<row value predicand>)
 # in current version of Simqle it can be only scalar
 
-public interface Predicand<T> : Sql {}
+public interface Predicand<T> extends Scalar<T> : Sql {}
 
 <T> Predicand<T> ::=
     e:NumericExpression<T> :: implicit {}
@@ -43,6 +43,7 @@ public class AbstractComparisonPredicate extends AbstractPredicate implements Co
      p1:Predicand<T> EQ p2:Predicand<T>
         :: public AbstractComparisonPredicate eq {}
 |
+
      p1:Predicand<T> NE p2:Predicand<T>
         :: public AbstractComparisonPredicate ne {}
 |
@@ -59,7 +60,24 @@ public class AbstractComparisonPredicate extends AbstractPredicate implements Co
         :: public AbstractComparisonPredicate le {}
 ;
 
-
+:: public <T> AbstractComparisonPredicate eq(Predicand<T> p, T v) {
+    return eq(p, DynamicParameter.create(p.getElementMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate ne(Predicand<T> p, T v) {
+    return ne(p, DynamicParameter.create(p.getElementMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate gt(Predicand<T> p, T v) {
+    return gt(p, DynamicParameter.create(p.getElementMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate ge(Predicand<T> p, T v) {
+    return ge(p, DynamicParameter.create(p.getElementMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate lt(Predicand<T> p, T v) {
+    return lt(p, DynamicParameter.create(p.getElementMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate le(Predicand<T> p, T v) {
+    return le(p, DynamicParameter.create(p.getElementMapper(), v));
+}
 public interface InPredicate extends Scalar<Boolean> : Sql {}
 
 public class AbstractInPredicate extends AbstractPredicate implements InPredicate {

@@ -77,16 +77,16 @@ public class Table implements TableName, TablePrimary, TableReference {
             throw new IllegalStateException(other + "is already joined to "+ other.referral);
         }
         other.referral = this;
-        if (!referents.add(other)) {
-            throw new IllegalStateException(other + "is already joined to this (" + this +")");
-        }
+        referents.add(other);
         Set<Table> foundReferrals = new HashSet<Table>();
+        Set<Table> maybeCycle = new HashSet<Table>();
         // try to find cycle starting from other
         Table t;
-        for (t = other; t != null; t = t.referral) {
-            if (foundReferrals.contains(t)) {
+        for (t = this; t != null; t = t.referral) {
+            maybeCycle.add(t);
+            if (other==t) {
                 // cycle!
-                throw new IllegalStateException("Cyclic join: " + foundReferrals);
+                throw new IllegalStateException("Cyclic join: " + maybeCycle);
             }
         }
         // OK, came to the root
@@ -235,10 +235,8 @@ public class SelectTableRegistry implements TableRegistry {
 
 
     private void addToLocalTables(Table table) {
-        if (!localTables.containsKey(table)) {
             final String newName = generateUniqueName();
             localTables.put(table, newName);
-        }
     }
 
 

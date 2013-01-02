@@ -33,6 +33,11 @@ public class OrderByTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
     }
 
+    public void testPairOrderByMultiple() throws Exception {
+        String sql = person.id.pair(person.name).orderBy(person.name.nullsFirst(), person.age.desc()).show();
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
+    }
+
 
 
     private static class Person extends Table {

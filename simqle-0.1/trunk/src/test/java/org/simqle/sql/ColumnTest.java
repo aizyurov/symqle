@@ -126,6 +126,42 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <= T0.age", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final LongColumn id = createId();
+        final String sql = id.where(id.eq(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final LongColumn id = createId();
+        final String sql = id.where(id.ne(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <> ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final LongColumn id = createId();
+        final String sql = id.where(id.lt(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final LongColumn id = createId();
+        final String sql = id.where(id.le(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id <= ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final LongColumn id = createId();
+        final String sql = id.where(id.gt(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final LongColumn id = createId();
+        final String sql = id.where(id.ge(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id >= ?", sql);
+    }
+
     public void testExceptAll() throws Exception {
         final LongColumn column = createId();
         final String sql = column.exceptAll(new LongColumn("age", person2)).show();
