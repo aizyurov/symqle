@@ -40,16 +40,6 @@ StringExpression<String> ::=
 ;
 
 :: public AbstractStringExpression<String> concat(final StringExpression<?> e, final String s) {
-    return concat(e, createStringParam(s));
+    return concat(e,  DynamicParameter.create(Mappers.STRING, s));
 }
 
-:: private DynamicParameter<String> createStringParam(final String s) {
-    return new DynamicParameter<String>() {
-        protected final void set(final SqlParameter p) throws SQLException {
-            p.setString(s);
-        }
-                public ElementMapper<String> getElementMapper() {
-                    return Mappers.STRING;
-                }
-    };
-}

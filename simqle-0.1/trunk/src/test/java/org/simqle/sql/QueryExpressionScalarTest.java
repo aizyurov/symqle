@@ -1,6 +1,7 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -193,6 +194,6 @@ public class QueryExpressionScalarTest extends SqlTestCase {
 
     private static Person person2 = new Person();
 
-    private DynamicParameter<Long> two = new LongParameter(2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
 }

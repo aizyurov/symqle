@@ -1,6 +1,7 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -346,6 +347,6 @@ public class NumericExpressionTest extends SqlTestCase {
 
     private static Employee employee = new Employee();
     
-    private static DynamicParameter<Long> two = new LongParameter(2L);
+    private static DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
 }

@@ -1,6 +1,7 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -327,7 +328,7 @@ public class TermTest extends SqlTestCase {
         public Column<String> name = new StringColumn("name", this);
     }
     
-    private static DynamicParameter<Long> two = new LongParameter(2L);
+    private static DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
     private static Person person = new Person();
     private static Person person2 = new Person();

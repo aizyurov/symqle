@@ -324,17 +324,7 @@ public class StringExpressionTest extends SqlTestCase {
         public Column<String> name = new StringColumn("name", this);
     }
     
-    private static DynamicParameter<String> numberSign = new DynamicParameter<String>() {
-        @Override
-        protected void set(final SqlParameter p) throws SQLException {
-            p.setString("#");
-        }
-
-        @Override
-        public ElementMapper<String> getElementMapper() {
-            return Mappers.STRING;
-        }
-    };
+    private static DynamicParameter<String> numberSign = DynamicParameter.create(Mappers.STRING, "#");
 
     private static Person person = new Person();
     private static Person person2 = new Person();

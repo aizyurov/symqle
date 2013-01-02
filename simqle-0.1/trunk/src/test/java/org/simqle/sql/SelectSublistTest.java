@@ -1,5 +1,7 @@
 package org.simqle.sql;
 
+import org.simqle.Mappers;
+
 /**
  * @author lvovich
  */
@@ -218,6 +220,6 @@ public class SelectSublistTest extends SqlTestCase {
     }
     private static Manager manager = new Manager();
 
-    private DynamicParameter<Long> two = new LongParameter(2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
 }

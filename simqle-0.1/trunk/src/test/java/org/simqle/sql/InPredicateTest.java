@@ -1,6 +1,7 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -437,6 +438,6 @@ public class InPredicateTest extends SqlTestCase {
     private static Employee employee2 = new Employee();
     private static Manager manager = new Manager();
 
-    private DynamicParameter<Long> two = new LongParameter(2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
 }

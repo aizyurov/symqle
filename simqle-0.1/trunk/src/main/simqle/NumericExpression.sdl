@@ -25,11 +25,11 @@ NumericExpression<Number> ::=
 ;
 
 :: public AbstractNumericExpression<Number> plus(final NumericExpression<?> e, final Number n) {
-    return plus(e, createNumberParameter(n));
+    return plus(e, DynamicParameter.create(Mappers.NUMBER, n));
 }
 
 :: public AbstractNumericExpression<Number> minus(final NumericExpression<?> e, final Number n) {
-    return minus(e, createNumberParameter(n));
+    return minus(e,  DynamicParameter.create(Mappers.NUMBER, n));
 }
 
 
@@ -57,11 +57,11 @@ Term<Number> ::=
 ;
 
 :: public AbstractTerm<Number> mult(final Term<?> t, final Number n) {
-    return mult(t, createNumberParameter(n));
+    return mult(t, DynamicParameter.create(Mappers.NUMBER, n));
  }
 
 :: public AbstractTerm<Number> div(final Term<?> t, final Number n) {
-    return div(t, createNumberParameter(n));
+    return div(t, DynamicParameter.create(Mappers.NUMBER, n));
  }
 
 
@@ -77,15 +77,3 @@ public class AbstractFactor<T> implements Factor<T> {}
     MINUS e:ValueExpressionPrimary<T> :: public AbstractFactor<T> opposite {}
 ;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
-:: protected DynamicParameter<Number> createNumberParameter(final Number n) {
-    return new DynamicParameter<Number>() {
-        protected void set(final SqlParameter p) throws SQLException {
-            p.setBigDecimal(new BigDecimal(n.toString()));
-        }
-            public ElementMapper<Number> getElementMapper() {
-                    return Mappers.NUMBER;
-            }
-     };
-}

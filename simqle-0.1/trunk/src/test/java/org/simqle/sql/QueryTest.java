@@ -2,6 +2,7 @@ package org.simqle.sql;
 
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -121,7 +122,7 @@ public class QueryTest extends SqlTestCase {
     public void testListWithParameter() throws Exception {
         Table person = new Table("person");
         final LongColumn id = new LongColumn("id", person);
-        final LongParameter param = new LongParameter(123L);
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 123L);
         final String queryString = id.where(id.eq(param)).show();
         System.out.println(queryString);
         expect(datasource.getConnection()).andReturn(connection);

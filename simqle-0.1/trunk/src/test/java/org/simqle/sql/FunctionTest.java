@@ -165,9 +165,9 @@ public class FunctionTest extends SqlTestCase {
         final LongColumn id  =  createId();
         // find all but the most old
 
-        final ValueExpression<Long> expr = new LongParameter(1L);
-        final ValueExpression<Long> expr2 = new LongParameter(2L);
-        final ValueExpression<Long> expr3 = new LongParameter(3L);
+        final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
+        final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
+        final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
         String sql = id.where(abs(id).in(expr, expr2, expr3)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) IN(?, ?, ?)", sql);
    }
@@ -176,9 +176,9 @@ public class FunctionTest extends SqlTestCase {
         final LongColumn id  =  createId();
         // find all but the most old
 
-        final ValueExpression<Long> expr = new LongParameter(1L);
-        final ValueExpression<Long> expr2 = new LongParameter(2L);
-        final ValueExpression<Long> expr3 = new LongParameter(3L);
+        final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
+        final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
+        final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
         String sql = id.where(abs(id).notIn(expr, expr2, expr3)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) NOT IN(?, ?, ?)", sql);
    }

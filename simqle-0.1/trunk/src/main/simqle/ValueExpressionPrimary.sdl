@@ -20,7 +20,18 @@ public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 
 import org.simqle.SqlParameter;
 import org.simqle.SqlParameters;
-public abstract class DynamicParameter<T> implements DynamicParameterSpecification<T> {
+public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
+    private final ElementMapper<T> mapper;
+    private final T value;
+
+    private DynamicParameter(final ElementMapper<T> mapper, T value) {
+        this.mapper = mapper;
+        this.value = value;
+     }
+
+     public static <T> DynamicParameter<T> create(final ElementMapper<T> mapper, final T value) {
+        return new DynamicParameter<T>(mapper, value); 
+     }
 
             /**
             * Creates an Sql representing <code>this</code>
@@ -36,7 +47,7 @@ public abstract class DynamicParameter<T> implements DynamicParameterSpecificati
 
                     @Override
                     public void setParameters(final SqlParameters p) throws SQLException {
-                        set(p.next());
+                        mapper.setValue(p.next(), value);
                     }
                 };
             }
@@ -44,11 +55,9 @@ public abstract class DynamicParameter<T> implements DynamicParameterSpecificati
             /**
             * Implement in derived classes
             */
-            protected abstract void set(final SqlParameter p) throws SQLException;
-            /**
-            * Implement in derived classes
-            */
-             public abstract ElementMapper<T> getElementMapper();
+             public final ElementMapper<T> getElementMapper() {
+                return mapper;
+             }
 
 }
 
