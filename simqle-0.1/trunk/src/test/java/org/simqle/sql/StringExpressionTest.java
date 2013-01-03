@@ -78,6 +78,36 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <= ?", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(numberSign.concat(person.id).eq("#12")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(numberSign.concat(person.id).ne("#12")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(numberSign.concat(person.id).gt("#12")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(numberSign.concat(person.id).ge("#12")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(numberSign.concat(person.id).lt("#12")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(numberSign.concat(person.id).le("#12")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <= ?", sql);
+    }
+
     public void testIn() throws Exception {
         String sql = person.id.where(numberSign.concat(person.id).in(numberSign.concat(person2.id))).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? || T1.id IN(SELECT ? || T2.id FROM person AS T2)", sql);

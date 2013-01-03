@@ -80,6 +80,36 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? <= T0.id + ?", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.id.mult(two).eq(0)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.id.mult(two).ne(0)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.id.mult(two).gt(0)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.id.mult(two).ge(0)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.id.mult(two).lt(0)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.id.mult(two).le(0)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? <= ?", sql);
+    }
+
     public void testIn() throws Exception {
         String sql = person.id.where(person.id.mult(two).in(person2.id.mult(two))).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id * ? IN(SELECT T2.id * ? FROM person AS T2)", sql);

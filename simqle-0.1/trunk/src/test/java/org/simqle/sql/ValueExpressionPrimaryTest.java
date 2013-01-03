@@ -81,6 +81,36 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) <= T1.id AS C0 FROM employee AS T1", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().eq(1L).asValue().orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) = ? AS C0 FROM employee AS T1 ORDER BY T1.name", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().ne(1L).asValue().orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) <> ? AS C0 FROM employee AS T1 ORDER BY T1.name", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().gt(1L).asValue().orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) > ? AS C0 FROM employee AS T1 ORDER BY T1.name", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().ge(1L).asValue().orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) >= ? AS C0 FROM employee AS T1 ORDER BY T1.name", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().lt(1L).asValue().orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) < ? AS C0 FROM employee AS T1 ORDER BY T1.name", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().le(1L).asValue().orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) <= ? AS C0 FROM employee AS T1 ORDER BY T1.name", sql);
+    }
+
     public void testPair() throws Exception {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().pair(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0, T1.id AS C1 FROM employee AS T1", sql);

@@ -83,6 +83,36 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id <= T0.id", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().eq(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().ne(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().gt(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().ge(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().lt(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.id.opposite().le(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id <= ?", sql);
+    }
+
     public void testIn() throws Exception {
         String sql = person.id.where(person.id.opposite().in(person2.id.opposite())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE - T1.id IN(SELECT - T2.id FROM person AS T2)", sql);

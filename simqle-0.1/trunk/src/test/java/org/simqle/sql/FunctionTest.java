@@ -137,6 +137,48 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) <= T0.age", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(abs(id).eq(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(abs(id).ne(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(abs(id).gt(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(abs(id).ge(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(abs(id).lt(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final LongColumn id = createId();
+        final LongColumn age = createAge();
+        final String sql = id.where(abs(id).le(0L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) <= ?", sql);
+    }
+
     public void testInAll() throws Exception {
         final LongColumn id  =  createId();
         // find all but the most old
