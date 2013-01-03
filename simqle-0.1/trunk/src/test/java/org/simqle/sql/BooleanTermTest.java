@@ -113,6 +113,36 @@ public class BooleanTermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) <=(T0.smart)", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).eq(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).ne(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).gt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).ge(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).lt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().and(person.cute.booleanValue()).le(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive AND T0.cute) <= ?", sql);
+    }
+
     public void testIn() throws Exception {
         String sql = person.id.where(person.smart.booleanValue().and(person.cute.booleanValue()).in(person2.alive.booleanValue().and(person2.cute.booleanValue()).asValue())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart AND T1.cute) IN(SELECT T2.alive AND T2.cute FROM person AS T2)", sql);

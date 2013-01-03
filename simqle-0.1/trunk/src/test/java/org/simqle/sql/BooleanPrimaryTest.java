@@ -162,6 +162,36 @@ public class BooleanPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) <=(T0.smart)", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().eq(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().ne(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().gt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().ge(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().lt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().le(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive) <= ?", sql);
+    }
+
     public void testIn() throws Exception {
         String sql = person.id.where(person.smart.booleanValue().in(person2.alive.booleanValue().asValue())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart) IN(SELECT T2.alive FROM person AS T2)", sql);

@@ -112,6 +112,36 @@ public class ComparisonPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) <=(T0.smart)", sql);
     }
 
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.alive.eq(person.cute).eq(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.alive.eq(person.cute).ne(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) <> ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.alive.eq(person.cute).gt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.alive.eq(person.cute).ge(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) >= ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.alive.eq(person.cute).lt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.alive.eq(person.cute).le(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive = T0.cute) <= ?", sql);
+    }
+
     public void testIn() throws Exception {
         String sql = person.id.where(person.smart.eq(person.cute).in(person2.alive.eq(person2.cute).asValue())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart = T1.cute) IN(SELECT T2.alive = T2.cute FROM person AS T2)", sql);
