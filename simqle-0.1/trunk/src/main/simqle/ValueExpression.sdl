@@ -7,6 +7,8 @@ public interface ValueExpression<T> extends Scalar<T> : Sql {}
 # <row value expression> is not considered being <value expression>
 # it is not Scalar and we have different rules for RowValueExpression and ValueExpression
 
+public class AbstractValueExpression<T> implements ValueExpression<T> {}
+
 <T> ValueExpression<T> ::=
     e:NumericExpression<T> :: implicit {}
 |
@@ -16,7 +18,7 @@ public interface ValueExpression<T> extends Scalar<T> : Sql {}
 ;
 
 # see BooleanValueExpression.sdl
-ValueExpression<Boolean> ::=  bve:BooleanExpression :: implicit {}
+ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpression<Boolean> asValue {}
 ;
 
 # no abstract class: no methods

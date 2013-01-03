@@ -60,18 +60,6 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
-    public void testInvalidIn() throws Exception {
-        final LongColumn id = createId();
-        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql;
-        try {
-            sql = id.in(param).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-    }
-
     public void testAsFunctionArgument() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         final LongColumn id = createId();

@@ -52,32 +52,32 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
     public void testEq() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().eq(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().eq(employee.id).asValue().show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) = T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().ne(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().ne(employee.id).asValue().show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) <> T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().gt(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().gt(employee.id).asValue().show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) > T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().ge(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().ge(employee.id).asValue().show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) >= T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().lt(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().lt(employee.id).asValue().show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) < T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().le(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().le(employee.id).asValue().show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) <= T1.id AS C0 FROM employee AS T1", sql);
     }
 

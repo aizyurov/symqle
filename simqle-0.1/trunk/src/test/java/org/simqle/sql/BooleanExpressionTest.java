@@ -26,11 +26,6 @@ public class BooleanExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive OR T0.cute OR T0.smart", sql);
     }
 
-    public void testPair() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).pair(person.smart.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0, T0.smart AS C1 FROM person AS T0", sql);
-    }
-
     public void testNegate() throws Exception {
         final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).negate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT(T0.alive OR T0.cute)", sql);
@@ -87,27 +82,6 @@ public class BooleanExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive OR T0.smart OR T0.friendly", sql);
     }
 
-    public void testSelect() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0", sql);
-    }
-
-    public void testSelectAll() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).all().show();
-        assertSimilar("SELECT ALL T0.alive OR T0.cute AS C0 FROM person AS T0", sql);
-    }
-
-    public void testSelectDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).distinct().show();
-        assertSimilar("SELECT DISTINCT T0.alive OR T0.cute AS C0 FROM person AS T0", sql);
-    }
-
-    public void testWhere() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).where(person.smart.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 WHERE T0.smart", sql);
-
-    }
-
     public void testEq() throws Exception {
         final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).eq(person.smart.booleanValue().or(person.cute.booleanValue()))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) =(T0.smart OR T0.cute)", sql);
@@ -133,240 +107,61 @@ public class BooleanExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) <(T0.smart)", sql);
     }
 
-    public void testLe() throws Exception {
-        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).le(person.smart.booleanValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) <=(T0.smart)", sql);
+    public void testEqValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).eq(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) = ?", sql);
+    }
+
+    public void testNeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).ne(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) <> ?", sql);
+    }
+
+    public void testLtValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).lt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) < ?", sql);
+    }
+
+    public void testLeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).le(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) <= ?", sql);
+    }
+
+    public void testGtValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).gt(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) > ?", sql);
+    }
+
+    public void testGeValue() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).ge(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) >= ?", sql);
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).in(person2.alive.booleanValue().or(person2.cute.booleanValue()))).show();
+        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).in(person2.alive.booleanValue().or(person2.cute.booleanValue()).asValue())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart OR T1.cute) IN(SELECT T2.alive OR T2.cute FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).notIn(person2.alive.booleanValue())).show();
+        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).notIn(person2.alive.booleanValue().asValue())).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart OR T1.cute) NOT IN(SELECT T2.alive FROM person AS T2)", sql);
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).in(person.alive.booleanValue().or(person.cute.booleanValue()), person.friendly.booleanValue())).show();
+        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).in(person.alive.booleanValue().or(person.cute.booleanValue()).asValue(), person.friendly.booleanValue().asValue())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart OR T0.cute) IN(T0.alive OR T0.cute, T0.friendly)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).notIn(person.alive.booleanValue(), person.friendly.booleanValue())).show();
+        String sql = person.id.where(person.smart.booleanValue().or(person.cute.booleanValue()).notIn(person.alive.booleanValue().asValue(), person.friendly.booleanValue().asValue())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart OR T0.cute) NOT IN(T0.alive, T0.friendly)", sql);
    }
 
-    public void testOpposite() throws Exception {
-        final String sql = person.smart.booleanValue().or(person.cute.booleanValue()).opposite().show();
-        assertSimilar("SELECT -(T0.smart OR T0.cute) AS C0 FROM person AS T0", sql);
+
+    public void testLe() throws Exception {
+        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).le(person.smart.booleanValue())).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) <=(T0.smart)", sql);
     }
-
-
-    public void testPlus() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).plus(person.alive.booleanValue().or(person.cute.booleanValue())).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) +(T0.alive OR T0.cute) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testPlusNumber() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).plus(2).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) + ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testBooleanValue() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).booleanValue().show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testMinus() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).minus(person.alive.booleanValue()).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) -(T0.alive) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testMinusNumber() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).minus(2).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) - ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testMult() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).mult(person.alive.booleanValue().or(person.cute.booleanValue())).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) *(T0.alive OR T0.cute) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testMultNumber() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).mult(2).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) * ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testDiv() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).div(person.alive.booleanValue()).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) /(T0.alive) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testDivNumber() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).div(2).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) / ? AS C0 FROM person AS T0", sql);
-    }
-
-    public void testConcat() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).concat(person.alive.booleanValue()).show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) ||(T0.alive) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testConcatString() throws Exception {
-        String sql = person.smart.booleanValue().or(person.cute.booleanValue()).concat(" test").show();
-        assertSimilar("SELECT(T0.smart OR T0.cute) || ? AS C0 FROM person AS T0", sql);
-    }
-    
-    public void testOrderBy() throws Exception {
-        String sql = person.alive.booleanValue().or(person.cute.booleanValue()).orderBy(person.smart.booleanValue().or(person.cute.booleanValue())).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute", sql);
-    }
-
-    public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).nullsFirst()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute NULLS FIRST", sql);
-    }
-
-    public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).nullsLast()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute NULLS LAST", sql);
-    }
-
-    public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).desc()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute DESC", sql);
-    }
-
-    public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.smart.booleanValue().or(person.cute.booleanValue()).asc()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.smart OR T0.cute ASC", sql);
-    }
-
-    public void testUnion() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).union(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 UNION SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-    
-    public void testUnionAll() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).unionAll(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 UNION ALL SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).unionDistinct(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExcept() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).except(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 EXCEPT SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptAll() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).exceptAll(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).exceptDistinct(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersect() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).intersect(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 INTERSECT SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectAll() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).intersectAll(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).intersectDistinct(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.alive AS C0 FROM person AS T1", sql);
-    }
-
-    public void testExists() throws Exception {
-        final String sql = person2.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).exists()).show();
-        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 WHERE EXISTS(SELECT T0.alive OR T0.cute FROM person AS T0)", sql);
-    }
-
-    public void testForUpdate() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).forUpdate().show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 FOR UPDATE", sql);
-    }
-
-    public void testForReadOnly() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).forReadOnly().show();
-        assertSimilar("SELECT T0.alive OR T0.cute AS C0 FROM person AS T0 FOR READ ONLY", sql);
-    }
-
-    public void testSubquery() throws Exception {
-        final String sql = person.alive.booleanValue().or(person.cute.booleanValue()).queryValue().where(person2.alive.booleanValue()).show();
-        assertSimilar("SELECT(SELECT T0.alive OR T0.cute FROM person AS T0) AS C1 FROM person AS T1 WHERE T1.alive", sql);
-    }
-
-
-    public void testList() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.booleanValue().or(person.cute.booleanValue()).show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        final List<Boolean> list = person.alive.booleanValue().or(person.cute.booleanValue()).list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Boolean.TRUE, list.get(0));
-        verify(datasource, connection, statement, resultSet);
-    }
-
-
-    public void testScroll() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.alive.booleanValue().or(person.cute.booleanValue()).show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        person.alive.booleanValue().or(person.cute.booleanValue()).scroll(datasource, new Callback<Boolean, SQLException>() {
-            int callCount = 0;
-
-            @Override
-            public void iterate(final Boolean aBoolean) throws SQLException, BreakException {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(Boolean.TRUE, aBoolean);
-            }
-        });
-        verify(datasource, connection,  statement, resultSet);
-    }
-
 
 
     private static class Person extends Table {
