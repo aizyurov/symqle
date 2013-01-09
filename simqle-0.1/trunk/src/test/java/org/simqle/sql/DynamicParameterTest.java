@@ -167,6 +167,18 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? >= ?", sql);
     }
 
+    public void testAsInSubquery() throws Exception {
+        final LongColumn id  =  createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        try {
+            String sql = id.where(id.in(param)).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains("does not support"));
+        }
+    }
+
+
 
     public void testIn() throws Exception {
         final LongColumn id  =  createId();

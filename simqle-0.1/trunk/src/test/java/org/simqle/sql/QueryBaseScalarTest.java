@@ -111,6 +111,11 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
     }
 
+    public void testQueryValue() throws Exception {
+        final String sql = person.id.all().queryValue().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT(SELECT ALL T0.id FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
