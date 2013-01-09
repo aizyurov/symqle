@@ -1,10 +1,6 @@
 package org.simqle.sql;
 
-import org.simqle.Element;
-import org.simqle.ElementMapper;
 import org.simqle.Mappers;
-
-import java.sql.SQLException;
 
 /**
 * Created by IntelliJ IDEA.
@@ -15,11 +11,7 @@ import java.sql.SQLException;
 */
 public class LongColumn extends Column<Long> {
     LongColumn(final String name, final Table owner) {
-        super(name, owner);
+        super(Mappers.LONG, name, owner);
     }
 
-    @Override
-    public ElementMapper<Long> getElementMapper() {
-        return Mappers.LONG;
-    }
 }

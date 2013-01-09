@@ -1,15 +1,6 @@
 package org.simqle.sql;
 
-import org.simqle.Callback;
 import org.simqle.Mappers;
-
-import javax.sql.DataSource;
-
-import java.sql.SQLException;
-import java.util.List;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
 
 /**
  * @author lvovich
@@ -159,6 +150,11 @@ public class ExistsPredicateTest extends SqlTestCase {
     public void testLeValue() throws Exception {
         final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().le(true)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) <= ?", sql);
+    }
+
+    public void testAsValue() throws Exception {
+        final String sql = employee.id.where(employee.name.eq(person.name)).exists().asValue().orderBy(person.name).show();
+        assertSimilar("SELECT EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
     private static class Person extends Table {

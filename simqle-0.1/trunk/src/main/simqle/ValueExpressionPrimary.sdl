@@ -65,14 +65,17 @@ public interface ColumnReference<T> extends Scalar<T> : Sql {}
 
 import org.simqle.CompositeSql;
 import org.simqle.SqlTerm;
-public abstract class Column<T> implements ColumnReference<T> {
-     private final Identifier columnName;
-     private final Table owner;
+import org.simqle.ElementMapper;
+public class Column<T> implements ColumnReference<T> {
+    private final Identifier columnName;
+    private final Table owner;
+    private final ElementMapper mapper;
 
-     protected Column(final String name,  final Table owner)  {
-             this.columnName = new DefinedIdentifier(name);
-             this.owner = owner;
-         }
+    protected Column(final ElementMapper mapper, final String name,  final Table owner)  {
+        this.mapper = mapper;
+        this.columnName = new DefinedIdentifier(name);
+        this.owner = owner;
+     }
 
     public Sql z$create$ColumnReference(SqlContext context) {
         final String correlationName = context.get(TableRegistry.class).getCorrelationName(owner);
@@ -82,7 +85,9 @@ public abstract class Column<T> implements ColumnReference<T> {
 
     }
 
-             public abstract ElementMapper<T> getElementMapper();
+    public final ElementMapper<T> getElementMapper() {
+        return mapper;
+    }
 }
 
 

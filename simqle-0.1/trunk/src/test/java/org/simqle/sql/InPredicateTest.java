@@ -1,20 +1,6 @@
 package org.simqle.sql;
 
-import org.simqle.Callback;
 import org.simqle.Mappers;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.matches;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -160,6 +146,11 @@ public class InPredicateTest extends SqlTestCase {
     public void testLeValue() throws Exception {
         final String sql = person.id.where(person.name.in(employee.name).le(true)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) <= ?", sql);
+    }
+
+    public void testAsValue() throws Exception {
+        final String sql = person.name.in(employee.name).asValue().show();
+        assertSimilar("SELECT T0.name IN(SELECT T1.name FROM employee AS T1) AS C0 FROM person AS T0", sql);
     }
 
     private static class Person extends Table {

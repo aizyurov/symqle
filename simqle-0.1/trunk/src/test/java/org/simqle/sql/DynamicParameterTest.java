@@ -1,7 +1,6 @@
 package org.simqle.sql;
 
 import org.simqle.Callback;
-import org.simqle.Element;
 import org.simqle.ElementMapper;
 import org.simqle.Mappers;
 
@@ -120,6 +119,54 @@ public class DynamicParameterTest extends SqlTestCase {
         final String sql = id.where(param.le(id)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <= T0.id", sql);
     }
+
+    public void testEqValue() throws Exception {
+        final LongColumn id = createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = id.where(param.eq(2L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? = ?", sql);
+    }
+
+
+    public void testNeValue() throws Exception {
+        final LongColumn id = createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = id.where(param.ne(2L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <> ?", sql);
+    }
+
+
+    public void testLtValue() throws Exception {
+        final LongColumn id = createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = id.where(param.lt(2L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? < ?", sql);
+    }
+
+
+    public void testLeValue() throws Exception {
+        final LongColumn id = createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = id.where(param.le(2L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <= ?", sql);
+    }
+
+
+    public void testGtValue() throws Exception {
+        final LongColumn id = createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = id.where(param.gt(2L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? > ?", sql);
+    }
+
+
+    public void testGeValue() throws Exception {
+        final LongColumn id = createId();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = id.where(param.ge(2L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? >= ?", sql);
+    }
+
 
     public void testIn() throws Exception {
         final LongColumn id  =  createId();
