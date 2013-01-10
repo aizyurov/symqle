@@ -164,8 +164,8 @@ public class QuerySpecificationTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
     private static Person person = new Person();
@@ -174,22 +174,11 @@ public class QuerySpecificationTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
-        public Column<Long> retired = new LongColumn("retired", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
     private static Employee employee = new Employee();
-
-    private static class Manager extends Table {
-        private Manager() {
-            super("manager");
-        }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
-        public Column<Long> retired = new LongColumn("retired", this);
-    }
-    private static Manager manager = new Manager();
 
     private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 

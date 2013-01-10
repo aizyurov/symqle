@@ -1,5 +1,6 @@
 package org.simqle.coretest;
 
+import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.Table;
 
@@ -160,12 +161,11 @@ public class ComparisonPredicateTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<Long> alive = new LongColumn("alive", this);
-        public Column<Long> smart = new LongColumn("smart", this);
-        public Column<Long> cute = new LongColumn("cute", this);
-        public Column<Long> speaksJapan = new LongColumn("speaks_japan", this);
-        public Column<Long> friendly = new LongColumn("friendly", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<Boolean> alive = defineColumn(Mappers.BOOLEAN, "alive");
+        public Column<Boolean> smart = defineColumn(Mappers.BOOLEAN, "smart");
+        public Column<Boolean> cute = defineColumn(Mappers.BOOLEAN, "cute");
+        public Column<Boolean> friendly = defineColumn(Mappers.BOOLEAN, "friendly");
     }
 
     private static Person person = new Person();

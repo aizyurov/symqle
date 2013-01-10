@@ -354,8 +354,8 @@ public class StringExpressionTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
     
     private static DynamicParameter<String> numberSign = DynamicParameter.create(Mappers.STRING, "#");

@@ -71,7 +71,7 @@ public class Column<T> implements ColumnReference<T> {
     private final Table owner;
     private final ElementMapper mapper;
 
-    public Column(final ElementMapper mapper, final String name,  final Table owner)  {
+    Column(final ElementMapper mapper, final String name,  final Table owner)  {
         this.mapper = mapper;
         this.columnName = new DefinedIdentifier(name);
         this.owner = owner;

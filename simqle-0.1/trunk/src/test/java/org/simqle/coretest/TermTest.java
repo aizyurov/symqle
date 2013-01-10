@@ -357,8 +357,8 @@ public class TermTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
     
     private static DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
@@ -370,8 +370,8 @@ public class TermTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
     private static Employee employee = new Employee();

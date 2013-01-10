@@ -1,6 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
 import org.simqle.sql.Table;
@@ -410,16 +411,16 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
     private static class Employee extends Table {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
     private static Person person = new Person();

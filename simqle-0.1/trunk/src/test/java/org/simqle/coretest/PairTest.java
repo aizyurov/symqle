@@ -1,6 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.sql.AbstractQueryBase;
 import org.simqle.sql.AbstractQueryExpression;
@@ -314,10 +315,9 @@ public class PairTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
-        public Column<Long> age = new LongColumn("age", this);
-        public Column<String> address = new StringColumn("address", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> age = defineColumn(Mappers.LONG, "age");
     }
 
     private static Person person = new Person();

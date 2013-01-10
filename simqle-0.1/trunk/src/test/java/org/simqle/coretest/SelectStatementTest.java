@@ -1,9 +1,9 @@
 package org.simqle.coretest;
 
+import org.simqle.Callback;
+import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.Table;
-
-import org.simqle.Callback;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -82,7 +82,7 @@ public class SelectStatementTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
     }
 
     private static Person person = new Person();

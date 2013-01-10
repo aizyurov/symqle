@@ -3,6 +3,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.Table;
 
@@ -51,8 +52,8 @@ public class QueryTest extends SqlTestCase {
     }
 
     public void testScrollWithEmptyResultSet() throws Exception {
-        Table person = new Person();
-        final LongColumn id = new LongColumn("id", person);
+        final Person person = new Person();
+        final Column<Long> id = person.id;
         final String queryString = id.show();
         System.out.println("Show: " + queryString);
         expect(datasource.getConnection()).andReturn(connection);
@@ -72,8 +73,8 @@ public class QueryTest extends SqlTestCase {
     }
 
     public void testScroll() throws Exception {
-        Table person = new Person();
-        final LongColumn id = new LongColumn("id", person);
+        final Person person = new Person();
+        final Column<Long> id = person.id;
         final String queryString = id.show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -101,8 +102,8 @@ public class QueryTest extends SqlTestCase {
     }
 
     public void testScrollWithBreak() throws Exception {
-        Table person = new Person();
-        final LongColumn id = new LongColumn("id", person);
+        final Person person = new Person();
+        final Column<Long> id = person.id;
         final String queryString = id.show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -134,8 +135,8 @@ public class QueryTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        Table person = new Person();
-        final LongColumn id = new LongColumn("id", person);
+        final Person person = new Person();
+        final Column<Long> id = person.id;
         final String queryString = id.show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -155,8 +156,8 @@ public class QueryTest extends SqlTestCase {
     }
 
     public void testListWithParameter() throws Exception {
-        Table person = new Person();
-        final LongColumn id = new LongColumn("id", person);
+        final Person person = new Person();
+        final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 123L);
         final String queryString = id.where(id.eq(param)).show();
         System.out.println(queryString);
@@ -182,7 +183,9 @@ public class QueryTest extends SqlTestCase {
         private Person() {
             super("person");
         }
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<Long> age = defineColumn(Mappers.LONG, "id");
+        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
     }
-
 
 }

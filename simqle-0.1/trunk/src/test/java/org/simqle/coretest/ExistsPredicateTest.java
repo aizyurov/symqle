@@ -165,33 +165,23 @@ public class ExistsPredicateTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
-        public Column<Long> married = new LongColumn("married", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Boolean> married = defineColumn(Mappers.BOOLEAN, "married");
     }
 
     private static class Employee extends Table {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
-        public Column<Long> retired = new LongColumn("retired", this);
-    }
-
-    private static class Manager extends Table {
-        private Manager() {
-            super("manager");
-        }
-        public Column<Long> id = new LongColumn("id", this);
-        public Column<String> name = new StringColumn("name", this);
-        public Column<Long> retired = new LongColumn("retired", this);
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> retired = defineColumn(Mappers.LONG, "retired");
     }
 
     private static Person person = new Person();
     private static Employee employee = new Employee();
     private static Employee employee2 = new Employee();
-    private static Manager manager = new Manager();
 
     private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
