@@ -1,0 +1,104 @@
+# <update statement: searched> ::= UPDATE <target table> SET <set clause list> [ WHERE <search condition> ]
+# <set clause list> ::= <set clause> [ { <comma> <set clause> }... ]
+# <set clause> ::=
+#		<multiple column assignment>
+#	|	<set target> <equals operator> <update source>
+#
+# <set target> ::= <update target> | <mutated set clause>
+#
+# <multiple column assignment> ::= <set target list> <equals operator> <assigned row>
+#
+# <set target list> ::= <left paren> <set target> [ { <comma> <set target> }... ] <right paren>
+#
+# <assigned row> ::= <contextually typed row value expression>
+#
+# <update target> ::=
+#		<object column>
+#	|	<object column> <left bracket or trigraph> <simple value specification> <right bracket or trigraph>
+#
+# <object column> ::= <column name>
+#
+# <mutated set clause> ::= <mutated target> <period> <method name>
+# <update source> ::= <value expression> | <contextually typed value specification>
+# <contextually typed value specification> ::=
+#  		<implicitly typed value specification> | <default specification>
+#
+#  <implicitly typed value specification> ::= <null specification> | <empty specification>
+#
+#  <null specification> ::= NULL
+#  <default specification> ::= DEFAULT
+
+public interface DataChangeStatement : Sql {}
+
+:: public int execute(final DataChangeStatement s, final DataSource datasource) throws SQLException {
+    throw new RuntimeException("Not implemented");
+}
+
+DataChangeStatement ::=
+    s:UpdateStatement :: implicit {}
+#|
+#    s:InsertStatement :: implicit {}
+#|
+#    s:DeleteStatement :: implicit {}
+;
+
+public interface UpdateStatement : Sql {}
+
+UpdateStatement ::=
+    b:UpdateStatementBase :: implicit {}
+|
+    b:UpdateStatementBase wc:WhereClause ::
+        public UpdateStatement where {}
+;
+
+public interface UpdateStatementBase : Sql {}
+
+public class AbstractUpdateStatementBase implements UpdateStatementBase {}
+
+UpdateStatementBase ::=
+    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {}
+;
+
+public interface TargetTable : Sql {}
+
+public interface SetClauseList : Sql {}
+
+SetClauseList ::=
+    c:SetClause :: protected SetClauseList initSetList {}
+|
+    l:SetClauseList COMMA c:SetClause :: protected SetClauseList appendSetList {}
+;
+
+:: public AbstractUpdateStatementBase update(final TargetTable t, final SetClause first, final SetClause... other) {
+    SetClauseList l = initSetList(first);
+    for (SetClause c: other) {
+        l = appendSetList(l, c);
+    }
+    return createUpdate(t, l);
+}
+
+public interface SetClause : Sql {}
+
+public class AbstractSetClause implements SetClause {}
+
+<T> SetClause ::=
+    c:ColumnName<T> EQ e:ValueExpression<T> :: public AbstractSetClause set {}
+;
+
+:: public <T> AbstractSetClause set(final ColumnName<T> column, final T value) {
+    return set(column, DynamicParameter.create(column.getElementMapper(), value));
+}
+
+SetClause ::=
+    c:ColumnName<?> EQ e:ValueExpression<?> :: public AbstractSetClause setIgnoreType {}
+|
+    c:ColumnName<?> EQ NULL :: public AbstractSetClause setNull {}
+|
+    c:ColumnName<?> EQ DEFAULT :: public AbstractSetClause setDefault {}
+;
+
+
+public interface ColumnName<T> extends Scalar<T> : Sql {}
+
+# public interface InsertStatement : Sql {}
+
