@@ -1,4 +1,4 @@
-public interface Predicate extends Scalar<Boolean> : Sql {}
+public interface Predicate : Sql {}
 
 Predicate ::=
  		p:ComparisonPredicate :: implicit {}
@@ -23,21 +23,17 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
     e:ValueExpressionPrimary<T> :: implicit {}
 ;
 
-Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {}
+Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {
+            public ElementMapper<Boolean> getElementMapper() {
+                return Mappers.BOOLEAN;
+            }
+    }
 ;
 
 
-public interface ComparisonPredicate extends Scalar<Boolean> : Sql {}
+public interface ComparisonPredicate : Sql {}
 
-import java.sql.SQLException;
-import org.simqle.Mappers;
-public class AbstractPredicate implements Scalar<Boolean> {
-    public ElementMapper<Boolean> getElementMapper() {
-        return Mappers.BOOLEAN;
-    }
-}
-
-public class AbstractComparisonPredicate extends AbstractPredicate implements ComparisonPredicate {}
+public class AbstractComparisonPredicate implements ComparisonPredicate {}
 
 <T> ComparisonPredicate ::=
      p1:Predicand<T> EQ p2:Predicand<T>
@@ -78,9 +74,9 @@ public class AbstractComparisonPredicate extends AbstractPredicate implements Co
 :: public <T> AbstractComparisonPredicate le(Predicand<T> p, T v) {
     return le(p, DynamicParameter.create(p.getElementMapper(), v));
 }
-public interface InPredicate extends Scalar<Boolean> : Sql {}
+public interface InPredicate : Sql {}
 
-public class AbstractInPredicate extends AbstractPredicate implements InPredicate {
+public class AbstractInPredicate implements InPredicate {
 }
 
 <T> InPredicate ::=
@@ -125,9 +121,9 @@ public interface InValueList<T> : Sql {}
 }
 
 
-public interface NullPredicate extends Scalar<Boolean> : Sql {}
+public interface NullPredicate : Sql {}
 
-public class AbstractNullPredicate extends AbstractPredicate implements NullPredicate {}
+public class AbstractNullPredicate implements NullPredicate {}
 
 NullPredicate ::=
     p:Predicand<?> IS NULL :: public AbstractNullPredicate isNull {}
@@ -135,9 +131,9 @@ NullPredicate ::=
     p:Predicand<?> IS NOT NULL :: public AbstractNullPredicate isNotNull {}
 ;
 
-public interface ExistsPredicate extends Scalar<Boolean> : Sql {}
+public interface ExistsPredicate : Sql {}
 
-public class AbstractExistsPredicate extends AbstractPredicate implements ExistsPredicate {}
+public class AbstractExistsPredicate implements ExistsPredicate {}
 
 ExistsPredicate ::= EXISTS s:ScalarSubquery<?> :: public AbstractExistsPredicate exists {}
 ;

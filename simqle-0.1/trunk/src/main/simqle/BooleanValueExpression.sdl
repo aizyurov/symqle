@@ -1,4 +1,4 @@
-public interface BooleanExpression extends Scalar<Boolean> : Sql {}
+public interface BooleanExpression : Sql {}
 
 public class AbstractBooleanExpression implements BooleanExpression {}
 
@@ -11,7 +11,7 @@ BooleanExpression ::=
         :: public AbstractBooleanExpression or {}
 ;
 
-public interface BooleanTerm extends Scalar<Boolean> : Sql {}
+public interface BooleanTerm : Sql {}
 
 public class AbstractBooleanTerm implements BooleanTerm {}
 
@@ -22,7 +22,7 @@ BooleanTerm ::=
         :: public AbstractBooleanTerm and {}
 ;
 
-public interface BooleanFactor extends Scalar<Boolean> : Sql {}
+public interface BooleanFactor : Sql {}
 
 public class AbstractBooleanFactor implements BooleanFactor {}
 
@@ -33,7 +33,7 @@ BooleanFactor ::=
         :: public AbstractBooleanFactor negate {}
 ;
 
-public interface BooleanTest extends Scalar<Boolean> : Sql {}
+public interface BooleanTest : Sql {}
 
 public class AbstractBooleanTest implements BooleanTest {}
 
@@ -59,7 +59,7 @@ BooleanTest ::=
         :: public AbstractBooleanTest isUnknown {}
 ;
 
-interface BooleanPrimary extends Scalar<Boolean> : Sql {}
+interface BooleanPrimary : Sql {}
 
 class AbstractBooleanPrimary implements BooleanPrimary {}
 
@@ -69,11 +69,7 @@ BooleanPrimary ::=
     LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit {}
 |
     e:ValueExpressionPrimary<?>
-        :: AbstractBooleanPrimary booleanValue {
-            public ElementMapper<Boolean> getElementMapper() {
-                return Mappers.BOOLEAN;
-            }
-        }
+        :: AbstractBooleanPrimary booleanValue {}
 ;
 
 

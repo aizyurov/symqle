@@ -18,7 +18,11 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
 ;
 
 # see BooleanValueExpression.sdl
-ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpression<Boolean> asValue {}
+ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpression<Boolean> asValue {
+                public ElementMapper<Boolean> getElementMapper() {
+                    return Mappers.BOOLEAN;
+                }
+    }
 ;
 
 # no abstract class: no methods
