@@ -30,8 +30,29 @@
 
 public interface DataChangeStatement : Sql {}
 
-:: public int execute(final DataChangeStatement s, final DataSource datasource) throws SQLException {
-    throw new RuntimeException("Not implemented");
+:: private Sql prepareUpdate(final DataChangeStatement statement) {
+    return statement.z$create$DataChangeStatement(new SqlContext());
+}
+
+:: public String show(final DataChangeStatement statement) {
+    return beautifySql(prepareUpdate(statement).getSqlText());
+}
+
+:: public int execute(final DataChangeStatement statement, final DataSource datasource) throws SQLException {
+     final Sql sql = prepareUpdate(statement);
+     final Connection connection = datasource.getConnection();
+     try {
+         final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
+         try {
+             sql.setParameters(new StatementParameters(preparedStatement));
+             return preparedStatement.executeUpdate();
+         } finally {
+             preparedStatement.close();
+         }
+     } finally {
+         connection.close();
+     }
+
 }
 
 DataChangeStatement ::=
@@ -44,11 +65,24 @@ DataChangeStatement ::=
 
 public interface UpdateStatement : Sql {}
 
+public class AbstractUpdateStatement implements UpdateStatement {}
+
 UpdateStatement ::=
     b:UpdateStatementBase :: implicit {}
 |
     b:UpdateStatementBase wc:WhereClause ::
-        public UpdateStatement where {}
+        public AbstractUpdateStatement where {
+            public Sql z$create$UpdateStatement(final SqlContext context) {
+                // a trick here: z$create$UpdateStatementBase modifies uts argument
+                final Sql base = b.z$create$UpdateStatementBase(context);
+                final SqlContext inner = createInnerContext(context);
+                final Sql where = wc.z$create$WhereClause(inner);
+                return new CompositeSql(
+                        base,
+                        where
+                    );
+            }
+        }
 ;
 
 public interface UpdateStatementBase : Sql {}
@@ -56,10 +90,19 @@ public interface UpdateStatementBase : Sql {}
 public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 
 UpdateStatementBase ::=
-    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {}
+    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {
+        public Sql z$create$UpdateStatementBase(final SqlContext context) {
+            // Modifies outer context by setting TableRegistry!
+            context.set(TableRegistry.class, new DataChangeTableRegistry(t));
+            // no name provider
+            return new CompositeSql(UPDATE, t.z$create$TargetTable(context), SET, l.z$create$SetClauseList(context));
+        }
+    }
 ;
 
-public interface TargetTable : Sql {}
+public interface TargetTable : Sql {
+    public String getName();
+}
 
 public interface SetClauseList : Sql {}
 
@@ -109,6 +152,58 @@ public class Table extends TableOrView implements TargetTable {
     public Sql z$create$TargetTable(final SqlContext context) {
         return new CustomSql(getName());
     }
+}
+
+import org.simqle.UniqueNameProvider;
+import org.simqle.TableNameProvider;
+class DataChangeTableRegistry implements TableRegistry {
+
+    final TargetTable targetTable;
+    final UniqueNameProvider nameProvider = new TableNameProvider();
+
+
+    public DataChangeTableRegistry(final TargetTable targetTable) {
+        this.targetTable = targetTable;
+    }
+
+    public String findCorrelationName(TableOrView table) {
+        if (table.equals(targetTable)) {
+            return targetTable.getName();
+        } else {
+            return null;
+        }
+    }
+
+
+    public FromClause generateFromClause() {
+        throw new RuntimeException("Operation not supported");
+    }
+
+
+    public String generateUniqueName() {
+        return nameProvider.getUniqueName();
+    }
+
+
+    public String getCorrelationName(TableOrView table) {
+        if (table.equals(targetTable)) {
+            return targetTable.getName();
+        } else {
+            throw new IllegalArgumentException(table.getName() + " is not legal in this context");
+        }
+    }
+
+
+    public boolean isInTestMode() {
+        return false;
+    }
+
+
+    public void setTestMode(boolean test) {
+        // do nothing
+    }
+
+
 }
 
 # public interface InsertStatement : Sql {}
