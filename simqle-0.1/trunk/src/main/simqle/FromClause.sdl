@@ -72,6 +72,10 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
         this.name = name;
     }
 
+    protected String getName() {
+        return name;
+    }
+
     public <T> Column<T> defineColumn(final ElementMapper<T> mapper, final String name) {
         return new Column(mapper, name, this);
     }

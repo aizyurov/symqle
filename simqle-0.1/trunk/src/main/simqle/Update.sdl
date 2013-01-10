@@ -100,5 +100,18 @@ SetClause ::=
 
 public interface ColumnName<T> extends Scalar<T> : Sql {}
 
+
+public class Table extends TableOrView implements TargetTable {
+    public Table(String name) {
+        super(name);
+    }
+
+    public Sql z$create$TargetTable(final SqlContext context) {
+        return new CustomSql(getName());
+    }
+}
+
 # public interface InsertStatement : Sql {}
+
+
 
