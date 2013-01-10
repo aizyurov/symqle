@@ -61,7 +61,7 @@ BooleanTest ::=
 
 interface BooleanPrimary : Sql {}
 
-class AbstractBooleanPrimary implements BooleanPrimary {}
+public class AbstractBooleanPrimary implements BooleanPrimary {}
 
 BooleanPrimary ::=
     p:Predicate :: implicit {}
@@ -69,7 +69,7 @@ BooleanPrimary ::=
     LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit {}
 |
     e:ValueExpressionPrimary<?>
-        :: AbstractBooleanPrimary booleanValue {}
+        :: public AbstractBooleanPrimary booleanValue {}
 ;
 
 

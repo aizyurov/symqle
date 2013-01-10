@@ -7,7 +7,7 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 |
 	c:ColumnReference<T> :: implicit {}
 |
-	s:ScalarSubquery<T> :: AbstractValueExpressionPrimary<T> queryValue {}
+	s:ScalarSubquery<T> :: public AbstractValueExpressionPrimary<T> queryValue {}
 |
 	r:RoutineInvocation<T> :: implicit {}
 ;
@@ -71,7 +71,7 @@ public class Column<T> implements ColumnReference<T> {
     private final Table owner;
     private final ElementMapper mapper;
 
-    protected Column(final ElementMapper mapper, final String name,  final Table owner)  {
+    public Column(final ElementMapper mapper, final String name,  final Table owner)  {
         this.mapper = mapper;
         this.columnName = new DefinedIdentifier(name);
         this.owner = owner;
@@ -105,7 +105,7 @@ import java.util.Collections;
         :: private AbstractRoutineInvocation<T> invoke {}
 ;
 
-:: <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
+:: public <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
     if (arg.length == 0) {
         return invoke(routine);
     } else {

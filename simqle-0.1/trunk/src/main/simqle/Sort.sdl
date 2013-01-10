@@ -42,7 +42,7 @@ SortOrderingSpecification ::=
     key:ValueExpression<?> :: implicit {}
 |
     key:ValueExpression<?> ASC
-     :: AbstractSortOrderingSpecification asc {}
+     :: public AbstractSortOrderingSpecification asc {}
 |  key:ValueExpression<?> DESC
-     :: AbstractSortOrderingSpecification desc {}
+     :: public AbstractSortOrderingSpecification desc {}
 ;
