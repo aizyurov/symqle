@@ -3,7 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -350,7 +350,7 @@ public class FactorTest extends SqlTestCase {
 
 
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -359,7 +359,7 @@ public class FactorTest extends SqlTestCase {
         public Column<Boolean> smart = defineColumn(Mappers.BOOLEAN, "smart");
     }
 
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }

@@ -49,26 +49,26 @@ JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpressi
 public interface TableName : Sql {
 }
 
-# a simgle class Table implements both TableName and Join
+# a simgle class TableOrView implements both TableName and Join
 # Tables are handled specially by SelectTableRegistry
 
-# Table implements TableReference by having a TableReference inside
+# TableOrView implements TableReference by having a TableReference inside
 import org.simqle.CustomSql;
 import org.simqle.ElementMapper;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.HashSet;
-public class Table implements TableName, TablePrimary, TableReference {
+public class TableOrView implements TableName, TablePrimary, TableReference {
     private final String name;
 
     // initialized by converting from TablePrimary
     private TableReference tableReference = Simqle.get().tableReferenceFromPrimary(this);
 
-    private Table referral = null;
+    private TableOrView referral = null;
 
-    private Set<Table> referents = new LinkedHashSet<Table>();
+    private Set<TableOrView> referents = new LinkedHashSet<TableOrView>();
 
-    protected Table(final String name) {
+    protected TableOrView(final String name) {
         this.name = name;
     }
 
@@ -76,16 +76,16 @@ public class Table implements TableName, TablePrimary, TableReference {
         return new Column(mapper, name, this);
     }
 
-    private void checkJoin(Table other) {
+    private void checkJoin(TableOrView other) {
         if (other.referral != null) {
             throw new IllegalStateException(other + "is already joined to "+ other.referral);
         }
         other.referral = this;
         referents.add(other);
-        Set<Table> foundReferrals = new HashSet<Table>();
-        Set<Table> maybeCycle = new HashSet<Table>();
+        Set<TableOrView> foundReferrals = new HashSet<TableOrView>();
+        Set<TableOrView> maybeCycle = new HashSet<TableOrView>();
         // try to find cycle starting from other
-        Table t;
+        TableOrView t;
         for (t = this; t != null; t = t.referral) {
             maybeCycle.add(t);
             if (other==t) {
@@ -96,30 +96,30 @@ public class Table implements TableName, TablePrimary, TableReference {
         // OK, came to the root
     }
 
-    public Table joinedTableRoot() {
+    public TableOrView joinedTableRoot() {
         return referral == null ? this : referral.joinedTableRoot();
     }
-        public Set<Table> joinedTableParticipants() {
+        public Set<TableOrView> joinedTableParticipants() {
             if (referral != null) {
                 return referral.joinedTableParticipants();
             } else {
-                Set<Table> participants = new LinkedHashSet<Table>();
+                Set<TableOrView> participants = new LinkedHashSet<TableOrView>();
                 participants.add(this);
                 participants.addAll(reachableReferents());
                 return participants;
             }
         }
 
-        private Set<Table> reachableReferents() {
-            Set<Table> reachable = new LinkedHashSet<Table>();
+        private Set<TableOrView> reachableReferents() {
+            Set<TableOrView> reachable = new LinkedHashSet<TableOrView>();
             reachable.addAll(referents);
-            for (Table t: referents) {
+            for (TableOrView t: referents) {
                 reachable.addAll(t.reachableReferents());
             }
             return reachable;
         }
 
-    public void leftJoin(Table other, BooleanExpression condition) {
+    public void leftJoin(TableOrView other, BooleanExpression condition) {
         final Simqle simqle = Simqle.get();
         checkJoin(other);
         final JoinedTable joinedTable = simqle.leftJoin(tableReference, other, condition);
@@ -189,11 +189,11 @@ public interface TableRegistry {
 
     FromClause generateFromClause();
 
-    String getCorrelationName(Table table);
+    String getCorrelationName(TableOrView table);
 
     String generateUniqueName();
 
-    String findCorrelationName(Table table);
+    String findCorrelationName(TableOrView table);
 
     boolean isInTestMode();
 
@@ -213,7 +213,7 @@ import org.simqle.Sql;
 import org.simqle.CustomSql;
 import org.simqle.SqlContext;
 public class SelectTableRegistry implements TableRegistry {
-    private Map<Table, String> localTables = new LinkedHashMap<Table, String>();
+    private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
 
     private final TableRegistry parent;
 
@@ -238,14 +238,14 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
 
-    private void addToLocalTables(Table table) {
+    private void addToLocalTables(TableOrView table) {
             final String newName = generateUniqueName();
             localTables.put(table, newName);
     }
 
 
     @Override
-    public String findCorrelationName(Table table) {
+    public String findCorrelationName(TableOrView table) {
         // first search in parent
         final String nameFromParent = parent == null ? null :
                 parent.findCorrelationName(table);
@@ -282,11 +282,11 @@ public class SelectTableRegistry implements TableRegistry {
         if (localTables.isEmpty()) {
             return generateEmptyFromClause();
         }
-        final Set<Table> roots = new HashSet<Table>();
-        for (Table t: localTables.keySet()) {
+        final Set<TableOrView> roots = new HashSet<TableOrView>();
+        for (TableOrView t: localTables.keySet()) {
             roots.add(t.joinedTableRoot());
         }
-        final Iterator<Table> iterator = roots.iterator();
+        final Iterator<TableOrView> iterator = roots.iterator();
         TableReferenceList tableReferenceList = Simqle.get().createTableReferenceList(iterator.next());
         while (iterator.hasNext()) {
             tableReferenceList = Simqle.get().appendTableReferenceList(tableReferenceList, iterator.next());
@@ -295,12 +295,12 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
 
-    public String getCorrelationName(Table table) {
+    public String getCorrelationName(TableOrView table) {
         final String found = findCorrelationName(table);
         if (found != null) {
             return found;
         } else {
-            for (Table t : table.joinedTableParticipants()) {
+            for (TableOrView t : table.joinedTableParticipants()) {
                 addToLocalTables(t);
             }
             return localTables.get(table);

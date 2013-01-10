@@ -2,7 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 
 /**
@@ -83,7 +83,7 @@ public class JoinTest extends SqlTestCase {
         }
     }
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -93,7 +93,7 @@ public class JoinTest extends SqlTestCase {
         public Column<Long> departmentId = defineColumn(Mappers.LONG, "department_id");
     }
 
-    private static class Department extends Table {
+    private static class Department extends TableOrView {
         private Department() {
             super("department");
         }

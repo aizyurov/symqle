@@ -8,7 +8,7 @@ import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.RoutineInvocation;
 import org.simqle.sql.SqlFunction;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
 
 import javax.sql.DataSource;
@@ -487,7 +487,7 @@ public class FunctionTest extends SqlTestCase {
     }
 
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -496,7 +496,7 @@ public class FunctionTest extends SqlTestCase {
         public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
     }
 
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }

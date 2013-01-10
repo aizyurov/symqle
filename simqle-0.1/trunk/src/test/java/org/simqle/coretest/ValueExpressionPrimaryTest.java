@@ -4,7 +4,7 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -407,7 +407,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
 
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -415,7 +415,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }

@@ -3,7 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 
 /**
@@ -193,7 +193,7 @@ public class SelectSublistTest extends SqlTestCase {
 
 
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -201,7 +201,7 @@ public class SelectSublistTest extends SqlTestCase {
         public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
@@ -210,7 +210,7 @@ public class SelectSublistTest extends SqlTestCase {
         public Column<Boolean> retired = defineColumn(Mappers.BOOLEAN, "retired");
     }
 
-    private static class Manager extends Table {
+    private static class Manager extends TableOrView {
         private Manager() {
             super("manager");
         }

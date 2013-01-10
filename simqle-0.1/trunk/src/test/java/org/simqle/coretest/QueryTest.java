@@ -5,7 +5,7 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -179,7 +179,7 @@ public class QueryTest extends SqlTestCase {
 
     }
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }

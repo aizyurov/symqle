@@ -3,7 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 
 /**
@@ -161,7 +161,7 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -170,7 +170,7 @@ public class ExistsPredicateTest extends SqlTestCase {
         public Column<Boolean> married = defineColumn(Mappers.BOOLEAN, "married");
     }
 
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }

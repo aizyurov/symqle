@@ -68,10 +68,10 @@ import org.simqle.SqlTerm;
 import org.simqle.ElementMapper;
 public class Column<T> implements ColumnReference<T>, ColumnName<T> {
     private final Identifier columnName;
-    private final Table owner;
+    private final TableOrView owner;
     private final ElementMapper mapper;
 
-    Column(final ElementMapper mapper, final String name,  final Table owner)  {
+    Column(final ElementMapper mapper, final String name,  final TableOrView owner)  {
         this.mapper = mapper;
         this.columnName = new DefinedIdentifier(name);
         this.owner = owner;

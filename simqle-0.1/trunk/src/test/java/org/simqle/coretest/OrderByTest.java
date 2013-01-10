@@ -2,7 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +35,7 @@ public class OrderByTest extends SqlTestCase {
 
 
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -45,7 +45,7 @@ public class OrderByTest extends SqlTestCase {
     }
 
     private static Person person = new Person();
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }

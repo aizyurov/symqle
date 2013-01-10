@@ -3,7 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 
 /**
@@ -157,7 +157,7 @@ public class InPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.name IN(SELECT T1.name FROM employee AS T1) AS C0 FROM person AS T0", sql);
     }
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
@@ -165,7 +165,7 @@ public class InPredicateTest extends SqlTestCase {
         public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
-    private static class Employee extends Table {
+    private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }

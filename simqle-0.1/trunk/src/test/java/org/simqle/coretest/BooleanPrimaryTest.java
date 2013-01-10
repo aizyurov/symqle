@@ -2,7 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
-import org.simqle.sql.Table;
+import org.simqle.sql.TableOrView;
 
 
 /**
@@ -206,7 +206,7 @@ public class BooleanPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart) NOT IN(T0.alive, T0.friendly)", sql);
    }
 
-    private static class Person extends Table {
+    private static class Person extends TableOrView {
         private Person() {
             super("person");
         }
