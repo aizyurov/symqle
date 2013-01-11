@@ -1,6 +1,5 @@
 package org.simqle.coretest;
 
-import org.simqle.ElementMapper;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
@@ -52,23 +51,13 @@ public class ColumnTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = new SqlFunction<Long>("abs") {
-            @Override
-            public ElementMapper<Long> getElementMapper() {
-                return Mappers.LONG;
-            }
-        }.apply(person.id).show();
+        final String sql = SqlFunction.create("abs", Mappers.LONG).apply(person.id).show();
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testAsFunctionMultipleArguments() throws Exception {
         final Column<Long> column = person.id;
-        final String sql = new SqlFunction<Long>("max") {
-            @Override
-            public ElementMapper<Long> getElementMapper() {
-                return Mappers.LONG;
-            }
-        }.apply(column, column).show();
+        final String sql = SqlFunction.create("max", Mappers.LONG).apply(column, column).show();
         assertSimilar("SELECT max(T0.id, T0.id) AS C0 FROM person AS T0", sql);
     }
 
@@ -369,12 +358,7 @@ public class ColumnTest extends SqlTestCase {
     public void testFunction() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        SqlFunction<Long> sumOf = new SqlFunction<Long>("SUM_OF") {
-            @Override
-            public ElementMapper<Long> getElementMapper() {
-                return Mappers.LONG;
-            }
-        };
+        SqlFunction<Long> sumOf = SqlFunction.create("SUM_OF", Mappers.LONG);
         String sql = sumOf.apply(id, age).show();
         assertSimilar("SELECT SUM_OF(T0.id, T0.age) AS C0 FROM person AS T0", sql);
     }

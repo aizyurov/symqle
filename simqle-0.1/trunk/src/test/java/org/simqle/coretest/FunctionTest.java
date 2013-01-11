@@ -1,12 +1,10 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
-import org.simqle.ElementMapper;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractRoutineInvocation;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.RoutineInvocation;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
@@ -25,48 +23,13 @@ import static org.easymock.EasyMock.*;
  */
 public class FunctionTest extends SqlTestCase {
 
-    public static class Concat extends SqlFunction<String> {
-
-        public Concat() {
-            super("concat");
-        }
-
-        public RoutineInvocation<String> apply(final ValueExpression<?> arg1, final ValueExpression<?> arg2) {
-            return super.apply(arg1, arg2);
-        }
-
-        @Override
-        public ElementMapper<String> getElementMapper() {
-            return Mappers.STRING;
-        }
-    }
-
     private AbstractRoutineInvocation<String> currentUser() {
-        return new SqlFunction<String>("user"){
-
-            public AbstractRoutineInvocation<String> apply(ValueExpression<?> arg) {
-                return super.apply(arg);
-            }
-
-            @Override
-            public ElementMapper<String> getElementMapper() {
-                return Mappers.STRING;
-            }
-        }.apply();
+        return SqlFunction.create("user", Mappers.STRING).apply();
     }
 
     private AbstractRoutineInvocation<Long> abs(ValueExpression<Long> e) {
-        return new SqlFunction<Long>("abs"){
 
-            public AbstractRoutineInvocation<Long> apply(ValueExpression<?> arg) {
-                return super.apply(arg);
-            }
-
-            @Override
-            public ElementMapper<Long> getElementMapper() {
-                return Mappers.LONG;
-            }
-        }.apply(e);
+        return SqlFunction.create("abs", Mappers.LONG).apply(e);
     }
 
     public void testSelectStatementFunctionality() throws Exception {
@@ -86,12 +49,7 @@ public class FunctionTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = new SqlFunction<Long>("abs") {
-            @Override
-            public ElementMapper<Long> getElementMapper() {
-                return Mappers.LONG;
-            }
-        }.apply(abs(person.id)).show();
+        final String sql = SqlFunction.create("abs", Mappers.LONG) .apply(abs(person.id)).show();
         assertSimilar("SELECT abs(abs(T0.id)) AS C0 FROM person AS T0", sql);
     }
 

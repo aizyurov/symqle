@@ -137,15 +137,25 @@ ArgumentList ::=
 ;
 
 import org.simqle.CustomSql;
-public abstract class SqlFunction<T> implements RoutineName<T> {
+public class SqlFunction<T> implements RoutineName<T> {
     private final String name;
+    private final ElementMapper<T> mapper;
 
-    protected SqlFunction(String name) {
+    private SqlFunction(final String name, final ElementMapper<T> mapper) {
         this.name = name;
+        this.mapper = mapper;
     }
 
     public Sql z$create$RoutineName(SqlContext context) {
         return new CustomSql(name);
+    }
+
+    public ElementMapper<T> getElementMapper() {
+        return mapper;
+    }
+
+    public static <T> SqlFunction<T> create(final String name, final ElementMapper<T> mapper) {
+        return new SqlFunction<T>(name, mapper);
     }
 
 }

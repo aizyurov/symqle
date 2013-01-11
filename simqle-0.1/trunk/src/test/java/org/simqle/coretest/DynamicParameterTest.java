@@ -1,7 +1,6 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
-import org.simqle.ElementMapper;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
@@ -63,12 +62,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsFunctionArgument() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         final Column<Long> id = person.id;
-        final String sql = new SqlFunction<Long>("abs") {
-            @Override
-            public ElementMapper<Long> getElementMapper() {
-                return Mappers.LONG;
-            }
-        }.apply(param).where(id.booleanValue()).show();
+        final String sql = SqlFunction.create("abs",Mappers.LONG).apply(param).where(id.booleanValue()).show();
         assertSimilar("SELECT abs(?) AS C1 FROM person AS T1 WHERE T1.id", sql);
     }
 
