@@ -203,7 +203,45 @@ class DataChangeTableRegistry implements TableRegistry {
 
 }
 
-# public interface InsertStatement : Sql {}
+public interface InsertStatement : Sql {}
+
+public class AbstractInsertStatement implements InsertStatement {}
+
+# TODO <override clause> not implemented
+
+InsertStatement ::=
+    INSERT INTO t:TargetTable s:FromSubquery
+        :: protected AbstractInsertStatement fromSubquery {}
+|
+    INSERT INTO t:TargetTable s:FromConstructor
+        :: protected AbstractInsertStatement fromConstructor {}
+|
+    INSERT INTO t:TargetTable DEFAULT VALUES
+        :: public AbstractInsertStatement insertDefault {}
+;
+
+interface FromSubquery : Sql {}
+
+interface FromConstructor : Sql {}
+
+FromSubquery ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN e:QueryExpression
+         :: protected FromSubquery createFromSubquery {}
+;
+
+FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstructor
+         :: protected FromConstructor createFromConstructor {}
+;
+
+interface InsertColumnList : Sql {}
+InsertColumnList ::=
+    c:ColumnName<?> :: protected InsertColumnList initColumnList {}
+|
+    l:InsertColumnList COMMA c:ColumnName<?> :: protected InsertColumnList appendColumnList {}
+;
+
+# only one row is supported so far
+TableValueConstructor ::= VALUES ContextuallyTypedRowValueConstructor :: implicit {}
+
 
 
 

@@ -68,6 +68,9 @@ public class ImplicitConversionsTest extends TestCase {
         DynamicParameter<Long> parameter = DynamicParameter.create(Mappers.LONG, 1L);
         final ValueExpressionPrimary<Long> valueExpressionPrimary = simqle.z$ValueExpressionPrimary$from$DynamicParameterSpecification(parameter);
         assertEquals(Mappers.LONG, valueExpressionPrimary.getElementMapper());
+        final AbstractRoutineInvocation<Long> abs = SqlFunction.create("abs", Mappers.LONG).apply(person.id);
+        final ValueExpressionPrimary<Long> valueExpressionPrimary1 = simqle.z$ValueExpressionPrimary$from$RoutineInvocation(abs);
+        assertEquals(Mappers.LONG, valueExpressionPrimary1.getElementMapper());
     }
 
     private static class Person extends TableOrView {
