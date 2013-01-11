@@ -93,7 +93,9 @@ UpdateStatementBase ::=
     UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {
         public Sql z$create$UpdateStatementBase(final SqlContext context) {
             // Modifies outer context by setting TableRegistry!
-            context.set(TableRegistry.class, new DataChangeTableRegistry(t));
+            TableRegistry registry = new DataChangeTableRegistry(t);
+            registry.setTestMode(false);
+            context.set(TableRegistry.class, registry);
             // no name provider
             return new CompositeSql(UPDATE, t.z$create$TargetTable(context), SET, l.z$create$SetClauseList(context));
         }
@@ -175,11 +177,6 @@ class DataChangeTableRegistry implements TableRegistry {
     }
 
 
-    public FromClause generateFromClause() {
-        throw new RuntimeException("Operation not supported");
-    }
-
-
     public String generateUniqueName() {
         return nameProvider.getUniqueName();
     }
@@ -189,7 +186,7 @@ class DataChangeTableRegistry implements TableRegistry {
         if (table.equals(targetTable)) {
             return targetTable.getName();
         } else {
-            throw new IllegalArgumentException(table.getName() + " is not legal in this context");
+            throw new IllegalArgumentException(table + " is not legal in this context");
         }
     }
 

@@ -86,6 +86,9 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
     }
 
     public Sql z$create$ColumnName(final SqlContext context) {
+        // make sure that owner is valid in the context
+        // by getting correlation name; the result is not used
+        context.get(TableRegistry.class).getCorrelationName(owner);
         return columnName.z$create$Identifier(context);
     }
 

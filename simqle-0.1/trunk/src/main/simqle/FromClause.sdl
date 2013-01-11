@@ -182,16 +182,14 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
 
 public class ImplicitFromClause implements FromClause {
             public Sql z$create$FromClause(SqlContext context) {
-                return context.get(TableRegistry.class)
-                        .generateFromClause()
+                SelectTableRegistry registry = (SelectTableRegistry) context.get(TableRegistry.class);
+                return registry.generateFromClause()
                         .z$create$FromClause(context);
             }
 }
 
 
 public interface TableRegistry {
-
-    FromClause generateFromClause();
 
     String getCorrelationName(TableOrView table);
 
