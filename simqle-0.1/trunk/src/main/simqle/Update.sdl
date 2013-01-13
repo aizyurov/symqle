@@ -122,24 +122,52 @@ SetClauseList ::=
     return createUpdate(t, l);
 }
 
-public interface SetClause : Sql {}
-
-public class AbstractSetClause implements SetClause {}
+public interface SetClause extends InsertColumn, ContextuallyTypeddRowValueElement : Sql {}
 
 <T> SetClause ::=
-    c:ColumnName<T> EQ e:ValueExpression<T> :: public AbstractSetClause set {}
+    c:ColumnName<T> EQ e:ValueExpression<T> :: public SetClause set {
+            public Sql z$create$ContextuallyTypeddRowValueElement(final SqlContext context) {
+                return e.z$create$ValueExpression(context);
+            }
+
+            public Sql z$create$InsertColumn(final SqlContext context) {
+                return c.z$create$ColumnName(context);
+            }
+    }
 ;
 
-:: public <T> AbstractSetClause set(final ColumnName<T> column, final T value) {
+:: public <T> SetClause set(final ColumnName<T> column, final T value) {
     return set(column, DynamicParameter.create(column.getElementMapper(), value));
 }
 
 SetClause ::=
-    c:ColumnName<?> EQ e:ValueExpression<?> :: public AbstractSetClause setIgnoreType {}
+    c:ColumnName<?> EQ e:ValueExpression<?> :: public SetClause setIgnoreType {
+            public Sql z$create$ContextuallyTypeddRowValueElement(final SqlContext context) {
+                return e.z$create$ValueExpression(context);
+            }
+
+            public Sql z$create$InsertColumn(final SqlContext context) {
+                return c.z$create$ColumnName(context);
+            }
+    }
 |
-    c:ColumnName<?> EQ NULL :: public AbstractSetClause setNull {}
+    c:ColumnName<?> EQ NULL :: public SetClause setNull {
+            public Sql z$create$ContextuallyTypeddRowValueElement(final SqlContext context) {
+                return NULL;
+            }
+            public Sql z$create$InsertColumn(final SqlContext context) {
+                return c.z$create$ColumnName(context);
+            }
+    }
 |
-    c:ColumnName<?> EQ DEFAULT :: public AbstractSetClause setDefault {}
+    c:ColumnName<?> EQ DEFAULT :: public SetClause setDefault {
+            public Sql z$create$ContextuallyTypeddRowValueElement(final SqlContext context) {
+                return DEFAULT;
+            }
+            public Sql z$create$InsertColumn(final SqlContext context) {
+                return c.z$create$ColumnName(context);
+            }
+    }
 ;
 
 
@@ -210,9 +238,9 @@ public class AbstractInsertStatement implements InsertStatement {}
 # TODO <override clause> not implemented
 
 InsertStatement ::=
-    INSERT INTO t:TargetTable s:FromSubquery
-        :: protected AbstractInsertStatement fromSubquery {}
-|
+#    INSERT INTO t:TargetTable s:FromSubquery
+#        :: protected AbstractInsertStatement fromSubquery {}
+#|
     INSERT INTO t:TargetTable s:FromConstructor
         :: protected AbstractInsertStatement fromConstructor {}
 |
@@ -220,13 +248,13 @@ InsertStatement ::=
         :: public AbstractInsertStatement insertDefault {}
 ;
 
-interface FromSubquery : Sql {}
+# interface FromSubquery : Sql {}
 
 interface FromConstructor : Sql {}
 
-FromSubquery ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN e:QueryExpression
-         :: protected FromSubquery createFromSubquery {}
-;
+# FromSubquery ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN e:QueryExpression
+#         :: protected FromSubquery createFromSubquery {}
+# ;
 
 FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstructor
          :: protected FromConstructor createFromConstructor {}
@@ -234,13 +262,32 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
 
 interface InsertColumnList : Sql {}
 InsertColumnList ::=
-    c:ColumnName<?> :: protected InsertColumnList initColumnList {}
+    c:InsertColumn :: protected InsertColumnList initColumnList {}
 |
-    l:InsertColumnList COMMA c:ColumnName<?> :: protected InsertColumnList appendColumnList {}
+    l:InsertColumnList COMMA c:InsertColumn :: protected InsertColumnList appendColumnList {}
 ;
 
-# only one row is supported so far
-TableValueConstructor ::= VALUES ContextuallyTypedRowValueConstructor :: implicit {}
+public interface InsertColumn : Sql {}
+
+interface TableValueConstructor : Sql {}
+
+# only one row is supported so far. The syntax is not that of SQL-2011, but is supported by all major databases
+# (standard define
+TableValueConstructor ::= VALUES LEFT_PAREN l:ContextuallyTypeddRowValueList RIGHT_PAREN :: implicit {}
+;
+
+interface ContextuallyTypeddRowValueList : Sql {}
+
+ContextuallyTypeddRowValueList ::=
+    e:ContextuallyTypeddRowValueElement
+        :: protected ContextuallyTypeddRowValueList initRowValueList {}
+|
+    l:ContextuallyTypeddRowValueList COMMA d:ContextuallyTypeddRowValueElement
+        :: protected ContextuallyTypeddRowValueList appendRowValueList {}
+;
+
+public interface ContextuallyTypeddRowValueElement : Sql {}
+
 
 
 
