@@ -59,8 +59,8 @@ DataChangeStatement ::=
     s:UpdateStatement :: implicit {}
 |
     s:InsertStatement :: implicit {}
-#|
-#    s:DeleteStatement :: implicit {}
+|
+    s:DeleteStatement :: implicit {}
 ;
 
 public interface UpdateStatement : Sql {}
@@ -309,6 +309,29 @@ public interface ContextuallyTypedRowValueElement : Sql {}
 }
 
 
+public interface DeleteStatement : Sql {}
 
+public class AbstractDeleteStatement implements DeleteStatement {}
+
+DeleteStatement ::= b:DeleteStatementBase :: implicit {}
+|
+    b:DeleteStatementBase wc:WhereClause :: public AbstractDeleteStatement where {}
+;
+
+public interface DeleteStatementBase : Sql {}
+
+public class AbstractDeleteStatementBase implements DeleteStatementBase {}
+
+DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {
+            public Sql z$create$DeleteStatementBase(final SqlContext context) {
+                // Modifies outer context by setting TableRegistry!
+                TableRegistry registry = new DataChangeTableRegistry(t);
+                registry.setTestMode(false);
+                context.set(TableRegistry.class, registry);
+                // no name provider
+                return new CompositeSql(DELETE, FROM, t.z$create$TargetTable(context));
+            }
+}
+;
 
 
