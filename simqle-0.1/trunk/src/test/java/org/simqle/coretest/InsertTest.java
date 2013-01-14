@@ -20,45 +20,39 @@ public class InsertTest extends SqlTestCase {
     }
 
     public void testSetNull() throws Exception {
-        final String sql = person.update(person.parentId.setNull()).show();
-        assertSimilar("UPDATE person SET parent_id = NULL", sql);
+        final String sql = person.insert(person.parentId.setNull()).show();
+        assertSimilar("INSERT INTO person(parent_id) VALUES(NULL)", sql);
     }
 
     public void testSetDefault() throws Exception {
-        final String sql = person.update(person.parentId.setDefault()).show();
-        assertSimilar("UPDATE person SET parent_id = DEFAULT", sql);
+        final String sql = person.insert(person.parentId.setDefault()).show();
+        assertSimilar("INSERT INTO person(parent_id) VALUES(DEFAULT)", sql);
+    }
+
+    public void testInsertDefault() throws Exception {
+        final String sql = person.insertDefault().show();
+        assertSimilar("INSERT INTO person DEFAULT VALUES", sql);
     }
 
     public void testSetIgnoreType() throws Exception {
-        final String sql = person.update(person.id.setIgnoreType(person.id.plus(1))).show();
-        assertSimilar("UPDATE person SET id = person.id + ?", sql);
+        final String sql = person.insert(person.id.setIgnoreType(DynamicParameter.create(Mappers.STRING, "1"))).show();
+        assertSimilar("INSERT INTO person(id) VALUES(?)", sql);
     }
 
     public void testMultipleColumns() throws Exception {
-        final String sql = person.update(person.parentId.set(person.id), person.name.set("John")).show();
-        assertSimilar("UPDATE person SET parent_id = person.id, name = ?", sql);
-    }
-
-    public void testWhere() throws Exception {
-        final String sql = person.update(person.parentId.set(person.id), person.name.set("John")).where(person.id.eq(1L)).show();
-        assertSimilar("UPDATE person SET parent_id = person.id, name = ? WHERE person.id = ?", sql);
-    }
-
-    public void testSubqueryInWhere() throws Exception {
-        final Person child = new Person();
-        final String sql = person.update(person.parentId.set(person.id)).where(child.id.where(child.parentId.eq(person.id)).exists()).show();
-        assertSimilar("UPDATE person SET parent_id = person.id WHERE EXISTS(SELECT T0.id FROM person AS T0 WHERE T0.parent_id = person.id)", sql);
+        final String sql = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)), person.name.set("John Doe")).show();
+        assertSimilar("INSERT INTO person(parent_id, name) VALUES(?, ?)", sql);
     }
 
     public void testSubqueryAsSource() throws Exception {
         final Person child = new Person();
-        final String sql = person.update(person.name.set(child.name.where(child.parentId.eq(person.id)).queryValue())).show();
-        assertSimilar("UPDATE person SET name =(SELECT T0.name FROM person AS T0 WHERE T0.parent_id = person.id)", sql);
+        final String sql = person.insert(person.name.set(child.name.where(child.id.eq(1L)).queryValue())).show();
+        assertSimilar("INSERT INTO person(name) VALUES((SELECT T0.name FROM person AS T0 WHERE T0.id = ?))", sql);
     }
 
     public void testSubqueryFromNoTables() throws Exception {
         try {
-            final String sql = person.update(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show();
+            final String sql = person.insert(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show();
             fail("IllegalStateException expected but was " + sql);
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("does not support"));
@@ -68,7 +62,7 @@ public class InsertTest extends SqlTestCase {
     public void testWrongTarget() throws Exception {
         final Person child = new Person();
         try {
-            final String sql = person.update(child.name.set(person.name)).show();
+            final String sql = person.insert(child.name.set(person.name)).show();
             fail("IllegalArgumentException expected, but was " + sql);
         } catch (IllegalArgumentException e) {
             // fine
@@ -79,7 +73,7 @@ public class InsertTest extends SqlTestCase {
     public void testWrongSource() throws Exception {
         final Person child = new Person();
         try {
-            final String sql = person.update(person.name.set(child.name)).show();
+            final String sql = person.insert(person.name.set(child.name)).show();
             fail("IllegalArgumentException expected, but was " + sql);
         } catch (IllegalArgumentException e) {
             // fine
@@ -88,7 +82,7 @@ public class InsertTest extends SqlTestCase {
     }
 
     public void testExecute() throws Exception {
-        final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
+        final AbstractInsertStatement update = person.insert(person.name.set("John"));
         final String statementString = update.show();
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
@@ -104,26 +98,6 @@ public class InsertTest extends SqlTestCase {
         assertEquals(2, update.execute(datasource));
 
     }
-
-    public void testExecuteSearched() throws Exception {
-        final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
-        final String statementString = update.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        statement.setString(1, "John");
-        statement.setLong(2, 1L);
-        expect(statement.executeUpdate()).andReturn(1);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
-
-        assertEquals(1, update.execute(datasource));
-
-    }
-
 
     private static class Person extends Table {
         private Person() {
