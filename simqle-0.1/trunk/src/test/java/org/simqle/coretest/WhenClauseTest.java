@@ -5,6 +5,7 @@ import org.simqle.Mappers;
 import org.simqle.sql.AbstractSearchedWhenClause;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -29,6 +30,16 @@ public class WhenClauseTest extends SqlTestCase {
     public void testElse() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testDynamicParameterElse() throws Exception {
+        final String sql = person.age.gt(20L).then(person.name).orElse(DynamicParameter.create(Mappers.STRING, "do not care")).show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE ? END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testFunctionElse() throws Exception {
+        final String sql = person.age.gt(20L).then(person.name).orElse(SqlFunction.create("to_upper", Mappers.STRING).apply(person.nick)).show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE to_upper(T0.nick) END AS C0 FROM person AS T0", sql);
     }
 
     public void testChain() throws Exception {

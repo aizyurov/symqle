@@ -153,6 +153,15 @@ public class BooleanFactorTest extends SqlTestCase {
    }
 
 
+    public void testThen() throws Exception {
+        final String sql = person.alive.booleanValue().negate().then(person.id).show();
+        assertSimilar("SELECT CASE WHEN NOT T0.alive THEN T0.id END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testThenNull() throws Exception {
+        final String sql = person.id.ge(0L).then(person.id).orWhen(person.alive.booleanValue().negate().thenNull()).show();
+        assertSimilar("SELECT CASE WHEN T0.id >= ? THEN T0.id WHEN NOT T0.alive THEN NULL END AS C0 FROM person AS T0", sql);
+    }
 
     private static class Person extends TableOrView {
         private Person() {

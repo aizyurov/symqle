@@ -157,6 +157,15 @@ public class BooleanTermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart AND T0.cute) NOT IN(T0.alive, T0.friendly)", sql);
    }
 
+    public void testThen() throws Exception {
+        final String sql = person.alive.booleanValue().and(person.cute.booleanValue()).then(person.id).show();
+        assertSimilar("SELECT CASE WHEN T0.alive AND T0.cute THEN T0.id END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testThenNull() throws Exception {
+        final String sql = person.id.ge(0L).then(person.id).orWhen(person.alive.booleanValue().and(person.cute.booleanValue()).thenNull()).show();
+        assertSimilar("SELECT CASE WHEN T0.id >= ? THEN T0.id WHEN T0.alive AND T0.cute THEN NULL END AS C0 FROM person AS T0", sql);
+    }
 
     private static class Person extends TableOrView {
         private Person() {
