@@ -9,6 +9,8 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 |
 	s:ScalarSubquery<T> :: public AbstractValueExpressionPrimary<T> queryValue {}
 |
+    e:CaseExpression<T> :: implicit {}
+|
 	r:RoutineInvocation<T> :: implicit {}
 ;
 
@@ -161,6 +163,54 @@ public class SqlFunction<T> implements RoutineName<T> {
 }
 
 
+public interface CaseExpression<T> extends Scalar<T> : Sql {}
 
+# Case abbreviations are not included here (considering them as functions, e.g nullIf)
+# only <searched case> is supported
+# <searched case> ::= CASE <searched when clause>... [ <else clause> ] END
 
+<T> CaseExpression<T> ::= CASE l:SearchedWhenClauseList<T> END :: implicit {}
+;
 
+public interface SearchedWhenClauseList<T> extends Scalar<T> : Sql {}
+
+public class AbstractSearchedWhenClauseList<T> implements SearchedWhenClauseList<T> {}
+
+<T> SearchedWhenClauseList<T> ::=
+    l:SearchedWhenClauseBaseList<T> :: implicit {}
+|
+    l:SearchedWhenClauseBaseList<T> e:ElseClause<T> :: public AbstractSearchedWhenClauseList<T> orElse {}
+;
+
+public interface SearchedWhenClauseBaseList<T> extends Scalar<T> : Sql {}
+public class AbstractSearchedWhenClauseBaseList<T> implements SearchedWhenClauseBaseList<T> {}
+
+<T> SearchedWhenClauseBaseList<T> ::=
+    c:SearchedWhenClause<T> :: implicit {}
+|
+    l:SearchedWhenClauseBaseList<T> c:SearchedWhenClause<T> :: public AbstractSearchedWhenClauseBaseList<T> orWhen {}
+|
+    l:SearchedWhenClauseBaseList<T> c:ThenNullClause :: public AbstractSearchedWhenClauseBaseList<T> orWhen {}
+;
+
+public interface SearchedWhenClause<T> extends Scalar<T> : Sql {}
+public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
+
+<T> SearchedWhenClause<T> ::=
+    WHEN cond:BooleanExpression THEN e:ValueExpression<T> :: public AbstractSearchedWhenClause<T> then {
+        private final ElementMapper<T> mapper = e.getElementMapper();
+        public final ElementMapper<T> getElementMapper() {
+            return mapper;
+        }
+    }
+;
+
+public interface ThenNullClause : Sql {}
+
+ThenNullClause ::= WHEN cond:BooleanExpression THEN NULL :: public ThenNullClause thenNull {}
+;
+
+public interface ElseClause<T> extends Scalar<T> : Sql {}
+
+<T> ElseClause<T> ::= ELSE e:ValueExpression<T> :: implicit {}
+;
