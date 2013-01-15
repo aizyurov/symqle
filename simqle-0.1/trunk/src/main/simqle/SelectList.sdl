@@ -55,7 +55,7 @@ public class DefinedIdentifier implements Identifier {
             public Query<T> z$create$SelectSublist(final SqlContext context) {
                 final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
                 if (nameProvider == null) {
-                    return new ComplexQuery<T>(new NullDataExtractor(), ve.z$create$ValueExpression(context));
+                    return new ComplexQuery<T>(new NullDataExtractor<T>(), ve.z$create$ValueExpression(context));
                 } else {
                     final String name = nameProvider.getUniqueName();
                     return new ComplexQuery<T>(new DataExtractor<T>(){

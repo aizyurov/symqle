@@ -12,6 +12,14 @@ import java.sql.SQLException;
  */
 public class Mappers {
 
+    private Mappers() {
+
+    }
+
+    static {
+        new Mappers();
+    }
+
     public static final ElementMapper<Boolean> BOOLEAN = new ElementMapper<Boolean>() {
         @Override
         public Boolean value(Element element) throws SQLException {

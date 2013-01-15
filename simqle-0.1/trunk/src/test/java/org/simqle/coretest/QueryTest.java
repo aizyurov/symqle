@@ -3,11 +3,13 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,21 +38,6 @@ public class QueryTest extends SqlTestCase {
         reset(resultSet);
     }
 
-    private void replayAll() {
-        replay(datasource);
-        replay(connection);
-        replay(statement);
-        replay(resultSet);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        verify(datasource);
-        verify(connection);
-        verify(statement);
-        verify(resultSet);
-    }
-
     public void testScrollWithEmptyResultSet() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
@@ -63,13 +50,14 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replayAll();
+        replay(datasource, connection, statement, resultSet);
         id.scroll(datasource, new Callback<Long, SQLException>() {
             @Override
             public void iterate(Long aLong) throws SQLException, BreakException {
                 fail("Must not be called");
             }
         });
+        verify(datasource, statement, connection, resultSet);
     }
 
     public void testScroll() throws Exception {
@@ -86,19 +74,21 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replayAll();
+        replay(datasource, connection, statement, resultSet);
         id.scroll(datasource, new Callback<Long, SQLException>() {
             private int callCount = 0;
+
             @Override
             public void iterate(Long aLong) throws SQLException, BreakException {
                 if (callCount > 0) {
                     fail("Must not get here");
                 } else {
-                    callCount ++;
+                    callCount++;
                     assertEquals(123, aLong.longValue());
                 }
             }
         });
+        verify(datasource, statement, connection, resultSet);
     }
 
     public void testScrollWithBreak() throws Exception {
@@ -117,7 +107,7 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replayAll();
+        replay(datasource, connection, statement, resultSet);
         int callNum = id.scroll(datasource, new Callback<Long, SQLException>() {
             private int callCount = 0;
             @Override
@@ -132,6 +122,7 @@ public class QueryTest extends SqlTestCase {
             }
         });
         assertEquals(1, callNum);
+        verify(datasource, statement, connection, resultSet);
     }
 
     public void testList() throws Exception {
@@ -148,10 +139,11 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replayAll();
+        replay(datasource, connection, statement, resultSet);
         final List<Long> list = id.list(datasource);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
+        verify(datasource, statement, connection, resultSet);
 
     }
 
@@ -160,7 +152,6 @@ public class QueryTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 123L);
         final String queryString = id.where(id.eq(param)).show();
-        System.out.println(queryString);
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setLong(1, 123L);
@@ -172,11 +163,56 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replayAll();
+        replay(datasource, connection, statement, resultSet);
         final List<Long> list = id.where(id.eq(param)).list(datasource);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
+        verify(datasource, statement, connection, resultSet);
+    }
 
+    public void testListWithComplexCondition() throws Exception {
+        final Person person = new Person();
+        final AbstractQuerySpecification<Long> query = person.id.where(person.age.plus(1).gt(33));
+        final String queryString = query.show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setBigDecimal(1, new BigDecimal(1));
+        statement.setBigDecimal(2, new BigDecimal(33));
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection, statement, resultSet);
+        final List<Long> list = query.list(datasource);
+        assertEquals(1, list.size());
+        assertEquals(Long.valueOf(123), list.get(0));
+        verify(datasource, statement,  connection, resultSet);
+    }
+
+    public void testListWithBooleanColumnCondition() throws Exception {
+        final Person person = new Person();
+        final AbstractQuerySpecification<Long> query = person.id.where(person.alive.eq(true));
+        final String queryString = query.show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setBoolean(1, true);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection, statement, resultSet);
+        final List<Long> list = query.list(datasource);
+        assertEquals(1, list.size());
+        assertEquals(Long.valueOf(123), list.get(0));
+        verify(datasource, statement,  connection, resultSet);
     }
 
     private static class Person extends TableOrView {
@@ -186,6 +222,7 @@ public class QueryTest extends SqlTestCase {
         public Column<Long> id = defineColumn(Mappers.LONG, "id");
         public Column<Long> age = defineColumn(Mappers.LONG, "id");
         public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
+        public Column<Boolean> alive = defineColumn(Mappers.BOOLEAN, "alive");
     }
 
 }

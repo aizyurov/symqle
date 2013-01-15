@@ -8,6 +8,7 @@ package org.simqle;
  * To change this template use File | Settings | File Templates.
  */
 public class NullDataExtractor<T> implements DataExtractor<T> {
+    @Override
     public T extract(final Row row) {
         // must never get here
         throw new RuntimeException("Not implemented");

@@ -18,9 +18,6 @@ public class SqlContext {
      * @throws IllegalArgumentException the key is in use
      */
     public <T> void set(Class<T> clazz, T impl) {
-        if (theContext.containsKey(clazz)) {
-            throw new IllegalArgumentException("Key is in use: "+clazz);
-        }
         theContext.put(clazz, impl);
     }
 

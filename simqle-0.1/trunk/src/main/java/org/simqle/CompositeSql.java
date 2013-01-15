@@ -28,7 +28,7 @@ public class CompositeSql implements Sql {
      */
     public CompositeSql(final Sql first, final Sql... other) {
         this.first = first;
-        this.other = other != null ? other : new Sql[0];
+        this.other = other;
     }
 
 
@@ -44,9 +44,7 @@ public class CompositeSql implements Sql {
             StringBuilder builder = new StringBuilder();
             builder.append(first.getSqlText());
             for (Sql element : this.other) {
-                if (builder.length()>0) {
-                    builder.append(' ');
-                }
+                builder.append(' ');
                 builder.append(element.getSqlText());
             }
             return builder.toString();

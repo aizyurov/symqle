@@ -16,11 +16,4 @@ public interface Row {
      */
     Element getValue(String label);
 
-    /**
-     * Accesses a value slot a column in the row by position.
-     * @param position position in the row, numeration starts from 1
-     * @return the value slot
-     */
-    Element getValue(int position);
-
 }

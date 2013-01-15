@@ -23,80 +23,6 @@ public class ResultSetRow implements Row {
         return new LabeledElement(label);
     }
 
-    @Override
-    public Element getValue(int position) {
-        return new PositionedElement(position);
-    }
-
-    private class PositionedElement implements Element {
-        private final int position;
-
-        private PositionedElement(int position) {
-            this.position = position;
-        }
-
-        @Override
-        public Boolean getBoolean() throws SQLException {
-            final boolean result = resultSet.getBoolean(position);
-            return resultSet.wasNull() ? null : result;
-        }
-
-        @Override
-        public Byte getByte() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Short getShort() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Integer getInt() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Long getLong() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Float getFloat() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Double getDouble() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public BigDecimal getBigDecimal() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public String getString() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Date getDate() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Time getTime() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        @Override
-        public Timestamp getTimestamp() throws SQLException {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-    }
-
     private class LabeledElement implements Element {
         private final String label;
 
@@ -112,17 +38,20 @@ public class ResultSetRow implements Row {
 
         @Override
         public Byte getByte() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final byte result = resultSet.getByte(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
         public Short getShort() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final short result = resultSet.getShort(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
         public Integer getInt() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final int result = resultSet.getInt(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
@@ -133,12 +62,14 @@ public class ResultSetRow implements Row {
 
         @Override
         public Float getFloat() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final float result = resultSet.getFloat(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
         public Double getDouble() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final double result = resultSet.getDouble(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
@@ -155,17 +86,20 @@ public class ResultSetRow implements Row {
 
         @Override
         public Date getDate() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final Date result = resultSet.getDate(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
         public Time getTime() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final Time result = resultSet.getTime(label);
+            return resultSet.wasNull() ? null : result;
         }
 
         @Override
         public Timestamp getTimestamp() throws SQLException {
-            throw new RuntimeException("Not implemented");
+            final Timestamp result = resultSet.getTimestamp(label);
+            return resultSet.wasNull() ? null : result;
         }
     }
 }

@@ -58,7 +58,11 @@ public class StatementParameters implements SqlParameters {
 
         @Override
         public void setInt(Integer x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            if (x == null) {
+                statement.setNull(position, Types.INTEGER);
+            } else {
+                    statement.setInt(position, x);
+            }
         }
 
         @Override
@@ -82,7 +86,7 @@ public class StatementParameters implements SqlParameters {
 
         @Override
         public void setBigDecimal(BigDecimal x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            statement.setBigDecimal(position, x);
         }
 
         @Override
