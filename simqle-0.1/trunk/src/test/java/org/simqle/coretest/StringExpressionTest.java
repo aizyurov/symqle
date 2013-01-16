@@ -289,6 +289,17 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id || ? FROM person AS T0) AS C0 FROM person AS T1 ORDER BY T1.id", sql);
     }
 
+    public void testWhenClause() throws Exception {
+        final String sql = person.name.isNotNull().then(person.name.concat(" test")).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name || ? END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testElse() throws Exception {
+        final String sql = person.name.isNotNull().then(person.name).orElse(person.name.concat(" test")).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name ELSE T0.name || ? END AS C0 FROM person AS T0", sql);
+    }
+
+
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);

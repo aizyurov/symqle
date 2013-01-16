@@ -4,6 +4,7 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractValueExpression;
 import org.simqle.sql.Column;
+import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -301,6 +302,17 @@ public class ValueExpressionTest extends SqlTestCase {
         final String sql = person.name.eq(employee.name).asValue().queryValue().where(person.name.eq("John")).show();
         assertSimilar("SELECT(SELECT T0.name = T1.name FROM employee AS T1) AS C0 FROM person AS T0 WHERE T0.name = ?", sql);
     }
+
+    public void testWhenClause() throws Exception {
+        final String sql = person.name.isNotNull().then(person.name.eq("John").asValue()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name = ? END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testElse() throws Exception {
+        final String sql = person.name.isNull().then(DynamicParameter.create(Mappers.BOOLEAN, false)).orElse(person.name.eq("John").asValue()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NULL THEN ? ELSE T0.name = ? END AS C0 FROM person AS T0", sql);
+    }
+
 
     public void testList() throws Exception {
         final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();

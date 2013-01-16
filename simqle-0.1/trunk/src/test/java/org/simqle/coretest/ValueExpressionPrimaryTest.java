@@ -328,12 +328,24 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testQueryValue() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().queryValue().show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().queryValue().where(employee.id.eq(1L)).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
     }
+
+    public void testWhenClause() throws Exception {
+        final String sql = person.name.isNotNull().then(employee.name.where(employee.id.eq(person.id)).queryValue()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testElse() throws Exception {
+        final String sql = person.name.isNotNull().then(person.name).orElse(employee.name.where(employee.id.eq(person.id)).queryValue()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name ELSE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) END AS C0 FROM person AS T0", sql);
+    }
+
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);

@@ -73,6 +73,21 @@ public class ImplicitConversionsTest extends TestCase {
         assertEquals(Mappers.LONG, valueExpressionPrimary1.getElementMapper());
     }
 
+    public void testCaseExpression() throws Exception {
+        final Simqle simqle = Simqle.get();
+        final AbstractSearchedWhenClause<Long> whenClause = person.name.isNotNull().then(person.id);
+        final SearchedWhenClauseBaseList<Long> baseList = simqle.z$SearchedWhenClauseBaseList$from$SearchedWhenClause(whenClause);
+        assertEquals(Mappers.LONG, baseList.getElementMapper());
+        final SearchedWhenClauseList<Long> list = simqle.z$SearchedWhenClauseList$from$SearchedWhenClauseBaseList(baseList);
+        assertEquals(Mappers.LONG, list.getElementMapper());
+        final CaseExpression<Long> caseExpression = simqle.z$CaseExpression$from$SearchedWhenClauseList(list);
+        assertEquals(Mappers.LONG, caseExpression.getElementMapper());
+        final ValueExpressionPrimary<Long> valueExpressionPrimary = simqle.z$ValueExpressionPrimary$from$CaseExpression(caseExpression);
+        assertEquals(Mappers.LONG, valueExpressionPrimary.getElementMapper());
+        final ElseClause<Long> elseClause = simqle.z$ElseClause$from$ValueExpression(person.id);
+        assertEquals(Mappers.LONG, elseClause.getElementMapper());
+    }
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");

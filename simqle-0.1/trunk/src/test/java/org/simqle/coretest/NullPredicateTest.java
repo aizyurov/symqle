@@ -156,6 +156,15 @@ public class NullPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) NOT IN(T0.alive, T0.friendly)", sql);
    }
 
+    public void testThen() throws Exception {
+        final String sql = person.smart.isNull().then(person.id).show();
+        assertSimilar("SELECT CASE WHEN T0.smart IS NULL THEN T0.id END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testThenNull() throws Exception {
+        final String sql = person.smart.isNull().then(person.id).orWhen(person.alive.isNotNull().thenNull()).show();
+        assertSimilar("SELECT CASE WHEN T0.smart IS NULL THEN T0.id WHEN T0.alive IS NOT NULL THEN NULL END AS C0 FROM person AS T0", sql);
+    }
 
     private static class Person extends TableOrView {
         private Person() {

@@ -289,6 +289,17 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT - T0.id FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
     }
 
+    public void testWhenClause() throws Exception {
+        final String sql = person.name.isNotNull().then(person.id.opposite()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN - T0.id END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testElse() throws Exception {
+        final String sql = person.name.isNotNull().then(person.id).orElse(person.id.opposite()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id ELSE - T0.id END AS C0 FROM person AS T0", sql);
+    }
+
+
 
 
     public void testList() throws Exception {

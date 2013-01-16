@@ -157,6 +157,16 @@ public class InPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.name IN(SELECT T1.name FROM employee AS T1) AS C0 FROM person AS T0", sql);
     }
 
+    public void testThen() throws Exception {
+        final String sql = person.name.in(employee.name).then(person.id).show();
+        assertSimilar("SELECT CASE WHEN T0.name IN(SELECT T1.name FROM employee AS T1) THEN T0.id END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testThenNull() throws Exception {
+        final String sql = person.name.isNull().then(DynamicParameter.create(Mappers.STRING, "no name")).orWhen(person.name.in(employee.name).thenNull()).orElse(person.name).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NULL THEN ? WHEN T0.name IN(SELECT T1.name FROM employee AS T1) THEN NULL ELSE T0.name END AS C0 FROM person AS T0", sql);
+    }
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");

@@ -161,6 +161,16 @@ public class ExistsPredicateTest extends SqlTestCase {
         assertSimilar("SELECT EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
+    public void testThen() throws Exception {
+        final String sql = employee.id.where(employee.name.eq(person.name)).exists().then(person.name).show();
+        assertSimilar("SELECT CASE WHEN EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) THEN T0.name END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testThenNull() throws Exception {
+        final String sql = person.name.isNotNull().then(person.name).orWhen(employee.id.where(employee.name.eq(person.name)).exists().thenNull()).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name WHEN EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name) THEN NULL END AS C0 FROM person AS T0", sql);
+    }
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");
