@@ -4,6 +4,7 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
+import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -345,6 +346,25 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name ELSE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) END AS C0 FROM person AS T0", sql);
     }
 
+    public void testLike() throws Exception {
+        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().like(DynamicParameter.create(Mappers.STRING, "true"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) LIKE ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().notLike(DynamicParameter.create(Mappers.STRING, "true"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) NOT LIKE ?", sql);
+    }
+
+    public void testLikeString() throws Exception {
+        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().like("true")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) LIKE ?", sql);
+    }
+
+    public void testNotLikeString() throws Exception {
+        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().notLike("true")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) NOT LIKE ?", sql);
+    }
 
 
     public void testList() throws Exception {

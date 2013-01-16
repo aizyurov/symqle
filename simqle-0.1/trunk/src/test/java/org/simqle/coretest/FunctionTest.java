@@ -387,6 +387,27 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT abs(T0.id) FROM person AS T0) AS C0 FROM person AS T1 ORDER BY T1.age", sql);
 
     }
+
+    public void testLike() throws Exception {
+        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).like(DynamicParameter.create(Mappers.STRING, "J%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) LIKE ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).notLike(DynamicParameter.create(Mappers.STRING, "J%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) NOT LIKE ?", sql);
+    }
+
+    public void testLikeString() throws Exception {
+        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).like("J%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) LIKE ?", sql);
+    }
+
+    public void testNotLikeString() throws Exception {
+        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).notLike("J%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) NOT LIKE ?", sql);
+    }
+
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
@@ -451,6 +472,7 @@ public class FunctionTest extends SqlTestCase {
         }
         public Column<Long> id = defineColumn(Mappers.LONG, "id");
         public Column<Long> age = defineColumn(Mappers.LONG, "age");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
         public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
     }
 

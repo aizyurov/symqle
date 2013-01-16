@@ -303,6 +303,27 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id + ? ELSE T0.id + ? END AS C0 FROM person AS T0", sql);
     }
 
+
+    public void testLike() throws Exception {
+        final String sql = person.id.where(person.id.plus(1).like(DynamicParameter.create(Mappers.STRING, "12%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? LIKE ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(person.id.plus(1).notLike(DynamicParameter.create(Mappers.STRING, "12%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT LIKE ?", sql);
+    }
+
+    public void  testLikeString() throws Exception {
+        final String sql = person.id.where(person.id.plus(1).like("12%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? LIKE ?", sql);
+    }
+
+    public void  testNotLikeString() throws Exception {
+        final String sql = person.id.where(person.id.plus(1).notLike("12%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT LIKE ?", sql);
+    }
+
     
 
     public void testList() throws Exception {

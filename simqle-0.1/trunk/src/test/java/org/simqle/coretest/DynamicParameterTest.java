@@ -478,6 +478,28 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
+    public void testLike() throws Exception {
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").like(person.name)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? LIKE T0.name", sql);
+    }
+
+    public void testLikeString() throws Exception {
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").like("J%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? LIKE ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").notLike(person.name)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT LIKE T0.name", sql);
+    }
+
+    public void testNotLikeString() throws Exception {
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").notLike("J%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT LIKE ?", sql);
+    }
+
+
+
     public void testList() throws Exception {
         final DataSource dataSource = org.easymock.EasyMock.createMock(DataSource.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
@@ -518,6 +540,7 @@ public class DynamicParameterTest extends SqlTestCase {
         }
         public Column<Long> id = defineColumn(Mappers.LONG, "id");
         public Column<Long> age = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
         public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
     }
 

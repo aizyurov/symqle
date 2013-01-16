@@ -8,6 +8,8 @@ Predicate ::=
         p:NullPredicate :: implicit {}
 |
         p:ExistsPredicate :: implicit {}
+|
+        p:LikePredicate :: implicit {}
 ;
 
 # All predicates use Predicand (<row value predicand>)
@@ -74,6 +76,8 @@ public class AbstractComparisonPredicate implements ComparisonPredicate {}
 :: public <T> AbstractComparisonPredicate le(Predicand<T> p, T v) {
     return le(p, DynamicParameter.create(p.getElementMapper(), v));
 }
+
+
 public interface InPredicate : Sql {}
 
 public class AbstractInPredicate implements InPredicate {
@@ -137,3 +141,34 @@ public class AbstractExistsPredicate implements ExistsPredicate {}
 
 ExistsPredicate ::= EXISTS s:ScalarSubquery<?> :: public AbstractExistsPredicate exists {}
 ;
+
+public interface LikePredicate : Sql {}
+public class AbstractLikePredicate implements LikePredicate {}
+
+# BLOB like not supported yet
+LikePredicate ::=
+    b:LikePredicateBase :: implicit {}
+|
+    b:LikePredicateBase ESCAPE esc:StringExpression<String> :: public AbstractLikePredicate escape {}
+;
+
+:: public AbstractLikePredicate escape(final LikePredicateBase base, final char escapeCharacter) {
+    return escape(base, DynamicParameter.create(Mappers.STRING, new String(new char[] {escapeCharacter})));
+}
+
+public interface LikePredicateBase : Sql {}
+public class AbstractLikePredicateBase implements LikePredicateBase {}
+
+LikePredicateBase ::=
+    e:ValueExpression<?> LIKE p:StringExpression<String> :: public AbstractLikePredicateBase like {}
+|
+    e:ValueExpression<?> NOT LIKE p:StringExpression<String> :: public AbstractLikePredicateBase notLike {}
+;
+
+:: public AbstractLikePredicateBase like(ValueExpression<?> expr, String pattern) {
+      return like(expr, DynamicParameter.create(Mappers.STRING, pattern));
+}
+
+:: public AbstractLikePredicateBase notLike(ValueExpression<?> expr, String pattern) {
+      return notLike(expr, DynamicParameter.create(Mappers.STRING, pattern));
+}

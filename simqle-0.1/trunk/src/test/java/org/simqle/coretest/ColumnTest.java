@@ -444,6 +444,16 @@ public class ColumnTest extends SqlTestCase {
 
     }
 
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(person.name.notLike(DynamicParameter.create(Mappers.STRING, "John%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name NOT LIKE ?", sql);
+    }
+
+    public void testNotLikeString() throws Exception {
+        final String sql = person.id.where(person.name.notLike("John%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name NOT LIKE ?", sql);
+    }
+
     public void testList() throws Exception {
         final Column<Long> column = person.id;
         final String queryString = column.show();
@@ -476,6 +486,7 @@ public class ColumnTest extends SqlTestCase {
         }
         public Column<Long> id = defineColumn(Mappers.LONG, "id");
         public Column<Long> age = defineColumn(Mappers.LONG, "age");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
         public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
     }
 

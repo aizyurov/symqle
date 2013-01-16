@@ -299,6 +299,27 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name ELSE T0.name || ? END AS C0 FROM person AS T0", sql);
     }
 
+    public void testLike() throws Exception {
+        final String sql = person.id.where(person.name.concat(" test").like(person.name.concat(" tes_"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name || ? LIKE T0.name || ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(person.name.concat(" test").notLike(person.name.concat(" tes_"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name || ? NOT LIKE T0.name || ?", sql);
+    }
+
+    public void testLikeString() throws Exception {
+        final String sql = person.id.where(person.name.concat(" test").like("J%tes_")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name || ? LIKE ?", sql);
+    }
+
+    public void testNotLikeString() throws Exception {
+        final String sql = person.id.where(person.name.concat(" test").notLike("J%tes_")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name || ? NOT LIKE ?", sql);
+    }
+
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);

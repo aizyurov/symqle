@@ -3,6 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
+import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -299,6 +300,26 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id ELSE - T0.id END AS C0 FROM person AS T0", sql);
     }
 
+
+    public void testLike() throws Exception {
+        final String sql = person.id.where(person.id.opposite().like(DynamicParameter.create(Mappers.STRING, "12%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id LIKE ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(person.id.opposite().notLike(DynamicParameter.create(Mappers.STRING, "12%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id NOT LIKE ?", sql);
+    }
+
+    public void  testLikeString() throws Exception {
+        final String sql = person.id.where(person.id.opposite().like("12%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id LIKE ?", sql);
+    }
+
+    public void  testNotLikeString() throws Exception {
+        final String sql = person.id.where(person.id.opposite().notLike("12%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id NOT LIKE ?", sql);
+    }
 
 
 

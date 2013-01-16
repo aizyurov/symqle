@@ -313,6 +313,25 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NULL THEN ? ELSE T0.name = ? END AS C0 FROM person AS T0", sql);
     }
 
+    public void testLike() throws Exception {
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().like(DynamicParameter.create(Mappers.STRING, "true"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick LIKE ?", sql);
+    }
+
+    public void testNotLike() throws Exception {
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike(DynamicParameter.create(Mappers.STRING, "true"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick NOT LIKE ?", sql);
+    }
+
+    public void testLikeString() throws Exception {
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().like("true")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick LIKE ?", sql);
+    }
+
+    public void testNotLikeString() throws Exception {
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike("true")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick NOT LIKE ?", sql);
+    }
 
     public void testList() throws Exception {
         final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();

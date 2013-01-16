@@ -332,6 +332,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END IS NOT NULL", sql);
     }
 
+    public void testLike() throws Exception {
+        final String sql = person.id.where(person.age.gt(20L).then(person.name).like(DynamicParameter.create(Mappers.STRING, "J%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END LIKE ?", sql);
+    }
+
 
 
 
