@@ -51,6 +51,14 @@ public class ColumnTest extends TestCase {
 
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        final Connection connection = dataSource.getConnection();
+        final PreparedStatement createStatement = connection.prepareStatement("DROP TABLE person");
+        createStatement.executeUpdate();
+        createStatement.close();
+    }
+
     private DataSource dataSource = new DriverManagerDataSource("jdbc:hsqldb:mem:simqle", "SA", "");
 
     public void testSelect() throws Exception {
