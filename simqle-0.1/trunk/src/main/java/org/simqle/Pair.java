@@ -47,4 +47,8 @@ public class Pair<First,Second> {
         result = 31 * result + (second != null ? second.hashCode() : 0);
         return result;
     }
+
+    public String toString() {
+        return "("+getFirst()+", "+getSecond()+")";
+    }
 }
