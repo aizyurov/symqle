@@ -53,7 +53,11 @@ public class StatementParameters implements SqlParameters {
 
         @Override
         public void setShort(Short x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            if (x == null) {
+                statement.setNull(position, Types.SMALLINT);
+            } else {
+                statement.setShort(position, x);
+            }
         }
 
         @Override
@@ -76,12 +80,20 @@ public class StatementParameters implements SqlParameters {
 
         @Override
         public void setFloat(Float x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            if (x == null) {
+                statement.setNull(position, Types.FLOAT);
+            } else {
+                    statement.setFloat(position, x);
+            }
         }
 
         @Override
         public void setDouble(Double x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            if (x == null) {
+                statement.setNull(position, Types.DOUBLE);
+            } else {
+                    statement.setDouble(position, x);
+            }
         }
 
         @Override
@@ -96,17 +108,17 @@ public class StatementParameters implements SqlParameters {
 
         @Override
         public void setDate(Date x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            statement.setDate(position, x);
         }
 
         @Override
         public void setTime(Time x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            statement.setTime(position, x);
         }
 
         @Override
         public void setTimestamp(Timestamp x) throws SQLException {
-            throw new RuntimeException("Not implemented");
+            statement.setTimestamp(position, x);
         }
     }
 }

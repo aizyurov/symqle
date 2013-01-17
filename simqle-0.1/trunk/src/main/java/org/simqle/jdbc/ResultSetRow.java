@@ -74,32 +74,27 @@ public class ResultSetRow implements Row {
 
         @Override
         public BigDecimal getBigDecimal() throws SQLException {
-            final BigDecimal result = resultSet.getBigDecimal(label);
-            return resultSet.wasNull() ? null : result;
+            return resultSet.getBigDecimal(label);
         }
 
         @Override
         public String getString() throws SQLException {
-            final String result = resultSet.getString(label);
-            return resultSet.wasNull() ? null : result;
+            return resultSet.getString(label);
         }
 
         @Override
         public Date getDate() throws SQLException {
-            final Date result = resultSet.getDate(label);
-            return resultSet.wasNull() ? null : result;
+            return resultSet.getDate(label);
         }
 
         @Override
         public Time getTime() throws SQLException {
-            final Time result = resultSet.getTime(label);
-            return resultSet.wasNull() ? null : result;
+            return resultSet.getTime(label);
         }
 
         @Override
         public Timestamp getTimestamp() throws SQLException {
-            final Timestamp result = resultSet.getTimestamp(label);
-            return resultSet.wasNull() ? null : result;
+            return resultSet.getTimestamp(label);
         }
     }
 }
