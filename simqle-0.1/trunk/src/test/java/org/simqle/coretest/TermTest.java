@@ -237,7 +237,6 @@ public class TermTest extends SqlTestCase {
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
         expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -359,7 +358,6 @@ public class TermTest extends SqlTestCase {
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
         expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();

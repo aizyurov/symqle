@@ -135,7 +135,6 @@ public class PairTest extends SqlTestCase {
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -163,7 +162,6 @@ public class PairTest extends SqlTestCase {
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -198,7 +196,6 @@ public class PairTest extends SqlTestCase {
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -226,7 +223,6 @@ public class PairTest extends SqlTestCase {
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -261,7 +257,6 @@ public class PairTest extends SqlTestCase {
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -289,7 +284,6 @@ public class PairTest extends SqlTestCase {
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();

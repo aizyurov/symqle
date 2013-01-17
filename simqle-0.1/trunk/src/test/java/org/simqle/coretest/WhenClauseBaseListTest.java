@@ -358,7 +358,6 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
@@ -386,7 +385,6 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
         expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();

@@ -68,4 +68,16 @@ public class Mappers {
         }
     };
 
+    public static final ElementMapper<Integer> INTEGER = new ElementMapper<Integer>() {
+        @Override
+        public Integer value(final Element element) throws SQLException {
+            return element.getInt();
+        }
+
+        @Override
+        public void setValue(final SqlParameter param, final Integer value) throws SQLException {
+            param.setInt(value);
+        }
+    };
+
 }
