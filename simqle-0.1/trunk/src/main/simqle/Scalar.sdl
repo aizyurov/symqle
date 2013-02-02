@@ -8,7 +8,7 @@ public interface Scalar<T>
 ::     private SqlContext createInnerContext(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         innerContext.set(UniqueNameProvider.class, null);
-        innerContext.set(Simqle.class, context.get(Simqle.class));
+        innerContext.set(Dialect.class, context.get(Dialect.class));
         // create an empty AbstractFromClause for QueryExpressionScalar with current FromClause as enclosing
         innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;
@@ -18,7 +18,7 @@ public interface Scalar<T>
         SqlContext innerContext = new SqlContext();
         // if already in inner context, do not provide column labels
         innerContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider());
-        innerContext.set(Simqle.class, context.get(Simqle.class));
+        innerContext.set(Dialect.class, context.get(Dialect.class));
         // create an empty AbstractFromClause with current FromClause as enclosing
         innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;

@@ -31,7 +31,9 @@
 public interface DataChangeStatement : Sql {}
 
 :: private Sql prepareUpdate(final DataChangeStatement statement) {
-    return statement.z$create$DataChangeStatement(new SqlContext());
+    final SqlContext context = new SqlContext();
+    context.set(Dialect.class, GenericDialect.get());
+    return statement.z$create$DataChangeStatement(context);
 }
 
 :: public String show(final DataChangeStatement statement) {
@@ -124,20 +126,12 @@ SetClauseList ::=
 
 public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElement : Sql {}
 
-<T> SetClause ::=
-    c:ColumnName<T> EQ e:ValueExpression<T> :: public SetClause set {
-            public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
-                return e.z$create$ValueExpression(context);
-            }
-
-            public Sql z$create$InsertColumn(final SqlContext context) {
-                return c.z$create$ColumnName(context);
-            }
+:: public <T> SetClause set(final ColumnName<T> c, final ValueExpression<T> e) {
+        return setIgnoreType(c, e);
     }
-;
 
 :: public <T> SetClause set(final ColumnName<T> column, final T value) {
-    return set(column, DynamicParameter.create(column.getElementMapper(), value));
+    return setIgnoreType(column, DynamicParameter.create(column.getElementMapper(), value));
 }
 
 SetClause ::=

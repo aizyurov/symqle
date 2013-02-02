@@ -79,6 +79,7 @@ public <T> List<T> list(final SelectStatement<T> statement,
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
+            context.set(Dialect.class, GenericDialect.get());
             tableRegistry.setTestMode(true);
             statement.z$create$SelectStatement(context);
         }
@@ -88,6 +89,7 @@ public <T> List<T> list(final SelectStatement<T> statement,
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
+            context.set(Dialect.class, GenericDialect.get());
             tableRegistry.setTestMode(false);
             query = statement.z$create$SelectStatement(context);
         }
