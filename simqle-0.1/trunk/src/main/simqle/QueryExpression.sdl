@@ -55,9 +55,16 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> union {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
-                return new CompositeQuery<T>(left, UNION, right);
+                final SqlContext leftContext = createScalarInnerContext(context);
+                final SqlContext rightContext = createScalarInnerContext(context);
+                // learning
+                qe.z$create$QueryExpressionScalar(createScalarInnerContext(leftContext));
+                qt.z$create$QueryTerm(createScalarInnerContext(rightContext));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(leftContext));
+                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(rightContext));
+                return new ComplexQuery<T>(left,
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_QueryTerm(left, right));
             }
         }
 |
