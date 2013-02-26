@@ -9,16 +9,32 @@ import java.sql.SQLException;
  * Time: 23:41:34
  * To change this template use File | Settings | File Templates.
  */
-public class ComplexQuery<T> extends CompositeSql implements Query<T> {
-    private final DataExtractor<T> extractor;
+public class ComplexQuery<T> implements Query<T> {
+    final DataExtractor<T> extractor;
+    final Sql sql;
 
-    public ComplexQuery(DataExtractor<T> extractor, Sql first, Sql... other) {
-        super(first, other);
-        this.extractor = extractor;
+    public ComplexQuery(DataExtractor<T> rowMapper, Sql sql) {
+        this.extractor = rowMapper;
+        this.sql = sql;
+    }
+
+    /**
+     * Creates a JavaType object frm Row data.
+     *
+     * @param row the Row providing the data
+     * @return constructed JAvaType object
+     */
+    public T extract(Row row) throws SQLException {
+        return extractor.extract(row);
     }
 
     @Override
-    public T extract(Row row) throws SQLException {
-        return extractor.extract(row);
+    public String getSqlText() {
+        return sql.getSqlText();
+    }
+
+    @Override
+    public void setParameters(final SqlParameters p) throws SQLException {
+        sql.setParameters(p);
     }
 }

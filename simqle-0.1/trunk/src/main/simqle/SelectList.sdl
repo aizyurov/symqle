@@ -54,8 +54,9 @@ public class DefinedIdentifier implements Identifier {
             */
             public Query<T> z$create$SelectSublist(final SqlContext context) {
                 final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                final Sql veSql = ve.z$create$ValueExpression(context);
                 if (nameProvider == null) {
-                    return new ComplexQuery<T>(new NullDataExtractor<T>(), ve.z$create$ValueExpression(context));
+                    return new ComplexQuery<T>(new NullDataExtractor<T>(), veSql);
                 } else {
                     final String name = nameProvider.getUniqueName();
                     return new ComplexQuery<T>(new DataExtractor<T>(){
@@ -63,10 +64,7 @@ public class DefinedIdentifier implements Identifier {
                                 public T extract(Row row) throws SQLException {
                                     return getElementMapper().value(row.getValue(name));
                                 }
-                            },
-                            ve.z$create$ValueExpression(context),
-                            AS,
-                            new CustomSql(name));
+                            }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new CustomSql(name)));
                 }           
             }
     }
