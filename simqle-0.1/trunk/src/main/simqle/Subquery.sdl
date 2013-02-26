@@ -11,7 +11,7 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
             // real Sql generation
             innerContext.get(TableRegistry.class).setTestMode(false);
              final Sql base = qe.z$create$QueryExpressionScalar(innerContext);
-             return new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN);
+             return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_QueryExpressionScalar_RIGHT_PAREN(base);
          }
 }
 ;

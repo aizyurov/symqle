@@ -79,10 +79,7 @@ UpdateStatement ::=
                 final Sql base = b.z$create$UpdateStatementBase(context);
                 final SqlContext inner = createInnerContext(context);
                 final Sql where = wc.z$create$WhereClause(inner);
-                return new CompositeSql(
-                        base,
-                        where
-                    );
+                return context.get(Dialect.class).UpdateStatement_is_UpdateStatementBase_WhereClause(base, where);
             }
         }
 ;
@@ -99,7 +96,7 @@ UpdateStatementBase ::=
             registry.setTestMode(false);
             context.set(TableRegistry.class, registry);
             // no name provider
-            return new CompositeSql(UPDATE, t.z$create$TargetTable(context), SET, l.z$create$SetClauseList(context));
+            return context.get(Dialect.class).UpdateStatementBase_is_UPDATE_TargetTable_SET_SetClauseList(t.z$create$TargetTable(context), l.z$create$SetClauseList(context));
         }
     }
 ;
@@ -243,7 +240,8 @@ InsertStatement ::=
                 registry.setTestMode(false);
                 context.set(TableRegistry.class, registry);
                 // no name provider
-                return new CompositeSql(INSERT, INTO, t.z$create$TargetTable(context), s.z$create$FromConstructor(context));
+                return context.get(Dialect.class).InsertStatement_is_INSERT_INTO_TargetTable_FromConstructor(
+                        t.z$create$TargetTable(context), s.z$create$FromConstructor(context));
             }
         }
 |
@@ -323,7 +321,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
                 registry.setTestMode(false);
                 context.set(TableRegistry.class, registry);
                 // no name provider
-                return new CompositeSql(DELETE, FROM, t.z$create$TargetTable(context));
+                return context.get(Dialect.class).DeleteStatementBase_is_DELETE_FROM_TargetTable(t.z$create$TargetTable(context));
             }
 }
 ;
