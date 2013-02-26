@@ -25,7 +25,7 @@ import org.simqle.Pair;
                         return Pair.of(query1.extract(row), query2.extract(row));
                     }
                 };
-                return new ComplexQuery<Pair<T, U>>(extractor, query1, COMMA, query2);
+                return new ComplexQuery<Pair<T, U>>(extractor, context.get(Dialect.class).SelectList_is_SelectList_COMMA_SelectList(query1, query2));
             }
     }
 ;
