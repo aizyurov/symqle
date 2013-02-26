@@ -70,6 +70,8 @@ public class DefinedIdentifier implements Identifier {
                 }           
             }
     }
+|
+    ve:ValueExpression<T> AS id:Identifier
 ;
 
 
