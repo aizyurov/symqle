@@ -1,11 +1,30 @@
-import java.sql.SQLException;
-import org.simqle.ElementMapper;
-public interface Scalar<T>
-{
-    ElementMapper<T> getElementMapper();
-}
+# This file contains templates for Simqle, Dialect and GenericDialect.
+# Methods are added to the classes during code generation
 
-::     private SqlContext createInnerContext(SqlContext context) {
+# Scalar interface is also defined here, because code generator should know it
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.sql.DataSource;
+import org.simqle.*;
+import org.simqle.jdbc.ResultSetRow;
+import org.simqle.jdbc.StatementParameters;
+public final class Simqle  {
+    private static final Simqle instance = new Simqle();
+
+    private Simqle() {}
+
+    public static Simqle get() {
+         return instance;
+    }
+
+    private static SqlContext createInnerContext(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         innerContext.set(UniqueNameProvider.class, null);
         innerContext.set(Dialect.class, context.get(Dialect.class));
@@ -14,7 +33,7 @@ public interface Scalar<T>
         return innerContext;
     }
 
-::     private SqlContext createScalarInnerContext(SqlContext context) {
+    private static SqlContext createScalarInnerContext(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         // if already in inner context, do not provide column labels
         innerContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider());
@@ -23,3 +42,40 @@ public interface Scalar<T>
         innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;
     }
+
+}
+
+
+import org.simqle.Sql;
+public interface Dialect  {
+}
+
+import org.simqle.CompositeSql;
+import org.simqle.Sql;
+import static org.simqle.SqlTerm.*;
+public class GenericDialect implements Dialect {
+
+    private static final GenericDialect instance = new GenericDialect();
+
+    private GenericDialect() {}
+
+    public static Dialect get() {
+         return instance;
+    }
+}
+
+
+import org.simqle.ElementMapper;
+
+/**
+ * Scalar corresponds to one element of a tuple.
+ * It can be mapped to some Java type: values of this type
+ * can be retrieved from a definite column of a ResultSet and may be set as SQL parameters.
+ * @author lvovich
+ * @param <T> the Java type to which this Scalar is mapped.
+ */
+public interface Scalar<T> {
+
+    ElementMapper<T> getElementMapper();
+
+}

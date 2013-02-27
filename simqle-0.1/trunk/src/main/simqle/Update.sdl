@@ -144,7 +144,7 @@ SetClause ::=
 |
     c:ColumnName<?> EQ NULL :: public SetClause setNull {
             public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
-                return NULL;
+                return SqlTerm.NULL;
             }
             public Sql z$create$InsertColumn(final SqlContext context) {
                 return c.z$create$ColumnName(context);
@@ -153,7 +153,7 @@ SetClause ::=
 |
     c:ColumnName<?> EQ DEFAULT :: public SetClause setDefault {
             public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
-                return DEFAULT;
+                return SqlTerm.DEFAULT;
             }
             public Sql z$create$InsertColumn(final SqlContext context) {
                 return c.z$create$ColumnName(context);

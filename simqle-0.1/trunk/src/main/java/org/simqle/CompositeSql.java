@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 /**
  * Represents an Sql element composed from a list of sub-elements.
- * Provides implementation of {@link #getSqlText()} and {@link #setParameters(SqlParameter)}}
+ * Provides implementation of {@link #getSqlText()} and {@link #setParameters(SqlParameters}}
  * @author Alexander Izyurov
  */
 public class CompositeSql implements Sql {
