@@ -34,17 +34,6 @@ public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
 
 public interface Identifier : Sql {}
 
-import org.simqle.CustomSql;
-public class DefinedIdentifier implements Identifier {
-    private final String name;
-    public DefinedIdentifier(final String name) {
-        this.name = name;
-    }
-    public Sql z$create$Identifier(final SqlContext context) {
-        return new CustomSql(name);
-    }
-}
-
 <T> SelectSublist<T> ::= ve:ValueExpression<T> ::
     implicit {
             /**
