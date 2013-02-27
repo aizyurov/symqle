@@ -52,7 +52,7 @@ public interface Identifier : Sql {}
                     return new ComplexQuery<T>(new RowMapper<T>(){
                                 @Override
                                 public T extract(Row row) throws SQLException {
-                                    return getElementMapper().value(row.getValue(name));
+                                    return getMapper().value(row.getValue(name));
                                 }
                             }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new CustomSql(name)));
                 }           

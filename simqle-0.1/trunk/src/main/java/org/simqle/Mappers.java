@@ -20,7 +20,7 @@ public class Mappers {
         new Mappers();
     }
 
-    public static final ElementMapper<Boolean> BOOLEAN = new ElementMapper<Boolean>() {
+    public static final Mapper<Boolean> BOOLEAN = new Mapper<Boolean>() {
         @Override
         public Boolean value(Element element) throws SQLException {
             return element.getBoolean();
@@ -32,7 +32,7 @@ public class Mappers {
         }
     };
 
-    public static  final ElementMapper<Number> NUMBER = new ElementMapper<Number>() {
+    public static  final Mapper<Number> NUMBER = new Mapper<Number>() {
         @Override
         public Number value(Element element) throws SQLException {
             return element.getBigDecimal();
@@ -44,7 +44,7 @@ public class Mappers {
         }
     };
 
-    public static  final ElementMapper<Long> LONG = new ElementMapper<Long>() {
+    public static  final Mapper<Long> LONG = new Mapper<Long>() {
         @Override
         public Long value(Element element) throws SQLException {
             return element.getLong();
@@ -56,7 +56,7 @@ public class Mappers {
         }
     };
 
-    public static  final ElementMapper<String> STRING = new ElementMapper<String>() {
+    public static  final Mapper<String> STRING = new Mapper<String>() {
         @Override
         public String value(Element element) throws SQLException {
             return element.getString();
@@ -68,7 +68,7 @@ public class Mappers {
         }
     };
 
-    public static final ElementMapper<Integer> INTEGER = new ElementMapper<Integer>() {
+    public static final Mapper<Integer> INTEGER = new Mapper<Integer>() {
         @Override
         public Integer value(final Element element) throws SQLException {
             return element.getInt();

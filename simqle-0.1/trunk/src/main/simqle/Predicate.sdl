@@ -26,7 +26,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
 ;
 
 Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {
-            public ElementMapper<Boolean> getElementMapper() {
+            public Mapper<Boolean> getMapper() {
                 return Mappers.BOOLEAN;
             }
     }
@@ -59,22 +59,22 @@ public class AbstractComparisonPredicate implements ComparisonPredicate {}
 ;
 
 :: public <T> AbstractComparisonPredicate eq(Predicand<T> p, T v) {
-    return eq(p, DynamicParameter.create(p.getElementMapper(), v));
+    return eq(p, DynamicParameter.create(p.getMapper(), v));
 }
 :: public <T> AbstractComparisonPredicate ne(Predicand<T> p, T v) {
-    return ne(p, DynamicParameter.create(p.getElementMapper(), v));
+    return ne(p, DynamicParameter.create(p.getMapper(), v));
 }
 :: public <T> AbstractComparisonPredicate gt(Predicand<T> p, T v) {
-    return gt(p, DynamicParameter.create(p.getElementMapper(), v));
+    return gt(p, DynamicParameter.create(p.getMapper(), v));
 }
 :: public <T> AbstractComparisonPredicate ge(Predicand<T> p, T v) {
-    return ge(p, DynamicParameter.create(p.getElementMapper(), v));
+    return ge(p, DynamicParameter.create(p.getMapper(), v));
 }
 :: public <T> AbstractComparisonPredicate lt(Predicand<T> p, T v) {
-    return lt(p, DynamicParameter.create(p.getElementMapper(), v));
+    return lt(p, DynamicParameter.create(p.getMapper(), v));
 }
 :: public <T> AbstractComparisonPredicate le(Predicand<T> p, T v) {
-    return le(p, DynamicParameter.create(p.getElementMapper(), v));
+    return le(p, DynamicParameter.create(p.getMapper(), v));
 }
 
 

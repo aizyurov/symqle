@@ -23,15 +23,15 @@ public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 import org.simqle.SqlParameter;
 import org.simqle.SqlParameters;
 public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
-    private final ElementMapper<T> mapper;
+    private final Mapper<T> mapper;
     private final T value;
 
-    private DynamicParameter(final ElementMapper<T> mapper, T value) {
+    private DynamicParameter(final Mapper<T> mapper, T value) {
         this.mapper = mapper;
         this.value = value;
      }
 
-     public static <T> DynamicParameter<T> create(final ElementMapper<T> mapper, final T value) {
+     public static <T> DynamicParameter<T> create(final Mapper<T> mapper, final T value) {
         return new DynamicParameter<T>(mapper, value); 
      }
 
@@ -57,7 +57,7 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
             /**
             * Implement in derived classes
             */
-             public final ElementMapper<T> getElementMapper() {
+             public final Mapper<T> getMapper() {
                 return mapper;
              }
 
@@ -70,13 +70,13 @@ public interface ColumnReference<T> extends Scalar<T> : Sql {}
 
 import org.simqle.CustomSql;
 import org.simqle.SqlTerm;
-import org.simqle.ElementMapper;
+import org.simqle.Mapper;
 public class Column<T> implements ColumnReference<T>, ColumnName<T> {
     private final String columnName;
     private final TableOrView owner;
-    private final ElementMapper mapper;
+    private final Mapper mapper;
 
-    Column(final ElementMapper mapper, final String name,  final TableOrView owner)  {
+    Column(final Mapper mapper, final String name,  final TableOrView owner)  {
         this.mapper = mapper;
         this.columnName = name;
         this.owner = owner;
@@ -95,7 +95,7 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
         return new CustomSql(columnName);
     }
 
-    public final ElementMapper<T> getElementMapper() {
+    public final Mapper<T> getMapper() {
         return mapper;
     }
 }
@@ -142,9 +142,9 @@ ArgumentList ::=
 import org.simqle.CustomSql;
 public class SqlFunction<T> implements RoutineName<T> {
     private final String name;
-    private final ElementMapper<T> mapper;
+    private final Mapper<T> mapper;
 
-    private SqlFunction(final String name, final ElementMapper<T> mapper) {
+    private SqlFunction(final String name, final Mapper<T> mapper) {
         this.name = name;
         this.mapper = mapper;
     }
@@ -153,11 +153,11 @@ public class SqlFunction<T> implements RoutineName<T> {
         return new CustomSql(name);
     }
 
-    public ElementMapper<T> getElementMapper() {
+    public Mapper<T> getMapper() {
         return mapper;
     }
 
-    public static <T> SqlFunction<T> create(final String name, final ElementMapper<T> mapper) {
+    public static <T> SqlFunction<T> create(final String name, final Mapper<T> mapper) {
         return new SqlFunction<T>(name, mapper);
     }
 
@@ -199,8 +199,8 @@ public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
 
 <T> SearchedWhenClause<T> ::=
     WHEN cond:BooleanExpression THEN e:ValueExpression<T> :: public AbstractSearchedWhenClause<T> then {
-        private final ElementMapper<T> mapper = e.getElementMapper();
-        public final ElementMapper<T> getElementMapper() {
+        private final Mapper<T> mapper = e.getMapper();
+        public final Mapper<T> getMapper() {
             return mapper;
         }
     }

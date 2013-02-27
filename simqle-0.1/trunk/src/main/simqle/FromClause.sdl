@@ -54,7 +54,7 @@ public interface TableName : Sql {
 
 # TableOrView implements TableReference by having a TableReference inside
 import org.simqle.CustomSql;
-import org.simqle.ElementMapper;
+import org.simqle.Mapper;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.HashSet;
@@ -76,7 +76,7 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
         return name;
     }
 
-    public <T> Column<T> defineColumn(final ElementMapper<T> mapper, final String name) {
+    public <T> Column<T> defineColumn(final Mapper<T> mapper, final String name) {
         return new Column(mapper, name, this);
     }
 

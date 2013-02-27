@@ -128,7 +128,7 @@ public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElemen
     }
 
 :: public <T> SetClause set(final ColumnName<T> column, final T value) {
-    return setIgnoreType(column, DynamicParameter.create(column.getElementMapper(), value));
+    return setIgnoreType(column, DynamicParameter.create(column.getMapper(), value));
 }
 
 SetClause ::=

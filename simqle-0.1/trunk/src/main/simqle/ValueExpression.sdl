@@ -19,7 +19,7 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
 
 # see BooleanValueExpression.sdl
 ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpression<Boolean> asValue {
-                public ElementMapper<Boolean> getElementMapper() {
+                public Mapper<Boolean> getMapper() {
                     return Mappers.BOOLEAN;
                 }
     }
@@ -39,7 +39,7 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
 StringExpression<String> ::=
     s:StringExpression<?> CONCAT e:ValueExpressionPrimary<?>
         :: public AbstractStringExpression<String> concat {
-                public ElementMapper<String> getElementMapper() {
+                public Mapper<String> getMapper() {
                     return Mappers.STRING;
                 }
         }

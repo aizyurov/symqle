@@ -11,14 +11,14 @@ public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 NumericExpression<Number> ::=
     e:NumericExpression<?> PLUS t:Term<?>
          :: public AbstractNumericExpression<Number> plus {
-            public ElementMapper<Number> getElementMapper() {
+            public Mapper<Number> getMapper() {
                     return Mappers.NUMBER;
             }
          }
 |
     e:NumericExpression<?> MINUS t:Term<?>
          :: public AbstractNumericExpression<Number> minus {
-            public ElementMapper<Number> getElementMapper() {
+            public Mapper<Number> getMapper() {
                     return Mappers.NUMBER;
             }
          }
@@ -43,14 +43,14 @@ public class AbstractTerm<T> implements Term<T> {}
 Term<Number> ::=
     t:Term<?> ASTERISK f:Factor<?>
         :: public AbstractTerm<Number> mult {
-            public ElementMapper<Number> getElementMapper() {
+            public Mapper<Number> getMapper() {
                     return Mappers.NUMBER;
             }
         }
 |
     t:Term<?> SOLIDUS f:Factor<?>
         :: public AbstractTerm<Number> div {
-            public ElementMapper<Number> getElementMapper() {
+            public Mapper<Number> getMapper() {
                     return Mappers.NUMBER;
             }
         }

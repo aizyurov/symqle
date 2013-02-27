@@ -7,7 +7,7 @@ import java.sql.SQLException;
  * @author lvovich
  * @param <T> the type of extracted value
  */
-public interface ElementMapper<T> {
+public interface Mapper<T> {
     /**
      * Extracts value from an Element.
      * @param element the element to extract value from

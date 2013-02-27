@@ -129,7 +129,7 @@ public class GenericDialect implements Dialect {
 }
 
 
-import org.simqle.ElementMapper;
+import org.simqle.Mapper;
 
 /**
  * Scalar corresponds to one element of a tuple.
@@ -140,6 +140,6 @@ import org.simqle.ElementMapper;
  */
 public interface Scalar<T> {
 
-    ElementMapper<T> getElementMapper();
+    Mapper<T> getMapper();
 
 }
