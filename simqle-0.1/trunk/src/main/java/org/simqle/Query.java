@@ -1,7 +1,7 @@
 package org.simqle;
 
 /**
- * This interface extends Sql and DataExtractor<JavaType>.
+ * This interface extends Sql and RowMapper<JavaType>.
  * Instances of this interface are associated with Sql syntax elements, which can appear in
  * SELECT clause. These elements provide Query, which can construct objects of JavaType class
  * from the values returned in result set.
@@ -9,5 +9,5 @@ package org.simqle;
  * @version 0.1
  * @param <JavaType> the type of associated Java objects
  */
-public interface Query<JavaType> extends Sql, DataExtractor<JavaType> {
+public interface Query<JavaType> extends Sql, RowMapper<JavaType> {
 }

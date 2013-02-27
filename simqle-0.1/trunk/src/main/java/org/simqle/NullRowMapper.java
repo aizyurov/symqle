@@ -7,7 +7,7 @@ package org.simqle;
  * Time: 12:14
  * To change this template use File | Settings | File Templates.
  */
-public class NullDataExtractor<T> implements DataExtractor<T> {
+public class NullRowMapper<T> implements RowMapper<T> {
     @Override
     public T extract(final Row row) {
         // must never get here

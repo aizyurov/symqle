@@ -8,7 +8,7 @@ import java.sql.SQLException;
  * @author Alexander Izyurov
  * @param <JavaType> the type of associated Java objects
   */
-public interface DataExtractor<JavaType> {
+public interface RowMapper<JavaType> {
     /**
      * Creates a JAvaType object frm Row data.
      * @param row the Row providing the data

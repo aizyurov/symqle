@@ -19,7 +19,7 @@ import org.simqle.Pair;
             public Query<Pair<T, U>> z$create$SelectList(final SqlContext context) {
                 final Query<T> query1 = sl1.z$create$SelectList(context);
                 final Query<U> query2 = sl2.z$create$SelectList(context);
-                DataExtractor<Pair<T, U>> extractor = new DataExtractor<Pair<T, U>>() {
+                RowMapper<Pair<T, U>> extractor = new RowMapper<Pair<T, U>>() {
                     @Override
                     public Pair<T, U> extract(Row row) throws SQLException {
                         return Pair.of(query1.extract(row), query2.extract(row));
@@ -45,11 +45,11 @@ public interface Identifier : Sql {}
                 final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
                 final Sql veSql = ve.z$create$ValueExpression(context);
                 if (nameProvider == null) {
-                    return new ComplexQuery<T>(new NullDataExtractor<T>(),
+                    return new ComplexQuery<T>(new NullRowMapper<T>(),
                     context.get(Dialect.class).SelectSublist_is_ValueExpression(veSql));
                 } else {
                     final String name = nameProvider.getUniqueName();
-                    return new ComplexQuery<T>(new DataExtractor<T>(){
+                    return new ComplexQuery<T>(new RowMapper<T>(){
                                 @Override
                                 public T extract(Row row) throws SQLException {
                                     return getElementMapper().value(row.getValue(name));

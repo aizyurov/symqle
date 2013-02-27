@@ -10,10 +10,10 @@ import java.sql.SQLException;
  * To change this template use File | Settings | File Templates.
  */
 public class ComplexQuery<T> implements Query<T> {
-    final DataExtractor<T> extractor;
+    final RowMapper<T> extractor;
     final Sql sql;
 
-    public ComplexQuery(DataExtractor<T> rowMapper, Sql sql) {
+    public ComplexQuery(RowMapper<T> rowMapper, Sql sql) {
         this.extractor = rowMapper;
         this.sql = sql;
     }

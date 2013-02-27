@@ -15,7 +15,7 @@ import static org.easymock.EasyMock.verify;
 public class NullDataExtractorTest extends TestCase {
 
     public void testThrowingException() throws Exception {
-        final DataExtractor<Long> extractor = new NullDataExtractor<Long>();
+        final RowMapper<Long> extractor = new NullRowMapper<Long>();
         final Row row = createMock(Row.class);
         replay(row);
         try {
