@@ -40,7 +40,7 @@ public interface JoinedTable : Sql {}
 
 public interface TablePrimary : Sql {}
 
-TablePrimary ::= t:TableName AS id:Identifier :: protected TablePrimary createTablePrimary {}
+TablePrimary ::= t:TableName AS id:Identifier
 ;
 
 JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable leftJoin {}
@@ -143,9 +143,8 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
             * @return sql conforming to <code>this</code> syntax
             */
             public Sql z$create$TablePrimary(SqlContext context) {
-                return Simqle.get().createTablePrimary(this,
-                        new DefinedIdentifier(context.get(TableRegistry.class).getCorrelationName(this)))
-                        .z$create$TablePrimary(context);
+                return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$create$TableName(context),
+                        new CustomSql(context.get(TableRegistry.class).getCorrelationName(this)));
             }
             /**
             * Creates an Sql representing <code>this</code>

@@ -65,33 +65,34 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
 
 public interface ColumnReference<T> extends Scalar<T> : Sql {}
 
-import org.simqle.CompositeSql;
+<T> ColumnReference<T> ::= tableRef:Identifier PERIOD columnName:ColumnName<T>
+;
+
+import org.simqle.CustomSql;
 import org.simqle.SqlTerm;
 import org.simqle.ElementMapper;
 public class Column<T> implements ColumnReference<T>, ColumnName<T> {
-    private final Identifier columnName;
+    private final String columnName;
     private final TableOrView owner;
     private final ElementMapper mapper;
 
     Column(final ElementMapper mapper, final String name,  final TableOrView owner)  {
         this.mapper = mapper;
-        this.columnName = new DefinedIdentifier(name);
+        this.columnName = name;
         this.owner = owner;
      }
 
     public Sql z$create$ColumnReference(SqlContext context) {
         final String correlationName = context.get(TableRegistry.class).getCorrelationName(owner);
-        return new CompositeSql(new DefinedIdentifier(correlationName).z$create$Identifier(context),
-                            SqlTerm.PERIOD,
-                            columnName.z$create$Identifier(context));
-
+        return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new CustomSql(correlationName),
+                z$create$ColumnName(context));
     }
 
     public Sql z$create$ColumnName(final SqlContext context) {
         // make sure that owner is valid in the context
         // by getting correlation name; the result is not used
         context.get(TableRegistry.class).getCorrelationName(owner);
-        return columnName.z$create$Identifier(context);
+        return new CustomSql(columnName);
     }
 
     public final ElementMapper<T> getElementMapper() {
