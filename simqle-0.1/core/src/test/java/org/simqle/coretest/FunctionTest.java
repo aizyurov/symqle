@@ -451,15 +451,16 @@ public class FunctionTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        abs(person.id).scroll(datasource, new Callback<Long, SQLException>() {
+        abs(person.id).scroll(datasource, new Callback<Long>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Long aLong) throws SQLException, BreakException {
+            public boolean iterate(final Long aLong) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(123L, aLong.longValue());
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);

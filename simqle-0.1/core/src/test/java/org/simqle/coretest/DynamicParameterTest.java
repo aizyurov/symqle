@@ -520,10 +520,11 @@ public class DynamicParameterTest extends SqlTestCase {
         // dataSource should never be called
         org.easymock.EasyMock.replay(dataSource);
         try {
-            param.scroll(dataSource, new Callback<Long, SQLException>() {
+            param.scroll(dataSource, new Callback<Long>() {
                 @Override
-                public void iterate(final Long aLong) throws SQLException, BreakException {
+                public boolean iterate(final Long aLong) {
                     fail("Must not get here");
+                    return true;
                 }
             });
             fail ("IllegalStateException expected");

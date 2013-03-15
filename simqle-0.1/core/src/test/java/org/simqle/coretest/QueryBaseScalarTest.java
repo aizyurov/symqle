@@ -163,15 +163,16 @@ public class QueryBaseScalarTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.id.all().scroll(datasource, new Callback<Long, SQLException>() {
+        person.id.all().scroll(datasource, new Callback<Long>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Long aNumber) throws SQLException, BreakException {
+            public boolean iterate(final Long aNumber) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(123L, aNumber.longValue());
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);

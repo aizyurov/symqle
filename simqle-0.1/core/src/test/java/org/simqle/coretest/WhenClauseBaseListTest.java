@@ -391,15 +391,16 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        whenClause.scroll(datasource, new Callback<String, SQLException>() {
+        whenClause.scroll(datasource, new Callback<String>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final String aString) throws SQLException, BreakException {
+            public boolean iterate(final String aString) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals("John", aString);
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);

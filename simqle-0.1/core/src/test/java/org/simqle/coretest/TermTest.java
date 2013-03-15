@@ -364,15 +364,16 @@ public class TermTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.id.mult(two).scroll(datasource, new Callback<Number, SQLException>() {
+        person.id.mult(two).scroll(datasource, new Callback<Number>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Number aNumber) throws SQLException, BreakException {
+            public boolean iterate(final Number aNumber) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(123L, aNumber.longValue());
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);

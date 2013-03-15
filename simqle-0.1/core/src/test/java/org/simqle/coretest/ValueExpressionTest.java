@@ -377,13 +377,14 @@ public class ValueExpressionTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        valueExpression.scroll(datasource, new Callback<Boolean, SQLException>() {
+        valueExpression.scroll(datasource, new Callback<Boolean>() {
             private int callCount;
 
             @Override
-            public void iterate(final Boolean aBoolean) throws SQLException, BreakException {
+            public boolean iterate(final Boolean aBoolean) {
                 assertEquals(0, callCount++);
                 assertEquals(Boolean.TRUE, aBoolean);
+                return true;
             }
         });
         verify(datasource, connection, statement, resultSet);

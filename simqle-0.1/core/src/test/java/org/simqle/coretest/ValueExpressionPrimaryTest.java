@@ -405,10 +405,11 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         final DataSource datasource = createMock(DataSource.class);
         replay(datasource);
         try {
-            person.id.where(person.name.eq(employee.name)).queryValue().scroll(datasource, new Callback<Long, SQLException>() {
+            person.id.where(person.name.eq(employee.name)).queryValue().scroll(datasource, new Callback<Long>() {
                 @Override
-                public void iterate(final Long aLong) throws SQLException, BreakException {
+                public boolean iterate(final Long aLong) {
                     fail("must not get here");
+                    return true;
                 }
             });
         } catch (IllegalStateException e) {

@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -51,10 +50,11 @@ public class QueryTest extends SqlTestCase {
         statement.close();
         connection.close();
         replay(datasource, connection, statement, resultSet);
-        id.scroll(datasource, new Callback<Long, SQLException>() {
+        id.scroll(datasource, new Callback<Long>() {
             @Override
-            public void iterate(Long aLong) throws SQLException, BreakException {
+            public boolean iterate(Long aLong) {
                 fail("Must not be called");
+                return true;
             }
         });
         verify(datasource, statement, connection, resultSet);
@@ -75,17 +75,18 @@ public class QueryTest extends SqlTestCase {
         statement.close();
         connection.close();
         replay(datasource, connection, statement, resultSet);
-        id.scroll(datasource, new Callback<Long, SQLException>() {
+        id.scroll(datasource, new Callback<Long>() {
             private int callCount = 0;
 
             @Override
-            public void iterate(Long aLong) throws SQLException, BreakException {
+            public boolean iterate(Long aLong) {
                 if (callCount > 0) {
                     fail("Must not get here");
                 } else {
                     callCount++;
                     assertEquals(123, aLong.longValue());
                 }
+                return true;
             }
         });
         verify(datasource, statement, connection, resultSet);
@@ -108,20 +109,21 @@ public class QueryTest extends SqlTestCase {
         statement.close();
         connection.close();
         replay(datasource, connection, statement, resultSet);
-        int callNum = id.scroll(datasource, new Callback<Long, SQLException>() {
+        int callNum = id.scroll(datasource, new Callback<Long>() {
             private int callCount = 0;
             @Override
-            public void iterate(Long aLong) throws SQLException, BreakException {
+            public boolean iterate(Long aLong) {
                 if (callCount > 0) {
                     assertEquals(254, aLong.longValue());
-                    throw new BreakException();
+                    return false;
                 } else {
                     callCount ++;
                     assertEquals(123, aLong.longValue());
+                    return true;
                 }
             }
         });
-        assertEquals(1, callNum);
+        assertEquals(2, callNum);
         verify(datasource, statement, connection, resultSet);
     }
 

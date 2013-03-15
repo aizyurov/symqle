@@ -20,7 +20,7 @@ import org.simqle.jdbc.StatementParameters;
 import org.simqle.jdbc.StatementOption;
 :: public <T> int scroll(final SelectStatement<T> statement,
                           final DataSource datasource,
-                          final Callback<T, SQLException> callback,
+                          final Callback<T> callback,
                           final StatementOption... options
                           ) throws SQLException {
      final Query<T> query = prepareQuery(statement);
@@ -37,11 +37,9 @@ import org.simqle.jdbc.StatementOption;
              try {
                 int count = 0;
                  while (resultSet.next()) {
-                     try {
-                         callback.iterate(query.extract(row));
-                         count++;
-                     } catch (Callback.BreakException e) {
-                         break;
+                     count++;
+                     if (!callback.iterate(query.extract(row))) {
+                        break;
                      }
                  }
                  return count;
@@ -66,9 +64,10 @@ public <T> List<T> list(final SelectStatement<T> statement,
                         ) throws SQLException {
         final List<T> result = new LinkedList<T>();
         scroll(statement,  datasource,
-            new Callback<T, SQLException>() {
-                public void iterate(T arg) {
+            new Callback<T>() {
+                public boolean iterate(T arg) {
                     result.add(arg);
+                    return true;
                 }
              }, options);
         return result;

@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -168,15 +167,16 @@ public class PairTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        selectList.scroll(datasource, new Callback<Pair<Long, String>, SQLException>() {
+        selectList.scroll(datasource, new Callback<Pair<Long, String>>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Pair<Long, String> pair) throws SQLException, BreakException {
+            public boolean iterate(final Pair<Long, String> pair) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(Pair.of(123L, "John"), pair);
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);
@@ -229,15 +229,16 @@ public class PairTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        queryBase.scroll(datasource, new Callback<Pair<Long, String>, SQLException>() {
+        queryBase.scroll(datasource, new Callback<Pair<Long, String>>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Pair<Long, String> pair) throws SQLException, BreakException {
+            public boolean iterate(final Pair<Long, String> pair) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(Pair.of(123L, "John"), pair);
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);
@@ -290,15 +291,16 @@ public class PairTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        queryExpression.scroll(datasource, new Callback<Pair<Long, String>, SQLException>() {
+        queryExpression.scroll(datasource, new Callback<Pair<Long, String>>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Pair<Long, String> pair) throws SQLException, BreakException {
+            public boolean iterate(final Pair<Long, String> pair) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(Pair.of(123L, "John"), pair);
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);

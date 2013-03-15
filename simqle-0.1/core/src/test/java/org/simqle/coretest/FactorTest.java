@@ -366,15 +366,16 @@ public class FactorTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        person.id.opposite().scroll(datasource, new Callback<Long, SQLException>() {
+        person.id.opposite().scroll(datasource, new Callback<Long>() {
             int callCount = 0;
 
             @Override
-            public void iterate(final Long aLong) throws SQLException, BreakException {
+            public boolean iterate(final Long aLong) {
                 if (callCount++ != 0) {
                     fail("One call expected, actually " + callCount);
                 }
                 assertEquals(Long.valueOf(123), aLong);
+                return true;
             }
         });
         verify(datasource, connection,  statement, resultSet);
