@@ -17,14 +17,19 @@ import org.simqle.Callback;
 import org.simqle.Row;
 import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
+import org.simqle.jdbc.StatementOption;
 :: public <T> int scroll(final SelectStatement<T> statement,
                           final DataSource datasource,
-                          final Callback<T, SQLException> callback
+                          final Callback<T, SQLException> callback,
+                          final StatementOption... options
                           ) throws SQLException {
      final Query<T> query = prepareQuery(statement);
      final Connection connection = datasource.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
+         for (final StatementOption option : options) {
+            option.apply(preparedStatement);
+         }
          try {
              query.setParameters(new StatementParameters(preparedStatement));
              final ResultSet resultSet = preparedStatement.executeQuery();
@@ -56,14 +61,16 @@ import java.sql.SQLException;
 import java.util.List;
 ::
 public <T> List<T> list(final SelectStatement<T> statement,
-                          final DataSource datasource) throws SQLException {
+                          final DataSource datasource,
+                          final StatementOption... options
+                        ) throws SQLException {
         final List<T> result = new LinkedList<T>();
         scroll(statement,  datasource,
             new Callback<T, SQLException>() {
                 public void iterate(T arg) {
                     result.add(arg);
                 }
-             });
+             }, options);
         return result;
     }
 

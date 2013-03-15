@@ -1,6 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Mappers;
+import org.simqle.jdbc.StatementOption;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.SqlFunction;
@@ -11,6 +12,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -477,6 +480,38 @@ public class ColumnTest extends SqlTestCase {
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
+    }
+
+    public void testOptions() throws Exception {
+        final Column<Long> column = person.id;
+        final String queryString = column.show();
+        final DataSource datasource = createMock(DataSource.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setFetchSize(10);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        final List<Long> list = column.list(datasource, new StatementOption() {
+            @Override
+            public void apply(final Statement statement) throws SQLException {
+                statement.setFetchSize(10);
+            }
+        });
+        assertEquals(1, list.size());
+        assertEquals(123L, list.get(0).longValue());
+        verify(datasource, connection, statement, resultSet);
+
     }
 
 
