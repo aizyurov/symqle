@@ -8,9 +8,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
   <groupId>org.simqle</groupId>
-  <artifactId>simqle</artifactId>
+  <artifactId>simqle-core</artifactId>
   <packaging>jar</packaging>
-  <version>0.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <name>simqle</name>
   <url>http://simqle.org</url>
 

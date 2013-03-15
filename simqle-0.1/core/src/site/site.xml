@@ -1,0 +1,10 @@
+<project name="common-util-extras">
+  <body>
+    <menu name="Specifications">
+      <!--item name="Release notes" href="release-notes.html" /-->
+      <item name="Javadoc" href="apidocs/index.html" />
+      <!--item name="Wiki" href="http://wiki.yandex-team.ru/AleksandrIzjurov/collections"/-->
+    </menu>
+    <menu ref="reports" />
+  </body>
+</project>
