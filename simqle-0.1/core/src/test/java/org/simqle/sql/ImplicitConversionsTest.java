@@ -88,6 +88,27 @@ public class ImplicitConversionsTest extends TestCase {
         assertEquals(Mappers.LONG, elseClause.getMapper());
     }
 
+    public void testQueryPrimary() throws Exception {
+        final Simqle simqle = Simqle.get();
+        final AbstractAggregateQuerySpecification<Integer> aggr = person.id.count().where(person.name.isNull());
+        final QueryPrimary<Integer> queryPrimary = simqle.z$QueryPrimary$from$AggregateQuerySpecification(aggr);
+        assertEquals(Mappers.INTEGER, queryPrimary.getMapper());
+    }
+
+    public void testAggregateQuerySpecification() throws Exception {
+        final Simqle simqle = Simqle.get();
+        final AbstractAggregateFunction<Integer> count = person.id.count();
+        final AggregateQuerySpecification<Integer> querySpecification = simqle.z$AggregateQuerySpecification$from$AggregateQueryBase(count);
+        assertEquals(Mappers.INTEGER,  querySpecification.getMapper());
+    }
+
+    public void testAggregateQueryBase() throws Exception {
+        final Simqle simqle = Simqle.get();
+        final AbstractAggregateFunction<Integer> count = person.id.count();
+        final AggregateQueryBase<Integer> aggregateQueryBase = simqle.z$AggregateQueryBase$from$AggregateSelectSublist(count);
+        assertEquals(Mappers.INTEGER, aggregateQueryBase.getMapper());
+    }
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");
