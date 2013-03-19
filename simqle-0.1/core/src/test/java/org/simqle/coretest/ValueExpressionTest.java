@@ -11,7 +11,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -332,6 +331,38 @@ public class ValueExpressionTest extends SqlTestCase {
         final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike("true")).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick NOT LIKE ?", sql);
     }
+    
+    public void testCount() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().count().show();
+        assertSimilar("SELECT COUNT(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT T0.name = T0.nick) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testSum() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().sum().show();
+        assertSimilar("SELECT SUM(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testAvg() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().avg().show();
+        assertSimilar("SELECT AVG(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testMin() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().min().show();
+        assertSimilar("SELECT MIN(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testMax() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().max().show();
+        assertSimilar("SELECT MAX(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
+    }
+    
+    
 
     public void testList() throws Exception {
         final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();

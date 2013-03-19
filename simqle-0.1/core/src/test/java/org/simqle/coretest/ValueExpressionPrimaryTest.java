@@ -11,7 +11,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
@@ -377,6 +376,38 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
     }
+
+    public void testCount() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().count().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT COUNT((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().countDistinct().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT COUNT(DISTINCT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+    public void testAvg() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().avg().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT AVG((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+    public void testSum() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().sum().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT SUM((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+    public void testMin() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().min().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT MIN((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+    public void testMax() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().max().where(employee.name.isNotNull()).show();
+        assertSimilar("SELECT MAX((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
+    }
+
+
 
     public void testQuery() throws Exception {
         final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.eq(employee.name)).queryValue().where(employee.name.isNotNull());

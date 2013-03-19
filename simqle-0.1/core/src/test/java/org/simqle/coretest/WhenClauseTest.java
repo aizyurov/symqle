@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -352,8 +351,35 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END NOT LIKE ?", sql);
     }
 
+    public void testCount() throws Exception {
+        final String sql = person.age.gt(20L).then(person.age).count().show();
+        assertSimilar("SELECT COUNT(CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
+    }
 
+    public void testCountDistinct() throws Exception {
+        final String sql = person.age.gt(20L).then(person.age).countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
+    }
 
+    public void testAvg() throws Exception {
+        final String sql = person.age.gt(20L).then(person.age).avg().show();
+        assertSimilar("SELECT AVG(CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSum() throws Exception {
+        final String sql = person.age.gt(20L).then(person.age).sum().show();
+        assertSimilar("SELECT SUM(CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMin() throws Exception {
+        final String sql = person.age.gt(20L).then(person.age).min().show();
+        assertSimilar("SELECT MIN(CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMax() throws Exception {
+        final String sql = person.age.gt(20L).then(person.age).max().show();
+        assertSimilar("SELECT MAX(CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
+    }
 
     public void testList() throws Exception {
         final AbstractSearchedWhenClause<String> whenClause = person.age.gt(20L).then(person.name);
