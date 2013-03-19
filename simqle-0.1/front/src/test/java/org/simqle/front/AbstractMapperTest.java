@@ -3,6 +3,7 @@ package org.simqle.front;
 import junit.framework.TestCase;
 import org.simqle.Mappers;
 import org.simqle.Row;
+import org.simqle.RowMapper;
 import org.simqle.sql.Column;
 import org.simqle.sql.TableOrView;
 
@@ -26,6 +27,47 @@ public class AbstractMapperTest extends TestCase {
         final String queryString = mapper.show();
         System.out.println(queryString);
         assertEquals("SELECT T1.id AS C1, T1.name AS C2 FROM person AS T1", queryString);
+    }
+
+    public void testNoMappers() {
+        final EmptyPersonMapper mapper = new EmptyPersonMapper();
+        try {
+            final String sql = mapper.show();
+            fail("IllegalStateException expected but returned: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("No mappings defined", e.getMessage());
+        }
+    }
+
+    public void testMapFromCreate() throws Exception {
+        final Person person = new Person();
+        final MapCallFromCreateMapper mapper = new MapCallFromCreateMapper(person);
+        final String queryString = mapper.show();
+        final DataSource datasource = createMock(DataSource.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        // next 4 lines are not called because create() throws an exception
+//        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+//        expect(resultSet.wasNull()).andReturn(false);
+//        expect(resultSet.getString(matches("C[0-9]"))).andReturn("Alex");
+//        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        try {
+            final List<PersonDTO> list = mapper.list(datasource);
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            // Ok
+        }
+        verify(datasource, connection, statement, resultSet);
     }
 
     public void testSimpleMapper() throws Exception {
@@ -69,19 +111,41 @@ public class AbstractMapperTest extends TestCase {
 
     private static class PersonMapper extends AbstractMapper<PersonDTO> {
 
-        private final Key<Long> idKey;
-        private final Key<String> nameKey;
+        private final RowMapper<Long> idKey;
+        private final RowMapper<String> nameKey;
 
         public PersonMapper(final Person person) {
-            idKey = key(person.id);
-            nameKey = key(person.name);
+            idKey = map(person.id);
+            nameKey = map(person.name);
         }
 
 
         @Override
         protected PersonDTO create(final Row row) throws SQLException {
-            return new PersonDTO(idKey.value(row), nameKey.value(row));
+            return new PersonDTO(idKey.extract(row), nameKey.extract(row));
         }
+    }
+
+    private static class EmptyPersonMapper extends AbstractMapper<PersonDTO> {
+        @Override
+        protected PersonDTO create(final Row row) throws SQLException {
+            return null;
+        }
+    }
+
+    private static class MapCallFromCreateMapper extends AbstractMapper<PersonDTO> {
+        private final Person person;
+
+        private MapCallFromCreateMapper(final Person person) {
+            this.person = person;
+            map(person.id);
+        }
+
+        @Override
+        protected PersonDTO create(final Row row) throws SQLException {
+            return new PersonDTO(map(person.id).extract(row), map(person.name).extract(row));
+        }
+
     }
 
     private static class Person extends TableOrView {
