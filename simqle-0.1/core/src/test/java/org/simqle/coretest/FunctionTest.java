@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -406,6 +405,36 @@ public class FunctionTest extends SqlTestCase {
     public void testNotLikeString() throws Exception {
         final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).notLike("J%")).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) NOT LIKE ?", sql);
+    }
+
+    public void testCount() throws Exception {
+        final String sql = abs(person.id).count().show();
+        assertSimilar("SELECT COUNT(abs(T1.id)) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final String sql = abs(person.id).countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT abs(T1.id)) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testAvg() throws Exception {
+        final String sql = abs(person.id).avg().show();
+        assertSimilar("SELECT AVG(abs(T1.id)) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testSum() throws Exception {
+        final String sql = abs(person.id).sum().show();
+        assertSimilar("SELECT SUM(abs(T1.id)) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testMin() throws Exception {
+        final String sql = abs(person.id).min().show();
+        assertSimilar("SELECT MIN(abs(T1.id)) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testMax() throws Exception {
+        final String sql = abs(person.id).max().show();
+        assertSimilar("SELECT MAX(abs(T1.id)) AS C1 FROM person AS T1", sql);
     }
 
     public void testList() throws Exception {

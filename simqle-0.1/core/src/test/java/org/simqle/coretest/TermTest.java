@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -345,6 +344,36 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? NOT LIKE ?", sql);
     }
 
+    public void testCount() throws Exception {
+        final String sql = person.id.mult(1).count().show();
+        assertSimilar("SELECT COUNT(T1.id * ?) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final String sql = person.id.mult(1).countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT T1.id * ?) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testSum() throws Exception {
+        final String sql = person.id.mult(1).sum().show();
+        assertSimilar("SELECT SUM(T1.id * ?) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testAvg() throws Exception {
+        final String sql = person.id.mult(1).avg().show();
+        assertSimilar("SELECT AVG(T1.id * ?) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testMin() throws Exception {
+        final String sql = person.id.mult(1).min().show();
+        assertSimilar("SELECT MIN(T1.id * ?) AS C1 FROM person AS T1", sql);
+    }
+    
+    public void testMax() throws Exception {
+        final String sql = person.id.mult(1).max().show();
+        assertSimilar("SELECT MAX(T1.id * ?) AS C1 FROM person AS T1", sql);
+    }
+    
 
     public void testScroll() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
