@@ -30,6 +30,8 @@ import org.simqle.Pair;
     }
 ;
 
+
+
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
 
 public interface Identifier : Sql {}
@@ -62,4 +64,32 @@ public interface Identifier : Sql {}
     ve:ValueExpression<T> AS id:Identifier
 ;
 
+public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
 
+<T> AggregateSelectSublist<T> ::= aggr:AggregateFunction<T> ::
+    implicit {
+            /**
+            * Creates a Query representing <code>this</code>
+            * @param context the Sql construction context
+            * @return query conforming to <code>this</code> syntax
+            */
+            public Query<T> z$create$AggregateSelectSublist(final SqlContext context) {
+                final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                final Sql aggrSql = aggr.z$create$AggregateFunction(context);
+                if (nameProvider == null) {
+                    return new ComplexQuery<T>(new NullRowMapper<T>(),
+                    context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction(aggrSql));
+                } else {
+                    final String name = nameProvider.getUniqueName();
+                    return new ComplexQuery<T>(new RowMapper<T>(){
+                                @Override
+                                public T extract(Row row) throws SQLException {
+                                    return getMapper().value(row.getValue(name));
+                                }
+                            }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new CustomSql(name)));
+                }
+            }
+    }
+|
+    aggr:AggregateFunction<T> AS id:Identifier
+;

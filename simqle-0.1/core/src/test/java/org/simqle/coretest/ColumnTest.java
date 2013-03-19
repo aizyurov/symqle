@@ -431,6 +431,36 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testCount() throws Exception {
+        final String sql = person.id.count().show();
+        assertSimilar("SELECT COUNT(T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final String sql = person.parentId.countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT T0.parent_id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testAvg() throws Exception {
+        final String sql = person.age.avg().show();
+        assertSimilar("SELECT AVG(T0.age) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSum() throws Exception {
+        final String sql = person.age.sum().show();
+        assertSimilar("SELECT SUM(T0.age) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMin() throws Exception {
+        final String sql = person.age.min().show();
+        assertSimilar("SELECT MIN(T0.age) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMax() throws Exception {
+        final String sql = person.age.max().show();
+        assertSimilar("SELECT MAX(T0.age) AS C0 FROM person AS T0", sql);
+    }
+
     public void testJoin() throws Exception {
         final Person person1 = new Person();
         final Person person2 = new Person();

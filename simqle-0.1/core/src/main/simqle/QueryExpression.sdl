@@ -167,6 +167,8 @@ public interface QueryPrimary<T> extends Scalar<T>  : Query<T> {}
 <T> QueryPrimary<T> ::=
     qs:QuerySpecification<T> :: implicit {}
 |
+    aqs:AggregateQuerySpecification<T> :: implicit {}
+|
     LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN :: implicit {}
 ;
 
@@ -181,5 +183,18 @@ public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
     qb:QueryBaseScalar<T> wc:WhereClause ::
          public AbstractQuerySpecification<T> where {}
 ;
+
+public interface AggregateQuerySpecification<T> extends Scalar<T> : Query<T> {}
+
+public class AbstractAggregateQuerySpecification<T> implements AggregateQuerySpecification<T> {}
+
+<T> AggregateQuerySpecification<T> ::=
+    qb:AggregateQueryBase<T> :: implicit {}
+|
+    qb:AggregateQueryBase<T> wc:WhereClause ::
+         public AbstractAggregateQuerySpecification<T> where {}
+;
+
+
 
 

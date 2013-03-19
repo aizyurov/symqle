@@ -9,7 +9,6 @@ import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -457,6 +456,46 @@ public class DynamicParameterTest extends SqlTestCase {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
     }
+
+    public void testCount() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.count().where(person.id.isNotNull()).show();
+        assertSimilar("SELECT COUNT(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.countDistinct().where(person.id.isNotNull()).show();
+        assertSimilar("SELECT COUNT(DISTINCT ?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
+    }
+
+    public void testAvg() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.avg().where(person.id.isNotNull()).show();
+        assertSimilar("SELECT AVG(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
+    }
+
+    public void testSum() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.sum().where(person.id.isNotNull()).show();
+        assertSimilar("SELECT SUM(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
+    }
+
+    public void testMin() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.min().where(person.id.isNotNull()).show();
+        assertSimilar("SELECT MIN(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
+    }
+
+    public void testMax() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.max().where(person.id.isNotNull()).show();
+        assertSimilar("SELECT MAX(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
+    }
+
+
+
+
 
     public void testForUpdate() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);

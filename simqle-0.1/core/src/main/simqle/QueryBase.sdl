@@ -45,7 +45,7 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 # see SelectList.sdl, FromClause.sdl
 
 <T> QueryBaseScalar<T> ::=
-    SELECT sl:SelectSublist<T> fc:FromClause :: protected AbstractQueryBaseScalar<T> from {}
+    SELECT sl:SelectSublist<T> fc:FromClause :: protected QueryBaseScalar<T> from {}
 |
     SELECT ALL sl:SelectSublist<T> fc:FromClause ::
          protected AbstractQueryBaseScalar<T> all {
@@ -54,6 +54,12 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     SELECT DISTINCT sl:SelectSublist<T> fc:FromClause ::
          protected AbstractQueryBaseScalar<T> distinct {
          }
+;
+
+public interface AggregateQueryBase<T> extends Scalar<T> :  Query<T> {}
+
+<T> AggregateQueryBase ::=
+       SELECT aggr:AggregateSelectSublist<T> fc:FromClause :: protected AggregateQueryBase<T> selectAggr {}
 ;
 
 :: <T> QueryBaseScalar<T> implicit(final SelectSublist<T> sl) {
@@ -67,4 +73,8 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 
 :: public <T> AbstractQueryBaseScalar<T> distinct(final SelectSublist<T> sl) {
     return distinct(sl, new ImplicitFromClause());
+}
+
+:: <T> AggregateQueryBase<T> implicit(final AggregateSelectSublist<T> aggr) {
+    return selectAggr(aggr, new ImplicitFromClause());
 }

@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -320,6 +319,39 @@ public class FactorTest extends SqlTestCase {
         final String sql = person.id.where(person.id.opposite().notLike("12%")).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id NOT LIKE ?", sql);
     }
+
+    public void testCount() throws Exception {
+        final String sql = person.id.opposite().count().show();
+        assertSimilar("SELECT COUNT(- T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final String sql = person.id.opposite().countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT - T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testAvg() throws Exception {
+        final String sql = person.id.opposite().avg().show();
+        assertSimilar("SELECT AVG(- T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testSum() throws Exception {
+        final String sql = person.id.opposite().sum().show();
+        assertSimilar("SELECT SUM(- T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testMin() throws Exception {
+        final String sql = person.id.opposite().min().show();
+        assertSimilar("SELECT MIN(- T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testMax() throws Exception {
+        final String sql = person.id.opposite().max().show();
+        assertSimilar("SELECT MAX(- T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+
+
 
 
 
