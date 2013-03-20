@@ -53,6 +53,7 @@ public class Functions {
         return SqlFunction.create("CEIL", arg.getMapper()).apply(arg);
     }
 
+
     public static AbstractRoutineInvocation<Number> power(
             final ValueExpression<?> base, final ValueExpression<?> exponent) {
         return SqlFunction.create("POWER", Mappers.NUMBER).apply(base,  exponent);
