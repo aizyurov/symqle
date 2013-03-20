@@ -23,8 +23,16 @@ import org.simqle.jdbc.StatementOption;
                           final Callback<T> callback,
                           final StatementOption... options
                           ) throws SQLException {
-     final Query<T> query = prepareQuery(statement);
-     final Connection connection = datasource.getConnection();
+    return scroll(statement, new DialectDataSource(GenericDialect.get(), datasource), callback, options);
+}
+
+:: public <T> int scroll(final SelectStatement<T> statement,
+                          final DialectDataSource datasource,
+                          final Callback<T> callback,
+                          final StatementOption... options
+                          ) throws SQLException {
+     final Query<T> query = prepareQuery(statement, datasource.getDialect());
+     final Connection connection = datasource.getDataSource().getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
          for (final StatementOption option : options) {
@@ -74,18 +82,23 @@ public <T> List<T> list(final SelectStatement<T> statement,
     }
 
 :: public String show(final SelectStatement<?> statement) {
-     String sql = prepareQuery(statement).getSqlText();
+     String sql = prepareQuery(statement, GenericDialect.get()).getSqlText();
      return beautifySql(sql);
     }
 
-:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement) {
+:: public String show(final SelectStatement<?> statement, final Dialect dialect) {
+     String sql = prepareQuery(statement, dialect).getSqlText();
+     return beautifySql(sql);
+    }
+
+:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect) {
         final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
         // training: learn all tables participating in query
         {
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
-            context.set(Dialect.class, GenericDialect.get());
+            context.set(Dialect.class, dialect);
             tableRegistry.setTestMode(true);
             statement.z$create$SelectStatement(context);
         }
@@ -95,7 +108,7 @@ public <T> List<T> list(final SelectStatement<T> statement,
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
-            context.set(Dialect.class, GenericDialect.get());
+            context.set(Dialect.class, dialect);
             tableRegistry.setTestMode(false);
             query = statement.z$create$SelectStatement(context);
         }
@@ -171,4 +184,19 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 }
 
 
+public class DialectDataSource {
+    private final DataSource dataSource;
+    private final Dialect dialect;
 
+    public DialectDataSource(final Dialect dialect, final DataSource dataSource) {
+        this.dialect = dialect;
+        this.dataSource = dataSource;
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+    public Dialect getDialect() {
+        return dialect;
+    }
+}
