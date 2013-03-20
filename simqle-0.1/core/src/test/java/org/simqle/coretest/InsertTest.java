@@ -99,6 +99,22 @@ public class InsertTest extends SqlTestCase {
 
         assertEquals(2, update.execute(datasource));
 
+        verify(datasource, connection,  statement);
+
+        reset(datasource, connection,  statement);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(statementString)).andReturn(statement);
+        statement.setString(1, "John");
+        expect(statement.executeUpdate()).andReturn(2);
+        statement.close();
+        connection.close();
+        replay(datasource, connection, statement);
+
+        assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+
+        verify(datasource, connection, statement);
+
     }
 
     private static class Person extends Table {

@@ -20,15 +20,18 @@ import static org.easymock.EasyMock.*;
 public class DeleteTest extends SqlTestCase {
 
     public void testDeleteAll() throws Exception {
-        final String sql = person.delete().show();
+        final AbstractDeleteStatementBase deleteStatementBase = person.delete();
+        final String sql = deleteStatementBase.show();
         assertSimilar("DELETE FROM person", sql);
-        final String sql2 = person.delete().show(GenericDialect.get());
+        final String sql2 = deleteStatementBase.show(GenericDialect.get());
         assertSimilar(sql, sql2);
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.delete().where(person.id.eq(1L)).show();
+        final AbstractDeleteStatement deleteStatement = person.delete().where(person.id.eq(1L));
+        final String sql = deleteStatement.show();
         assertSimilar("DELETE FROM person WHERE person.id = ?", sql);
+        assertSimilar(sql, deleteStatement.show(GenericDialect.get()));
     }
 
     public void testSubqueryInWhere() throws Exception {

@@ -2,6 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractSelectStatement;
 import org.simqle.sql.Column;
 import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.GenericDialect;
@@ -20,13 +21,23 @@ import static org.easymock.EasyMock.*;
  */
 public class SelectStatementTest extends SqlTestCase {
 
+    public void testShow() throws Exception {
+        final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
+        final String sql = selectStatement.show();
+        final String sql2 = selectStatement.show(GenericDialect.get());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 FOR UPDATE", sql);
+        assertSimilar(sql, sql2);
+    }
+
+
 
     public void testList() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.forUpdate().show();
+        final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
+        final String queryString = selectStatement.show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -39,7 +50,7 @@ public class SelectStatementTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = person.id.forUpdate().list(datasource);
+        final List<Long> list = selectStatement.list(datasource);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
