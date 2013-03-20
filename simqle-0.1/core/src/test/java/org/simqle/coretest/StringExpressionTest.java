@@ -3,7 +3,9 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -30,9 +32,10 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
 
-    public void testSelect() throws Exception {
+    public void testShow() throws Exception {
         final String sql = numberSign.concat(person.id).show();
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
+        assertSimilar(sql, numberSign.concat(person.id).show(GenericDialect.get()));
     }
 
     public void testSelectAll() throws Exception {
@@ -396,6 +399,34 @@ public class StringExpressionTest extends SqlTestCase {
         replay(datasource, connection,  statement, resultSet);
 
         numberSign.concat(person.id).scroll(datasource, new Callback<String>() {
+            int callCount = 0;
+
+            @Override
+            public boolean iterate(final String aString) {
+                if (callCount++ != 0) {
+                    fail("One call expected, actually " + callCount);
+                }
+                assertEquals("#123", aString);
+                return true;
+            }
+        });
+        verify(datasource, connection,  statement, resultSet);
+
+        reset(datasource, connection,  statement, resultSet);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setString(1, "#");
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getString(matches("C[0-9]"))).andReturn("#123");
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        numberSign.concat(person.id).scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<String>() {
             int callCount = 0;
 
             @Override

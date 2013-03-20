@@ -4,6 +4,8 @@ import org.simqle.Mappers;
 import org.simqle.sql.AbstractUpdateStatement;
 import org.simqle.sql.AbstractUpdateStatementBase;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.Table;
 
 import javax.sql.DataSource;
@@ -13,6 +15,8 @@ import java.sql.PreparedStatement;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -22,6 +26,8 @@ public class UpdateTest extends SqlTestCase {
     public void testOneColumn() throws Exception {
         final String sql = person.update(person.parentId.set(person.id)).show();
         assertSimilar("UPDATE person SET parent_id = person.id", sql);
+        final String sql2 = person.update(person.parentId.set(person.id)).show(GenericDialect.get());
+        assertSimilar(sql, sql2);
     }
 
     public void testSetNull() throws Exception {
@@ -108,6 +114,21 @@ public class UpdateTest extends SqlTestCase {
 
         assertEquals(2, update.execute(datasource));
 
+        verify(datasource, connection, statement);
+
+        reset(datasource, connection, statement);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(statementString)).andReturn(statement);
+        statement.setString(1, "John");
+        expect(statement.executeUpdate()).andReturn(2);
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement);
+
+        assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+
+        verify(datasource, connection, statement);
     }
 
     public void testExecuteSearched() throws Exception {

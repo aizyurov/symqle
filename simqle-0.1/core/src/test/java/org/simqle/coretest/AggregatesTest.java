@@ -4,7 +4,9 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractAggregateFunction;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -13,11 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.matches;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -26,7 +24,9 @@ public class AggregatesTest extends SqlTestCase  {
 
     public void testShow() throws Exception {
         final String show = person.id.count().show();
+        final String show2 = person.id.count().show(GenericDialect.get());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1", show);
+        assertSimilar(show, show2);
     }
 
     public void testUnion() throws Exception {
@@ -157,6 +157,7 @@ public class AggregatesTest extends SqlTestCase  {
 
         count.scroll(datasource, new Callback<Integer>() {
             private int callCount = 0;
+
             @Override
             public boolean iterate(final Integer integer) {
                 if (callCount > 0) {
@@ -166,6 +167,37 @@ public class AggregatesTest extends SqlTestCase  {
                 return true;
             }
         });
+
+        verify(datasource, connection, statement, resultSet);
+
+        reset(datasource, connection, statement, resultSet);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        count.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Integer>() {
+            private int callCount = 0;
+
+            @Override
+            public boolean iterate(final Integer integer) {
+                if (callCount > 0) {
+                    fail("Only one call expected");
+                }
+                assertEquals(integer.intValue(), 123);
+                return true;
+            }
+        });
+
+        verify(datasource, connection, statement, resultSet);
     }
 
 

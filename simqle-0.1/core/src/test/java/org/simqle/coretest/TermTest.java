@@ -3,7 +3,9 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -31,9 +33,10 @@ public class TermTest extends SqlTestCase {
     }
 
 
-    public void testSelect() throws Exception {
+    public void testShow() throws Exception {
         final String sql = person.id.mult(two).show();
         assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0", sql);
+        assertSimilar(sql, person.id.mult(two).show(GenericDialect.get()));
     }
 
     public void testSelectAll() throws Exception {
@@ -406,6 +409,35 @@ public class TermTest extends SqlTestCase {
             }
         });
         verify(datasource, connection,  statement, resultSet);
+
+        reset(datasource, connection,  statement, resultSet);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setLong(1, 2L);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        person.id.mult(two).scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Number>() {
+            int callCount = 0;
+
+            @Override
+            public boolean iterate(final Number aNumber) {
+                if (callCount++ != 0) {
+                    fail("One call expected, actually " + callCount);
+                }
+                assertEquals(123L, aNumber.longValue());
+                return true;
+            }
+        });
+        verify(datasource, connection,  statement, resultSet);
+
+
     }
 
 

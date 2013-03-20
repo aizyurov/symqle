@@ -30,19 +30,28 @@
 
 public interface DataChangeStatement : Sql {}
 
-:: private Sql prepareUpdate(final DataChangeStatement statement) {
+:: private Sql prepareUpdate(final DataChangeStatement statement, final Dialect dialect) {
     final SqlContext context = new SqlContext();
-    context.set(Dialect.class, GenericDialect.get());
+    context.set(Dialect.class, dialect);
     return statement.z$create$DataChangeStatement(context);
 }
 
 :: public String show(final DataChangeStatement statement) {
-    return beautifySql(prepareUpdate(statement).getSqlText());
+    return show(statement, GenericDialect.get());
+}
+
+:: public String show(final DataChangeStatement statement, final Dialect dialect) {
+    return beautifySql(prepareUpdate(statement, dialect).getSqlText());
 }
 
 :: public int execute(final DataChangeStatement statement, final DataSource datasource) throws SQLException {
-     final Sql sql = prepareUpdate(statement);
-     final Connection connection = datasource.getConnection();
+    return execute(statement, new DialectDataSource(GenericDialect.get(), datasource));
+}
+
+
+:: public int execute(final DataChangeStatement statement, final DialectDataSource datasource) throws SQLException {
+     final Sql sql = prepareUpdate(statement, datasource.getDialect());
+     final Connection connection = datasource.getDataSource().getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
          try {

@@ -5,7 +5,9 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -76,6 +78,38 @@ public class QueryTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection, statement, resultSet);
         id.scroll(datasource, new Callback<Long>() {
+            private int callCount = 0;
+
+            @Override
+            public boolean iterate(Long aLong) {
+                if (callCount > 0) {
+                    fail("Must not get here");
+                } else {
+                    callCount++;
+                    assertEquals(123, aLong.longValue());
+                }
+                return true;
+            }
+        });
+        verify(datasource, statement, connection, resultSet);
+    }
+
+    public void testScrollWithDialect() throws Exception {
+        final Person person = new Person();
+        final Column<Long> id = person.id;
+        final String queryString = id.show();
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection, statement, resultSet);
+        id.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
             private int callCount = 0;
 
             @Override

@@ -4,6 +4,7 @@ import org.simqle.Mappers;
 import org.simqle.jdbc.StatementOption;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
@@ -31,6 +32,7 @@ public class ColumnTest extends SqlTestCase {
     public void testShow() throws Exception {
         final Column<Long> col = person.id;
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.show());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.show(GenericDialect.get()));
     }
 
     public void testSelectStatementFunctionality() throws Exception {

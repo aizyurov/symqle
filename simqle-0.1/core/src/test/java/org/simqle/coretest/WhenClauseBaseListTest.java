@@ -4,7 +4,9 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractSearchedWhenClauseBaseList;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -20,9 +22,11 @@ import static org.easymock.EasyMock.*;
  */
 public class WhenClauseBaseListTest extends SqlTestCase {
 
-    public void testSelect() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).show();
+    public void testShow() throws Exception {
+        final AbstractSearchedWhenClauseBaseList<String> baseList = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
+        final String sql = baseList.show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0", sql);
+        assertSimilar(sql, baseList.show(GenericDialect.get()));
     }
 
     public void testElse() throws Exception {
@@ -433,6 +437,36 @@ public class WhenClauseBaseListTest extends SqlTestCase {
             }
         });
         verify(datasource, connection,  statement, resultSet);
+
+        reset(datasource, connection,  statement, resultSet);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setLong(1, 20L);
+        statement.setLong(2, 1L);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        whenClause.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<String>() {
+            int callCount = 0;
+
+            @Override
+            public boolean iterate(final String aString) {
+                if (callCount++ != 0) {
+                    fail("One call expected, actually " + callCount);
+                }
+                assertEquals("John", aString);
+                return true;
+            }
+        });
+        verify(datasource, connection,  statement, resultSet);
+
     }
 
 

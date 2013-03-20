@@ -4,7 +4,9 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractValueExpression;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -23,6 +25,8 @@ public class ValueExpressionTest extends SqlTestCase {
     public void testShow() throws Exception {
         final String sql = person.name.eq(person.nickName).asValue().show();
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0", sql);
+        final String sql2 = person.name.eq(person.nickName).asValue().show(GenericDialect.get());
+        assertSimilar(sql, sql2);
     }
 
     public void testAll() throws Exception {
@@ -409,6 +413,31 @@ public class ValueExpressionTest extends SqlTestCase {
         replay(datasource, connection,  statement, resultSet);
 
         valueExpression.scroll(datasource, new Callback<Boolean>() {
+            private int callCount;
+
+            @Override
+            public boolean iterate(final Boolean aBoolean) {
+                assertEquals(0, callCount++);
+                assertEquals(Boolean.TRUE, aBoolean);
+                return true;
+            }
+        });
+        verify(datasource, connection, statement, resultSet);
+
+        reset(datasource, connection, statement, resultSet);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        valueExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Boolean>() {
             private int callCount;
 
             @Override

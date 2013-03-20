@@ -7,6 +7,7 @@ import org.simqle.sql.AbstractQueryBase;
 import org.simqle.sql.AbstractQueryExpression;
 import org.simqle.sql.AbstractSelectList;
 import org.simqle.sql.Column;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -29,6 +30,8 @@ public class PairTest extends SqlTestCase {
     public void testShow() throws Exception {
         final String sql = person.id.pair(person.name).show();
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
+        final String sql2 = person.id.pair(person.name).show(GenericDialect.get());
+        assertSimilar(sql, sql2);
     }
 
     public void testPairChain() throws Exception {

@@ -3,7 +3,9 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
@@ -24,6 +26,12 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+        try {
+            param.show(GenericDialect.get());
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -560,6 +568,21 @@ public class DynamicParameterTest extends SqlTestCase {
         org.easymock.EasyMock.replay(dataSource);
         try {
             param.scroll(dataSource, new Callback<Long>() {
+                @Override
+                public boolean iterate(final Long aLong) {
+                    fail("Must not get here");
+                    return true;
+                }
+            });
+            fail ("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+        org.easymock.EasyMock.verify(dataSource);
+        org.easymock.EasyMock.reset(dataSource);
+        org.easymock.EasyMock.replay(dataSource);
+        try {
+            param.scroll(new DialectDataSource(GenericDialect.get(), dataSource), new Callback<Long>() {
                 @Override
                 public boolean iterate(final Long aLong) {
                     fail("Must not get here");

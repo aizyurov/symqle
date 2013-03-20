@@ -2,15 +2,16 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -20,6 +21,13 @@ import static org.easymock.EasyMock.*;
  */
 public class QuerySpecificationTest extends SqlTestCase {
 
+
+    public void testShow() throws Exception {
+        final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.isNotNull());
+        final String sql = querySpecification.show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
+        assertSimilar(sql, querySpecification.show(GenericDialect.get()));
+    }
 
     public void testQueryValue() throws Exception {
         final String sql = employee.id.where(employee.name.isNotNull()).queryValue().orderBy(person.name).show();

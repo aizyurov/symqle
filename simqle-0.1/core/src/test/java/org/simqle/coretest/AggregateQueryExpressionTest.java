@@ -5,7 +5,9 @@ import org.simqle.Mappers;
 import org.simqle.sql.AbstractAggregateFunction;
 import org.simqle.sql.AbstractAggregateQuerySpecification;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -23,6 +25,11 @@ public class AggregateQueryExpressionTest extends SqlTestCase  {
 
     public void testShow() throws Exception {
         final String show = person.id.count().where(person.age.gt(20L)).show();
+        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 WHERE T1.age > ?", show);
+    }
+
+    public void testShowDialect() throws Exception {
+        final String show = person.id.count().where(person.age.gt(20L)).show(GenericDialect.get());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 WHERE T1.age > ?", show);
     }
 
@@ -135,6 +142,7 @@ public class AggregateQueryExpressionTest extends SqlTestCase  {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setLong(1, 20L);
@@ -146,6 +154,7 @@ public class AggregateQueryExpressionTest extends SqlTestCase  {
         resultSet.close();
         statement.close();
         connection.close();
+
         replay(datasource, connection,  statement, resultSet);
 
         count.scroll(datasource, new Callback<Integer>() {
@@ -159,6 +168,35 @@ public class AggregateQueryExpressionTest extends SqlTestCase  {
                 return true;
             }
         });
+
+        verify(datasource, connection, statement, resultSet);
+        reset(datasource, connection,  statement, resultSet);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setLong(1, 20L);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+
+        replay(datasource, connection,  statement, resultSet);
+        count.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Integer>() {
+            private int callCount = 0;
+            @Override
+            public boolean iterate(final Integer integer) {
+                if (callCount > 0) {
+                    fail("Only one call expected");
+                }
+                assertEquals(integer.intValue(), 123);
+                return true;
+            }
+        });
+        verify(datasource, connection, statement, resultSet);
     }
 
 

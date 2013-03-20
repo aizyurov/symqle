@@ -4,7 +4,9 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
@@ -13,10 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.matches;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -27,6 +26,12 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     public void testShow() throws Exception {
         try {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+        try {
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show(GenericDialect.get());
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -446,6 +451,23 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
+        verify(datasource);
+
+        reset(datasource);
+
+        replay(datasource);
+        try {
+            person.id.where(person.name.eq(employee.name)).queryValue().scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
+                @Override
+                public boolean iterate(final Long aLong) {
+                    fail("must not get here");
+                    return true;
+                }
+            });
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+        verify(datasource);
     }
 
 

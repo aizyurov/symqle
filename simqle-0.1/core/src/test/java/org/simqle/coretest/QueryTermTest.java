@@ -2,26 +2,36 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractQueryTerm;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
  */
 public class QueryTermTest extends SqlTestCase {
+
+    public void testShow() throws Exception {
+        final AbstractQueryTerm<Long> queryTerm = employee.id.intersect(manager.id);
+        final String sql = queryTerm.show();
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2", sql);
+        assertSimilar(sql, queryTerm.show(GenericDialect.get()));
+    }
 
 
     public void testQueryValue() throws Exception {
@@ -161,6 +171,34 @@ public class QueryTermTest extends SqlTestCase {
             }
         });
         verify(datasource, connection,  statement, resultSet);
+
+        reset(datasource, connection, statement, resultSet);
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong("S0")).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        employee.id.intersect(manager.id).scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
+            int callCount = 0;
+
+            @Override
+            public boolean iterate(final Long aNumber) {
+                if (callCount++ != 0) {
+                    fail("One call expected, actually " + callCount);
+                }
+                assertEquals(123L, aNumber.longValue());
+                return true;
+            }
+        });
+        verify(datasource, connection,  statement, resultSet);
+
     }
 
 

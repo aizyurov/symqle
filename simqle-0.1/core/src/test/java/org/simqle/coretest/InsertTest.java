@@ -15,8 +15,10 @@ import static org.easymock.EasyMock.*;
 public class InsertTest extends SqlTestCase {
 
     public void testOneColumn() throws Exception {
-        final String sql = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L))).show();
+        final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)));
+        final String sql = insert.show();
         assertSimilar("INSERT INTO person(parent_id) VALUES(?)", sql);
+        assertSimilar(sql, insert.show(GenericDialect.get()));
     }
 
     public void testSetNull() throws Exception {

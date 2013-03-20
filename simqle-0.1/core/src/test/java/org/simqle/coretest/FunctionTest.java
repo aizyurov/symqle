@@ -2,12 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
-import org.simqle.sql.AbstractRoutineInvocation;
-import org.simqle.sql.Column;
-import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.SqlFunction;
-import org.simqle.sql.TableOrView;
-import org.simqle.sql.ValueExpression;
+import org.simqle.sql.*;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -31,9 +26,10 @@ public class FunctionTest extends SqlTestCase {
         return SqlFunction.create("abs", Mappers.LONG).apply(e);
     }
 
-    public void testSelectStatementFunctionality() throws Exception {
+    public void testShow() throws Exception {
         final Column<Long> col = person.id;
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", abs(col).show());
+        assertSimilar(abs(col).show(), abs(col).show(GenericDialect.get()));
     }
 
     public void testSelectAll() throws Exception {
@@ -481,6 +477,34 @@ public class FunctionTest extends SqlTestCase {
         replay(datasource, connection,  statement, resultSet);
 
         abs(person.id).scroll(datasource, new Callback<Long>() {
+            int callCount = 0;
+
+            @Override
+            public boolean iterate(final Long aLong) {
+                if (callCount++ != 0) {
+                    fail("One call expected, actually " + callCount);
+                }
+                assertEquals(123L, aLong.longValue());
+                return true;
+            }
+        });
+        verify(datasource, connection,  statement, resultSet);
+
+        reset(datasource, connection,  statement, resultSet);
+
+        expect(datasource.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(datasource, connection,  statement, resultSet);
+
+        abs(person.id).scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
             int callCount = 0;
 
             @Override
