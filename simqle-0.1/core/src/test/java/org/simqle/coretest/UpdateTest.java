@@ -11,11 +11,11 @@ import org.simqle.sql.Table;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
 /**
@@ -51,8 +51,11 @@ public class UpdateTest extends SqlTestCase {
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.update(person.parentId.set(person.id), person.name.set("John")).where(person.id.eq(1L)).show();
+        final AbstractUpdateStatement updateStatement = person.update(person.parentId.set(person.id), person.name.set("John")).where(person.id.eq(1L));
+        final String sql = updateStatement.show();
         assertSimilar("UPDATE person SET parent_id = person.id, name = ? WHERE person.id = ?", sql);
+        final String sql2 = updateStatement.show(GenericDialect.get());
+        assertSimilar(sql, sql2);
     }
 
     public void testSubqueryInWhere() throws Exception {
@@ -99,55 +102,84 @@ public class UpdateTest extends SqlTestCase {
     }
 
     public void testExecute() throws Exception {
-        final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
-        final String statementString = update.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        statement.setString(1, "John");
-        expect(statement.executeUpdate()).andReturn(2);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
+        new ExecuteScenario() {
+            @Override
+            protected void runExecute(final AbstractUpdateStatementBase update, final DataSource datasource) throws SQLException {
+                assertEquals(2, update.execute(datasource));
+            }
+        }.play();
 
-        assertEquals(2, update.execute(datasource));
+        new ExecuteScenario() {
+            @Override
+            protected void runExecute(final AbstractUpdateStatementBase update, final DataSource datasource) throws SQLException {
+                assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            }
+        }.play();
 
-        verify(datasource, connection, statement);
+    }
 
-        reset(datasource, connection, statement);
+    private abstract static class ExecuteScenario {
+        public void play() throws Exception {
+            final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
+            final String statementString = update.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(statementString)).andReturn(statement);
+            statement.setString(1, "John");
+            expect(statement.executeUpdate()).andReturn(2);
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement);
 
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        statement.setString(1, "John");
-        expect(statement.executeUpdate()).andReturn(2);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
+            runExecute(update, datasource);
 
-        assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            verify(datasource, connection, statement);
+        }
 
-        verify(datasource, connection, statement);
+        protected abstract void runExecute(final AbstractUpdateStatementBase update, final DataSource datasource) throws SQLException;
     }
 
     public void testExecuteSearched() throws Exception {
-        final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
-        final String statementString = update.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        statement.setString(1, "John");
-        statement.setLong(2, 1L);
-        expect(statement.executeUpdate()).andReturn(1);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
+        new ExecuteSearchedScenario() {
+            @Override
+            protected void runExecute(final AbstractUpdateStatement update, final DataSource datasource) throws SQLException {
+                assertEquals(1, update.execute(datasource));
+            }
+        }.play();
 
-        assertEquals(1, update.execute(datasource));
+        new ExecuteSearchedScenario() {
+            @Override
+            protected void runExecute(final AbstractUpdateStatement update, final DataSource datasource) throws SQLException {
+                assertEquals(1, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            }
+        }.play();
 
+    }
+
+    private abstract static class ExecuteSearchedScenario {
+        public void play() throws Exception {
+            final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
+            final String statementString = update.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(statementString)).andReturn(statement);
+            statement.setString(1, "John");
+            statement.setLong(2, 1L);
+            expect(statement.executeUpdate()).andReturn(1);
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement);
+
+            runExecute(update, datasource);
+
+            verify(datasource, connection, statement);
+        }
+
+        protected abstract void runExecute(final AbstractUpdateStatement update, final DataSource datasource) throws SQLException;
     }
 
 

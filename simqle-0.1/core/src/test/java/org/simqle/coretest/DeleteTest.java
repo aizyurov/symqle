@@ -11,6 +11,7 @@ import org.simqle.sql.Table;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import static org.easymock.EasyMock.*;
 
@@ -52,49 +53,82 @@ public class DeleteTest extends SqlTestCase {
     }
 
     public void testExecute() throws Exception {
-        final AbstractDeleteStatementBase update = person.delete();
-        final String statementString = update.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        expect(statement.executeUpdate()).andReturn(2);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
+        new ExecuteScenario() {
+            @Override
+            protected void runExecute(final AbstractDeleteStatementBase update, final DataSource datasource) throws SQLException {
+                assertEquals(2, update.execute(datasource));
+            }
+        }.play();
 
-        assertEquals(2, update.execute(datasource));
-        verify(datasource, connection, statement);
+        new ExecuteScenario() {
+            @Override
+            protected void runExecute(final AbstractDeleteStatementBase update, final DataSource datasource) throws SQLException {
+                assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            }
+        }.play();
 
-        reset(datasource, connection, statement);
+    }
 
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        expect(statement.executeUpdate()).andReturn(2);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
+    private static abstract class ExecuteScenario {
 
-        assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
-        verify(datasource, connection, statement);
+        public void play() throws Exception {
+            final AbstractDeleteStatementBase update = person.delete();
+            final String statementString = update.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(statementString)).andReturn(statement);
+            expect(statement.executeUpdate()).andReturn(2);
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement);
+
+            runExecute(update, datasource);
+            verify(datasource, connection, statement);
+        }
+
+        protected abstract void runExecute(final AbstractDeleteStatementBase update, final DataSource datasource) throws SQLException;
     }
 
     public void testExecuteSearched() throws Exception {
-        final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
-        final String statementString = update.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        statement.setLong(1, 1L);
-        expect(statement.executeUpdate()).andReturn(1);
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement);
+        new ExecuteSearchedScenario() {
+            @Override
+            protected void runExecute(final AbstractDeleteStatement update, final DataSource datasource) throws SQLException {
+                assertEquals(1, update.execute(datasource));
+            }
+        }.play();
 
-        assertEquals(1, update.execute(datasource));
+        new ExecuteSearchedScenario() {
+            @Override
+            protected void runExecute(final AbstractDeleteStatement update, final DataSource datasource) throws SQLException {
+                assertEquals(1, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            }
+        }.play();
+    }
+
+    private static abstract class ExecuteSearchedScenario {
+
+        public void play() throws Exception {
+            final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
+            final String statementString = update.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(statementString)).andReturn(statement);
+            statement.setLong(1, 1L);
+            expect(statement.executeUpdate()).andReturn(1);
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement);
+
+            runExecute(update, datasource);
+
+            verify(datasource, connection, statement);
+        }
+
+        protected abstract void runExecute(final AbstractDeleteStatement update, final DataSource datasource) throws SQLException;
 
     }
 

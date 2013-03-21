@@ -7,6 +7,7 @@ import org.simqle.sql.AbstractQueryBase;
 import org.simqle.sql.AbstractQueryExpression;
 import org.simqle.sql.AbstractSelectList;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -48,6 +50,9 @@ public class PairTest extends SqlTestCase {
     public void testAll() throws Exception {
         final String sql = person.id.pair(person.name).all().show();
         assertSimilar("SELECT ALL T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
+        final String sql2 = person.id.pair(person.name).all().show(GenericDialect.get());
+        assertSimilar(sql, sql2);
+
     }
 
     public void testDistinct() throws Exception {
@@ -56,8 +61,11 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.id.pair(person.name).where(person.name.isNotNull()).show();
+        final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
+        final String sql = queryExpression.show();
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
+        final String sql2 = queryExpression.show(GenericDialect.get());
+        assertSimilar(sql, sql2);
     }
 
     public void testOrderBy() throws Exception {
@@ -124,189 +132,239 @@ public class PairTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractSelectList<Pair<Long,String>> selectList = person.id.pair(person.name);
-        final String queryString = selectList.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        final List<Pair<Long, String>> list = selectList.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Pair.of(123L, "John"), list.get(0));
-        verify(datasource, connection, statement, resultSet);
+        new PairScenario() {
+            @Override
+            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DataSource datasource) throws SQLException {
+                final List<Pair<Long, String>> list = selectList.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Pair.of(123L, "John"), list.get(0));
+            }
+        }.play();
     }
 
 
     public void testScroll() throws Exception {
-        final AbstractSelectList<Pair<Long,String>> selectList = person.id.pair(person.name);
-        final String queryString = selectList.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        selectList.scroll(datasource, new Callback<Pair<Long, String>>() {
-            int callCount = 0;
-
+        new PairScenario() {
             @Override
-            public boolean iterate(final Pair<Long, String> pair) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(Pair.of(123L, "John"), pair);
-                return true;
+            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DataSource datasource) throws SQLException {
+                selectList.scroll(datasource, new Callback<Pair<Long, String>>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Pair<Long, String> pair) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(Pair.of(123L, "John"), pair);
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
+
+        new PairScenario() {
+            @Override
+            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DataSource datasource) throws SQLException {
+                selectList.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Pair<Long, String>>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Pair<Long, String> pair) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(Pair.of(123L, "John"), pair);
+                        return true;
+                    }
+                });
+            }
+        }.play();
+    }
+
+    private static abstract class PairScenario {
+        public void play() throws Exception {
+            final AbstractSelectList<Pair<Long,String>> selectList = person.id.pair(person.name);
+            final String queryString = selectList.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(selectList, datasource);
+            verify(datasource, connection,  statement, resultSet);
+        }
+
+        protected abstract void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DataSource datasource) throws SQLException;
     }
 
     public void testDistinctList() throws Exception {
-        final AbstractQueryBase<Pair<Long, String>> queryBase = person.id.pair(person.name).distinct();
-        final String queryString = queryBase.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        final List<Pair<Long, String>> list = queryBase.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Pair.of(123L, "John"), list.get(0));
-        verify(datasource, connection, statement, resultSet);
+        new DistinctScenario() {
+            @Override
+            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DataSource datasource) throws SQLException {
+                final List<Pair<Long, String>> list = queryBase.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Pair.of(123L, "John"), list.get(0));
+            }
+        }.play();
     }
 
-
     public void testDistinctScroll() throws Exception {
-        final AbstractQueryBase<Pair<Long, String>> queryBase = person.id.pair(person.name).distinct();
-        final String queryString = queryBase.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
 
-        queryBase.scroll(datasource, new Callback<Pair<Long, String>>() {
-            int callCount = 0;
-
+        new DistinctScenario() {
             @Override
-            public boolean iterate(final Pair<Long, String> pair) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(Pair.of(123L, "John"), pair);
-                return true;
+            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DataSource datasource) throws SQLException {
+                queryBase.scroll(datasource, new Callback<Pair<Long, String>>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Pair<Long, String> pair) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(Pair.of(123L, "John"), pair);
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
+
+        new DistinctScenario() {
+            @Override
+            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DataSource datasource) throws SQLException {
+                queryBase.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Pair<Long, String>>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Pair<Long, String> pair) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(Pair.of(123L, "John"), pair);
+                        return true;
+                    }
+                });
+            }
+        }.play();
+    }
+
+    private static abstract class DistinctScenario {
+        public void play() throws Exception {
+            final AbstractQueryBase<Pair<Long, String>> queryBase = person.id.pair(person.name).distinct();
+            final String queryString = queryBase.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(queryBase, datasource);
+            verify(datasource, connection,  statement, resultSet);
+
+        }
+
+        protected abstract void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DataSource datasource) throws SQLException;
     }
 
     public void testWhereList() throws Exception {
-        final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
-        final String queryString = queryExpression.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        final List<Pair<Long, String>> list = queryExpression.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Pair.of(123L, "John"), list.get(0));
-        verify(datasource, connection, statement, resultSet);
+        new WhereScenario() {
+            @Override
+            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DataSource datasource) throws SQLException {
+                final List<Pair<Long, String>> list = queryExpression.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Pair.of(123L, "John"), list.get(0));
+            }
+        }.play();
     }
 
 
     public void testWhereScroll() throws Exception {
-        final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
-        final String queryString = queryExpression.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        queryExpression.scroll(datasource, new Callback<Pair<Long, String>>() {
-            int callCount = 0;
-
+        new WhereScenario() {
             @Override
-            public boolean iterate(final Pair<Long, String> pair) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(Pair.of(123L, "John"), pair);
-                return true;
+            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DataSource datasource) throws SQLException {
+                queryExpression.scroll(datasource, new Callback<Pair<Long, String>>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Pair<Long, String> pair) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(Pair.of(123L, "John"), pair);
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
+
+        new WhereScenario() {
+            @Override
+            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DataSource datasource) throws SQLException {
+                queryExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Pair<Long, String>>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Pair<Long, String> pair) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(Pair.of(123L, "John"), pair);
+                        return true;
+                    }
+                });
+            }
+        }.play();
+    }
+
+    private static abstract class WhereScenario {
+        public void play() throws Exception {
+            final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
+            final String queryString = queryExpression.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(queryExpression, datasource);
+            verify(datasource, connection,  statement, resultSet);
+
+        }
+
+        protected abstract void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DataSource datasource) throws SQLException;
     }
 
 
