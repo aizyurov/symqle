@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -369,87 +370,85 @@ public class ValueExpressionTest extends SqlTestCase {
     
 
     public void testList() throws Exception {
-        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
-        final String queryString = valueExpression.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
+                final List<Boolean> list = valueExpression.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Boolean.TRUE, list.get(0));
+            }
+        }.play();
 
-        final List<Boolean> list = valueExpression.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Boolean.TRUE, list.get(0));
-        verify(datasource, connection, statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
+                final List<Boolean> list = valueExpression.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(Boolean.TRUE, list.get(0));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
-        final String queryString = valueExpression.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        valueExpression.scroll(datasource, new Callback<Boolean>() {
-            private int callCount;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Boolean aBoolean) {
-                assertEquals(0, callCount++);
-                assertEquals(Boolean.TRUE, aBoolean);
-                return true;
+            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
+                valueExpression.scroll(datasource, new Callback<Boolean>() {
+                    private int callCount;
+
+                    @Override
+                    public boolean iterate(final Boolean aBoolean) {
+                        assertEquals(0, callCount++);
+                        assertEquals(Boolean.TRUE, aBoolean);
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection, statement, resultSet);
+        }.play();
 
-        reset(datasource, connection, statement, resultSet);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        valueExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Boolean>() {
-            private int callCount;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Boolean aBoolean) {
-                assertEquals(0, callCount++);
-                assertEquals(Boolean.TRUE, aBoolean);
-                return true;
+            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
+                valueExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Boolean>() {
+                    private int callCount;
+
+                    @Override
+                    public boolean iterate(final Boolean aBoolean) {
+                        assertEquals(0, callCount++);
+                        assertEquals(Boolean.TRUE, aBoolean);
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection, statement, resultSet);
+        }.play();
     }
 
+    private static abstract class Scenario {
+        public void play() throws Exception {
+            final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
+            final String queryString = valueExpression.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(valueExpression, datasource);
+            verify(datasource, connection, statement, resultSet);
+        }
+
+        protected abstract void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException;
+    }
 
 
 

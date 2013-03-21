@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -377,96 +378,90 @@ public class WhenClauseBaseListTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractSearchedWhenClauseBaseList<String> whenClause = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
-        final String queryString = whenClause.show();
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
+                final List<String> list = whenClause.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals("John", list.get(0));
+            }
+        }.play();
 
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setLong(1, 20L);
-        statement.setLong(2, 1L);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        final List<String> list = whenClause.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals("John", list.get(0));
-        verify(datasource, connection, statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
+                final List<String> list = whenClause.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals("John", list.get(0));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractSearchedWhenClauseBaseList<String> whenClause = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
-        final String queryString = whenClause.show();
-
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setLong(1, 20L);
-        statement.setLong(2, 1L);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        whenClause.scroll(datasource, new Callback<String>() {
-            int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final String aString) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals("John", aString);
-                return true;
+            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
+                whenClause.scroll(datasource, new Callback<String>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final String aString) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals("John", aString);
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
 
-        reset(datasource, connection,  statement, resultSet);
-
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setLong(1, 20L);
-        statement.setLong(2, 1L);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        whenClause.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<String>() {
-            int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final String aString) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals("John", aString);
-                return true;
-            }
-        });
-        verify(datasource, connection,  statement, resultSet);
+            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
+                whenClause.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<String>() {
+                    int callCount = 0;
 
+                    @Override
+                    public boolean iterate(final String aString) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals("John", aString);
+                        return true;
+                    }
+                });
+            }
+        }.play();
+    }
+
+    private static abstract class Scenario {
+        public void play() throws Exception {
+            final AbstractSearchedWhenClauseBaseList<String> whenClause = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
+            final String queryString = whenClause.show();
+
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            statement.setLong(1, 20L);
+            statement.setLong(2, 1L);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(whenClause, datasource);
+            verify(datasource, connection,  statement, resultSet);
+        }
+
+        protected abstract void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException;
     }
 
 

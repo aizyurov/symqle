@@ -3,6 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Mappers;
 import org.simqle.jdbc.StatementOption;
 import org.simqle.sql.Column;
+import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
@@ -490,28 +491,51 @@ public class ColumnTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        final Column<Long> column = person.id;
-        final String queryString = column.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final Column<Long> column, final DataSource datasource) throws SQLException {
+                final List<Long> list = column.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
 
-        final List<Long> list = column.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(123L, list.get(0).longValue());
-        verify(datasource, connection, statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final Column<Long> column, final DataSource datasource) throws SQLException {
+                final List<Long> list = column.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
+    }
+
+    public static abstract class Scenario {
+        public void play() throws Exception {
+            final Column<Long> column = person.id;
+            final String queryString = column.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(column, datasource);
+            verify(datasource, connection, statement, resultSet);
+
+        }
+
+        protected abstract void runQuery(final Column<Long> column, final DataSource datasource) throws SQLException;
     }
 
     public void testOptions() throws Exception {

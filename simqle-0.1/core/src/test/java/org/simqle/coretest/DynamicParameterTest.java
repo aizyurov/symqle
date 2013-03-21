@@ -558,6 +558,12 @@ public class DynamicParameterTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
+        try {
+            param.list(new DialectDataSource(GenericDialect.get(), dataSource));
+            fail ("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
         org.easymock.EasyMock.verify(dataSource);
     }
 

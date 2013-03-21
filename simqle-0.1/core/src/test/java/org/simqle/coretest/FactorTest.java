@@ -2,6 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractFactor;
 import org.simqle.sql.Column;
 import org.simqle.sql.DialectDataSource;
 import org.simqle.sql.DynamicParameter;
@@ -12,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -360,89 +362,90 @@ public class FactorTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.opposite().show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractFactor<Long> factor) throws SQLException {
+                final List<Long> list = factor.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Long.valueOf(123), list.get(0));
+            }
+        }.play();
 
-        final List<Long> list = person.id.opposite().list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(Long.valueOf(123), list.get(0));
-        verify(datasource, connection, statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractFactor<Long> factor) throws SQLException {
+                final List<Long> list = factor.list(new DialectDataSource(GenericDialect.get(),  datasource));
+                assertEquals(1, list.size());
+                assertEquals(Long.valueOf(123), list.get(0));
+            }
+        }.play();
     }
 
 
     public void testScroll() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.opposite().show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        person.id.opposite().scroll(datasource, new Callback<Long>() {
-            int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Long aLong) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(Long.valueOf(123), aLong);
-                return true;
+            protected void runQuery(final DataSource datasource, final AbstractFactor<Long> factor) throws SQLException {
+                factor.scroll(datasource, new Callback<Long>() {
+                            int callCount = 0;
+
+                            @Override
+                            public boolean iterate(final Long aLong) {
+                                if (callCount++ != 0) {
+                                    fail("One call expected, actually " + callCount);
+                                }
+                                assertEquals(Long.valueOf(123), aLong);
+                                return true;
+                            }
+                        });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
 
-        reset(datasource, connection,  statement, resultSet);
-
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        person.id.opposite().scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
-            int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Long aLong) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(Long.valueOf(123), aLong);
-                return true;
+            protected void runQuery(final DataSource datasource, final AbstractFactor<Long> factor) throws SQLException {
+                factor.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
+                            int callCount = 0;
+
+                            @Override
+                            public boolean iterate(final Long aLong) {
+                                if (callCount++ != 0) {
+                                    fail("One call expected, actually " + callCount);
+                                }
+                                assertEquals(Long.valueOf(123), aLong);
+                                return true;
+                            }
+                        });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
+
+    }
+
+    private static abstract class Scenario {
+        public void play() throws Exception {
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            final AbstractFactor<Long> factor = person.id.opposite();
+            final String queryString = factor.show();
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
+
+            runQuery(datasource, factor);
+            verify(datasource, connection,  statement, resultSet);
+        }
+
+        protected abstract void runQuery(final DataSource datasource, final AbstractFactor<Long> factor) throws SQLException;
     }
 
 

@@ -140,6 +140,15 @@ public class PairTest extends SqlTestCase {
                 assertEquals(Pair.of(123L, "John"), list.get(0));
             }
         }.play();
+
+        new PairScenario() {
+            @Override
+            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DataSource datasource) throws SQLException {
+                final List<Pair<Long, String>> list = selectList.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(Pair.of(123L, "John"), list.get(0));
+            }
+        }.play();
     }
 
 
@@ -214,6 +223,15 @@ public class PairTest extends SqlTestCase {
             @Override
             protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DataSource datasource) throws SQLException {
                 final List<Pair<Long, String>> list = queryBase.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Pair.of(123L, "John"), list.get(0));
+            }
+        }.play();
+
+        new DistinctScenario() {
+            @Override
+            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DataSource datasource) throws SQLException {
+                final List<Pair<Long, String>> list = queryBase.list(new DialectDataSource(GenericDialect.get(), datasource));
                 assertEquals(1, list.size());
                 assertEquals(Pair.of(123L, "John"), list.get(0));
             }
@@ -293,6 +311,15 @@ public class PairTest extends SqlTestCase {
             @Override
             protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DataSource datasource) throws SQLException {
                 final List<Pair<Long, String>> list = queryExpression.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(Pair.of(123L, "John"), list.get(0));
+            }
+        }.play();
+
+        new WhereScenario() {
+            @Override
+            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DataSource datasource) throws SQLException {
+                final List<Pair<Long, String>> list = queryExpression.list(new DialectDataSource(GenericDialect.get(), datasource));
                 assertEquals(1, list.size());
                 assertEquals(Pair.of(123L, "John"), list.get(0));
             }

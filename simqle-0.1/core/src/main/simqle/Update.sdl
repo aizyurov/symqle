@@ -102,7 +102,6 @@ UpdateStatementBase ::=
         public Sql z$create$UpdateStatementBase(final SqlContext context) {
             // Modifies outer context by setting TableRegistry!
             TableRegistry registry = new DataChangeTableRegistry(t);
-            registry.setTestMode(false);
             context.set(TableRegistry.class, registry);
             // no name provider
             return context.get(Dialect.class).UpdateStatementBase_is_UPDATE_TargetTable_SET_SetClauseList(t.z$create$TargetTable(context), l.z$create$SetClauseList(context));
@@ -217,18 +216,6 @@ class DataChangeTableRegistry implements TableRegistry {
             throw new IllegalArgumentException(table + " is not legal in this context");
         }
     }
-
-
-    public boolean isInTestMode() {
-        return false;
-    }
-
-
-    public void setTestMode(boolean test) {
-        // do nothing
-    }
-
-
 }
 
 public interface InsertStatement : Sql {}
@@ -246,7 +233,6 @@ InsertStatement ::=
             public Sql z$create$InsertStatement(final SqlContext context) {
                 // Modifies outer context by setting TableRegistry!
                 TableRegistry registry = new DataChangeTableRegistry(t);
-                registry.setTestMode(false);
                 context.set(TableRegistry.class, registry);
                 // no name provider
                 return context.get(Dialect.class).InsertStatement_is_INSERT_INTO_TargetTable_FromConstructor(
@@ -327,7 +313,6 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
             public Sql z$create$DeleteStatementBase(final SqlContext context) {
                 // Modifies outer context by setting TableRegistry!
                 TableRegistry registry = new DataChangeTableRegistry(t);
-                registry.setTestMode(false);
                 context.set(TableRegistry.class, registry);
                 // no name provider
                 return context.get(Dialect.class).DeleteStatementBase_is_DELETE_FROM_TargetTable(t.z$create$TargetTable(context));

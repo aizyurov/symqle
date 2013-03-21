@@ -119,6 +119,14 @@ public class QuerySpecificationTest extends SqlTestCase {
             }
         }.play();
 
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractQuerySpecification<Long> querySpecification) throws SQLException {
+                final List<Long> list = querySpecification.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
     }
 
 

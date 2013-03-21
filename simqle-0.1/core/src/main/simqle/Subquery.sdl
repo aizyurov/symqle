@@ -6,10 +6,10 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
          public Sql z$create$ScalarSubquery(SqlContext context) {
             final SqlContext innerContext = createInnerContext(context);
             // learning
-            innerContext.get(TableRegistry.class).setTestMode(true);
+            innerContext.set(Dialect.class, DebugDialect.get());
             qe.z$create$QueryExpressionScalar(innerContext);
             // real Sql generation
-            innerContext.get(TableRegistry.class).setTestMode(false);
+            innerContext.set(Dialect.class, context.get(Dialect.class));
              final Sql base = qe.z$create$QueryExpressionScalar(innerContext);
              return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_QueryExpressionScalar_RIGHT_PAREN(base);
          }

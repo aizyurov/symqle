@@ -103,13 +103,13 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
                 final SqlContext leftContext = createScalarInnerContext(context);
                 final SqlContext rightContext = createScalarInnerContext(context);
                 // learning
-                leftContext.get(TableRegistry.class).setTestMode(true);
-                rightContext.get(TableRegistry.class).setTestMode(true);
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
                 qe.z$create$QueryExpressionScalar(leftContext);
                 qt.z$create$QueryTerm(rightContext);
 
-                leftContext.get(TableRegistry.class).setTestMode(false);
-                rightContext.get(TableRegistry.class).setTestMode(false);
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
                 final Query<T> left = qe.z$create$QueryExpressionScalar(leftContext);
                 final Query<T> right = qt.z$create$QueryTerm(rightContext);
                 return new ComplexQuery<T>(left,

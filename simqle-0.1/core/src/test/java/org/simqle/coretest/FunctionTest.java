@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -21,7 +22,7 @@ public class FunctionTest extends SqlTestCase {
         return SqlFunction.create("user", Mappers.STRING).apply();
     }
 
-    private AbstractRoutineInvocation<Long> abs(ValueExpression<Long> e) {
+    private static AbstractRoutineInvocation<Long> abs(ValueExpression<Long> e) {
 
         return SqlFunction.create("abs", Mappers.LONG).apply(e);
     }
@@ -434,89 +435,91 @@ public class FunctionTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = abs(person.id).show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
+                final List<Long> list = abs(person.id).list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
 
-        final List<Long> list = abs(person.id).list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(123L, list.get(0).longValue());
-        verify(datasource, connection, statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
+                final List<Long> list = abs(person.id).list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
     }
 
 
     public void testScroll() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = abs(person.id).show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        abs(person.id).scroll(datasource, new Callback<Long>() {
-            int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Long aLong) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(123L, aLong.longValue());
-                return true;
+            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
+                routineInvocation.scroll(datasource, new Callback<Long>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Long aLong) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(123L, aLong.longValue());
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
 
-        reset(datasource, connection,  statement, resultSet);
-
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        abs(person.id).scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
-            int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Long aLong) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(123L, aLong.longValue());
-                return true;
+            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
+                routineInvocation.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Long aLong) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(123L, aLong.longValue());
+                        return true;
+                    }
+                });
             }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        }.play();
+
+    }
+
+    private static abstract class Scenario {
+        public void play() throws Exception {
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            final AbstractRoutineInvocation<Long> routineInvocation = abs(person.id);
+            final String queryString = routineInvocation.show();
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection, statement, resultSet);
+
+            runQuery(datasource, routineInvocation);
+            verify(datasource, connection, statement, resultSet);
+
+        }
+
+        protected abstract void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException;
     }
 
 

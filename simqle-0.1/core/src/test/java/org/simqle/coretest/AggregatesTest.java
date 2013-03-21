@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -112,96 +113,92 @@ public class AggregatesTest extends SqlTestCase  {
     }
 
     public void testList() throws Exception {
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String queryString = count.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
+                final List<Integer> list = count.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(123, list.get(0).intValue());
+            }
+        }.play();
 
-        final List<Integer> list = count.list(datasource);
-        assertEquals(1, list.size());
-        assertEquals(123, list.get(0).intValue());
-        verify(datasource, connection, statement, resultSet);
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
+                final List<Integer> list = count.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(123, list.get(0).intValue());
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String queryString = count.show();
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        count.scroll(datasource, new Callback<Integer>() {
-            private int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Integer integer) {
-                if (callCount > 0) {
-                    fail("Only one call expected");
-                }
-                assertEquals(integer.intValue(), 123);
-                return true;
+            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
+                count.scroll(datasource, new Callback<Integer>() {
+                    private int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Integer integer) {
+                        if (callCount > 0) {
+                            fail("Only one call expected");
+                        }
+                        assertEquals(integer.intValue(), 123);
+                        return true;
+                    }
+                });
             }
-        });
+        }.play();
 
-        verify(datasource, connection, statement, resultSet);
-
-        reset(datasource, connection, statement, resultSet);
-
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        count.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Integer>() {
-            private int callCount = 0;
-
+        new Scenario() {
             @Override
-            public boolean iterate(final Integer integer) {
-                if (callCount > 0) {
-                    fail("Only one call expected");
-                }
-                assertEquals(integer.intValue(), 123);
-                return true;
-            }
-        });
+            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
+                count.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Integer>() {
+                    private int callCount = 0;
 
-        verify(datasource, connection, statement, resultSet);
+                    @Override
+                    public boolean iterate(final Integer integer) {
+                        if (callCount > 0) {
+                            fail("Only one call expected");
+                        }
+                        assertEquals(integer.intValue(), 123);
+                        return true;
+                    }
+                });
+            }
+        }.play();
+
     }
 
 
+    private static abstract class Scenario {
+        public void play() throws Exception {
+            final AbstractAggregateFunction<Integer> count = person.id.count();
+            final String queryString = count.show();
+            final DataSource datasource = createMock(DataSource.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(queryString)).andReturn(statement);
+            expect(statement.executeQuery()).andReturn(resultSet);
+            expect(resultSet.next()).andReturn(true);
+            expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
+            expect(resultSet.wasNull()).andReturn(false);
+            expect(resultSet.next()).andReturn(false);
+            resultSet.close();
+            statement.close();
+            connection.close();
+            replay(datasource, connection,  statement, resultSet);
 
+            runQuery(count, datasource);
+
+            verify(datasource, connection, statement, resultSet);
+        }
+
+        protected abstract void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException;
+    }
 
 
     private static class Person extends TableOrView {

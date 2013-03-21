@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -358,15 +358,72 @@ public class NumericExpressionTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        final List<AbstractNumericExpression<Number>> expressions = new ArrayList<AbstractNumericExpression<Number>>();
-        expressions.add(person.id.plus(two));
-        expressions.add(person.id.minus(two));
-        for (final AbstractNumericExpression<Number> numericExpression : expressions) {
-            final String queryString = numericExpression.show();
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
+                final List<Number> list = numericExpression.list(datasource);
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
+
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
+                final List<Number> list = numericExpression.list(new DialectDataSource(GenericDialect.get(), datasource));
+                assertEquals(1, list.size());
+                assertEquals(123L, list.get(0).longValue());
+            }
+        }.play();
+    }
+
+
+    public void testScroll() throws Exception {
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
+                numericExpression.scroll(datasource, new Callback<Number>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Number aNumber) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(123L, aNumber.longValue());
+                        return true;
+                    }
+                });
+            }
+        }.play();
+
+        new Scenario() {
+            @Override
+            protected void runQuery(final DataSource datasource, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
+                numericExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Number>() {
+                    int callCount = 0;
+
+                    @Override
+                    public boolean iterate(final Number aNumber) {
+                        if (callCount++ != 0) {
+                            fail("One call expected, actually " + callCount);
+                        }
+                        assertEquals(123L, aNumber.longValue());
+                        return true;
+                    }
+                });
+            }
+        }.play();
+    }
+
+    private static abstract class Scenario {
+        public void play() throws Exception {
             final DataSource datasource = createMock(DataSource.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
+            final AbstractNumericExpression<Number> numericExpression = person.id.plus(two);
+            final String queryString = numericExpression.show();
             expect(datasource.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             statement.setLong(1, 2L);
@@ -377,75 +434,14 @@ public class NumericExpressionTest extends SqlTestCase {
             resultSet.close();
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement, resultSet);
+            replay(datasource, connection, statement, resultSet);
 
-            final List<Number> list = numericExpression.list(datasource);
-            assertEquals(1, list.size());
-            assertEquals(123L, list.get(0).longValue());
+            runQuery(datasource, numericExpression);
             verify(datasource, connection, statement, resultSet);
+
         }
-    }
 
-
-    public void testScroll() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        final String queryString = person.id.plus(two).show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setLong(1, 2L);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        person.id.plus(two).scroll(datasource, new Callback<Number>() {
-            int callCount = 0;
-
-            @Override
-            public boolean iterate(final Number aNumber) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(123L, aNumber.longValue());
-                return true;
-            }
-        });
-        verify(datasource, connection,  statement, resultSet);
-
-        reset(datasource, connection,  statement, resultSet);
-
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setLong(1, 2L);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        person.id.plus(two).scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Number>() {
-            int callCount = 0;
-
-            @Override
-            public boolean iterate(final Number aNumber) {
-                if (callCount++ != 0) {
-                    fail("One call expected, actually " + callCount);
-                }
-                assertEquals(123L, aNumber.longValue());
-                return true;
-            }
-        });
-        verify(datasource, connection,  statement, resultSet);
+        protected abstract void runQuery(final DataSource datasource, final AbstractNumericExpression<Number> numericExpression) throws SQLException;
     }
 
 

@@ -196,9 +196,6 @@ public interface TableRegistry {
 
     String findCorrelationName(TableOrView table);
 
-    boolean isInTestMode();
-
-    public void setTestMode(boolean test);
 
 }
 
@@ -254,28 +251,13 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
 
-    private boolean inTestMode = false;
-
-    public void setTestMode(boolean test) {
-        inTestMode = test;
-    }
-
-    public boolean isInTestMode() {
-        return (parent != null ? parent.isInTestMode() : false ) || inTestMode;
-    }
-
-
-
     protected FromClause generateEmptyFromClause() {
-        if (isInTestMode()) {
-            return new FromClause() {
-                public Sql z$create$FromClause(final SqlContext context) {
-                    return new CustomSql("");
-                }
-            };
-        } else {
-            throw new IllegalStateException("Generic dialect does not support selects with no tables");
-        }
+        return new FromClause() {
+            @Override
+            public Sql z$create$FromClause(final SqlContext context) {
+                return context.get(Dialect.class).FromClauseFromNothing();
+            }
+        };
     }
 
 

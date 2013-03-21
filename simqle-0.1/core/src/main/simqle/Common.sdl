@@ -48,6 +48,8 @@ public final class Simqle  {
 
 import org.simqle.Sql;
 public interface Dialect  {
+
+    Sql FromClauseFromNothing();
 }
 
 import org.simqle.SqlParameters;
@@ -55,12 +57,16 @@ import org.simqle.Sql;
 import static org.simqle.SqlTerm.*;
 public class GenericDialect implements Dialect {
 
-    private static final GenericDialect instance = new GenericDialect();
+    private static final Dialect instance = new GenericDialect();
 
-    private GenericDialect() {}
+    protected GenericDialect() {}
 
     public static Dialect get() {
          return instance;
+    }
+
+    public Sql FromClauseFromNothing() {
+        throw new IllegalStateException("Generic dialect does not support selects with no tables");
     }
 
     protected final Sql concat(final Sql first, final Sql... other) {
@@ -126,6 +132,23 @@ public class GenericDialect implements Dialect {
 
     }
 
+}
+
+import org.simqle.CustomSql;
+import org.simqle.Sql;
+class DebugDialect extends GenericDialect {
+
+    private static final Dialect instance = new DebugDialect();
+
+    protected DebugDialect() {}
+
+    public static Dialect get() {
+        return instance;
+    }
+
+    public Sql FromClauseFromNothing() {
+        return new CustomSql("FROM ###");
+    }
 }
 
 

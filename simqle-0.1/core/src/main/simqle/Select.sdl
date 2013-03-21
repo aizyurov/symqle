@@ -65,9 +65,23 @@ import org.simqle.jdbc.StatementOption;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
-::
-public <T> List<T> list(final SelectStatement<T> statement,
+:: public <T> List<T> list(final SelectStatement<T> statement,
                           final DataSource datasource,
+                          final StatementOption... options
+                        ) throws SQLException {
+        final List<T> result = new LinkedList<T>();
+        scroll(statement,  datasource,
+            new Callback<T>() {
+                public boolean iterate(T arg) {
+                    result.add(arg);
+                    return true;
+                }
+             }, options);
+        return result;
+    }
+
+:: public <T> List<T> list(final SelectStatement<T> statement,
+                          final DialectDataSource datasource,
                           final StatementOption... options
                         ) throws SQLException {
         final List<T> result = new LinkedList<T>();
@@ -98,8 +112,7 @@ public <T> List<T> list(final SelectStatement<T> statement,
             final SqlContext context = new SqlContext();
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
-            context.set(Dialect.class, dialect);
-            tableRegistry.setTestMode(true);
+            context.set(Dialect.class, DebugDialect.get());
             statement.z$create$SelectStatement(context);
         }
         // real generation of Sql
@@ -109,7 +122,6 @@ public <T> List<T> list(final SelectStatement<T> statement,
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
             context.set(Dialect.class, dialect);
-            tableRegistry.setTestMode(false);
             query = statement.z$create$SelectStatement(context);
         }
         return query;

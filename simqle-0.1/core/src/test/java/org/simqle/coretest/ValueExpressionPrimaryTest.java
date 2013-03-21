@@ -380,6 +380,18 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
+        verify(datasource);
+
+        reset(datasource);
+
+        replay(datasource);
+        try {
+            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(new DialectDataSource(GenericDialect.get(), datasource));
+            fail ("IllegalStateException expected but produced: "+list);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+        verify(datasource);
     }
 
     public void testCount() throws Exception {
