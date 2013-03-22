@@ -1,6 +1,7 @@
 package org.simqle;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.SQLException;
 
 /**
@@ -80,4 +81,27 @@ public class Mappers {
         }
     };
 
+    public static final Mapper<Date> DATE = new Mapper<Date>() {
+        @Override
+        public Date value(final Element element) throws SQLException {
+            return element.getDate();
+        }
+
+        @Override
+        public void setValue(final SqlParameter param, final Date value) throws SQLException {
+            param.setDate(value);
+        }
+    };
+
+    public static final Mapper<Double> DOUBLE = new Mapper<Double>() {
+        @Override
+        public Double value(final Element element) throws SQLException {
+            return element.getDouble();
+        }
+
+        @Override
+        public void setValue(final SqlParameter param, final Double value) throws SQLException {
+            param.setDouble(value);
+        }
+    };
 }

@@ -1,6 +1,9 @@
 package org.simqle.jdbctest;
 
 import junit.framework.TestCase;
+import org.simqle.Element;
+import org.simqle.Mappers;
+import org.simqle.SqlParameter;
 import org.simqle.jdbc.ResultSetRow;
 
 import java.math.BigDecimal;
@@ -156,6 +159,23 @@ public class ResultSetRowTest extends TestCase {
 
     }
 
+    public void testDateMapper() throws Exception {
+        final SqlParameter param = createMock(SqlParameter.class);
+        final Date date = new Date(System.currentTimeMillis());
+        param.setDate(date);
+        replay(param);
+        Mappers.DATE.setValue(param, date);
+        verify(param);
+
+        Element element = createMock(Element.class);
+        expect(element.getDate()).andReturn(date);
+
+        replay(element);
+
+        assertEquals(date, Mappers.DATE.value(element));
+        verify(element);
+    }
+
     public void testTimestamp() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
         final Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -203,6 +223,20 @@ public class ResultSetRowTest extends TestCase {
 
         verify(resultSet);
 
+        final SqlParameter param = createMock(SqlParameter.class);
+        final Double d = 2.3e4;
+        param.setDouble(d);
+        replay(param);
+
+        Mappers.DOUBLE.setValue(param, d);
+        verify(param);
+
+        final Element element = createMock(Element.class);
+        expect(element.getDouble()).andReturn(d);
+        replay(element);
+
+        assertEquals(d, Mappers.DOUBLE.value(element));
+        verify(element);
     }
 
     public void testFloat() throws Exception {
