@@ -43,9 +43,9 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
         final String driverClass = System.getProperty("simqle.jdbc.driverClass");
 
         final String effectiveUrl = url !=null ? url : "jdbc:hsqldb:mem:simqle";
-        final String effectiveUser = url !=null ? url : "SA";
-        final String effectivePassword = url !=null ? url : "";
-        final String effectiveDriverClass = url !=null ? url : jdbcDriver.class.getName();
+        final String effectiveUser = url !=null ? user : "SA";
+        final String effectivePassword = url !=null ? password : "";
+        final String effectiveDriverClass = url !=null ? driverClass : jdbcDriver.class.getName();
 
         final ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(effectiveUrl);
@@ -93,10 +93,12 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
                     if (line.equals("")) {
                         final String sql = builder.toString();
                         builder.setLength(0);
-                        System.out.println(sql);
-                        final PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                        preparedStatement.executeUpdate();
-                        preparedStatement.close();
+                        if (sql.trim().length()>0) {
+                            System.out.println(sql);
+                            final PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                            preparedStatement.executeUpdate();
+                            preparedStatement.close();
+                        }
                     } else {
                         builder.append(" ").append(line);
                     }

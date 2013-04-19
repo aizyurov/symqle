@@ -141,7 +141,4 @@
         <scope>test</scope>
     </dependency>
   </dependencies>
-  <modules>
-    <module>simqle-front</module>
-  </modules>
 </project>

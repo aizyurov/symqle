@@ -33,6 +33,17 @@ public class Department extends Table {
 
     public final Column<Integer> managerId = defineColumn(Mappers.INTEGER, "manager_id");
 
+    private final LazyRef<Employee> managerRef = new LazyRef<Employee>() {
+        @Override
+        protected Employee create() {
+            final Employee manager = new Employee();
+            leftJoin(manager, manager.empId.eq(managerId));
+            return manager;
+        }
+    };
 
+    public final Employee manager() {
+        return managerRef.get();
+    }
 
 }

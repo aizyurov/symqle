@@ -16,7 +16,7 @@ public class Employee extends Table {
         super("employee");
     }
 
-    public final Column<Integer> empId = defineColumn(Mappers.INTEGER, "dept_id");
+    public final Column<Integer> empId = defineColumn(Mappers.INTEGER, "emp_id");
     public final Column<String> firstName = defineColumn(Mappers.STRING, "first_name");
     public final Column<String> lastName = defineColumn(Mappers.STRING, "last_name");
     public final Column<String> title = defineColumn(Mappers.STRING, "title");
