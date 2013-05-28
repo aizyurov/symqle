@@ -2,7 +2,7 @@ package org.simqle.integration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import junit.framework.TestCase;
-import org.hsqldb.jdbcDriver;
+import org.apache.derby.jdbc.EmbeddedDriver;
 import org.simqle.sql.Dialect;
 import org.simqle.sql.DialectDataSource;
 
@@ -11,7 +11,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Base class for integration tests.
@@ -36,16 +38,21 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     private boolean databaseInitialized;
 
+    private final String driverName;
+    private final String url;
+
     protected AbstractIntegrationTestBase() throws Exception {
         final String url = System.getProperty("simqle.jdbc.url");
         final String user = System.getProperty("simqle.jdbc.user");
         final String password = System.getProperty("simqle.jdbc.password");
         final String driverClass = System.getProperty("simqle.jdbc.driverClass");
 
-        final String effectiveUrl = url !=null ? url : "jdbc:hsqldb:mem:simqle";
-        final String effectiveUser = url !=null ? user : "SA";
+        final String effectiveUrl = url !=null ? url : "jdbc:derby:memory:simqle";
+        this.url = effectiveUrl;
+        final String effectiveUser = url !=null ? user : "simqle";
         final String effectivePassword = url !=null ? password : "";
-        final String effectiveDriverClass = url !=null ? driverClass : jdbcDriver.class.getName();
+        final String effectiveDriverClass = url !=null ? driverClass : EmbeddedDriver.class.getName();
+        driverName = effectiveDriverClass;
 
         final ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(effectiveUrl);
@@ -69,6 +76,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     @Override
     protected final void setUp() throws Exception {
         if (!databaseInitialized) {
+            DriverManager.getConnection(url+";create=true");
             initDatabase();
             databaseInitialized = true;
         }
@@ -77,6 +85,32 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     protected void onSetUp() throws Exception {
 
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        if (driverName.equals("org.apache.derby.jdbc.EmbeddedDriver")) {
+           boolean gotSQLExc = false;
+            int errorCode = -1;
+           try {
+              DriverManager.getConnection(url+";drop=true");
+           } catch (SQLException se)  {
+               final String sqlState = se.getSQLState();
+               if ( sqlState.equals("XJ015") || sqlState.equals("08006") ) {
+                 gotSQLExc = true;
+              } else {
+                  errorCode = se.getErrorCode();
+                  se.printStackTrace();
+                  System.out.println("errorCode=" + errorCode);
+                  System.out.println("sqlState="+se.getSQLState());
+              }
+           }
+           if (!gotSQLExc) {
+              System.out.println("Database did not shut down normally");
+           }  else  {
+              System.out.println("Database shut down normally");
+           }
+        }
     }
 
     private void initDatabase() throws Exception {

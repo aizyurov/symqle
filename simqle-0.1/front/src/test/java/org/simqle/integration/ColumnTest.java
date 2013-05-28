@@ -19,20 +19,21 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public ColumnTest() throws Exception {
     }
 
-    public void onSetup() throws Exception {
+    @Override
+    public void onSetUp() throws Exception {
         final Country country = new Country();
         usaCountryId = country.countryId.where(country.code.eq("USA")).list(getDialectDataSource()).get(0);
         final Department dept = new Department();
         devDeptId = dept.deptId.where(dept.deptName.eq("DEV")).list(getDialectDataSource()).get(0);
     }
 
-    public void _testPair() throws Exception {
+    public void testPair() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<String,String>> developers = employee.firstName.pair(employee.lastName).where(employee.department().deptName.eq("DEV")).list(getDialectDataSource());
         System.out.println(developers);
     }
 
-    public void _testSubqueryInSelect() throws Exception {
+    public void testSubqueryInSelect() throws Exception {
         final Employee employee = new Employee();
         final Employee manager = new Employee();
         final List<Pair<String, String>> pairs = employee.lastName
