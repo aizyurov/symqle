@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author lvovich
@@ -437,4 +438,72 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         Collections.reverse(expected);
         assertEquals(expected, list);
     }
+
+    public void testOpposite() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = employee.salary.opposite().where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        assertEquals(Arrays.asList(-3000.0), list);
+    }
+
+    public void testPlus() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = employee.empId.plus(employee.deptId).list(getDialectDataSource());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDialectDataSource());
+        final Set<Integer> actual = new HashSet<Integer>();
+        for (Number n: list) {
+            actual.add(n == null ? null : n.intValue());
+        }
+        final Set<Integer> expected = new HashSet<Integer>();
+        for (Pair<Integer, Integer> pair : pairs) {
+            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() + pair.getSecond());
+        }
+        assertEquals(expected, actual);
+    }
+
+    public void testMinus() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = employee.empId.minus(employee.deptId).list(getDialectDataSource());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDialectDataSource());
+        final Set<Integer> actual = new HashSet<Integer>();
+        for (Number n: list) {
+            actual.add(n == null ? null : n.intValue());
+        }
+        final Set<Integer> expected = new HashSet<Integer>();
+        for (Pair<Integer, Integer> pair : pairs) {
+            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() - pair.getSecond());
+        }
+        assertEquals(expected, actual);
+    }
+
+    public void testMult() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = employee.empId.mult(employee.deptId).list(getDialectDataSource());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDialectDataSource());
+        final Set<Integer> actual = new HashSet<Integer>();
+        for (Number n: list) {
+            actual.add(n == null ? null : n.intValue());
+        }
+        final Set<Integer> expected = new HashSet<Integer>();
+        for (Pair<Integer, Integer> pair : pairs) {
+            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() * pair.getSecond());
+        }
+        assertEquals(expected, actual);
+    }
+
+    public void testDiv() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = employee.empId.div(employee.deptId).list(getDialectDataSource());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDialectDataSource());
+        final Set<Integer> actual = new HashSet<Integer>();
+        for (Number n: list) {
+            actual.add(n == null ? null : n.intValue());
+        }
+        final Set<Integer> expected = new HashSet<Integer>();
+        for (Pair<Integer, Integer> pair : pairs) {
+            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() / pair.getSecond());
+        }
+        assertEquals(expected, actual);
+    }
+
+
 }
