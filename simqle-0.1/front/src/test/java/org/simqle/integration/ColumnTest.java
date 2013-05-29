@@ -420,4 +420,21 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals("mysql", getDatabaseName());
         }
     }
+
+    public void testOrderByAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.orderBy(employee.lastName.asc()).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
+        Collections.sort(expected);
+        assertEquals(expected, list);
+    }
+
+    public void testOrderByDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.orderBy(employee.lastName.desc()).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
+        Collections.sort(expected);
+        Collections.reverse(expected);
+        assertEquals(expected, list);
+    }
 }
