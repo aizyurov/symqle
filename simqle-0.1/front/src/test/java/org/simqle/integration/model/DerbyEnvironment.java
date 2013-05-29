@@ -28,7 +28,11 @@ public class DerbyEnvironment implements TestEnvironment {
         dataSource.setJdbcUrl(url);
         dataSource.setDriverClass(EmbeddedDriver.class.getName());
         dialectDataSource = new DialectDataSource(GenericDialect.get(), dataSource);
+    }
 
+    @Override
+    public String getDatabaseName() {
+        return "derby";
     }
 
     @Override

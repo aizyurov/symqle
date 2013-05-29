@@ -44,6 +44,10 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     }
 
+    protected final String getDatabaseName() {
+        return environment.getDatabaseName();
+    }
+
     @Override
     protected void tearDown() throws Exception {
         environment.doTearDown();

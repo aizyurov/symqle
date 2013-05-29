@@ -15,13 +15,20 @@ import java.util.Properties;
 public class ExternalDbEnvironment implements TestEnvironment {
 
     private DialectDataSource dialectDataSource;
+    private String databaseName;
 
     public DialectDataSource getDialectDataSource() {
         return dialectDataSource;
     }
 
     @Override
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    @Override
     public void doSetUp(final String databaseName) throws Exception {
+        this.databaseName = databaseName;
         final Properties properties = new Properties();
         final File homeDir = new File(System.getProperty("user.home"));
         final File simqleSettingsDir = new File(homeDir, ".simqle");
@@ -44,5 +51,6 @@ public class ExternalDbEnvironment implements TestEnvironment {
     public void doTearDown() throws Exception {
         ((ComboPooledDataSource) dialectDataSource.getDataSource()).close();
         dialectDataSource = null;
+        databaseName = null;
     }
 }

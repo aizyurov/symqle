@@ -9,4 +9,5 @@ public interface TestEnvironment {
     void doSetUp(String testName) throws Exception;
     void doTearDown() throws Exception;
     DialectDataSource getDialectDataSource();
+    String getDatabaseName();
 }

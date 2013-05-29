@@ -7,6 +7,8 @@ import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.sql.AbstractSelectList;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -183,6 +185,79 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.le("James")).list(getDialectDataSource());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Cooper")), new HashSet<String>(list));
+    }
+
+    public void testExceptAll() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        try {
+            final List<String> list = employee.lastName.exceptAll(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            // mysql does not support EXCEPT
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testExcept() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        try {
+            final List<String> list = employee.lastName.except(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            // mysql does not support EXCEPT
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        try {
+            final List<String> list = employee.firstName.exceptDistinct(department.manager().firstName.where(department.deptId.eq(1))).list(getDialectDataSource());
+            assertEquals(3, list.size());
+            assertTrue(list.toString(), list.contains("Bill"));
+            assertTrue(list.toString(), list.contains("James"));
+            assertTrue(list.toString(), list.contains("Alex"));
+        } catch (SQLException e) {
+            // mysql does not support EXCEPT
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testUnionAll() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.unionAll(department.manager().lastName).list(getDialectDataSource());
+        assertEquals(7, list.size());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood", "First", "Redwood"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.unionDistinct(department.manager().lastName).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+
+    }
+
+    public void testUnion() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.union(department.manager().lastName).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+
     }
 
 }
