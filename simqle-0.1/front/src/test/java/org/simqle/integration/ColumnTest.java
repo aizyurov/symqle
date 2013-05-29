@@ -118,7 +118,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testEq() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.eq(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
     }
 
     public void testNe() throws Exception {
@@ -136,7 +136,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testGe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
     }
 
     public void testLt() throws Exception {
@@ -148,7 +148,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testLe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood")), new HashSet<String>(list));
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Redwood")), new HashSet<String>(list));
     }
 
     public void testEqValue() throws Exception {
@@ -355,8 +355,69 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testInList() throws Exception {
         final Employee employee = new Employee();
-        // TODO: change signature of in() to accept Java values
-//        final List<String> list = employee.lastName.where(employee.firstName.in("James", "Bill")).list(getDialectDataSource());
+        final List<String> list = employee.lastName.where(employee.firstName.in("James", "Bill")).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Cooper"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+    }
 
+    public void testNotInList() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.notIn("James", "Bill")).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "Pedersen"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+    }
+
+    public void testIsNull() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.deptId.isNull()).list(getDialectDataSource());
+        assertEquals(Collections.singletonList("Cooper"), list);
+    }
+
+    public void testIsNotNull() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.deptId.isNotNull()).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+    }
+
+    public void testOrderBy() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
+        Collections.sort(expected);
+        assertEquals(expected, list);
+    }
+
+    public void testOrderByTwoColumns() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.orderBy(employee.firstName, employee.lastName).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Pedersen", "March", "Cooper", "First", "Redwood"));
+        assertEquals(expected, list);
+    }
+
+    public void testOrderByNullsFirst() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.orderBy(employee.deptId.nullsFirst()).list(getDialectDataSource());
+            assertEquals("Cooper", list.get(0));
+        } catch (SQLException e) {
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testOrderByNullsLast() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.orderBy(employee.deptId.nullsLast()).list(getDialectDataSource());
+            assertEquals("Cooper", list.get(list.size()-1));
+        } catch (SQLException e) {
+            assertEquals("mysql", getDatabaseName());
+        }
     }
 }

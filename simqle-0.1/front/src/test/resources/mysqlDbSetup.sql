@@ -43,7 +43,7 @@ insert into employee (emp_id, first_name, last_name, title, hire_date, salary, d
  'guru', '2008-10-11', 2000, 2 )
 
 insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id, is_retired) values (203, 'James', 'Cooper',
- 'hacker', '2009-01-12', 1500, 2, true )
+ 'hacker', '2009-01-12', 1500, null, true )
 
 
 

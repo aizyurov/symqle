@@ -45,9 +45,8 @@ insert into employee (first_name, last_name, title, hire_date, salary, dept_id) 
  'guru', '2008-10-11', 2000, dept_id
   from department d where d.dept_name = 'DEV'
 
-insert into employee (first_name, last_name, title, hire_date, salary, dept_id, is_retired) select 'James', 'Cooper',
- 'hacker', '2009-01-12', 1500, dept_id, true
-  from department d where d.dept_name = 'DEV'
+insert into employee (first_name, last_name, title, hire_date, salary, dept_id, is_retired) values ('James', 'Cooper',
+ 'hacker', '2009-01-12', 1500, null , true)
 
 
 
