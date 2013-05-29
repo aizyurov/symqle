@@ -151,12 +151,12 @@ public class LikePredicateBaseTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.name.like(person.nick).in(TRUE, NULL)).show();
+        final String sql = person.id.where(person.name.like(person.nick).in(true, false)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name LIKE T0.nick) IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.name.like(person.nick).notIn(TRUE, NULL)).show();
+        final String sql = person.id.where(person.name.like(person.nick).notIn(true, false)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name LIKE T0.nick) NOT IN(?, ?)", sql);
    }
 
@@ -192,8 +192,6 @@ public class LikePredicateBaseTest extends SqlTestCase {
 
     private static Person child = new Person();
 
-    final DynamicParameter<Boolean> TRUE = DynamicParameter.create(Mappers.BOOLEAN, true);
-    final DynamicParameter<Boolean> NULL = DynamicParameter.create(Mappers.BOOLEAN, null);
 
 
 }

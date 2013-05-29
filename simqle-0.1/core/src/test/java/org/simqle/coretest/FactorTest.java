@@ -134,13 +134,13 @@ public class FactorTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.id.opposite().in(person.id.opposite(), person.id)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id IN(- T0.id, T0.id)", sql);
+        String sql = person.id.where(person.id.opposite().in(-1L, 1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.id.opposite().notIn(person.id.opposite(), person.id)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id NOT IN(- T0.id, T0.id)", sql);
+        String sql = person.id.where(person.id.opposite().notIn(-1L, 1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id NOT IN(?, ?)", sql);
    }
 
     public void testOpposite() throws Exception {

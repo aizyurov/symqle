@@ -8,7 +8,6 @@ import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
-import org.simqle.sql.ValueExpression;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -273,10 +272,7 @@ public class ColumnTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
 
-        final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
-        final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
-        final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
-        String sql = id.where(id.in(expr, expr2, expr3)).show();
+        String sql = id.where(id.in(1L, 2L, 3L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id IN(?, ?, ?)", sql);
    }
 
@@ -284,10 +280,7 @@ public class ColumnTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
 
-        final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
-        final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
-        final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
-        String sql = id.where(id.notIn(expr, expr2, expr3)).show();
+        String sql = id.where(id.notIn(1L, 2L, 3L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id NOT IN(?, ?, ?)", sql);
    }
 

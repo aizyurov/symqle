@@ -133,13 +133,13 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).in(person.nick, person.name)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END IN(T0.nick, T0.name)", sql);
+        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).in("John", "James")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).notIn(person.nick, person.name)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NOT IN(T0.nick, T0.name)", sql);
+        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).notIn("John")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NOT IN(?)", sql);
    }
 
     public void testAsInSubquery() throws Exception {

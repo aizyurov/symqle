@@ -127,13 +127,13 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).in(numberSign.concat(person.id), numberSign.concat(person.id).concat(numberSign))).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id IN(? || T0.id, ? || T0.id || ?)", sql);
+        String sql = person.id.where(numberSign.concat(person.id).in("#123", "#124")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).notIn(numberSign.concat(person.id), numberSign.concat(person.id).concat(numberSign))).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id NOT IN(? || T0.id, ? || T0.id || ?)", sql);
+        String sql = person.id.where(numberSign.concat(person.id).notIn("#123", "#124")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id NOT IN(?, ?)", sql);
    }
 
     public void testOrderBy() throws Exception {

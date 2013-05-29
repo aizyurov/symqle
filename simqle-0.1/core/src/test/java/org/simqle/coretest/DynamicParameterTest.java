@@ -203,10 +203,7 @@ public class DynamicParameterTest extends SqlTestCase {
         // find all but the most old
 
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
-        final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
-        final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
-        String sql = id.where(param.in(expr, expr2, expr3)).show();
+        String sql = id.where(param.in(1L, 2L, 3L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(?, ?, ?)", sql);
    }
 
@@ -217,7 +214,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
         final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
         final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
-        String sql = id.where(param.notIn(expr, expr2, expr3)).show();
+        String sql = id.where(param.notIn(1L, 2L, 3L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT IN(?, ?, ?)", sql);
    }
 

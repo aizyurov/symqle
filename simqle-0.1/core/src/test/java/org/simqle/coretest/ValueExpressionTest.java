@@ -132,13 +132,13 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(person.name.eq("John").asValue(), person.married)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IN(T0.name = ?, T0.married)", sql);
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IN(?, ?)", sql);
     }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notIn(person.name.eq("John").asValue(), person.married)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) NOT IN(T0.name = ?, T0.married)", sql);
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notIn(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) NOT IN(?, ?)", sql);
     }
 
     public void testIsNull() throws Exception {
@@ -298,8 +298,8 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testAsInListArguments() throws Exception {
-        final String sql = person.id.where(person.married.in(person.name.eq(person.nickName).asValue(), person.name.eq("John").asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.married IN(T0.name = T0.nick, T0.name = ?)", sql);
+        final String sql = person.id.where(person.married.in(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.married IN(?, ?)", sql);
     }
 
     public void testQueryValue() throws Exception {

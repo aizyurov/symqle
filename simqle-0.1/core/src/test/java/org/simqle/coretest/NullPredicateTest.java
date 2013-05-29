@@ -147,13 +147,13 @@ public class NullPredicateTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.smart.isNull().in(person.alive.isNull().asValue(), person.friendly.booleanValue().asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) IN(T0.alive IS NULL, T0.friendly)", sql);
+        String sql = person.id.where(person.smart.isNull().in(true)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) IN(?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.smart.isNull().notIn(person.alive.booleanValue().asValue(), person.friendly.booleanValue().asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) NOT IN(T0.alive, T0.friendly)", sql);
+        String sql = person.id.where(person.smart.isNull().notIn(false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) NOT IN(?)", sql);
    }
 
     public void testThen() throws Exception {

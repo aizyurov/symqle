@@ -42,13 +42,13 @@ public class InPredicateTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).in(person.name.isNotNull().asValue(), person.name.isNull().asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) IN(T0.name IS NOT NULL, T0.name IS NULL)", sql);
+        final String sql = person.id.where(person.name.in(employee.name).in(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) IN(?, ?)", sql);
     }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).notIn(person.name.isNotNull().asValue(), person.name.isNull().asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) NOT IN(T0.name IS NOT NULL, T0.name IS NULL)", sql);
+        final String sql = person.id.where(person.name.in(employee.name).notIn(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) NOT IN(?, ?)", sql);
     }
 
     public void testIsTrue() throws Exception {

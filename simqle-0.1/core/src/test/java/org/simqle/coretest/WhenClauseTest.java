@@ -144,13 +144,13 @@ public class WhenClauseTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).in(person.nick, person.name)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END IN(T0.nick, T0.name)", sql);
+        final String sql = person.id.where(person.age.gt(20L).then(person.name).in("John", "James")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).notIn(person.nick, person.name)).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END NOT IN(T0.nick, T0.name)", sql);
+        final String sql = person.id.where(person.age.gt(20L).then(person.name).notIn("John", "James")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END NOT IN(?, ?)", sql);
    }
 
     public void testAsInSubquery() throws Exception {

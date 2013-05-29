@@ -39,9 +39,9 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().in(person.name.isNotNull().asValue(), person.name.isNull().asValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().in(true, false)).show();
         System.out.println(sql);
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(T0.name IS NOT NULL, T0.name IS NULL)", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) IN(?, ?)", sql);
     }
 
     public void testNotIn() throws Exception {
@@ -51,9 +51,9 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().notIn(person.name.isNotNull().asValue(), person.name.isNull().asValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().notIn(true, false)).show();
         System.out.println(sql);
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) NOT IN(T0.name IS NOT NULL, T0.name IS NULL)", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) NOT IN(?, ?)", sql);
     }
 
     public void testIsTrue() throws Exception {

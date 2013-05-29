@@ -2,7 +2,6 @@ package org.simqle.coretest;
 
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
-import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.TableOrView;
 
 /**
@@ -136,12 +135,12 @@ public class LikePredicateTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.name.like(person.nick).escape('\\').in(TRUE, NULL)).show();
+        final String sql = person.id.where(person.name.like(person.nick).escape('\\').in(true, false)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name LIKE T0.nick ESCAPE ?) IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.name.like(person.nick).escape('\\').notIn(TRUE, NULL)).show();
+        final String sql = person.id.where(person.name.like(person.nick).escape('\\').notIn(true, false)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name LIKE T0.nick ESCAPE ?) NOT IN(?, ?)", sql);
    }
 
@@ -177,8 +176,6 @@ public class LikePredicateTest extends SqlTestCase {
 
     private static Person child = new Person();
 
-    final DynamicParameter<Boolean> TRUE = DynamicParameter.create(Mappers.BOOLEAN, true);
-    final DynamicParameter<Boolean> NULL = DynamicParameter.create(Mappers.BOOLEAN, null);
 
 
 }

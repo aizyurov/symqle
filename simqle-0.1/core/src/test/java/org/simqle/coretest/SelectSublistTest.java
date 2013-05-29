@@ -37,13 +37,13 @@ public class SelectSublistTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        final String sql = person.name.where(employee.id.queryValue().in(person.id, person.id.opposite())).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IN(T0.id, - T0.id)", sql);
+        final String sql = person.name.where(employee.id.queryValue().in(1L, 2L)).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IN(?, ?)", sql);
     }
 
     public void testNotInList() throws Exception {
-        final String sql = person.name.where(employee.id.queryValue().notIn(person.id, person.id.opposite())).show();
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) NOT IN(T0.id, - T0.id)", sql);
+        final String sql = person.name.where(employee.id.queryValue().notIn(1L, 2L)).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) NOT IN(?, ?)", sql);
     }
 
     public void testIsNull() throws Exception {

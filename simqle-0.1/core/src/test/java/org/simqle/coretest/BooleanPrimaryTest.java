@@ -197,13 +197,13 @@ public class BooleanPrimaryTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().in(person.alive.booleanValue().asValue(), person.friendly.booleanValue().asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart) IN(T0.alive, T0.friendly)", sql);
+        String sql = person.id.where(person.smart.booleanValue().in(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart) IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.smart.booleanValue().notIn(person.alive.booleanValue().asValue(), person.friendly.booleanValue().asValue())).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart) NOT IN(T0.alive, T0.friendly)", sql);
+        String sql = person.id.where(person.smart.booleanValue().notIn(true, false)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart) NOT IN(?, ?)", sql);
    }
 
     public void testThen() throws Exception {

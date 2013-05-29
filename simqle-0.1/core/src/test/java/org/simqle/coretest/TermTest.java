@@ -128,13 +128,13 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.id.mult(two).in(person.id.mult(two), person.id.plus(0))).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? IN(T0.id * ?, T0.id + ?)", sql);
+        String sql = person.id.where(person.id.mult(two).in(2L, 4L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.id.mult(two).notIn(person.id.mult(two), person.id.plus(0))).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? NOT IN(T0.id * ?, T0.id + ?)", sql);
+        String sql = person.id.where(person.id.mult(two).notIn(2L, 4L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? NOT IN(?, ?)", sql);
    }
 
     public void testOrderBy() throws Exception {

@@ -323,14 +323,6 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         }
     }
 
-    public void testAsInListArguments() throws Exception {
-        final String sql = employee.id.where(
-                employee.id.in(
-                        person.id.where(person.name.eq(employee.name)).queryValue(),
-                        person.id.where(person.name.eq(employee.name)).queryValue().opposite())).show();
-        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 WHERE T1.id IN((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name), -(SELECT T2.id FROM person AS T2 WHERE T2.name = T1.name))", sql);
-    }
-
     public void testQueryValue() throws Exception {
         try {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().queryValue().where(employee.id.eq(1L)).show();
