@@ -331,4 +331,32 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
 
     }
+
+    public void testIn() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.in(department.manager().firstName)).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("First", "Cooper", "Redwood"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+
+    }
+
+    public void testNotIn() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.notIn(department.manager().firstName)).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen"));
+        Collections.sort(expected);
+        Collections.sort(list);
+        assertEquals(expected, list);
+    }
+
+    public void testInList() throws Exception {
+        final Employee employee = new Employee();
+        // TODO: change signature of in() to accept Java values
+//        final List<String> list = employee.lastName.where(employee.firstName.in("James", "Bill")).list(getDialectDataSource());
+
+    }
 }
