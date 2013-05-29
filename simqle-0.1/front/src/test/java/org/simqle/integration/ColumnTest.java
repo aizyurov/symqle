@@ -47,6 +47,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testMultipleJoins() throws Exception {
+        System.out.println(getName());
         final Employee employee = new Employee();
         final AbstractSelectList<Pair<String,String>> select = employee.department().country().code.pair(employee.department().manager().department().country().code);
         System.out.println(select.show());
@@ -55,8 +56,10 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 //        connection.prepareStatement("SELECT T3.code AS C1 FROM employee AS T1 LEFT JOIN  department AS T2 LEFT JOIN country AS T3 ON T3.country_id = T2.country_id ON T2.dept_id = T1.dept_id");
 
         assertEquals(5, countryCodes.size());
+        System.out.println(countryCodes);
         for (Pair<String, String> pair : countryCodes) {
             assertEquals(pair.getFirst(), pair.getSecond());
         }
     }
+
 }
