@@ -18,6 +18,9 @@ insert into country (name, code) values ('United States of America', 'USA')
 
 insert into country (name, code) values ('Russian Federation', 'RUS')
 
+insert into country (name, code) values ('France', 'FRA')
+
+
 insert into department (dept_name, country_id) select 'HR', country_id from country c where c.code = 'USA'
 
 insert into department (dept_name, country_id) select 'DEV', country_id from country c where c.code = 'RUS'

@@ -20,6 +20,8 @@ insert into country (country_id, name, code) values (1, 'United States of Americ
 
 insert into country (country_id, name, code) values (2, 'Russian Federation', 'RUS')
 
+insert into country (name, code) values ('France', 'FRA')
+
 insert into department (dept_id, dept_name, country_id) values(1, 'HR', 1)
 
 insert into department (dept_id, dept_name, country_id) values (2, 'DEV', 2)

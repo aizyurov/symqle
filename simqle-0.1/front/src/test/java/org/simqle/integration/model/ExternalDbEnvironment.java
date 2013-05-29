@@ -39,7 +39,7 @@ public class ExternalDbEnvironment implements TestEnvironment {
         dataSource.setDriverClass(properties.getProperty("simqle.jdbc.driverClass"));
         dataSource.setUser(properties.getProperty("simqle.jdbc.user"));
         dataSource.setPassword(properties.getProperty("simqle.jdbc.password"));
-        final String dialectClass = System.getProperty("simqle.jdbc.dialectClass");
+        final String dialectClass = properties.getProperty("simqle.jdbc.dialectClass");
         final String effectiveClass = dialectClass !=null ? dialectClass : "org.simqle.sql.GenericDialect";
         final Class<?> dialectClazz = Class.forName(effectiveClass);
         final Method getMethod = dialectClazz.getMethod("get");

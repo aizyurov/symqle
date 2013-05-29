@@ -208,6 +208,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // mysql does not support EXCEPT
             assertEquals("mysql", getDatabaseName());
+            // a workaround for EXCEPT - TODO
         }
     }
 
@@ -235,7 +236,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
-
     }
 
     public void testUnionDistinct() throws Exception {
@@ -246,7 +246,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
-
     }
 
     public void testUnion() throws Exception {
@@ -257,7 +256,79 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
+    }
+
+    public void testIntersectAll() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        try {
+            final List<String> list = employee.lastName.intersectAll(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            // mysql does not support EXCEPT
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testIntersect() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        try {
+            final List<String> list = employee.lastName.intersect(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            // mysql does not support EXCEPT
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        try {
+            final List<String> list = employee.lastName.intersectDistinct(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            // mysql does not support EXCEPT
+            assertEquals("mysql", getDatabaseName());
+        }
+    }
+
+    public void testSelectForUpdate() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.forUpdate().list(getDialectDataSource());
+        assertEquals(5, list.size());
+        assertTrue(list.toString(), list.contains("Cooper"));
+        assertTrue(list.toString(), list.contains("Redwood"));
+        assertTrue(list.toString(), list.contains("March"));
+        assertTrue(list.toString(), list.contains("First"));
+        assertTrue(list.toString(), list.contains("Pedersen"));
+    }
+
+    public void testSelectForReadOnly() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.forReadOnly().list(getDialectDataSource());
+        assertEquals(5, list.size());
+        assertTrue(list.toString(), list.contains("Cooper"));
+        assertTrue(list.toString(), list.contains("Redwood"));
+        assertTrue(list.toString(), list.contains("March"));
+        assertTrue(list.toString(), list.contains("First"));
+        assertTrue(list.toString(), list.contains("Pedersen"));
+    }
+
+    public void testExists() throws Exception {
+        final Country country = new Country();
+        final Department department = new Department();
+        final List<String> list = country.code.where(department.deptId.exists()).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
 
     }
 
+    public void testExistsWithCondition() throws Exception {
+        final Country country = new Country();
+        final Department department = new Department();
+        final List<String> list = country.code.where(department.deptId.where(department.countryId.eq(country.countryId)).exists()).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
+
+    }
 }

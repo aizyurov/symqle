@@ -33,7 +33,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
         final String database = System.getProperty("org.simqle.integration.database");
         if (database == null) {
             environment = new DerbyEnvironment();
-            environment.doSetUp(getName());
+            environment.doSetUp(getClass().getName() + "." + getName());
        } else {
             environment = new ExternalDbEnvironment();
             environment.doSetUp(database);
