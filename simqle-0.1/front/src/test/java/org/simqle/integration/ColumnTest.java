@@ -1,11 +1,15 @@
 package org.simqle.integration;
 
 import org.simqle.Pair;
+import org.simqle.generic.Functions;
 import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.sql.AbstractSelectList;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -60,6 +64,125 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         for (Pair<String, String> pair : countryCodes) {
             assertEquals(pair.getFirst(), pair.getSecond());
         }
+    }
+
+    public void testSelect() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.list(getDialectDataSource());
+        assertEquals(5, list.size());
+        assertTrue(list.toString(), list.contains("Cooper"));
+        assertTrue(list.toString(), list.contains("Redwood"));
+        assertTrue(list.toString(), list.contains("March"));
+        assertTrue(list.toString(), list.contains("First"));
+        assertTrue(list.toString(), list.contains("Pedersen"));
+    }
+
+    public void testSelectAll() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.all().list(getDialectDataSource());
+        assertEquals(5, list.size());
+        assertTrue(list.toString(), list.contains("Cooper"));
+        assertTrue(list.toString(), list.contains("Redwood"));
+        assertTrue(list.toString(), list.contains("March"));
+        assertTrue(list.toString(), list.contains("First"));
+        assertTrue(list.toString(), list.contains("Pedersen"));
+    }
+
+    public void testSelectDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.distinct().list(getDialectDataSource());
+        assertEquals(4, list.size());
+        assertTrue(list.toString(), list.contains("Margaret"));
+        assertTrue(list.toString(), list.contains("Bill"));
+        assertTrue(list.toString(), list.contains("James"));
+        assertTrue(list.toString(), list.contains("Alex"));
+    }
+
+    public void testAsFunctionArgument() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = Functions.floor(employee.salary).list(getDialectDataSource());
+        assertEquals(5, list.size());
+        assertTrue(list.toString(), list.contains(3000.0));
+        assertTrue(list.toString(), list.contains(2000.0));
+        assertTrue(list.toString(), list.contains(1500.0));
+    }
+
+    public void testAsCondition() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.retired.booleanValue()).list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    public void testEq() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.eq(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
+    }
+
+    public void testNe() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.ne(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
+    }
+
+    public void testGt() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.gt(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(Collections.emptyList(), list);
+    }
+
+    public void testGe() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
+    }
+
+    public void testLt() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.lt(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
+    }
+
+    public void testLe() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood")), new HashSet<String>(list));
+    }
+
+    public void testEqValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper")), new HashSet<String>(list));
+    }
+
+    public void testNeValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.ne("James")).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood")), new HashSet<String>(list));
+    }
+
+    public void testGtValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.gt("James")).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+    }
+
+    public void testGeValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.ge("James")).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
+    }
+
+    public void testLtValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.lt("James")).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
+    }
+
+    public void testLeValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.le("James")).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Cooper")), new HashSet<String>(list));
     }
 
 }
