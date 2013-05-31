@@ -48,6 +48,8 @@ insert into employee (first_name, last_name, title, hire_date, salary, dept_id) 
 insert into employee (first_name, last_name, title, hire_date, salary, dept_id, is_retired) values ('James', 'Cooper',
  'hacker', '2009-01-12', 1500, null , true)
 
+ create table big_table (num integer)
+
 
 
 

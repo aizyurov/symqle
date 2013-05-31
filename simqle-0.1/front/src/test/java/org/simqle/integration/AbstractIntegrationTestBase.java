@@ -6,6 +6,8 @@ import org.simqle.integration.model.ExternalDbEnvironment;
 import org.simqle.integration.model.TestEnvironment;
 import org.simqle.sql.DialectDataSource;
 
+import java.util.Arrays;
+
 /**
  * Base class for integration tests.
  * dialectDataSource is initialized depending on system property
@@ -44,13 +46,13 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     }
 
-    protected final String getDatabaseName() {
-        return environment.getDatabaseName();
-    }
-
     @Override
     protected void tearDown() throws Exception {
         environment.doTearDown();
+    }
+
+    protected final boolean databaseIsNot(String... allowedDatabases) {
+        return !Arrays.asList(allowedDatabases).contains(environment.getDatabaseName());
     }
 
 }

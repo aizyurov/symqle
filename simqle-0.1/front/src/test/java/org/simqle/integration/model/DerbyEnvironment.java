@@ -32,7 +32,7 @@ public class DerbyEnvironment implements TestEnvironment {
 
     @Override
     public String getDatabaseName() {
-        return "derby";
+        return "embeddedDerby";
     }
 
     @Override

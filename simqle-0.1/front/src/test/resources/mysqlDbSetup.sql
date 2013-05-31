@@ -45,6 +45,7 @@ insert into employee (emp_id, first_name, last_name, title, hire_date, salary, d
 insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id, is_retired) values (203, 'James', 'Cooper',
  'hacker', '2009-01-12', 1500, null, true )
 
+create table big_table (num integer)
 
 
 

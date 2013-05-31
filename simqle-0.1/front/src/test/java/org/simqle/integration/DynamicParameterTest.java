@@ -1,18 +1,14 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
-import org.simqle.front.StatementOptions;
+import org.simqle.front.Params;
 import org.simqle.generic.Functions;
-import org.simqle.integration.model.BigTable;
 import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
-import org.simqle.sql.AbstractSelectList;
+import org.simqle.sql.DynamicParameter;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,12 +20,12 @@ import java.util.Set;
 /**
  * @author lvovich
  */
-public class ColumnTest extends AbstractIntegrationTestBase {
+public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     private Integer usaCountryId;
     private Integer devDeptId;
 
-    public ColumnTest() throws Exception {
+    public DynamicParameterTest() throws Exception {
     }
 
     @Override
@@ -40,166 +36,189 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         devDeptId = dept.deptId.where(dept.deptName.eq("DEV")).list(getDialectDataSource()).get(0);
     }
 
-    public void testPair() throws Exception {
-        final Employee employee = new Employee();
-        final List<Pair<String,String>> developers = employee.firstName.pair(employee.lastName).where(employee.department().deptName.eq("DEV")).list(getDialectDataSource());
-        System.out.println(developers);
-    }
-
-    public void testSubqueryInSelect() throws Exception {
-        final Employee employee = new Employee();
-        final Employee manager = new Employee();
-        final List<Pair<String, String>> pairs = employee.lastName
-                .pair(
-                        manager.lastName.where(employee.department().deptId.eq(manager.department().deptId)
-                                .and(manager.title.like("%manager"))).queryValue()
-                )
-                .where(employee.title.eq("guru")).list(getDialectDataSource());
-        assertEquals(1, pairs.size());
-        assertEquals(Pair.of("Pedersen", "First"), pairs.get(0));
-    }
-
-    public void testMultipleJoins() throws Exception {
-        System.out.println(getName());
-        final Employee employee = new Employee();
-        final AbstractSelectList<Pair<String,String>> select = employee.department().country().code.pair(employee.department().manager().department().country().code);
-        System.out.println(select.show());
-        final List<Pair<String, String>> countryCodes = select.list(getDialectDataSource());
-//        final Connection connection = getDialectDataSource().getDataSource().getConnection();
-//        connection.prepareStatement("SELECT T3.code AS C1 FROM employee AS T1 LEFT JOIN  department AS T2 LEFT JOIN country AS T3 ON T3.country_id = T2.country_id ON T2.dept_id = T1.dept_id");
-
-        assertEquals(5, countryCodes.size());
-        System.out.println(countryCodes);
-        for (Pair<String, String> pair : countryCodes) {
-            assertEquals(pair.getFirst(), pair.getSecond());
+    public void testSelect() throws Exception {
+        try {
+            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).list(getDialectDataSource());
+            assertEquals(Arrays.asList(1), list);
+        } catch (IllegalStateException e) {
+            if (!databaseIsNot("mysql")) {
+                fail("SELECT with no FROM must be supported by this engine");
+            }
         }
     }
 
-    public void testSelect() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.list(getDialectDataSource());
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains("Cooper"));
-        assertTrue(list.toString(), list.contains("Redwood"));
-        assertTrue(list.toString(), list.contains("March"));
-        assertTrue(list.toString(), list.contains("First"));
-        assertTrue(list.toString(), list.contains("Pedersen"));
-    }
-
     public void testSelectAll() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.all().list(getDialectDataSource());
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains("Cooper"));
-        assertTrue(list.toString(), list.contains("Redwood"));
-        assertTrue(list.toString(), list.contains("March"));
-        assertTrue(list.toString(), list.contains("First"));
-        assertTrue(list.toString(), list.contains("Pedersen"));
+        try {
+            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).all().list(getDialectDataSource());
+            assertEquals(Arrays.asList(1), list);
+        } catch (IllegalStateException e) {
+            if (!databaseIsNot("mysql")) {
+                fail("SELECT with no FROM must be supported by this engine");
+            }
+        }
     }
 
     public void testSelectDistinct() throws Exception {
+        try {
+            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).all().list(getDialectDataSource());
+            assertEquals(Arrays.asList(1), list);
+        } catch (IllegalStateException e) {
+            if (!databaseIsNot("mysql")) {
+                fail("SELECT with no FROM must be supported by this engine");
+            }
+        }
+    }
+
+    public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.firstName.distinct().list(getDialectDataSource());
-        assertEquals(4, list.size());
-        assertTrue(list.toString(), list.contains("Margaret"));
-        assertTrue(list.toString(), list.contains("Bill"));
-        assertTrue(list.toString(), list.contains("James"));
-        assertTrue(list.toString(), list.contains("Alex"));
+        try {
+            final List<Pair<Integer, String>> redwood = Params.p(1).pair(employee.firstName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+            assertEquals(Arrays.asList(Pair.of(1, "Margaret")), redwood);
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                fail("This engine should support parameters in select list");
+            }
+        }
     }
 
     public void testAsFunctionArgument() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = Functions.floor(employee.salary).list(getDialectDataSource());
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains(3000.0));
-        assertTrue(list.toString(), list.contains(2000.0));
-        assertTrue(list.toString(), list.contains(1500.0));
+        final List<Pair<String, Double>> list = employee.lastName.pair(Functions.floor(Params.p(1.2))).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        assertEquals(Arrays.asList(Pair.of("Redwood", 1.0)), list);
     }
 
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.retired.booleanValue()).list(getDialectDataSource());
-        assertEquals(Arrays.asList("Cooper"), list);
+        try {
+            final List<String> list = employee.lastName.where(Params.p(false).booleanValue()).list(getDialectDataSource());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testEq() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+        final List<String> list = employee.lastName.where(Params.p("Margaret").eq(employee.firstName)).list(getDialectDataSource());
+        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     public void testNe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ne(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
+        final List<String> list = employee.lastName.where(Params.p("Margaret").ne(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Pedersen")), new HashSet<String>(list));
     }
 
     public void testGt() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.gt(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(Collections.emptyList(), list);
+        final List<String> list = employee.lastName.where(Params.p("K").gt(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Pedersen")), new HashSet<String>(list));
     }
 
     public void testGe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+        final List<String> list = employee.lastName.where(Params.p("James").ge(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("First", "Pedersen")), new HashSet<String>(list));
     }
 
     public void testLt() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.lt(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
+        final List<String> list = employee.lastName.where(Params.p("K").lt(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Redwood")), new HashSet<String>(list));
     }
 
     public void testLe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Redwood")), new HashSet<String>(list));
+        final List<String> list = employee.lastName.where(Params.p("Margaret").le(employee.department().manager().firstName)).list(getDialectDataSource());
+        assertEquals(new HashSet<String>(Arrays.asList("March", "Redwood")), new HashSet<String>(list));
     }
 
     public void testEqValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper")), new HashSet<String>(list));
+        try {
+            final List<String> list = employee.lastName.where(Params.p("Margaret").eq("James")).list(getDialectDataSource());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // ERROR 42X35: It is not allowed for both operands of '<>' to be ? parameters.
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testNeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ne("James")).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood")), new HashSet<String>(list));
+        try {
+            final List<String> list = employee.lastName.where(Params.p("Margaret").ne("James")).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testGtValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.gt("James")).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        try {
+            final List<String> list = employee.lastName.where(Params.p("Margaret").gt("James")).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testGeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ge("James")).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
+        try {
+            final List<String> list = employee.lastName.where(Params.p("Margaret").ge("James")).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testLtValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.lt("James")).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
+        try {
+            final List<String> list = employee.lastName.where(Params.p("Margaret").lt("James")).list(getDialectDataSource());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testLeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.le("James")).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Cooper")), new HashSet<String>(list));
+        try {
+            final List<String> list = employee.lastName.where(Params.p("James").le("Margaret")).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testExceptAll() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.exceptAll(department.manager().lastName).list(getDialectDataSource());
-            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
+            final List<String> list = Params.p("Redwood").exceptAll(employee.firstName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECt without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
         } catch (SQLException e) {
             // mysql does not support EXCEPT
             if (databaseIsNot("mysql")) {
@@ -212,14 +231,18 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.except(department.manager().lastName).list(getDialectDataSource());
-            assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
+            final List<String> list = Params.p("Redwood").except(employee.firstName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECt without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
         } catch (SQLException e) {
             // mysql does not support EXCEPT
             if (databaseIsNot("mysql")) {
                 throw e;
             }
-            // a workaround for EXCEPT - TODO
         }
     }
 
@@ -227,11 +250,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.firstName.exceptDistinct(department.manager().firstName.where(department.deptId.eq(1))).list(getDialectDataSource());
-            assertEquals(3, list.size());
-            assertTrue(list.toString(), list.contains("Bill"));
-            assertTrue(list.toString(), list.contains("James"));
-            assertTrue(list.toString(), list.contains("Alex"));
+            final List<String> list = Params.p("Redwood").exceptDistinct(employee.firstName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECt without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
         } catch (SQLException e) {
             // mysql does not support EXCEPT
             if (databaseIsNot("mysql")) {
@@ -243,42 +268,67 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.unionAll(department.manager().lastName).list(getDialectDataSource());
-        assertEquals(7, list.size());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood", "First", "Redwood"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final List<String> list = Params.p("Redwood").unionAll(employee.lastName).list(getDialectDataSource());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "Redwood", "First", "Cooper", "March", "Pedersen"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECt without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
+        }
     }
 
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.unionDistinct(department.manager().lastName).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final List<String> list = Params.p("Redwood").unionDistinct(employee.lastName).list(getDialectDataSource());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "First", "Cooper", "March", "Pedersen"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECt without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
+        }
     }
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.union(department.manager().lastName).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final List<String> list = Params.p("Redwood").union(employee.lastName).list(getDialectDataSource());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "First", "Cooper", "March", "Pedersen"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECt without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
+        }
     }
 
     public void testIntersectAll() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.intersectAll(department.manager().lastName).list(getDialectDataSource());
-            assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+            final List<String> list = Params.p("Redwood").intersectAll(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECT without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
+            // mysql does not support INTERSECT
             if (databaseIsNot("mysql")) {
                 throw e;
             }
@@ -289,10 +339,15 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.intersect(department.manager().lastName).list(getDialectDataSource());
-            assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+            final List<String> list = Params.p("Redwood").intersect(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECT without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
+            // mysql does not support INTERSECT
             if (databaseIsNot("mysql")) {
                 throw e;
             }
@@ -303,10 +358,15 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.intersectDistinct(department.manager().lastName).list(getDialectDataSource());
-            assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
+            final List<String> list = Params.p("Redwood").intersectDistinct(department.manager().lastName).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // most databases do not support SELECT without FROM
+            if (!databaseIsNot("mysql")) {
+                throw e;
+            }
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
+            // mysql does not support INTERSECT
             if (databaseIsNot("mysql")) {
                 throw e;
             }
@@ -314,39 +374,38 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testSelectForUpdate() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.forUpdate().list(getDialectDataSource());
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains("Cooper"));
-        assertTrue(list.toString(), list.contains("Redwood"));
-        assertTrue(list.toString(), list.contains("March"));
-        assertTrue(list.toString(), list.contains("First"));
-        assertTrue(list.toString(), list.contains("Pedersen"));
+        if (databaseIsNot("mysql")) {
+            return;
+        }
+        final List<String> list = Params.p("Redwood").forUpdate().list(getDialectDataSource());
+        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     public void testSelectForReadOnly() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.forReadOnly().list(getDialectDataSource());
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains("Cooper"));
-        assertTrue(list.toString(), list.contains("Redwood"));
-        assertTrue(list.toString(), list.contains("March"));
-        assertTrue(list.toString(), list.contains("First"));
-        assertTrue(list.toString(), list.contains("Pedersen"));
+        if (databaseIsNot("mysql")) {
+            return;
+        }
+        final List<String> list = Params.p("Redwood").forUpdate().list(getDialectDataSource());
+        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     public void testExists() throws Exception {
+        if (databaseIsNot("mysql")) {
+            return;
+        }
         final Country country = new Country();
-        final Department department = new Department();
-        final List<String> list = country.code.where(department.deptId.exists()).list(getDialectDataSource());
+        final List<String> list = country.code.where(Params.p("Redwood").exists()).list(getDialectDataSource());
         assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
 
     }
 
     public void testExistsWithCondition() throws Exception {
+        if (databaseIsNot("mysql")) {
+            return;
+        }
         final Country country = new Country();
         final Department department = new Department();
-        final List<String> list = country.code.where(department.deptId.where(department.countryId.eq(country.countryId)).exists()).list(getDialectDataSource());
+        final List<String> list = country.code.where(Params.p("Redwood").where(department.countryId.eq(country.countryId)).exists()).list(getDialectDataSource());
         assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
 
     }
@@ -354,8 +413,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testIn() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.where(employee.firstName.in(department.manager().firstName)).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("First", "Cooper", "Redwood"));
+        System.out.println(employee.lastName.where(Params.p("Margaret").in(department.manager().firstName.where(employee.department().deptId.eq(department.deptId)))).show(getDialectDataSource().getDialect()));
+        final List<String> list = employee.lastName.where(Params.p("Margaret").in(department.manager().firstName.where(employee.department().deptId.eq(department.deptId)))).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "March"));
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
@@ -365,8 +425,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testNotIn() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.where(employee.firstName.notIn(department.manager().firstName)).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen"));
+        final List<String> list = employee.lastName.where(Params.p("James").notIn(department.manager().firstName.where(employee.department().deptId.eq(department.deptId)))).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Cooper", "Redwood", "March"));
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
@@ -374,20 +434,32 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testInList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.in("James", "Bill")).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Cooper"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final List<String> list = employee.lastName.where(Params.p("James").in("Bill", "James")).list(getDialectDataSource());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Pedersen", "March", "Cooper", "First", "Redwood"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testNotInList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.notIn("James", "Bill")).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "Pedersen"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final List<String> list = employee.lastName.where(Params.p("James").notIn("Bill", "Alex")).list(getDialectDataSource());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Pedersen", "March", "Cooper", "First", "Redwood"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (SQLException e) {
+            if (databaseIsNot("embeddedDerby")) {
+                throw e;
+            }
+        }
     }
 
     public void testIsNull() throws Exception {
@@ -666,77 +738,12 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testNotLike() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.notLike("%es")).list(getDialectDataSource());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "Redwood"));
+        final List<String> list = employee.lastName.where(Params.p("Bill").notLike("%es")).list(getDialectDataSource());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "First", "Cooper", "March", "Pedersen"));
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
     }
 
-    public void testMaxRows() throws Exception {
-            final Employee employee = new Employee();
-            final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDialectDataSource(), StatementOptions.setMaxRows(2));
-            assertEquals(2, list.size());
-            assertTrue(list.toString(), list.contains("First"));
-            assertTrue(list.toString(), list.contains("Cooper"));
-    }
-
-    public void testFetchSize() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.list(getDialectDataSource(), StatementOptions.setFetchSize(2));
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains("Cooper"));
-        assertTrue(list.toString(), list.contains("Redwood"));
-        assertTrue(list.toString(), list.contains("March"));
-        assertTrue(list.toString(), list.contains("First"));
-        assertTrue(list.toString(), list.contains("Pedersen"));
-    }
-
-    public void testFetchDirection() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDialectDataSource(), StatementOptions.setFetchDirection(ResultSet.FETCH_REVERSE));
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
-    }
-
-    public void testMaxFieldSize() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDialectDataSource(), StatementOptions.setMaxFieldSize(5));
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Peder", "Redwo", "Coope"));
-        final ArrayList<String> expectedForMysql = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
-        Collections.sort(expected);
-        Collections.sort(expectedForMysql);
-        Collections.sort(list);
-        assertEquals(databaseIsNot("mysql") ? expected : expectedForMysql, list);
-    }
-
-    public void testQueryTimeout() throws Exception {
-        final DataSource dataSource = getDialectDataSource().getDataSource();
-        final Connection connection = dataSource.getConnection();
-        try {
-            final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
-            deleteStatement.executeUpdate();
-            final PreparedStatement insertStatement = connection.prepareStatement("insert into big_table (num) values(?)");
-            for (int i=0; i<2000000; i++) {
-                insertStatement.setInt(1, i);
-                assertEquals(1, insertStatement.executeUpdate());
-            }
-        } finally {
-            connection.close();
-        }
-        final BigTable bigTable = new BigTable();
-        final long start = System.currentTimeMillis();
-
-        try {
-            final List<Integer> list = bigTable.num.list(getDialectDataSource(), StatementOptions.setQueryTimeout(1));
-            if (databaseIsNot("embeddedDerby")) {
-                fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
-            }
-        } catch (SQLException e) {
-            // fine
-        }
-    }
 
 }

@@ -1,5 +1,6 @@
 package org.simqle.mysql;
 
+import org.simqle.CustomSql;
 import org.simqle.Sql;
 import org.simqle.sql.Dialect;
 import org.simqle.sql.GenericDialect;
@@ -23,9 +24,17 @@ public class MysqlDialect extends GenericDialect {
       * @param cspec
      * @return
      */
-public Sql SelectStatement_is_CursorSpecification_FOR_READ_ONLY(final Sql cspec) {
+    public Sql SelectStatement_is_CursorSpecification_FOR_READ_ONLY(final Sql cspec) {
         return SelectStatement_is_CursorSpecification(cspec);
     }
 
+    @Override
+    public Sql StringExpression_is_StringExpression_CONCAT_ValueExpressionPrimary(final Sql s, final Sql e) {
+        throw new IllegalStateException("concat operator is not supported by this dialect; use concat function instead");
+    }
 
+    @Override
+    public Sql FromClauseFromNothing() {
+        return new CustomSql("");
+    }
 }

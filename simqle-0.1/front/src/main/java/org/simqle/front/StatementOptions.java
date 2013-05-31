@@ -50,15 +50,6 @@ public class StatementOptions {
         };
     }
 
-    public static StatementOption setPoolable(final boolean poolable) {
-        return new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setPoolable(poolable);
-            }
-        };
-    }
-
     public static StatementOption setQueryTimeout(final int seconds) {
         return new StatementOption() {
             @Override
