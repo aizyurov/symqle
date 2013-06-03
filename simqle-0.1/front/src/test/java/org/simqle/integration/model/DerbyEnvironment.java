@@ -2,8 +2,8 @@ package org.simqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
+import org.simqle.derby.DerbyDialect;
 import org.simqle.sql.DialectDataSource;
-import org.simqle.sql.GenericDialect;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,12 +27,12 @@ public class DerbyEnvironment implements TestEnvironment {
         final ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(url);
         dataSource.setDriverClass(EmbeddedDriver.class.getName());
-        dialectDataSource = new DialectDataSource(GenericDialect.get(), dataSource);
+        dialectDataSource = new DialectDataSource(DerbyDialect.get(), dataSource);
     }
 
     @Override
     public String getDatabaseName() {
-        return "embeddedDerby";
+        return "derby";
     }
 
     @Override

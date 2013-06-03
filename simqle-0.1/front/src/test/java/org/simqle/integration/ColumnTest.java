@@ -731,7 +731,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
         try {
             final List<Integer> list = bigTable.num.list(getDialectDataSource(), StatementOptions.setQueryTimeout(1));
-            if (databaseIsNot("embeddedDerby")) {
+            if (databaseIsNot("derby")) {
                 fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
             }
         } catch (SQLException e) {
