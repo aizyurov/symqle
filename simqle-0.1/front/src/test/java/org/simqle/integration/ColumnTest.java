@@ -7,6 +7,7 @@ import org.simqle.integration.model.BigTable;
 import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
+import org.simqle.integration.model.MyDual;
 import org.simqle.sql.AbstractSelectList;
 
 import javax.sql.DataSource;
@@ -635,7 +636,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSum() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.sum().list(getDialectDataSource());
+        final List<Number> list = employee.salary.sum().list(getDialectDataSource());
         assertEquals(1, list.size());
         assertEquals(11500, list.get(0).intValue());
     }
@@ -652,6 +653,14 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final List<Double> list = employee.salary.max().list(getDialectDataSource());
         assertEquals(1, list.size());
         assertEquals(3000, list.get(0).intValue());
+    }
+
+    public void testQueryValue() throws Exception {
+        MyDual dual = new MyDual();
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = dual.dummy.queryValue().pair(employee.lastName)
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList(Pair.of("X", "Cooper"), Pair.of("X", "First"), Pair.of("X", "March"), Pair.of("X", "Pedersen"), Pair.of("X", "Redwood")), list);
     }
 
     public void testLike() throws Exception {

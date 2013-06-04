@@ -50,7 +50,9 @@ insert into employee (first_name, last_name, title, hire_date, salary, dept_id, 
 
  create table big_table (num integer)
 
+create table my_dual (dummy char(1))
 
+insert into my_dual (dummy) values ('X')
 
 
 

@@ -750,7 +750,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testSum() throws Exception {
         try {
-            final List<Integer> list = Params.p(1).sum().list(getDialectDataSource());
+            final List<Number> list = Params.p(1L).sum().list(getDialectDataSource());
             assertEquals(1, list.size());
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
@@ -787,6 +787,21 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         }
     }
 
+    public void testQueryValue() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Pair<String, String>> list = Params.p("X").queryValue().pair(employee.lastName)
+                    .orderBy(employee.lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(Pair.of("X", "Cooper"), Pair.of("X", "First"), Pair.of("X", "March"), Pair.of("X", "Pedersen"), Pair.of("X", "Redwood")), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed
+            if (databaseIsNot("derby")) {
+                throw e;
+            }
+        }
+    }
+
+
     public void testLike() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(Params.p("James").like("%es")).list(getDialectDataSource());
@@ -813,7 +828,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         // 'LIKE' accepts 2 '?'s
 
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(Params.p(11).notLike(11+"")).list(getDialectDataSource());
+        final List<String> list = employee.lastName.where(Params.p(11).notLike(11 + "")).list(getDialectDataSource());
         assertEquals(0, list.size());
     }
 
