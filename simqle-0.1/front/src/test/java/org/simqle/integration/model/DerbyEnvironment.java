@@ -77,7 +77,7 @@ public class DerbyEnvironment implements TestEnvironment {
                     final String sql = builder.toString();
                     builder.setLength(0);
                     if (sql.trim().length()>0) {
-                        System.out.println(sql);
+//                        System.out.println(sql);
                         final PreparedStatement preparedStatement = connection.prepareStatement(sql);
                         preparedStatement.executeUpdate();
                         preparedStatement.close();
