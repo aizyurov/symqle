@@ -21,14 +21,18 @@ AggregateFunction<Integer> ::=
 ;
 
 <T> AggregateFunction<T> ::=
-    SUM LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: public AbstractAggregateFunction<T> sum {}
-|
     MIN LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: public AbstractAggregateFunction<T> min {}
 |
     MAX LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: public AbstractAggregateFunction<T> max {}
 ;
 
 AggregateFunction<Number> ::=
+    SUM LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: public AbstractAggregateFunction<Number> sum {
+        public Mapper<Number> getMapper() {
+            return Mappers.NUMBER;
+        }
+    }
+|
     AVG LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: public AbstractAggregateFunction<Number> avg {
         public Mapper<Number> getMapper() {
             return Mappers.NUMBER;

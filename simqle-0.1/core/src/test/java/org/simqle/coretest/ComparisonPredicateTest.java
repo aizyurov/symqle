@@ -156,7 +156,6 @@ public class ComparisonPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart = T0.cute) NOT IN(?)", sql);
    }
 
-
     private static class Person extends TableOrView {
         private Person() {
             super("person");
