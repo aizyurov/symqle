@@ -1,13 +1,18 @@
 package org.simqle.integration;
 
+import junit.framework.AssertionFailedError;
 import org.simqle.Mappers;
 import org.simqle.Pair;
+import org.simqle.derby.DerbyDialect;
 import org.simqle.front.Params;
 import org.simqle.generic.Functions;
 import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
+import org.simqle.mysql.MysqlDialect;
+import org.simqle.sql.Dialect;
 import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -42,9 +47,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -54,9 +59,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -66,9 +72,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -79,9 +86,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(Pair.of(1, "Margaret")), redwood);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -93,8 +98,19 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(Params.p(false).booleanValue()).list(getDialectDataSource());
-        assertEquals(0, list.size());
+        try {
+            final List<String> list = employee.lastName.where(Params.p(false).booleanValue()).list(getDialectDataSource());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // derby: ERROR 42X19: The WHERE or HAVING clause or CHECK CONSTRAINT definition is an untyped parameter expression.  It must be a BOOLEAN expression.
+            // DerbyDialect fixes this problem
+            if (DerbyDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+                // should not get here: be fixed by DerbyDialect!
+                throw e;
+            } else {
+                expectSQLException(e, "derby");
+            }
+        }
     }
 
     public void testEq() throws Exception {
@@ -139,10 +155,8 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").eq("James")).list(getDialectDataSource());
             assertEquals(0, list.size());
         } catch (SQLException e) {
-            // ERROR 42X35: It is not allowed for both operands of '=' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            // derby: ERROR 42X35: It is not allowed for both operands of '=' to be ? parameters.
+            expectSQLException(e, "derby");
         }
     }
 
@@ -152,10 +166,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").ne("James")).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // derby: ERROR 42X35: It is not allowed for both operands of '<>' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -165,10 +178,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").gt("James")).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // derby: ERROR 42X35: It is not allowed for both operands of '>' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -178,10 +190,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").ge("James")).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // derby: ERROR 42X35: It is not allowed for both operands of '>=' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -192,9 +203,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '<' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -205,9 +214,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '<=' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -218,11 +225,12 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").exceptAll(employee.firstName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "derby", "mysql");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -233,11 +241,13 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").except(employee.firstName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "derby", "mysql");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -248,11 +258,12 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").exceptDistinct(employee.firstName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "derby", "mysql");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -267,9 +278,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -284,9 +296,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -300,10 +313,12 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(expected, list);
         } catch (SQLException e) {
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -314,11 +329,12 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").intersectAll(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support INTERSECT
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "derby", "mysql");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -329,11 +345,12 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").intersect(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support INTERSECT
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "derby", "mysql");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -344,48 +361,57 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").intersectDistinct(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support INTERSECT
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "derby", "mysql");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
     public void testSelectForUpdate() throws Exception {
-        if (databaseIsNot("mysql")) {
-            return;
+        try {
+            final List<String> list = Params.p("Redwood").forUpdate().list(getDialectDataSource());
+            assertEquals(Arrays.asList("Redwood"), list);
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
-        final List<String> list = Params.p("Redwood").forUpdate().list(getDialectDataSource());
-        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     public void testSelectForReadOnly() throws Exception {
-        if (databaseIsNot("mysql")) {
-            return;
+        try {
+            final List<String> list = Params.p("Redwood").forReadOnly().list(getDialectDataSource());
+            assertEquals(Arrays.asList("Redwood"), list);
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
-        final List<String> list = Params.p("Redwood").forUpdate().list(getDialectDataSource());
-        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     public void testExists() throws Exception {
-        if (databaseIsNot("mysql")) {
-            return;
-        }
         final Country country = new Country();
-        final List<String> list = country.code.where(Params.p("Redwood").exists()).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
+        try {
+            final List<String> list = country.code.where(Params.p("Redwood").exists()).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
+        }
 
     }
 
     public void testExistsWithCondition() throws Exception {
-        if (databaseIsNot("mysql")) {
-            return;
-        }
         final Country country = new Country();
         final Department department = new Department();
-        final List<String> list = country.code.where(Params.p("Redwood").where(department.countryId.eq(country.countryId)).exists()).list(getDialectDataSource());
-        assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
+        try {
+            final List<String> list = country.code.where(Params.p("Redwood").where(department.countryId.eq(country.countryId)).exists()).list(getDialectDataSource());
+            assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
+        }
 
     }
 
@@ -421,9 +447,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
            // derby: ERROR 42X35: It is not allowed for both operands of 'IN' to be ? parameters.
-           if (databaseIsNot("derby")) {
-                throw e;
-           }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -437,9 +461,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
            // derby: ERROR 42X35: It is not allowed for both operands of 'IN' to be ? parameters.
-           if (databaseIsNot("derby")) {
-                throw e;
-           }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -469,9 +491,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -484,9 +504,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -496,11 +514,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.orderBy(Params.p("James").nullsFirst()).list(getDialectDataSource());
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
-            // mysql: does not support NULLS FIRST
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support NULLS FIRST
+            expectSQLException(e, "derby", "mysql");
         }
     }
 
@@ -510,11 +526,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.orderBy(Params.p("James").nullsLast()).list(getDialectDataSource());
             assertEquals("Cooper", list.get(list.size()-1));
         } catch (SQLException e) {
-            // mysql: does not support NULLS LAST
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("mysql", "derby")) {
-                throw e;
-            }
+            // mysql: does not support NULLS FIRST
+            expectSQLException(e, "derby", "mysql");
         }
     }
 
@@ -528,9 +542,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
         }
     }
 
@@ -543,10 +555,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(expected, list);
         } catch (SQLException e) {
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby", "mysql");
         }
     }
 
@@ -557,9 +568,8 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(-1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+
         }
     }
 
@@ -633,9 +643,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(3, sums.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '+' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -646,9 +657,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(1, sums.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '-' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -659,9 +671,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(6, sums.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '*' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -672,9 +685,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(3, sums.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '/' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -685,10 +699,16 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Ms. Redwood"), list);
         } catch (IllegalStateException e) {
             // mysql does not support "||" operator as concatenation
-            if (databaseIsNot("mysql")) {
-                throw e;
+            expectIllegalStateException(e, MysqlDialect.class);
+        } catch (AssertionFailedError e) {
+            // mysql but not MysqlDialect: concat is broken (another meaning of || operator)
+            if ("mysql".equals(getDatabaseName())) {
+                return;
             }
+            throw e;
         }
+        final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
+        assertFalse("MysqlDialect should throw exception", dialectClass.equals(MysqlDialect.class));
     }
 
     public void testConcatString() throws Exception {
@@ -697,16 +717,24 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Success").concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
             assertEquals(Arrays.asList("Success expected"), list);
         } catch (IllegalStateException e) {
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
             // mysql does not support "||" operator as concatenation
-            if (databaseIsNot("mysql")) {
-                throw e;
+            if (dialectClass.equals(MysqlDialect.class)) {
+                return;
             }
+            throw e;
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '||' to be ? parameters.
-            if (databaseIsNot("derby")) {
-                throw e;
+            expectSQLException(e, "derby");
+        } catch (AssertionFailedError e) {
+            // mysql and not MysqlDialect: concat is broken (another meaning of || operator)
+            if ("mysql".equals(getDatabaseName())) {
+                return;
             }
+            throw e;
         }
+        final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
+        assertFalse("MysqlDialect should throw exception", dialectClass.equals(MysqlDialect.class));
     }
 
     public void testCount() throws Exception {
@@ -715,9 +743,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'COUNT' operator is not allowed to take a ? parameter as an operand
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
 
     }
@@ -728,9 +756,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'COUNT' operator is not allowed to take a ? parameter as an operand
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
 
     }
@@ -742,9 +770,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'AVG' operator is not allowed to take a ? parameter as an operand.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -755,9 +783,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'SUM' operator is not allowed to take a ? parameter as an operand.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -768,9 +796,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'MIN' operator is not allowed to take a ? parameter as an operand.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -780,10 +808,10 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(1, list.size());
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
-            // derby: ERROR 42X36: The 'MIN' operator is not allowed to take a ? parameter as an operand.
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            // derby: ERROR 42X36: The 'MAX' operator is not allowed to take a ? parameter as an operand.
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 
@@ -795,9 +823,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(Pair.of("X", "Cooper"), Pair.of("X", "First"), Pair.of("X", "March"), Pair.of("X", "Pedersen"), Pair.of("X", "Redwood")), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed
-            if (databaseIsNot("derby")) {
-                throw e;
-            }
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
         }
     }
 

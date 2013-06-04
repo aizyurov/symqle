@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import junit.framework.AssertionFailedError;
 import org.simqle.Pair;
 import org.simqle.front.StatementOptions;
 import org.simqle.generic.Functions;
@@ -8,7 +9,9 @@ import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
+import org.simqle.mysql.MysqlDialect;
 import org.simqle.sql.AbstractSelectList;
+import org.simqle.sql.Dialect;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -202,10 +205,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.exceptAll(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -216,11 +217,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.except(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
-            // a workaround for EXCEPT - TODO
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -234,10 +232,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains("James"));
             assertTrue(list.toString(), list.contains("Alex"));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -279,10 +275,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.intersectAll(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -293,10 +287,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.intersect(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -307,10 +299,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.intersectDistinct(department.manager().lastName).list(getDialectDataSource());
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            // mysql does not support EXCEPT
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -327,13 +317,23 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSelectForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.forReadOnly().list(getDialectDataSource());
-        assertEquals(5, list.size());
-        assertTrue(list.toString(), list.contains("Cooper"));
-        assertTrue(list.toString(), list.contains("Redwood"));
-        assertTrue(list.toString(), list.contains("March"));
-        assertTrue(list.toString(), list.contains("First"));
-        assertTrue(list.toString(), list.contains("Pedersen"));
+        try {
+            final List<String> list = employee.lastName.forReadOnly().list(getDialectDataSource());
+            assertEquals(5, list.size());
+            assertTrue(list.toString(), list.contains("Cooper"));
+            assertTrue(list.toString(), list.contains("Redwood"));
+            assertTrue(list.toString(), list.contains("March"));
+            assertTrue(list.toString(), list.contains("First"));
+            assertTrue(list.toString(), list.contains("Pedersen"));
+        } catch (SQLException e) {
+            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+                // should work with MysqlDialect
+                throw e;
+            } else {
+                // mysql does not support FOR READ ONLY natively
+                expectSQLException(e, "mysql");
+            }
+        }
     }
 
     public void testExists() throws Exception {
@@ -427,9 +427,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.orderBy(employee.deptId.nullsFirst()).list(getDialectDataSource());
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            // mysql does not support NULLS FIRST
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -439,9 +438,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.orderBy(employee.deptId.nullsLast()).list(getDialectDataSource());
             assertEquals("Cooper", list.get(list.size()-1));
         } catch (SQLException e) {
-            if (databaseIsNot("mysql")) {
-                throw e;
-            }
+            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
+            // mysql does not support NULLS LAST
+            expectSQLException(e, "mysql");
         }
     }
 
@@ -591,25 +590,45 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
+        final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
         try {
             final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
             assertEquals(Arrays.asList("MargaretRedwood"), list);
+            assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
         } catch (IllegalStateException e) {
-            if (databaseIsNot("mysql")) {
-                throw e;
+            // mysql: does not support concat
+            if (dialectClass.equals(MysqlDialect.class)) {
+                return;
             }
+            throw e;
+        } catch (AssertionFailedError e) {
+            // mysql and not MysqlDialect: concat is broken (another meaning of || operator)
+            if ("mysql".equals(getDatabaseName())) {
+                return;
+            }
+            throw e;
         }
     }
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
+        final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
         try {
             final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
             assertEquals(Arrays.asList("Margaret expected"), list);
+            assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
         } catch (IllegalStateException e) {
-            if (databaseIsNot("mysql")) {
-                throw e;
+            // mysql: does not support concat
+            if (dialectClass.equals(MysqlDialect.class)) {
+                return;
             }
+            throw e;
+        } catch (AssertionFailedError e) {
+            // mysql and not MysqlDialect: concat is broken (another meaning of || operator)
+            if ("mysql".equals(getDatabaseName())) {
+                return;
+            }
+            throw e;
         }
     }
 
@@ -713,12 +732,18 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testMaxFieldSize() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDialectDataSource(), StatementOptions.setMaxFieldSize(5));
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Peder", "Redwo", "Coope"));
-        final ArrayList<String> expectedForMysql = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
-        Collections.sort(expected);
-        Collections.sort(expectedForMysql);
+        final ArrayList<String> truncatedNames = new ArrayList<String>(Arrays.asList("March", "First", "Peder", "Redwo", "Coope"));
+        final ArrayList<String> fullNames = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
+        Collections.sort(truncatedNames);
+        Collections.sort(fullNames);
         Collections.sort(list);
-        assertEquals(databaseIsNot("mysql") ? expected : expectedForMysql, list);
+        // some database engines to not honor setMaxFieldSize
+        // mysql,...
+        if ("mysql".equals(getDatabaseName())) {
+            assertEquals(fullNames, list);
+        } else {
+            assertEquals(truncatedNames, list);
+        }
     }
 
     public void testQueryTimeout() throws Exception {
@@ -740,11 +765,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
         try {
             final List<Integer> list = bigTable.num.list(getDialectDataSource(), StatementOptions.setQueryTimeout(1));
-            if (databaseIsNot("derby")) {
-                fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
+            // derby: does not honor queryTimeout
+            if ("derby".equals(getDatabaseName())) {
+                return;
             }
+            fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
         } catch (SQLException e) {
-            // fine
+            // fine: timeout
         }
     }
 

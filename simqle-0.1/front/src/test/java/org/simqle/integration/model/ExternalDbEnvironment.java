@@ -17,13 +17,12 @@ public class ExternalDbEnvironment implements TestEnvironment {
     private DialectDataSource dialectDataSource;
     private String databaseName;
 
-    public DialectDataSource getDialectDataSource() {
-        return dialectDataSource;
-    }
-
-    @Override
     public String getDatabaseName() {
         return databaseName;
+    }
+
+    public DialectDataSource getDialectDataSource() {
+        return dialectDataSource;
     }
 
     @Override
@@ -40,7 +39,7 @@ public class ExternalDbEnvironment implements TestEnvironment {
         dataSource.setUser(properties.getProperty("simqle.jdbc.user"));
         dataSource.setPassword(properties.getProperty("simqle.jdbc.password"));
         final String dialectClass = properties.getProperty("simqle.jdbc.dialectClass");
-        final String effectiveClass = dialectClass !=null ? dialectClass : "org.simqle.sql.GenericDialect";
+        final String effectiveClass = System.getProperty("org.simqle.integration.dialect", dialectClass);
         final Class<?> dialectClazz = Class.forName(effectiveClass);
         final Method getMethod = dialectClazz.getMethod("get");
         final Dialect dialect = (Dialect) getMethod.invoke(null);

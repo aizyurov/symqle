@@ -6,6 +6,7 @@ import org.simqle.integration.model.ExternalDbEnvironment;
 import org.simqle.integration.model.TestEnvironment;
 import org.simqle.sql.DialectDataSource;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 /**
@@ -51,8 +52,22 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
         environment.doTearDown();
     }
 
-    protected final boolean databaseIsNot(String... allowedDatabases) {
-        return !Arrays.asList(allowedDatabases).contains(environment.getDatabaseName());
+    protected final void expectSQLException(SQLException e, String... databaseNames) throws SQLException {
+        if (Arrays.asList(databaseNames).contains(environment.getDatabaseName())) {
+            return;
+        }
+        throw e;
+    }
+
+    protected final void expectIllegalStateException(IllegalStateException e, Class... dialects) {
+        if (Arrays.asList(dialects).contains(getDialectDataSource().getDialect().getClass())) {
+            return;
+        }
+        throw e;
+    }
+
+    protected final String getDatabaseName() {
+        return environment.getDatabaseName();
     }
 
 }

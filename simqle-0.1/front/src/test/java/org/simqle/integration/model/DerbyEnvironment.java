@@ -2,11 +2,12 @@ package org.simqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
-import org.simqle.derby.DerbyDialect;
+import org.simqle.sql.Dialect;
 import org.simqle.sql.DialectDataSource;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,6 +19,11 @@ import java.sql.SQLException;
 public class DerbyEnvironment implements TestEnvironment {
     private String url;
     private DialectDataSource dialectDataSource;
+    private final String databaseName = "derby";
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
 
     @Override
     public void doSetUp(final String testName) throws Exception {
@@ -27,12 +33,11 @@ public class DerbyEnvironment implements TestEnvironment {
         final ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(url);
         dataSource.setDriverClass(EmbeddedDriver.class.getName());
-        dialectDataSource = new DialectDataSource(DerbyDialect.get(), dataSource);
-    }
-
-    @Override
-    public String getDatabaseName() {
-        return "derby";
+        final String effectiveClass = System.getProperty("org.simqle.integration.dialect", "org.simqle.sql.GenericDialect");
+        final Class<?> dialectClazz = Class.forName(effectiveClass);
+        final Method getMethod = dialectClazz.getMethod("get");
+        final Dialect dialect = (Dialect) getMethod.invoke(null);
+        dialectDataSource = new DialectDataSource(dialect, dataSource);
     }
 
     @Override
