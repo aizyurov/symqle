@@ -20,7 +20,7 @@ public class Employee extends Table {
     public final Column<String> firstName = defineColumn(Mappers.STRING, "first_name");
     public final Column<String> lastName = defineColumn(Mappers.STRING, "last_name");
     public final Column<String> title = defineColumn(Mappers.STRING, "title");
-    public final Column<Date> hireDate = defineColumn(Mappers.DATE, "date");
+    public final Column<Date> hireDate = defineColumn(Mappers.DATE, "hire_date");
     public final Column<Boolean> retired = defineColumn(Mappers.BOOLEAN, "is_retired");
     public final Column<Double> salary = defineColumn(Mappers.DOUBLE, "salary");
 
