@@ -135,15 +135,10 @@ public class BooleanTermTest extends AbstractIntegrationTestBase {
     public void testIsNull() throws Exception {
         final Employee employee = new Employee();
         final AbstractBooleanTerm basicCondition = createBasicCondition(employee);
-        try {
-            final List<String> list = employee.lastName.where(basicCondition.isNull())
-                    .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
-            expectSQLException(e, "derby");
-        }
+        final List<String> list = employee.lastName.where(basicCondition.isNull())
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(0, list.size());
     }
 
     public void testIsNotNull() throws Exception {
