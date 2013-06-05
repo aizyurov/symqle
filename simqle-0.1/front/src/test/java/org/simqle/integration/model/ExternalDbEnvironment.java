@@ -16,6 +16,7 @@ public class ExternalDbEnvironment implements TestEnvironment {
 
     private DialectDataSource dialectDataSource;
     private String databaseName;
+    private ComboPooledDataSource pool;
 
     public String getDatabaseName() {
         return databaseName;
@@ -33,23 +34,23 @@ public class ExternalDbEnvironment implements TestEnvironment {
         final File simqleSettingsDir = new File(homeDir, ".simqle");
         final File propertiesFile = new File(simqleSettingsDir, databaseName+".properties");
         properties.load(new FileInputStream(propertiesFile));
-        final ComboPooledDataSource dataSource = new ComboPooledDataSource();
-        dataSource.setJdbcUrl(properties.getProperty("simqle.jdbc.url"));
-        dataSource.setDriverClass(properties.getProperty("simqle.jdbc.driverClass"));
-        dataSource.setUser(properties.getProperty("simqle.jdbc.user"));
-        dataSource.setPassword(properties.getProperty("simqle.jdbc.password"));
+        pool = new ComboPooledDataSource();
+        pool.setJdbcUrl(properties.getProperty("simqle.jdbc.url"));
+        pool.setDriverClass(properties.getProperty("simqle.jdbc.driverClass"));
+        pool.setUser(properties.getProperty("simqle.jdbc.user"));
+        pool.setPassword(properties.getProperty("simqle.jdbc.password"));
         final String dialectClass = properties.getProperty("simqle.jdbc.dialectClass");
+        final String connectionSetup = properties.getProperty("simqle.jdbc.connectionSetup");
         final String effectiveClass = System.getProperty("org.simqle.integration.dialect", dialectClass);
         final Class<?> dialectClazz = Class.forName(effectiveClass);
         final Method getMethod = dialectClazz.getMethod("get");
         final Dialect dialect = (Dialect) getMethod.invoke(null);
-        dialectDataSource = new DialectDataSource(dialect, dataSource);
+        dialectDataSource = new DialectDataSource(dialect, pool, connectionSetup);
     }
 
     @Override
     public void doTearDown() throws Exception {
-        ((ComboPooledDataSource) dialectDataSource.getDataSource()).close();
-        dialectDataSource = null;
+        pool.close();
         databaseName = null;
     }
 

@@ -29,11 +29,6 @@ public class MysqlDialect extends GenericDialect {
     }
 
     @Override
-    public Sql StringExpression_is_StringExpression_CONCAT_ValueExpressionPrimary(final Sql s, final Sql e) {
-        throw new IllegalStateException("concat operator is not supported by this dialect; use concat function instead");
-    }
-
-    @Override
     public Sql FromClauseFromNothing() {
         return new CustomSql("");
     }

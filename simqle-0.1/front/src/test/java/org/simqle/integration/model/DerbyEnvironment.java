@@ -20,6 +20,7 @@ public class DerbyEnvironment implements TestEnvironment {
     private String url;
     private DialectDataSource dialectDataSource;
     private final String databaseName = "derby";
+    private ComboPooledDataSource dataSource;
 
     public String getDatabaseName() {
         return databaseName;
@@ -30,7 +31,7 @@ public class DerbyEnvironment implements TestEnvironment {
         url = "jdbc:derby:memory:"+testName;
         final Connection connection = DriverManager.getConnection(url + ";create=true");
         initDatabase(connection);
-        final ComboPooledDataSource dataSource = new ComboPooledDataSource();
+        dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(url);
         dataSource.setDriverClass(EmbeddedDriver.class.getName());
         final String effectiveClass = System.getProperty("org.simqle.integration.dialect", "org.simqle.sql.GenericDialect");
@@ -42,7 +43,7 @@ public class DerbyEnvironment implements TestEnvironment {
 
     @Override
     public void doTearDown() throws Exception {
-        ((ComboPooledDataSource) dialectDataSource.getDataSource()).close();
+        dataSource.close();
         try {
             try {
                DriverManager.getConnection(url+";drop=true");

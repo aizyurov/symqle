@@ -48,7 +48,7 @@ insert into employee (first_name, last_name, title, hire_date, salary, dept_id) 
 insert into employee (first_name, last_name, title, hire_date, salary, dept_id, is_retired) values ('James', 'Cooper',
  'hacker', '2009-01-12', 1500, null , true)
 
- create table big_table (num integer)
+create table big_table (num integer)
 
 create table my_dual (dummy char(1))
 
@@ -60,7 +60,9 @@ create table delete_detail (detail_id integer primary key, master_id integer, de
 
 alter table delete_detail add foreign key (master_id) references delete_master
 
+create table one (id integer)
 
+insert into one (id) values (1)
 
 
 

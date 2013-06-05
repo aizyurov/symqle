@@ -57,6 +57,9 @@ create table delete_detail (detail_id integer primary key, master_id integer, de
 
 alter table delete_detail add foreign key (master_id) references delete_master(master_id)
 
+create table one (id integer)
+
+insert into one (id) values (1)
 
 
 

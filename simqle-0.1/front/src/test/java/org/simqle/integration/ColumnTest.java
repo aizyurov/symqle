@@ -13,7 +13,6 @@ import org.simqle.mysql.MysqlDialect;
 import org.simqle.sql.AbstractSelectList;
 import org.simqle.sql.Dialect;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -747,8 +746,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryTimeout() throws Exception {
-        final DataSource dataSource = getDialectDataSource().getDataSource();
-        final Connection connection = dataSource.getConnection();
+        final Connection connection = getDialectDataSource().getConnection();
         try {
             final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
             deleteStatement.executeUpdate();

@@ -15,7 +15,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     @Override
     protected void onSetUp() throws Exception {
-        final Connection connection = getDialectDataSource().getDataSource().getConnection();
+        final Connection connection = getDialectDataSource().getConnection();
         try {
             {
                 final PreparedStatement stmt = connection.prepareStatement("DELETE FROM delete_detail");
@@ -35,7 +35,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
     public void testDeleteAll() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         assertEquals(0, master.delete().execute(getDialectDataSource()));
-        final Connection connection = getDialectDataSource().getDataSource().getConnection();
+        final Connection connection = getDialectDataSource().getConnection();
         try {
             final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
             stmt.setInt(1, 1);
@@ -55,7 +55,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
     public void testDeleteSome() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         assertEquals(0, master.delete().execute(getDialectDataSource()));
-        final Connection connection = getDialectDataSource().getDataSource().getConnection();
+        final Connection connection = getDialectDataSource().getConnection();
         try {
             final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
             stmt.setInt(1, 1);
@@ -80,7 +80,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
         final DeleteMaster master = new DeleteMaster();
         System.out.println(master.masterId.list(getDialectDataSource()));
         assertEquals(0, master.delete().execute(getDialectDataSource()));
-        final Connection connection = getDialectDataSource().getDataSource().getConnection();
+        final Connection connection = getDialectDataSource().getConnection();
         try {
             {
                 final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
