@@ -32,7 +32,7 @@ import org.simqle.jdbc.StatementOption;
                           final StatementOption... options
                           ) throws SQLException {
      final Query<T> query = prepareQuery(statement, datasource.getDialect());
-     final Connection connection = datasource.getDataSource().getConnection();
+     final Connection connection = datasource.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
          for (final StatementOption option : options) {
@@ -195,19 +195,37 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
      return  orderBy(qe, createOrderByClause(list));
 }
 
-
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 public class DialectDataSource {
     private final DataSource dataSource;
     private final Dialect dialect;
+    private final String connectionSetup;
 
-    public DialectDataSource(final Dialect dialect, final DataSource dataSource) {
+    public DialectDataSource(final Dialect dialect, final DataSource dataSource, final String connectionSetup) {
         this.dialect = dialect;
         this.dataSource = dataSource;
+        this.connectionSetup = connectionSetup;
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
+    public DialectDataSource(final Dialect dialect, final DataSource dataSource) {
+        this(dialect, dataSource, null);
     }
+
+    public Connection getConnection() throws SQLException {
+        final Connection connection = dataSource.getConnection();
+        if (connectionSetup != null) {
+            final Statement statement = connection.createStatement();
+            try {
+                statement.executeUpdate(connectionSetup);
+            } finally {
+                statement.close();
+            }
+        }
+        return connection;
+    }
+
     public Dialect getDialect() {
         return dialect;
     }

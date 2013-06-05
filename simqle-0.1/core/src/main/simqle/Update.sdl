@@ -51,7 +51,7 @@ public interface DataChangeStatement : Sql {}
 
 :: public int execute(final DataChangeStatement statement, final DialectDataSource datasource) throws SQLException {
      final Sql sql = prepareUpdate(statement, datasource.getDialect());
-     final Connection connection = datasource.getDataSource().getConnection();
+     final Connection connection = datasource.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
          try {
