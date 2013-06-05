@@ -41,6 +41,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
             environment = new ExternalDbEnvironment();
             environment.doSetUp(database);
         }
+        onSetUp();
     }
 
     protected void onSetUp() throws Exception {

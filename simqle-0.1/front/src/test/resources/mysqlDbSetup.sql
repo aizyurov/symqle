@@ -49,8 +49,13 @@ create table big_table (num integer)
 
 create table my_dual (dummy char(1))
 
-insert into dual (dummy) values ('X')
+insert into my_dual (dummy) values ('X')
 
+create table delete_master (master_id integer primary key, description varchar(30))
+
+create table delete_detail (detail_id integer primary key, master_id integer, detail varchar(30))
+
+alter table delete_detail add foreign key (master_id) references delete_master(master_id)
 
 
 
