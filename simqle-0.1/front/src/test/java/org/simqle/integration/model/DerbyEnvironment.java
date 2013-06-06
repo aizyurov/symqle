@@ -40,7 +40,7 @@ public class DerbyEnvironment implements TestEnvironment {
             final ComboPooledDataSource dataSource = new ComboPooledDataSource();
             dataSource.setJdbcUrl(url);
             dataSource.setDriverClass(EmbeddedDriver.class.getName());
-            final String effectiveClass = System.getProperty("org.simqle.integration.dialect", "org.simqle.sql.GenericDialect");
+            final String effectiveClass = System.getProperty("org.simqle.integration.dialect", "org.simqle.derby.DerbyDialect");
             final Class<?> dialectClazz = Class.forName(effectiveClass);
             final Method getMethod = dialectClazz.getMethod("get");
             final Dialect dialect = (Dialect) getMethod.invoke(null);

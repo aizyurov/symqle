@@ -375,6 +375,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
         }
     }
 
@@ -385,6 +388,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
         }
     }
 
@@ -396,6 +402,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
         }
 
     }
