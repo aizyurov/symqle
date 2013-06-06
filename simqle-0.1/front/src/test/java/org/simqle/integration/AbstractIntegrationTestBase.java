@@ -24,33 +24,25 @@ import java.util.Arrays;
  */
 public abstract class AbstractIntegrationTestBase extends TestCase {
 
-    private TestEnvironment environment;
+    private static TestEnvironment environment = createTestEnvironment();
 
 
     public DialectDataSource getDialectDataSource() {
         return environment.getDialectDataSource();
     }
 
+    private static TestEnvironment createTestEnvironment() {
+        final String database = System.getProperty("org.simqle.integration.database");
+        return database == null ? DerbyEnvironment.getInstance() : ExternalDbEnvironment.getInstance(database);
+    }
+
     @Override
     protected final void setUp() throws Exception {
-        final String database = System.getProperty("org.simqle.integration.database");
-        if (database == null) {
-            environment = new DerbyEnvironment();
-            environment.doSetUp(getClass().getName() + "." + getName());
-       } else {
-            environment = new ExternalDbEnvironment();
-            environment.doSetUp(database);
-        }
         onSetUp();
     }
 
     protected void onSetUp() throws Exception {
 
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        environment.doTearDown();
     }
 
     protected final void expectSQLException(SQLException e, String... databaseNames) throws SQLException {

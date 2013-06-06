@@ -715,6 +715,11 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryTimeout() throws Exception {
+        // derby: does not honor queryTimeout
+        // skip this test
+        if ("derby".equals(getDatabaseName())) {
+            return;
+        }
         final Connection connection = getDialectDataSource().getConnection();
         try {
             final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
@@ -732,12 +737,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
         try {
             final List<Integer> list = bigTable.num.list(getDialectDataSource(), StatementOptions.setQueryTimeout(1));
-            // derby: does not honor queryTimeout
-            if ("derby".equals(getDatabaseName())) {
-                return;
-            }
             fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
         } catch (SQLException e) {
+            System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
             // fine: timeout
         }
     }

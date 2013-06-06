@@ -11,54 +11,44 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * @author lvovich
  */
 public class DerbyEnvironment implements TestEnvironment {
-    private String url;
-    private DialectDataSource dialectDataSource;
+    private final String url = "jdbc:derby:memory:simqle";
+    private final DialectDataSource dialectDataSource = createDialectDataSource();
     private final String databaseName = "derby";
-    private ComboPooledDataSource dataSource;
+
+    private DerbyEnvironment() {
+    }
+
+    private static DerbyEnvironment instance = new DerbyEnvironment();
+
+    public static DerbyEnvironment getInstance() {
+        return instance;
+    }
 
     public String getDatabaseName() {
         return databaseName;
     }
 
-    @Override
-    public void doSetUp(final String testName) throws Exception {
-        url = "jdbc:derby:memory:"+testName;
-        final Connection connection = DriverManager.getConnection(url + ";create=true");
-        initDatabase(connection);
-        dataSource = new ComboPooledDataSource();
-        dataSource.setJdbcUrl(url);
-        dataSource.setDriverClass(EmbeddedDriver.class.getName());
-        final String effectiveClass = System.getProperty("org.simqle.integration.dialect", "org.simqle.sql.GenericDialect");
-        final Class<?> dialectClazz = Class.forName(effectiveClass);
-        final Method getMethod = dialectClazz.getMethod("get");
-        final Dialect dialect = (Dialect) getMethod.invoke(null);
-        dialectDataSource = new DialectDataSource(dialect, dataSource);
-    }
-
-    @Override
-    public void doTearDown() throws Exception {
-        dataSource.close();
+    public DialectDataSource createDialectDataSource() {
         try {
-            try {
-               DriverManager.getConnection(url+";drop=true");
-            } catch (SQLException se)  {
-                final String sqlState = se.getSQLState();
-                if ( sqlState.equals("08006") ) {
-                  return;
-               } else {
-                    throw se;
-               }
-            }
-            throw new IllegalStateException("Database did not shut down normally");
-        } finally {
-            url = null;
-            dialectDataSource = null;
+            final Connection connection = DriverManager.getConnection(url + ";create=true");
+            initDatabase(connection);
+            final ComboPooledDataSource dataSource = new ComboPooledDataSource();
+            dataSource.setJdbcUrl(url);
+            dataSource.setDriverClass(EmbeddedDriver.class.getName());
+            final String effectiveClass = System.getProperty("org.simqle.integration.dialect", "org.simqle.sql.GenericDialect");
+            final Class<?> dialectClazz = Class.forName(effectiveClass);
+            final Method getMethod = dialectClazz.getMethod("get");
+            final Dialect dialect = (Dialect) getMethod.invoke(null);
+            return new DialectDataSource(dialect, dataSource);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -67,7 +57,7 @@ public class DerbyEnvironment implements TestEnvironment {
         return dialectDataSource;
     }
 
-    private static void initDatabase(final Connection connection) throws Exception {
+    private void initDatabase(final Connection connection) throws Exception {
     final BufferedReader reader = new BufferedReader(
             new InputStreamReader(DerbyEnvironment.class.getClassLoader().getResourceAsStream("defaultDbSetup.sql")));
     try {
