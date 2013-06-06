@@ -2,7 +2,6 @@ package org.simqle.integration;
 
 import org.simqle.Pair;
 import org.simqle.integration.model.Employee;
-import org.simqle.sql.AbstractNumericExpression;
 import org.simqle.sql.AbstractRoutineInvocation;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.ValueExpression;
@@ -266,12 +265,112 @@ public class FunctionTest extends AbstractIntegrationTestBase {
 
     public void testPlus() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNumericExpression<Number> sum = abs(employee.salary.opposite()).plus(employee.department().manager().salary);
-        final List<Number> list = sum.orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Number> list = abs(employee.salary.opposite()).plus(employee.department().manager().salary)
+                .orderBy(employee.lastName).list(getDialectDataSource());
         final List<Double> asDoubles = new ArrayList<Double>();
         for (Number n : list) {
             asDoubles.add(n == null ? null : n.doubleValue());
         }
         assertEquals(Arrays.asList(null, 6000.0, 5000.0, 5000.0, 6000.0), asDoubles);
+    }
+
+    public void testPlusNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).plus(400.0)
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Double> asDoubles = new ArrayList<Double>();
+        for (Number n : list) {
+            asDoubles.add(n == null ? null : n.doubleValue());
+        }
+        assertEquals(Arrays.asList(1900.0, 3400.0, 2400.0, 2400.0, 3400.0), asDoubles);
+    }
+
+    public void testMinus() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).minus(employee.department().manager().salary)
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Double> asDoubles = new ArrayList<Double>();
+        for (Number n : list) {
+            asDoubles.add(n == null ? null : n.doubleValue());
+        }
+        assertEquals(Arrays.asList(null, 0.0, -1000.0, -1000.0, 0.0), asDoubles);
+    }
+
+    public void testMinusNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).minus(100.0)
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Double> asDoubles = new ArrayList<Double>();
+        for (Number n : list) {
+            asDoubles.add(n == null ? null : n.doubleValue());
+        }
+        assertEquals(Arrays.asList(1400.0, 2900.0, 1900.0, 1900.0, 2900.0), asDoubles);
+    }
+
+    public void testMult() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).mult(employee.department().manager().salary)
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Double> asDoubles = new ArrayList<Double>();
+        for (Number n : list) {
+            asDoubles.add(n == null ? null : n.doubleValue());
+        }
+        assertEquals(Arrays.asList(null, 9000000.0, 6000000.0, 6000000.0, 9000000.0), asDoubles);
+    }
+
+    public void testMultNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).mult(2.0).orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Double> asDoubles = new ArrayList<Double>();
+        for (Number n : list) {
+            asDoubles.add(n == null ? null : n.doubleValue());
+        }
+        assertEquals(Arrays.asList(3000.0, 6000.0, 4000.0, 4000.0, 6000.0), asDoubles);
+    }
+
+    public void testDiv() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).div(employee.department().manager().salary.div(100)).orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Integer> percentList = new ArrayList<Integer>();
+        for (Number n : list) {
+            percentList.add(n == null ? null : n.intValue());
+        }
+        assertEquals(Arrays.asList(null, 100, 66, 66, 100), percentList);
+    }
+
+    public void testDivNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary.opposite()).div(0.5)
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Double> asDoubles = new ArrayList<Double>();
+        for (Number n : list) {
+            asDoubles.add(n == null ? null : n.doubleValue());
+        }
+        assertEquals(Arrays.asList(3000.0, 6000.0, 4000.0, 4000.0, 6000.0), asDoubles);
+    }
+
+    public void testConcatString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = abs(employee.salary.opposite()).concat(" marsian dollars")
+                    .orderBy(employee.lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList("1500 marsian dollars", "3000 marsian dollars", "2000 marsian dollars", "2000 marsian dollars", "3000 marsian dollars"), list);
+        } catch (SQLException e) {
+            // derby: Cannot convert types 'DOUBLE' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+
+    }
+
+    public void testConcat() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = abs(employee.salary.opposite()).concat(employee.lastName)
+                    .orderBy(employee.lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList("1500Cooper", "3000First", "2000March", "2000Pedersen", "3000Redwood"), list);
+        } catch (SQLException e) {
+            // derby: Cannot convert types 'DOUBLE' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
     }
 }
