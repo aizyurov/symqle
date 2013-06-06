@@ -7,7 +7,9 @@ import org.simqle.integration.model.TestEnvironment;
 import org.simqle.sql.DialectDataSource;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Base class for integration tests.
@@ -61,6 +63,18 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     protected final String getDatabaseName() {
         return environment.getDatabaseName();
+    }
+
+    public static List<Double> toListOfDouble(final List<Number> list, Double nullReplacement) {
+        final List<Double> doubles = new ArrayList<Double>();
+        for (Number n: list) {
+            doubles.add(n == null ? nullReplacement : n.doubleValue());
+        }
+        return doubles;
+    }
+
+    public static List<Double> toListOfDouble(final List<Number> list) {
+        return toListOfDouble(list, null);
     }
 
 }
