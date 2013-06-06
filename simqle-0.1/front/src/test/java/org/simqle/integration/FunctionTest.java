@@ -1,7 +1,11 @@
 package org.simqle.integration;
 
 import org.simqle.Pair;
+import org.simqle.front.Params;
+import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
+import org.simqle.integration.model.One;
+import org.simqle.mysql.MysqlDialect;
 import org.simqle.sql.AbstractRoutineInvocation;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.ValueExpression;
@@ -473,6 +477,98 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
             expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testForUpdate() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).forUpdate().list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testForReadOnly() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).forReadOnly().list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+        } catch (SQLException e) {
+            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+                // should work with MysqlDialect
+                throw e;
+            } else {
+                // mysql does not support FOR READ ONLY natively
+                expectSQLException(e, "mysql");
+            }
+        }
+    }
+
+    public void testExists() throws Exception {
+        final Employee employee = new Employee();
+        final One one = new One();
+        final List<String> list = employee.lastName.where(abs(one.id).exists()).list(getDialectDataSource());
+        assertEquals(5, list.size());
+    }
+
+    public void testQueryValue() throws Exception {
+        final Department department = new Department();
+        final One one = new One();
+        final List<Pair<String, Integer>> list = department.deptName.pair(abs(one.id.opposite()).queryValue())
+                .orderBy(department.deptName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(Pair.of("DEV", 1), Pair.of("HR", 1)), list);
+    }
+
+    public void testLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(abs(employee.salary).like(Params.p("20%")))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(abs(employee.salary).notLike(Params.p("20%")))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testLikeString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(abs(employee.salary).like("20%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLikeString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(abs(employee.salary).notLike("20%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
         }
     }
 }
