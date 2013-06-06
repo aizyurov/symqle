@@ -571,4 +571,36 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             expectSQLException(e, "derby");
         }
     }
+
+    public void testCount() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = abs(employee.salary).count().list(getDialectDataSource());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    public void testSum() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary).sum().list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(11500, list.get(0).intValue());
+    }
+
+    public void testAvg() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = abs(employee.salary).avg().list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(2300, list.get(0).intValue());
+    }
+
+    public void testMin() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary).min().list(getDialectDataSource());
+        assertEquals(Arrays.asList(1500.0), list);
+    }
+
+    public void testMax() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary).max().list(getDialectDataSource());
+        assertEquals(Arrays.asList(3000.0), list);
+    }
 }
