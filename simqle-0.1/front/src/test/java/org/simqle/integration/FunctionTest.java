@@ -373,4 +373,106 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             expectSQLException(e, "derby");
         }
     }
+
+    public void testUnionAll() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).unionAll(employee.salary.where(employee.lastName.eq("Cooper")))
+                .list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).unionDistinct(employee.salary.where(employee.lastName.eq("Cooper")))
+                .list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 3000.0), list);
+    }
+
+    public void testUnion() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).union(employee.salary.where(employee.lastName.eq("Cooper")))
+                .list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 3000.0), list);
+    }
+
+    public void testExceptAll() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).exceptAll(employee.salary.where(employee.lastName.eq("Cooper")))
+                    .list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(2000.0, 2000.0, 3000.0, 3000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).exceptDistinct(employee.salary.where(employee.lastName.eq("Cooper")))
+                    .list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(2000.0, 3000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExcept() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).except(employee.salary.where(employee.lastName.eq("Cooper")))
+                    .list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(2000.0, 3000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectAll() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).intersectAll(employee.salary.where(employee.lastName.eq("March").or(employee.lastName.eq("Pedersen"))))
+                    .list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(2000.0, 2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).intersectDistinct(employee.salary.where(employee.lastName.eq("March").or(employee.lastName.eq("Pedersen"))))
+                    .list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersect() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = abs(employee.salary.opposite()).intersect(employee.salary.where(employee.lastName.eq("March").or(employee.lastName.eq("Pedersen"))))
+                    .list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
 }
