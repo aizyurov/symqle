@@ -63,6 +63,9 @@ insert into one (id) values (1)
 
 create table insert_test (id integer default 0, text varchar(50) default 'nothing')
 
+create table true_value (value boolean)
+
+insert into true_value values(true)
 
 
 
