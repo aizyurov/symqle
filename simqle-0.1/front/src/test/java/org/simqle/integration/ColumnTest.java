@@ -1,6 +1,5 @@
 package org.simqle.integration;
 
-import junit.framework.AssertionFailedError;
 import org.simqle.Pair;
 import org.simqle.front.StatementOptions;
 import org.simqle.generic.Functions;
@@ -590,45 +589,17 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
         final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
-        try {
-            final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-            assertEquals(Arrays.asList("MargaretRedwood"), list);
-            assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
-        } catch (IllegalStateException e) {
-            // mysql: does not support concat
-            if (dialectClass.equals(MysqlDialect.class)) {
-                return;
-            }
-            throw e;
-        } catch (AssertionFailedError e) {
-            // mysql and not MysqlDialect: concat is broken (another meaning of || operator)
-            if ("mysql".equals(getDatabaseName())) {
-                return;
-            }
-            throw e;
-        }
+        final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        assertEquals(Arrays.asList("MargaretRedwood"), list);
+        assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
     }
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
         final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
-        try {
-            final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-            assertEquals(Arrays.asList("Margaret expected"), list);
-            assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
-        } catch (IllegalStateException e) {
-            // mysql: does not support concat
-            if (dialectClass.equals(MysqlDialect.class)) {
-                return;
-            }
-            throw e;
-        } catch (AssertionFailedError e) {
-            // mysql and not MysqlDialect: concat is broken (another meaning of || operator)
-            if ("mysql".equals(getDatabaseName())) {
-                return;
-            }
-            throw e;
-        }
+        final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        assertEquals(Arrays.asList("Margaret expected"), list);
+        assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
     }
 
     public void testCount() throws Exception {

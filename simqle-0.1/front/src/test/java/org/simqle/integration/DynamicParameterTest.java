@@ -1,6 +1,5 @@
 package org.simqle.integration;
 
-import junit.framework.AssertionFailedError;
 import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.derby.DerbyDialect;
@@ -9,7 +8,6 @@ import org.simqle.generic.Functions;
 import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
-import org.simqle.mysql.MysqlDialect;
 import org.simqle.sql.Dialect;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
@@ -694,47 +692,14 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<String> list = Params.p("Ms. ").concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-            assertEquals(Arrays.asList("Ms. Redwood"), list);
-        } catch (IllegalStateException e) {
-            // mysql does not support "||" operator as concatenation
-            expectIllegalStateException(e, MysqlDialect.class);
-        } catch (AssertionFailedError e) {
-            // mysql but not MysqlDialect: concat is broken (another meaning of || operator)
-            if ("mysql".equals(getDatabaseName())) {
-                return;
-            }
-            throw e;
-        }
-        final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
-        assertFalse("MysqlDialect should throw exception", dialectClass.equals(MysqlDialect.class));
+        final List<String> list = Params.p("Ms. ").concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        assertEquals(Arrays.asList("Ms. Redwood"), list);
     }
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<String> list = Params.p("Success").concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-            assertEquals(Arrays.asList("Success expected"), list);
-        } catch (IllegalStateException e) {
-            final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
-            // mysql does not support "||" operator as concatenation
-            if (dialectClass.equals(MysqlDialect.class)) {
-                return;
-            }
-            throw e;
-        } catch (SQLException e) {
-            // derby: ERROR 42X35: It is not allowed for both operands of '||' to be ? parameters.
-            expectSQLException(e, "derby");
-        } catch (AssertionFailedError e) {
-            // mysql and not MysqlDialect: concat is broken (another meaning of || operator)
-            if ("mysql".equals(getDatabaseName())) {
-                return;
-            }
-            throw e;
-        }
-        final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
-        assertFalse("MysqlDialect should throw exception", dialectClass.equals(MysqlDialect.class));
+        final List<String> list = Params.p("Success").concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        assertEquals(Arrays.asList("Success expected"), list);
     }
 
     public void testCount() throws Exception {
