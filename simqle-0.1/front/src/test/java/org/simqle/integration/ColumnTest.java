@@ -591,7 +591,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
         final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
         assertEquals(Arrays.asList("MargaretRedwood"), list);
-        assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
     }
 
     public void testConcatString() throws Exception {
@@ -599,7 +598,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Class<? extends Dialect> dialectClass = getDialectDataSource().getDialect().getClass();
         final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
         assertEquals(Arrays.asList("Margaret expected"), list);
-        assertFalse("should not support concat operator", dialectClass.equals(MysqlDialect.class));
     }
 
     public void testCount() throws Exception {
