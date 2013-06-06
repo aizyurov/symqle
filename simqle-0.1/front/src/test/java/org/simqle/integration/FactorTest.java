@@ -1,6 +1,7 @@
 package org.simqle.integration;
 
 import org.simqle.Pair;
+import org.simqle.front.Params;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
@@ -547,4 +548,100 @@ public class FactorTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(Pair.of(-1, "X")), list);
     }
 
+    public void testWhenClause() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = employee.retired.booleanValue().then(createFactor(employee)).orElse(employee.salary).list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testElse() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = employee.retired.booleanValue().negate().then(employee.salary).orElse(createFactor(employee)).list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createFactor(employee).like(Params.p("-2%")))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testLikeString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createFactor(employee).like("-2%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createFactor(employee).notLike(Params.p("-2%")))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLikeString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createFactor(employee).notLike("-2%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testCount() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createFactor(employee).count().list(getDialectDataSource());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createFactor(employee).countDistinct().list(getDialectDataSource());
+        assertEquals(Arrays.asList(3), list);
+    }
+
+    public void testAverage() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createFactor(employee).avg().list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(-2300.0, list.get(0).doubleValue());
+    }
+
+    public void testMin() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createFactor(employee).min().list(getDialectDataSource());
+        assertEquals(Arrays.asList(-3000.0), list);
+    }
+
+    public void testMax() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createFactor(employee).max().list(getDialectDataSource());
+        assertEquals(Arrays.asList(-1500.0), list);
+    }
 }

@@ -67,9 +67,9 @@ public class DerbyEnvironment implements TestEnvironment {
         return dialectDataSource;
     }
 
-    private void initDatabase(final Connection connection) throws Exception {
+    private static void initDatabase(final Connection connection) throws Exception {
     final BufferedReader reader = new BufferedReader(
-            new InputStreamReader(getClass().getClassLoader().getResourceAsStream("defaultDbSetup.sql")));
+            new InputStreamReader(DerbyEnvironment.class.getClassLoader().getResourceAsStream("defaultDbSetup.sql")));
     try {
         final StringBuilder builder = new StringBuilder();
         try {

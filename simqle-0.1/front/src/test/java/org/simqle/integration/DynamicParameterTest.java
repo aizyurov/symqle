@@ -698,8 +698,13 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = Params.p("Success").concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-        assertEquals(Arrays.asList("Success expected"), list);
+        try {
+            final List<String> list = Params.p("Success").concat(" expected").where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+            assertEquals(Arrays.asList("Success expected"), list);
+        } catch (SQLException e) {
+            // ERROR 42X35: It is not allowed for both operands of '||' to be ? parameters.
+            expectSQLException(e, "derby");
+        }
     }
 
     public void testCount() throws Exception {

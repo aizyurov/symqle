@@ -27,8 +27,13 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createCursorSpecificaton(employee).forUpdate().list(getDialectDataSource());
-        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+        try {
+            final List<String> list = createCursorSpecificaton(employee).forUpdate().list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement
+            expectSQLException(e, "derby");
+        }
     }
 
     public void testForReadOnly() throws Exception {
