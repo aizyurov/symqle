@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import junit.framework.AssertionFailedError;
 import org.simqle.Pair;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
@@ -17,6 +18,8 @@ import java.util.List;
  * @author lvovich
  */
 public class StringExpressionTest extends AbstractIntegrationTestBase {
+
+    private final List<String> caseInsensitiveLikeDatabases = Arrays.asList("mysql");
 
     private AbstractStringExpression<String> stringExpression(final Employee employee) {
         return employee.firstName.concat(", my friend");
@@ -406,7 +409,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName
-                    .where(stringExpression(employee).in("Margaret", "James"))
+                    .where(stringExpression(employee).in("Margaret, my friend", "James, my friend"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());
             assertEquals(Arrays.asList("Cooper", "First","Redwood"), list);
@@ -425,7 +428,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName
-                    .where(stringExpression(employee).notIn("Margaret", "James"))
+                    .where(stringExpression(employee).notIn("Margaret, my friend", "James, my friend"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());
             assertEquals(Arrays.asList("March", "Pedersen"), list);
@@ -441,9 +444,124 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
 
     public void testPlus() throws Exception {
         final One one = new One();
-        final List<Number> list = one.id.concat("2").plus(3).list(getDialectDataSource());
-        assertEquals(1, list.size());
-        assertEquals(15, list.get(0).intValue());
+        try {
+            final List<Number> list = one.id.concat("2").plus(3).list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(15, list.get(0).intValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testMinus() throws Exception {
+        final One one = new One();
+        try {
+            final List<Number> list = one.id.concat("2").minus(3).list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(9, list.get(0).intValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testMult() throws Exception {
+        final One one = new One();
+        try {
+            final List<Number> list = one.id.concat("2").mult(3).list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(36, list.get(0).intValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testDiv() throws Exception {
+        final One one = new One();
+        try {
+            final List<Number> list = one.id.concat("2").div(3).list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(4, list.get(0).intValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testOpposite() throws Exception {
+        final One one = new One();
+        try {
+            final List<String> list = one.id.concat("2").opposite().list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals("-12", list.get(0));
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testPair() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<Pair<String, String>> list = stringExpression(employee).pair(employee.lastName)
+                .where(employee.empId.notIn(department.managerId))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of("James, my friend", "Cooper"),
+                Pair.of("Bill, my friend", "March"),
+                Pair.of("Alex, my friend", "Pedersen")), list);
+    }
+
+    public void testLike() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(stringExpression(employee).like(employee.department().manager().firstName.concat("%")))
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    public void testNotLike() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(stringExpression(employee).notLike(employee.department().manager().firstName.concat("%")))
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        // Cooper has no department, so notLike(null) is FALSE!
+        assertEquals(Arrays.asList("March", "Pedersen"), list);
+    }
+
+    public void testLikeString() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(stringExpression(employee).like("%a%"))
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        try {
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (AssertionFailedError e) {
+            if (caseInsensitiveLikeDatabases.contains(getDatabaseName())) {
+                assertEquals(Arrays.asList("Cooper", "First", "Pedersen", "Redwood"), list);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public void testNotLikeString() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(stringExpression(employee).notLike("%a%"))
+                .orderBy(employee.lastName).list(getDialectDataSource());
+        try {
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (AssertionFailedError e) {
+            if (caseInsensitiveLikeDatabases.contains(getDatabaseName())) {
+                assertEquals(Arrays.asList("Pedersen"), list);
+            } else {
+                throw e;
+            }
+        }
     }
 
 }
