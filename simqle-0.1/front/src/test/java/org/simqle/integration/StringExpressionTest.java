@@ -564,4 +564,55 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         }
     }
 
+    public void testCount() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = stringExpression(employee).count().list(getDialectDataSource());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Integer> list = stringExpression(employee).countDistinct().list(getDialectDataSource());
+            assertEquals(Arrays.asList(4), list);
+        } catch (SQLException e) {
+            // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
+                // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testMin() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = stringExpression(employee).min().list(getDialectDataSource());
+            assertEquals(Arrays.asList("Alex, my friend"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42Y22: Aggregate MIN cannot operate on type LONG VARCHAR.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testMax() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = stringExpression(employee).max().list(getDialectDataSource());
+            assertEquals(Arrays.asList("Margaret, my friend"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42Y22: Aggregate MIN cannot operate on type LONG VARCHAR.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testAvg() throws Exception {
+        final One one = new One();
+        try {
+            final List<Number> list = one.id.concat("2").avg().list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(12, list.get(0).intValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+    }
 }
