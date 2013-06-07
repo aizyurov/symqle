@@ -3,6 +3,7 @@ package org.simqle.integration;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Employee;
+import org.simqle.integration.model.MyDual;
 import org.simqle.sql.AbstractLikePredicateBase;
 
 import java.sql.SQLException;
@@ -323,5 +324,14 @@ public class LikePredicateBaseTest extends AbstractIntegrationTestBase {
                 )
                 .orderBy(employee.lastName).list(getDialectDataSource());
         assertEquals(Arrays.asList(Pair.of("Cooper", null), Pair.of("First", "James"), Pair.of("March", ":)"), Pair.of("Pedersen", ":)"), Pair.of("Redwood", "Margaret")), list);
+    }
+
+    public void testEscape() throws Exception {
+        final MyDual myDual = new MyDual();
+        final List<String> list = myDual.dummy.where(Params.p("what\\is\\it").like("%\\it").escape('$')).list(getDialectDataSource());
+        assertEquals(1, list.size());
+        // '%' has no special meaning when escaped
+        final List<String> list2 = myDual.dummy.where(Params.p("what\\is\\it").like("$%it").escape('$')).list(getDialectDataSource());
+        assertEquals(0, list2.size());
     }
 }
