@@ -557,7 +557,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (AssertionFailedError e) {
             if (caseInsensitiveLikeDatabases.contains(getDatabaseName())) {
-                assertEquals(Arrays.asList("Pedersen"), list);
+                assertEquals(Arrays.asList("March"), list);
             } else {
                 throw e;
             }
