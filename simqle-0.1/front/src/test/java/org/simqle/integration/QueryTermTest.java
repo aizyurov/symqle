@@ -149,4 +149,34 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("First"), list);
     }
 
+    public void testExists() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
+        final List<Integer> list = department.deptId.where(subquery.exists()).list(getDialectDataSource());
+        assertEquals(1, list.size());
+    }
+
+    public void testExistsNegative() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("HR")));
+        final List<Integer> list2 = department.deptId.where(subquery2.exists()).list(getDialectDataSource());
+        assertEquals(0, list2.size());
+    }
+
+    public void testQueryValue() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
+        final List<String> list = subquery.queryValue().list(getDialectDataSource());
+        assertEquals(Arrays.asList("First"), list);
+    }
+
+    public void testInArgument() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = employee.salary.where(employee.lastName.in(queryTerm(employee))).list(getDialectDataSource());
+        assertEquals(Arrays.asList(3000.0), list);
+    }
+
 }
