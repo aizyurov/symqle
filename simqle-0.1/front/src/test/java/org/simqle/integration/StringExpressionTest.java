@@ -4,6 +4,7 @@ import org.simqle.Pair;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
+import org.simqle.integration.model.One;
 import org.simqle.mysql.MysqlDialect;
 import org.simqle.sql.AbstractStringExpression;
 
@@ -399,6 +400,50 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
             expectSQLException(e, "derby");
         }
+    }
+
+    public void testInList() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(stringExpression(employee).in("Margaret", "James"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First","Redwood"), list);
+        } catch (SQLException e) {
+            // derby:  ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
+                // Types must be comparable. String types must also have matching collation.
+                // If collation does not match, a possible solution is to
+                // cast operands to force them to the default collation
+                // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotInList() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(stringExpression(employee).notIn("Margaret", "James"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby:  ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
+                // Types must be comparable. String types must also have matching collation.
+                // If collation does not match, a possible solution is to
+                // cast operands to force them to the default collation
+                // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testPlus() throws Exception {
+        final One one = new One();
+        final List<Number> list = one.id.concat("2").plus(3).list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(15, list.get(0).intValue());
     }
 
 }
