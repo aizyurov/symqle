@@ -2,6 +2,7 @@ package org.simqle.integration;
 
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
+import org.simqle.mysql.MysqlDialect;
 import org.simqle.sql.AbstractQuerySpecification;
 
 import java.sql.SQLException;
@@ -45,8 +46,13 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
-            // mysql: does not support FOR READ ONLY
-            expectSQLException(e, "mysql");
+            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+                // should work with MysqlDialect
+                throw e;
+            } else {
+                // mysql does not support FOR READ ONLY natively
+                expectSQLException(e, "mysql");
+            }
         }
     }
 
