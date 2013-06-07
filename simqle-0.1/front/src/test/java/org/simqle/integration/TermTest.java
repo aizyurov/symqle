@@ -1,0 +1,650 @@
+package org.simqle.integration;
+
+import org.simqle.Pair;
+import org.simqle.front.Params;
+import org.simqle.integration.model.Department;
+import org.simqle.integration.model.Employee;
+import org.simqle.integration.model.MyDual;
+import org.simqle.integration.model.One;
+import org.simqle.mysql.MysqlDialect;
+import org.simqle.sql.AbstractFactor;
+import org.simqle.sql.AbstractTerm;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * @author lvovich
+ */
+public class TermTest extends AbstractIntegrationTestBase {
+
+
+    private AbstractTerm<Number> createTerm(final Employee employee) {
+        return employee.salary.mult(-1);
+    }
+
+    public void testList() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testAll() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).all().list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).distinct().list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testWhere() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).where(employee.retired.booleanValue().negate()).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
+    }
+
+    public void testPair() throws Exception {
+        final Employee employee = new Employee();
+        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(-1500, list.get(0).getFirst().intValue());
+        assertEquals("Cooper", list.get(0).getSecond());
+    }
+
+    public void testIsNull() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractFactor<Integer> factor = employee.deptId.opposite();
+        final List<String> list = employee.lastName.where(factor.isNull()).list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    public void testIsNotNull() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractFactor<Integer> factor = employee.deptId.opposite();
+        final List<String> list = employee.lastName.where(factor.isNotNull()).orderBy(employee.lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testEq() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createTerm(employee).eq(employee.salary.plus(0))).list(getDialectDataSource());
+        assertEquals(0, list.size());
+    }
+
+    public void testNe() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).ne(employee.salary.plus(0)))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testLe() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).le(employee.salary.plus(0)))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testLt() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).lt(employee.salary.plus(0)))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testGe() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).ge(employee.salary.plus(0)))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(), list);
+    }
+
+    public void testGt() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).gt(employee.salary.plus(0)))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(), list);
+    }
+
+    public void testEqValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).eq(-1500.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    public void testNeValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).ne(-1500.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testGeValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).ge(-2000.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
+    }
+
+    public void testGtValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).gt(-2000.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    public void testLeValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).le(-2000.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testLtValue() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).lt(-2000.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    public void testIn() throws Exception {
+        final Employee employee = new Employee();
+        final Employee other = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).in(other.salary.mult(-1).where(other.retired.booleanValue().negate())))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testNotIn() throws Exception {
+        final Employee employee = new Employee();
+        final Employee other = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).notIn(other.salary.mult(-1).where(other.retired.booleanValue().negate())))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    public void testInList() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).in(-2000.0, -1500.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
+    }
+
+    public void testNotInList() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName
+                .where(createTerm(employee).notIn(-2000.0, -1500.0))
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    public void testOpposite() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).opposite().list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testPlus() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).plus(employee.salary.mult(2)).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testMinus() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).minus(employee.salary.mult(2).opposite()).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testMult() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).mult(employee.salary.div(createTerm(employee))).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testDiv() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).div(createTerm(employee).div(employee.salary)).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testPlusNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).plus(3000.0).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(0.0, 0.0, 1000.0, 1000.0, 1500.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testMinusNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).minus(500.0).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(-3500.0, -3500.0, -2500.0, -2500.0, -2000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testMultNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).mult(2).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(-6000.0, -6000.0, -4000.0, -4000.0, -3000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testDivNumber() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).div(0.5).list(getDialectDataSource());
+        final List<Double> actual = new ArrayList<Double>();
+        for (Number number : list) {
+            actual.add(number.doubleValue());
+        }
+        Collections.sort(actual);
+        final List<Double> expected = Arrays.asList(-6000.0, -6000.0, -4000.0, -4000.0, -3000.0);
+        assertEquals(expected, actual);
+    }
+
+    public void testBooleanValue() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createTerm(employee).booleanValue())
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby:GenericDialect ERROR 42X19: The WHERE or HAVING clause or CHECK CONSTRAINT definition is a 'DOUBLE' expression.  It must be a BOOLEAN expression.
+            // derby:DerbyDialect ERROR 42846: Cannot convert types 'DOUBLE' to 'BOOLEAN'.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testConcat() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = createTerm(employee).concat(employee.lastName)
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("-1500Cooper", "-3000First", "-2000March", "-2000Pedersen", "-3000Redwood"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testConcatString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = createTerm(employee).concat(" marsian $")
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testOrderBy() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee)).list(getDialectDataSource()));
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testOrderByNullsFirst() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).nullsFirst()).list(getDialectDataSource()));
+            assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+        } catch (SQLException e) {
+            // mysql does not support NULLS FIRST
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testOrderByNullsLast() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).nullsLast()).list(getDialectDataSource()));
+            assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+        } catch (SQLException e) {
+            // mysql does not support NULLS FIRST
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testOrderByAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).asc()).list(getDialectDataSource()));
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testOrderByDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).desc()).list(getDialectDataSource()));
+        assertEquals(Arrays.asList(-1500.0, -2000.0, -2000.0, -3000.0, -3000.0), list);
+    }
+
+    public void testUnionAll() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).unionAll(employee.salary.mult(1).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0, 1500.0), list);
+
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).unionDistinct(employee.salary.mult(-1).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -2000.0, -1500.0), list);
+
+    }
+
+    public void testUnion() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).union(employee.salary.mult(-1).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -2000.0, -1500.0), list);
+
+    }
+
+    public void testExceptAll() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).exceptAll(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).exceptDistinct(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+
+    }
+
+    public void testExcept() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).except(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectAll() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).intersectAll(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).intersectDistinct(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersect() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).intersect(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -2000.0), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExists() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = department.deptName
+                .where(createTerm(employee).exists())
+                .orderBy(department.deptName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
+    public void testForUpdate() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).forUpdate().list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testForReadOnly() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Double> list = toListOfDouble(createTerm(employee).forReadOnly().list(getDialectDataSource()));
+            Collections.sort(list);
+            assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+        } catch (SQLException e) {
+            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+                // should work with MysqlDialect
+                throw e;
+            } else {
+                // mysql does not support FOR READ ONLY natively
+                expectSQLException(e, "mysql");
+            }
+        }
+    }
+
+    public void testQueryValueNegative() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        try {
+            createTerm(employee).queryValue().pair(department.deptName).list(getDialectDataSource());
+            fail("Scalar subquery is only allowed to return a single row");
+        } catch (SQLException e) {
+            // fine
+        }
+    }
+
+    public void testQueryValue() throws Exception {
+        final List<Pair<Integer, String>> list = new One().id.opposite().queryValue().pair(new MyDual().dummy)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(Pair.of(-1, "X")), list);
+    }
+
+    public void testWhenClause() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(employee.retired.booleanValue().then(createTerm(employee)).orElse(employee.salary.plus(0)).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testElse() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.plus(0)).orElse(createTerm(employee)).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createTerm(employee).like(Params.p("-2%")))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testLikeString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createTerm(employee).like("-2%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createTerm(employee).notLike(Params.p("-2%")))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLikeString() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(createTerm(employee).notLike("-2%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testCount() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createTerm(employee).count().list(getDialectDataSource());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createTerm(employee).countDistinct().list(getDialectDataSource());
+        assertEquals(Arrays.asList(3), list);
+    }
+
+    public void testAverage() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createTerm(employee).avg().list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(-2300.0, list.get(0).doubleValue());
+    }
+
+    public void testMin() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).min().list(getDialectDataSource()));
+        assertEquals(Arrays.asList(-3000.0), list);
+    }
+
+    public void testMax() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createTerm(employee).max().list(getDialectDataSource()));
+        assertEquals(Arrays.asList(-1500.0), list);
+    }
+}
