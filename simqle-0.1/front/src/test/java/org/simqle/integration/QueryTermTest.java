@@ -150,6 +150,9 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testExists() throws Exception {
+        if (notApplicable) {
+            return;
+        }
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
@@ -158,6 +161,9 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testExistsNegative() throws Exception {
+        if (notApplicable) {
+            return;
+        }
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("HR")));
@@ -166,6 +172,9 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryValue() throws Exception {
+        if (notApplicable) {
+            return;
+        }
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
@@ -174,6 +183,9 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testInArgument() throws Exception {
+        if (notApplicable) {
+            return;
+        }
         final Employee employee = new Employee();
         final List<Double> list = employee.salary.where(employee.lastName.in(queryTerm(employee))).list(getDialectDataSource());
         assertEquals(Arrays.asList(3000.0), list);

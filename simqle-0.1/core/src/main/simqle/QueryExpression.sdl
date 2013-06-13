@@ -28,8 +28,13 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
                 final SqlContext leftContext = createScalarInnerContext(context);
                 final SqlContext rightContext = createScalarInnerContext(context);
                 // learning
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
                 qe.z$create$QueryExpressionScalar(leftContext);
                 qt.z$create$QueryTerm(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
                 final Query<T> left = qe.z$create$QueryExpressionScalar(leftContext);
                 final Query<T> right = qt.z$create$QueryTerm(rightContext);
                 return new ComplexQuery<T>(left,
@@ -45,10 +50,15 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
                 final SqlContext leftContext = createScalarInnerContext(context);
                 final SqlContext rightContext = createScalarInnerContext(context);
                 // learning
-                qe.z$create$QueryExpressionScalar(createScalarInnerContext(leftContext));
-                qt.z$create$QueryTerm(createScalarInnerContext(rightContext));
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(leftContext));
-                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(rightContext));
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qe.z$create$QueryExpressionScalar(leftContext);
+                qt.z$create$QueryTerm(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(leftContext);
+                final Query<T> right = qt.z$create$QueryTerm(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryExpressionScalar_is_QueryExpressionScalar_UNION_DISTINCT_QueryTerm(left, right));
@@ -62,10 +72,15 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
                 final SqlContext leftContext = createScalarInnerContext(context);
                 final SqlContext rightContext = createScalarInnerContext(context);
                 // learning
-                qe.z$create$QueryExpressionScalar(createScalarInnerContext(leftContext));
-                qt.z$create$QueryTerm(createScalarInnerContext(rightContext));
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(leftContext));
-                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(rightContext));
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qe.z$create$QueryExpressionScalar(leftContext);
+                qt.z$create$QueryTerm(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(leftContext);
+                final Query<T> right = qt.z$create$QueryTerm(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryExpressionScalar_is_QueryExpressionScalar_UNION_QueryTerm(left, right));
@@ -76,8 +91,18 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> exceptAll {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
+                final SqlContext leftContext = createScalarInnerContext(context);
+                final SqlContext rightContext = createScalarInnerContext(context);
+                // learning
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qe.z$create$QueryExpressionScalar(leftContext);
+                qt.z$create$QueryTerm(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(leftContext);
+                final Query<T> right = qt.z$create$QueryTerm(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_ALL_QueryTerm(left, right));
@@ -88,8 +113,18 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
         public AbstractQueryExpressionScalar<T> exceptDistinct {
             public Query<T> z$create$QueryExpressionScalar(final SqlContext context) {
                 // left and right parts have separate contexts
-                final Query<T> left = qe.z$create$QueryExpressionScalar(createScalarInnerContext(context));
-                final Query<T> right = qt.z$create$QueryTerm(createScalarInnerContext(context));
+                final SqlContext leftContext = createScalarInnerContext(context);
+                final SqlContext rightContext = createScalarInnerContext(context);
+                // learning
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qe.z$create$QueryExpressionScalar(leftContext);
+                qt.z$create$QueryTerm(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qe.z$create$QueryExpressionScalar(leftContext);
+                final Query<T> right = qt.z$create$QueryTerm(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_DISTINCT_QueryTerm(left, right));
@@ -131,8 +166,18 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
         public AbstractQueryTerm<T> intersectAll {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
-                final Query<T> left = qt.z$create$QueryTerm(createScalarInnerContext(context));
-                final Query<T> right = qp.z$create$QueryPrimary(createScalarInnerContext(context));
+                final SqlContext leftContext = createScalarInnerContext(context);
+                final SqlContext rightContext = createScalarInnerContext(context);
+                // learning
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qt.z$create$QueryTerm(leftContext);
+                qp.z$create$QueryPrimary(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qt.z$create$QueryTerm(leftContext);
+                final Query<T> right = qp.z$create$QueryPrimary(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryTerm_is_QueryTerm_INTERSECT_ALL_QueryPrimary(left, right));
@@ -142,8 +187,18 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
-                final Query<T> left = qt.z$create$QueryTerm(createScalarInnerContext(context));
-                final Query<T> right = qp.z$create$QueryPrimary(createScalarInnerContext(context));
+                final SqlContext leftContext = createScalarInnerContext(context);
+                final SqlContext rightContext = createScalarInnerContext(context);
+                // learning
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qt.z$create$QueryTerm(leftContext);
+                qp.z$create$QueryPrimary(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qt.z$create$QueryTerm(leftContext);
+                final Query<T> right = qp.z$create$QueryPrimary(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryTerm_is_QueryTerm_INTERSECT_DISTINCT_QueryPrimary(left, right));
@@ -153,8 +208,18 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersect {
             public Query<T> z$create$QueryTerm(final SqlContext context) {
-                final Query<T> left = qt.z$create$QueryTerm(createScalarInnerContext(context));
-                final Query<T> right = qp.z$create$QueryPrimary(createScalarInnerContext(context));
+                final SqlContext leftContext = createScalarInnerContext(context);
+                final SqlContext rightContext = createScalarInnerContext(context);
+                // learning
+                leftContext.set(Dialect.class, DebugDialect.get());
+                rightContext.set(Dialect.class, DebugDialect.get());;
+                qt.z$create$QueryTerm(leftContext);
+                qp.z$create$QueryPrimary(rightContext);
+                // construction
+                leftContext.set(Dialect.class, context.get(Dialect.class));
+                rightContext.set(Dialect.class, context.get(Dialect.class));
+                final Query<T> left = qt.z$create$QueryTerm(leftContext);
+                final Query<T> right = qp.z$create$QueryPrimary(rightContext);
                 return new ComplexQuery<T>(left,
                     context.get(Dialect.class)
                         .QueryTerm_is_QueryTerm_INTERSECT_QueryPrimary(left, right));
