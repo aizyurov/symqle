@@ -70,4 +70,5 @@ create table true_value (value boolean)
 
 insert into true_value values(true)
 
+create table update_test (id integer default 0, text varchar(50) default 'nothing')
 
