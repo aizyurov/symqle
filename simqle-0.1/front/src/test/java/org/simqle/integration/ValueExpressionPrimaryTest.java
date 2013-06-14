@@ -58,6 +58,12 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("March"), list);
     }
 
+    public void testOrderBy() throws Exception {
+        final Department department = new Department();
+        final List<String> list = creatPrimary(department).orderBy(department.deptName).list(getDialectDataSource());
+        assertEquals(Arrays.asList("First", "March"), list);
+    }
+
     public void testPair() throws Exception {
         final Department department = new Department();
         final List<Pair<String, String>> list = creatPrimary(department).pair(department.deptName).orderBy(department.deptName.desc()).list(getDialectDataSource());
@@ -367,7 +373,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
     }
 
-    public void testOrderBy() throws Exception {
+    public void testOrderByArgument() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .orderBy(creatPrimary(department))
