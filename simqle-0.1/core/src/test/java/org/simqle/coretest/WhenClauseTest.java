@@ -204,13 +204,13 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.nick END AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
-    public void testPlus() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).plus(person.id.mult(two)).show();
+    public void testAdd() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).add(person.id.mult(two)).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id END + T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).plus(2).show();
+    public void testAddNumber() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).add(2).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id END + ? AS C0 FROM person AS T0", sql);
     }
 
@@ -219,13 +219,13 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.id END", sql);
     }
 
-    public void testMinus() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).minus(person.id.mult(two)).show();
+    public void testSub() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).sub(person.id.mult(two)).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id END - T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).minus(2).show();
+    public void testSubNumber() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).sub(2).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id END - ? AS C0 FROM person AS T0", sql);
     }
 

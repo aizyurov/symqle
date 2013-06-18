@@ -178,13 +178,13 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
-    public void testPlus() throws Exception {
-        String sql = numberSign.concat(person.id).plus(numberSign.concat(person.id)).show();
+    public void testAdd() throws Exception {
+        String sql = numberSign.concat(person.id).add(numberSign.concat(person.id)).show();
         assertSimilar("SELECT(? || T0.id) +(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinus() throws Exception {
-        String sql = numberSign.concat(person.id).minus(numberSign.concat(person.id)).show();
+    public void testSub() throws Exception {
+        String sql = numberSign.concat(person.id).sub(numberSign.concat(person.id)).show();
         assertSimilar("SELECT(? || T0.id) -(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
@@ -203,13 +203,13 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id ||(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        String sql = numberSign.concat(person.id).plus(2).show();
+    public void testAddNumber() throws Exception {
+        String sql = numberSign.concat(person.id).add(2).show();
         assertSimilar("SELECT(? || T0.id) + ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        String sql = numberSign.concat(person.id).minus(2).show();
+    public void testSubNumber() throws Exception {
+        String sql = numberSign.concat(person.id).sub(2).show();
         assertSimilar("SELECT(? || T0.id) - ? AS C0 FROM person AS T0", sql);
     }
 

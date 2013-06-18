@@ -91,8 +91,8 @@ public class SelectSublistTest extends SqlTestCase {
         assertSimilar("SELECT -(SELECT T3.id FROM employee AS T3) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
-    public void testPlus() throws Exception {
-        final String sql = employee.id.queryValue().plus(person.id).orderBy(person.name).show();
+    public void testAdd() throws Exception {
+        final String sql = employee.id.queryValue().add(person.id).orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) + T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
@@ -100,8 +100,8 @@ public class SelectSublistTest extends SqlTestCase {
         final String sql = employee.id.queryValue().pair(person.id).orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) AS C0, T2.id AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
-    public void testMinus() throws Exception {
-        final String sql = employee.id.queryValue().minus(person.id).orderBy(person.name).show();
+    public void testSub() throws Exception {
+        final String sql = employee.id.queryValue().sub(person.id).orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) - T2.id AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
@@ -116,13 +116,13 @@ public class SelectSublistTest extends SqlTestCase {
     }
 
 
-    public void testPlusNumber() throws Exception {
-        final String sql = employee.id.queryValue().plus(2).orderBy(person.name).show();
+    public void testAddNumber() throws Exception {
+        final String sql = employee.id.queryValue().add(2).orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) + ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        final String sql = employee.id.queryValue().minus(2).orderBy(person.name).show();
+    public void testSubNumber() throws Exception {
+        final String sql = employee.id.queryValue().sub(2).orderBy(person.name).show();
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3) - ? AS C0 FROM person AS T2 ORDER BY T2.name", sql);
     }
 

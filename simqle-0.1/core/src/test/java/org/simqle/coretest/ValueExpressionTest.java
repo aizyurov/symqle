@@ -151,13 +151,13 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IS NOT NULL", sql);
     }
 
-    public void testPlus() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().plus(person.id).show();
+    public void testAdd() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().add(person.id).show();
         assertSimilar("SELECT(T0.name = T0.nick) + T0.id AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinus() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().minus(person.id).show();
+    public void testSub() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().sub(person.id).show();
         assertSimilar("SELECT(T0.name = T0.nick) - T0.id AS C0 FROM person AS T0", sql);
     }
 
@@ -171,13 +171,13 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(T0.name = T0.nick) / T0.id AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().plus(2).show();
+    public void testAddNumber() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().add(2).show();
         assertSimilar("SELECT(T0.name = T0.nick) + ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().minus(2).show();
+    public void testSubNumber() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().sub(2).show();
         assertSimilar("SELECT(T0.name = T0.nick) - ? AS C0 FROM person AS T0", sql);
     }
 

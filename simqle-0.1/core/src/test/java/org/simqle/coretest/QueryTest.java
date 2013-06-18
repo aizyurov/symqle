@@ -208,7 +208,7 @@ public class QueryTest extends SqlTestCase {
 
     public void testListWithComplexCondition() throws Exception {
         final Person person = new Person();
-        final AbstractQuerySpecification<Long> query = person.id.where(person.age.plus(1).gt(33));
+        final AbstractQuerySpecification<Long> query = person.id.where(person.age.add(1).gt(33));
         final String queryString = query.show();
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);

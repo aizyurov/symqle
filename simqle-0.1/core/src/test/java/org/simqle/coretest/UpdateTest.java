@@ -41,7 +41,7 @@ public class UpdateTest extends SqlTestCase {
     }
 
     public void testSetIgnoreType() throws Exception {
-        final String sql = person.update(person.id.setIgnoreType(person.id.plus(1))).show();
+        final String sql = person.update(person.id.setIgnoreType(person.id.add(1))).show();
         assertSimilar("UPDATE person SET id = person.id + ?", sql);
     }
 

@@ -10,26 +10,26 @@ public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 # all operations accept <? extends Number> and return <Number>
 NumericExpression<Number> ::=
     e:NumericExpression<?> PLUS t:Term<?>
-         :: public AbstractNumericExpression<Number> plus {
+         :: public AbstractNumericExpression<Number> add {
             public Mapper<Number> getMapper() {
                     return Mappers.NUMBER;
             }
          }
 |
     e:NumericExpression<?> MINUS t:Term<?>
-         :: public AbstractNumericExpression<Number> minus {
+         :: public AbstractNumericExpression<Number> sub {
             public Mapper<Number> getMapper() {
                     return Mappers.NUMBER;
             }
          }
 ;
 
-:: public AbstractNumericExpression<Number> plus(final NumericExpression<?> e, final Number n) {
-    return plus(e, DynamicParameter.create(Mappers.NUMBER, n));
+:: public AbstractNumericExpression<Number> add(final NumericExpression<?> e, final Number n) {
+    return add(e, DynamicParameter.create(Mappers.NUMBER, n));
 }
 
-:: public AbstractNumericExpression<Number> minus(final NumericExpression<?> e, final Number n) {
-    return minus(e,  DynamicParameter.create(Mappers.NUMBER, n));
+:: public AbstractNumericExpression<Number> sub(final NumericExpression<?> e, final Number n) {
+    return sub(e,  DynamicParameter.create(Mappers.NUMBER, n));
 }
 
 

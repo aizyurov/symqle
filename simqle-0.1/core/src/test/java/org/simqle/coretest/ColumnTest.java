@@ -368,29 +368,29 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.plus(age).show();
+        String sql = id.add(age).show();
         assertSimilar("SELECT T0.id + T0.age AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.plus(1).show();
+        String sql = id.add(1).show();
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.minus(age).show();
+        String sql = id.sub(age).show();
         assertSimilar("SELECT T0.id - T0.age AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.minus(1.0).show();
+        String sql = id.sub(1.0).show();
         assertSimilar("SELECT T0.id - ? AS C0 FROM person AS T0", sql);
     }
 

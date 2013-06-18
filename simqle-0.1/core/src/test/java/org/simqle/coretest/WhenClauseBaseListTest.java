@@ -193,13 +193,13 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
-    public void testPlus() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).plus(person.id.mult(two)).show();
+    public void testAdd() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).add(person.id.mult(two)).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END + T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).plus(2L).show();
+    public void testAddNumber() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).add(2L).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END + ? AS C0 FROM person AS T0", sql);
     }
 
@@ -208,13 +208,13 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END", sql);
     }
 
-    public void testMinus() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).minus(person.id.mult(two)).show();
+    public void testSub() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).sub(person.id.mult(two)).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END - T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).minus(2L).show();
+    public void testSubNumber() throws Exception {
+        String sql = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).sub(2L).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END - ? AS C0 FROM person AS T0", sql);
     }
 

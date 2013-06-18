@@ -125,13 +125,13 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().pair(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0, T1.id AS C1 FROM employee AS T1", sql);
     }
-    public void testPlus() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().plus(employee.id).show();
+    public void testAdd() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().add(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) + T1.id AS C0 FROM employee AS T1", sql);
     }
 
-    public void testMinus() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().minus(employee.id).show();
+    public void testSub() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().sub(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) - T1.id AS C0 FROM employee AS T1", sql);
     }
 
@@ -145,23 +145,23 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) / T1.id AS C0 FROM employee AS T1", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().plus(2).plus(employee.id).show();
+    public void testAddNumber() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().add(2).add(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) + ? + T1.id AS C0 FROM employee AS T1", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().minus(2).plus(employee.id).show();
+    public void testSubNumber() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().sub(2).add(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) - ? + T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testMultNumber() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().mult(2).plus(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().mult(2).add(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) * ? + T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testDivNumber() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().div(2).plus(employee.id).show();
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().div(2).add(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) / ? + T1.id AS C0 FROM employee AS T1", sql);
     }
 

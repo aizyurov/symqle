@@ -25,335 +25,335 @@ import static org.easymock.EasyMock.*;
 public class NumericExpressionTest extends SqlTestCase {
 
     public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).isNull()).show();
+        final String sql = person.id.where(person.id.add(two).isNull()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IS NULL", sql);
     }
 
     public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).isNotNull()).show();
+        final String sql = person.id.where(person.id.add(two).isNotNull()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IS NOT NULL", sql);
     }
 
 
     public void testShow() throws Exception {
-        final String sql = person.id.plus(two).show();
+        final String sql = person.id.add(two).show();
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
-        final String sql2 = person.id.plus(two).show(GenericDialect.get());
+        final String sql2 = person.id.add(two).show(GenericDialect.get());
         assertSimilar(sql, sql2);
     }
 
     public void testSelectAll() throws Exception {
-        final String sql = person.id.plus(two).all().show();
+        final String sql = person.id.add(two).all().show();
         assertSimilar("SELECT ALL T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSelectDistinct() throws Exception {
-        final String sql = person.id.plus(two).distinct().show();
+        final String sql = person.id.add(two).distinct().show();
         assertSimilar("SELECT DISTINCT T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.id.plus(two).where(person.id.eq(two)).show();
+        final String sql = person.id.add(two).where(person.id.eq(two)).show();
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 WHERE T0.id = ?", sql);
 
     }
 
     public void testEq() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).eq(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.add(two).eq(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? = T0.id + ?", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).ne(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.add(two).ne(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <> T0.id + ?", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).gt(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.add(two).gt(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? > T0.id + ?", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).ge(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.add(two).ge(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? >= T0.id + ?", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).lt(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.add(two).lt(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? < T0.id + ?", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).le(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.add(two).le(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <= T0.id + ?", sql);
     }
 
     public void testEqValue() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).eq(0L)).show();
+        final String sql = person.id.where(person.id.add(two).eq(0L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? = ?", sql);
     }
 
     public void testNeValue() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).ne(0L)).show();
+        final String sql = person.id.where(person.id.add(two).ne(0L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <> ?", sql);
     }
 
     public void testGtValue() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).gt(0L)).show();
+        final String sql = person.id.where(person.id.add(two).gt(0L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? > ?", sql);
     }
 
     public void testGeValue() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).ge(0L)).show();
+        final String sql = person.id.where(person.id.add(two).ge(0L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? >= ?", sql);
     }
 
     public void testLtValue() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).lt(0L)).show();
+        final String sql = person.id.where(person.id.add(two).lt(0L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? < ?", sql);
     }
 
     public void testLeValue() throws Exception {
-        final String sql = person.id.where(person.id.plus(two).le(0L)).show();
+        final String sql = person.id.where(person.id.add(two).le(0L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <= ?", sql);
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.id.plus(two).in(person2.id.plus(two))).show();
+        String sql = person.id.where(person.id.add(two).in(person2.id.add(two))).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id + ? IN(SELECT T2.id + ? FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.id.plus(two).notIn(person2.id.plus(0))).show();
+        String sql = person.id.where(person.id.add(two).notIn(person2.id.add(0))).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id + ? NOT IN(SELECT T2.id + ? FROM person AS T2)", sql);
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.id.plus(two).in(10L, 12L)).show();
+        String sql = person.id.where(person.id.add(two).in(10L, 12L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.id.plus(two).notIn(10L, 12L)).show();
+        String sql = person.id.where(person.id.add(two).notIn(10L, 12L)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT IN(?, ?)", sql);
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.id.plus(two).orderBy(person.id.plus(two)).show();
+        String sql = person.id.add(two).orderBy(person.id.add(two)).show();
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 ORDER BY T0.id + ?", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).nullsFirst()).show();
+        String sql = person.id.orderBy(person.id.add(two).nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).nullsLast()).show();
+        String sql = person.id.orderBy(person.id.add(two).nullsLast()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).desc()).show();
+        String sql = person.id.orderBy(person.id.add(two).desc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.id.plus(two).asc()).show();
+        String sql = person.id.orderBy(person.id.add(two).asc()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? ASC", sql);
     }
 
 
     public void testOpposite() throws Exception {
-        final String sql = person.id.plus(two).opposite().show();
+        final String sql = person.id.add(two).opposite().show();
         assertSimilar("SELECT -(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
 
-    public void testPlus() throws Exception {
-        String sql = person.id.plus(two).plus(person.id.plus(two)).show();
+    public void testAdd() throws Exception {
+        String sql = person.id.add(two).add(person.id.add(two)).show();
         assertSimilar("SELECT T0.id + ? +(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {
-        String sql = person.id.plus(two).pair(person.name).show();
+        String sql = person.id.add(two).pair(person.name).show();
         assertSimilar("SELECT T0.id + ? AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        String sql = person.id.plus(2).plus(3).show();
+    public void testAddNumber() throws Exception {
+        String sql = person.id.add(2).add(3).show();
         assertSimilar("SELECT T0.id + ? + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(person.id.plus(two).booleanValue()).show();
+        String sql = person.id.where(person.id.add(two).booleanValue()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id + ?)", sql);
     }
 
-    public void testMinus() throws Exception {
-        String sql = person.id.plus(two).minus(person.id.plus(two)).show();
+    public void testSub() throws Exception {
+        String sql = person.id.add(two).sub(person.id.add(two)).show();
         assertSimilar("SELECT T0.id + ? -(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        String sql = person.id.plus(two).minus(2).show();
+    public void testSubNumber() throws Exception {
+        String sql = person.id.add(two).sub(2).show();
         assertSimilar("SELECT T0.id + ? - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = person.id.plus(two).mult(person.id.plus(two)).show();
+        String sql = person.id.add(two).mult(person.id.add(two)).show();
         assertSimilar("SELECT(T0.id + ?) *(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        String sql = person.id.plus(two).mult(2).show();
+        String sql = person.id.add(two).mult(2).show();
         assertSimilar("SELECT(T0.id + ?) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        String sql = person.id.plus(two).div(person.id.plus(two)).show();
+        String sql = person.id.add(two).div(person.id.add(two)).show();
         assertSimilar("SELECT(T0.id + ?) /(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        String sql = person.id.plus(two).div(2).show();
+        String sql = person.id.add(two).div(2).show();
         assertSimilar("SELECT(T0.id + ?) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = person.id.plus(two).concat(person.id.plus(two)).show();
+        String sql = person.id.add(two).concat(person.id.add(two)).show();
         assertSimilar("SELECT(T0.id + ?) ||(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        String sql = person.id.plus(two).concat(" id").show();
+        String sql = person.id.add(two).concat(" id").show();
         assertSimilar("SELECT(T0.id + ?) || ? AS C0 FROM person AS T0", sql);
     }
     
     public void testUnion() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).union(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).union(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 UNION SELECT T2.id + ? FROM person AS T2 WHERE T2.name = T0.name)", sql);
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).unionAll(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).unionAll(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 UNION ALL SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testUnionDistinct() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).unionDistinct(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).unionDistinct(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 UNION DISTINCT SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testExcept() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).except(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).except(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 EXCEPT SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).exceptAll(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).exceptAll(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 EXCEPT ALL SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testExceptDistinct() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).exceptDistinct(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).exceptDistinct(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 EXCEPT DISTINCT SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
 
     public void testIntersect() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).intersect(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).intersect(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 INTERSECT SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).intersectAll(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).intersectAll(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 INTERSECT ALL SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testIntersectDistinct() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).intersectDistinct(person2.id.plus(1).where(person2.name.eq(employee.name))).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).intersectDistinct(person2.id.add(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1 INTERSECT DISTINCT SELECT T2.id + ? FROM person AS T2 WHERE T2.name = t0.name)", sql);
     }
 
     public void testExists() throws Exception {
-        final String sql = employee.id.where(person.id.plus(2).exists()).show();
+        final String sql = employee.id.where(person.id.add(2).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1)", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.plus(2).forUpdate().show();
+        final String sql = person.id.add(2).forUpdate().show();
         assertSimilar("SELECT T1.id + ? AS C1 FROM person AS T1 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.plus(2).forReadOnly().show();
+        final String sql = person.id.add(2).forReadOnly().show();
         assertSimilar("SELECT T1.id + ? AS C1 FROM person AS T1 FOR READ ONLY", sql);
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = person.id.plus(2).queryValue().where(employee.name.isNotNull()).show();
+        final String sql = person.id.add(2).queryValue().where(employee.name.isNotNull()).show();
         assertSimilar("SELECT(SELECT T0.id + ? FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
     }
 
     public void testWhenClause() throws Exception {
-        final String sql = person.name.isNotNull().then(person.id.plus(2)).show();
+        final String sql = person.name.isNotNull().then(person.id.add(2)).show();
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id + ? END AS C0 FROM person AS T0", sql);
     }
 
     public void testElse() throws Exception {
-        final String sql = person.name.isNotNull().then(person.id.plus(1)).orElse(person.id.plus(2)).show();
+        final String sql = person.name.isNotNull().then(person.id.add(1)).orElse(person.id.add(2)).show();
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id + ? ELSE T0.id + ? END AS C0 FROM person AS T0", sql);
     }
 
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(person.id.plus(1).like(DynamicParameter.create(Mappers.STRING, "12%"))).show();
+        final String sql = person.id.where(person.id.add(1).like(DynamicParameter.create(Mappers.STRING, "12%"))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.id.plus(1).notLike(DynamicParameter.create(Mappers.STRING, "12%"))).show();
+        final String sql = person.id.where(person.id.add(1).notLike(DynamicParameter.create(Mappers.STRING, "12%"))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT LIKE ?", sql);
     }
 
     public void  testLikeString() throws Exception {
-        final String sql = person.id.where(person.id.plus(1).like("12%")).show();
+        final String sql = person.id.where(person.id.add(1).like("12%")).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? LIKE ?", sql);
     }
 
     public void  testNotLikeString() throws Exception {
-        final String sql = person.id.where(person.id.plus(1).notLike("12%")).show();
+        final String sql = person.id.where(person.id.add(1).notLike("12%")).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT LIKE ?", sql);
     }
 
     public void testCount() throws Exception {
-        final String sql = person.id.plus(1).count().show();
+        final String sql = person.id.add(1).count().show();
         assertSimilar("SELECT COUNT(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
     public void testCountDistinct() throws Exception {
-        final String sql = person.id.plus(1).countDistinct().show();
+        final String sql = person.id.add(1).countDistinct().show();
         assertSimilar("SELECT COUNT(DISTINCT T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
     public void testSum() throws Exception {
-        final String sql = person.id.plus(1).sum().show();
+        final String sql = person.id.add(1).sum().show();
         assertSimilar("SELECT SUM(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
     public void testAvg() throws Exception {
-        final String sql = person.id.plus(1).avg().show();
+        final String sql = person.id.add(1).avg().show();
         assertSimilar("SELECT AVG(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
     public void testMin() throws Exception {
-        final String sql = person.id.plus(1).min().show();
+        final String sql = person.id.add(1).min().show();
         assertSimilar("SELECT MIN(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
     public void testMax() throws Exception {
-        final String sql = person.id.plus(1).max().show();
+        final String sql = person.id.add(1).max().show();
         assertSimilar("SELECT MAX(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
@@ -422,7 +422,7 @@ public class NumericExpressionTest extends SqlTestCase {
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
-            final AbstractNumericExpression<Number> numericExpression = person.id.plus(two);
+            final AbstractNumericExpression<Number> numericExpression = person.id.add(two);
             final String queryString = numericExpression.show();
             expect(datasource.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);

@@ -58,32 +58,32 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testEq() throws Exception {
-        final String sql = person.id.where(person.id.mult(two).eq(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.mult(two).eq(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? = T0.id + ?", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(person.id.mult(two).ne(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.mult(two).ne(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? <> T0.id + ?", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(person.id.mult(two).gt(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.mult(two).gt(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? > T0.id + ?", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(person.id.mult(two).ge(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.mult(two).ge(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? >= T0.id + ?", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(person.id.mult(two).lt(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.mult(two).lt(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? < T0.id + ?", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(person.id.mult(two).le(person.id.plus(0))).show();
+        final String sql = person.id.where(person.id.mult(two).le(person.id.add(0))).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? <= T0.id + ?", sql);
     }
 
@@ -123,7 +123,7 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.id.mult(two).notIn(person2.id.plus(0))).show();
+        String sql = person.id.where(person.id.mult(two).notIn(person2.id.add(0))).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id * ? NOT IN(SELECT T2.id + ? FROM person AS T2)", sql);
     }
 
@@ -173,13 +173,13 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id * ? AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
-    public void testPlus() throws Exception {
-        String sql = person.id.mult(two).plus(person.id.mult(two)).show();
+    public void testAdd() throws Exception {
+        String sql = person.id.mult(two).add(person.id.mult(two)).show();
         assertSimilar("SELECT T0.id * ? + T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        String sql = person.id.mult(two).plus(2).show();
+    public void testAddNumber() throws Exception {
+        String sql = person.id.mult(two).add(2).show();
         assertSimilar("SELECT T0.id * ? + ? AS C0 FROM person AS T0", sql);
     }
 
@@ -188,13 +188,13 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id * ?)", sql);
     }
 
-    public void testMinus() throws Exception {
-        String sql = person.id.mult(two).minus(person.id.mult(two)).show();
+    public void testSub() throws Exception {
+        String sql = person.id.mult(two).sub(person.id.mult(two)).show();
         assertSimilar("SELECT T0.id * ? - T0.id * ? AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        String sql = person.id.mult(two).minus(2).show();
+    public void testSubNumber() throws Exception {
+        String sql = person.id.mult(two).sub(2).show();
         assertSimilar("SELECT T0.id * ? - ? AS C0 FROM person AS T0", sql);
     }
 
@@ -301,7 +301,7 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testElse() throws Exception {
-        final String sql = person.name.isNotNull().then(person.id.plus(1)).orElse(person.id.mult(2)).show();
+        final String sql = person.name.isNotNull().then(person.id.add(1)).orElse(person.id.mult(2)).show();
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id + ? ELSE T0.id * ? END AS C0 FROM person AS T0", sql);
     }
 

@@ -149,13 +149,13 @@ public class FactorTest extends SqlTestCase {
     }
 
 
-    public void testPlus() throws Exception {
-        String sql = person.id.opposite().plus(person.id.opposite()).show();
+    public void testAdd() throws Exception {
+        String sql = person.id.opposite().add(person.id.opposite()).show();
         assertSimilar("SELECT - T0.id + - T0.id AS C0 FROM person AS T0", sql);
     }
 
-    public void testPlusNumber() throws Exception {
-        String sql = person.id.opposite().plus(2).show();
+    public void testAddNumber() throws Exception {
+        String sql = person.id.opposite().add(2).show();
         assertSimilar("SELECT - T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
@@ -164,13 +164,13 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(- T0.id)", sql);
     }
 
-    public void testMinus() throws Exception {
-        String sql = person.id.opposite().minus(person.id.opposite()).show();
+    public void testSub() throws Exception {
+        String sql = person.id.opposite().sub(person.id.opposite()).show();
         assertSimilar("SELECT - T0.id - - T0.id AS C0 FROM person AS T0", sql);
     }
 
-    public void testMinusNumber() throws Exception {
-        String sql = person.id.opposite().minus(2).show();
+    public void testSubNumber() throws Exception {
+        String sql = person.id.opposite().sub(2).show();
         assertSimilar("SELECT - T0.id - ? AS C0 FROM person AS T0", sql);
     }
 
