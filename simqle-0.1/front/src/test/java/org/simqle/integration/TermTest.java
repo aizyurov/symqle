@@ -78,14 +78,14 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testEq() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createTerm(employee).eq(employee.salary.plus(0))).list(getDialectDataSource());
+        final List<String> list = employee.lastName.where(createTerm(employee).eq(employee.salary.add(0))).list(getDialectDataSource());
         assertEquals(0, list.size());
     }
 
     public void testNe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).ne(employee.salary.plus(0)))
+                .where(createTerm(employee).ne(employee.salary.add(0)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -94,7 +94,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testLe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).le(employee.salary.plus(0)))
+                .where(createTerm(employee).le(employee.salary.add(0)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -103,7 +103,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testLt() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).lt(employee.salary.plus(0)))
+                .where(createTerm(employee).lt(employee.salary.add(0)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -112,7 +112,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testGe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).ge(employee.salary.plus(0)))
+                .where(createTerm(employee).ge(employee.salary.add(0)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(), list);
@@ -121,7 +121,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testGt() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).gt(employee.salary.plus(0)))
+                .where(createTerm(employee).gt(employee.salary.add(0)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(), list);
@@ -226,9 +226,9 @@ public class TermTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).plus(employee.salary.mult(2)).list(getDialectDataSource());
+        final List<Number> list = createTerm(employee).add(employee.salary.mult(2)).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -238,9 +238,9 @@ public class TermTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).minus(employee.salary.mult(2).opposite()).list(getDialectDataSource());
+        final List<Number> list = createTerm(employee).sub(employee.salary.mult(2).opposite()).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -274,9 +274,9 @@ public class TermTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).plus(3000.0).list(getDialectDataSource());
+        final List<Number> list = createTerm(employee).add(3000.0).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -286,9 +286,9 @@ public class TermTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).minus(500.0).list(getDialectDataSource());
+        final List<Number> list = createTerm(employee).sub(500.0).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -553,14 +553,14 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testWhenClause() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().then(createTerm(employee)).orElse(employee.salary.plus(0)).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(employee.retired.booleanValue().then(createTerm(employee)).orElse(employee.salary.add(0)).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
     public void testElse() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.plus(0)).orElse(createTerm(employee)).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.add(0)).orElse(createTerm(employee)).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }

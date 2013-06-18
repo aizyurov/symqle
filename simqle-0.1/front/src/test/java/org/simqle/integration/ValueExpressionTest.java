@@ -205,11 +205,11 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         // many dababases do not support
         try {
             final Employee employee = new Employee();
-            final List<Number> list = createVE(employee).plus(employee.salary)
+            final List<Number> list = createVE(employee).add(employee.salary)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());
@@ -222,11 +222,11 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         // many dababases do not support
         try {
             final Employee employee = new Employee();
-            final List<Number> list = createVE(employee).minus(employee.salary)
+            final List<Number> list = createVE(employee).sub(employee.salary)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());
@@ -270,11 +270,11 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         // many dababases do not support
         try {
             final Employee employee = new Employee();
-            final List<Number> list = createVE(employee).plus(2.0)
+            final List<Number> list = createVE(employee).add(2.0)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());
@@ -287,11 +287,11 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         // many dababases do not support
         try {
             final Employee employee = new Employee();
-            final List<Number> list = createVE(employee).minus(0.5)
+            final List<Number> list = createVE(employee).sub(0.5)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());

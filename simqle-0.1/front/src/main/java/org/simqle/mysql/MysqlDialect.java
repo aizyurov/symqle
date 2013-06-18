@@ -35,10 +35,28 @@ public class MysqlDialect extends GenericDialect {
     }
 
     @Override
+    public Sql ValueExpressionPrimary_is_LEFT_PAREN_ValueExpression_RIGHT_PAREN(final Sql e) {
+        // prevent double parentesizing
+        final String sqlText = e.getSqlText();
+        // prevent double parenthesizing
+        if (sqlText.startsWith("(") && sqlText.endsWith(")")) {
+            return e;
+        } else {
+            return concat(SqlTerm.LEFT_PAREN, e, SqlTerm.RIGHT_PAREN);
+        }
+    }
+
+    @Override
     public Sql ValueExpression_is_BooleanExpression(final Sql bve) {
         // mysql dialect misunderstands usage of BooleanExpression where ValueExpression is required;
         // surrounding with parentheses to avoid it
-        return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
+        final String sqlText = bve.getSqlText();
+        // prevent double parenthesizing
+        if (sqlText.startsWith("(") && sqlText.endsWith(")")) {
+            return bve;
+        } else {
+            return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
+        }
     }
 
 }

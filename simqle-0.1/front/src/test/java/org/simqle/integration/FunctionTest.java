@@ -267,9 +267,9 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(Pair.make(1500.0, "Cooper")), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = abs(employee.salary.opposite()).plus(employee.department().manager().salary)
+        final List<Number> list = abs(employee.salary.opposite()).add(employee.department().manager().salary)
                 .orderBy(employee.lastName).list(getDialectDataSource());
         final List<Double> asDoubles = new ArrayList<Double>();
         for (Number n : list) {
@@ -278,9 +278,9 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(null, 6000.0, 5000.0, 5000.0, 6000.0), asDoubles);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = abs(employee.salary.opposite()).plus(400.0)
+        final List<Number> list = abs(employee.salary.opposite()).add(400.0)
                 .orderBy(employee.lastName).list(getDialectDataSource());
         final List<Double> asDoubles = new ArrayList<Double>();
         for (Number n : list) {
@@ -289,9 +289,9 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1900.0, 3400.0, 2400.0, 2400.0, 3400.0), asDoubles);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = abs(employee.salary.opposite()).minus(employee.department().manager().salary)
+        final List<Number> list = abs(employee.salary.opposite()).sub(employee.department().manager().salary)
                 .orderBy(employee.lastName).list(getDialectDataSource());
         final List<Double> asDoubles = new ArrayList<Double>();
         for (Number n : list) {
@@ -300,9 +300,9 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(null, 0.0, -1000.0, -1000.0, 0.0), asDoubles);
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = abs(employee.salary.opposite()).minus(100.0)
+        final List<Number> list = abs(employee.salary.opposite()).sub(100.0)
                 .orderBy(employee.lastName).list(getDialectDataSource());
         final List<Double> asDoubles = new ArrayList<Double>();
         for (Number n : list) {

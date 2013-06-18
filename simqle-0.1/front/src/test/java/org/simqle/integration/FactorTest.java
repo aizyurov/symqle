@@ -223,9 +223,9 @@ public class FactorTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createFactor(employee).plus(employee.salary.mult(2)).list(getDialectDataSource());
+        final List<Number> list = createFactor(employee).add(employee.salary.mult(2)).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -235,9 +235,9 @@ public class FactorTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createFactor(employee).minus(employee.salary.mult(2).opposite()).list(getDialectDataSource());
+        final List<Number> list = createFactor(employee).sub(employee.salary.mult(2).opposite()).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -271,9 +271,9 @@ public class FactorTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createFactor(employee).plus(3000.0).list(getDialectDataSource());
+        final List<Number> list = createFactor(employee).add(3000.0).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -283,9 +283,9 @@ public class FactorTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createFactor(employee).minus(500.0).list(getDialectDataSource());
+        final List<Number> list = createFactor(employee).sub(500.0).list(getDialectDataSource());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());

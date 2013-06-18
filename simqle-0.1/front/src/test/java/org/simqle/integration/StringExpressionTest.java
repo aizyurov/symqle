@@ -442,10 +442,10 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final One one = new One();
         try {
-            final List<Number> list = one.id.concat("2").plus(3).list(getDialectDataSource());
+            final List<Number> list = one.id.concat("2").add(3).list(getDialectDataSource());
             assertEquals(1, list.size());
             assertEquals(15, list.get(0).intValue());
         } catch (SQLException e) {
@@ -454,10 +454,10 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final One one = new One();
         try {
-            final List<Number> list = one.id.concat("2").minus(3).list(getDialectDataSource());
+            final List<Number> list = one.id.concat("2").sub(3).list(getDialectDataSource());
             assertEquals(1, list.size());
             assertEquals(9, list.get(0).intValue());
         } catch (SQLException e) {

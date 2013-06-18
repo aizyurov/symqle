@@ -580,9 +580,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = Params.p(1).plus(employee.deptId).list(getDialectDataSource());
+        final List<Number> list = Params.p(1).add(employee.deptId).list(getDialectDataSource());
         final List<Integer> ids = employee.deptId.list(getDialectDataSource());
         assertEquals(list.size(), ids.size());
         final Set<Integer> actual = new HashSet<Integer>();
@@ -596,9 +596,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = Params.p(100).minus(employee.deptId).list(getDialectDataSource());
+        final List<Number> list = Params.p(100).sub(employee.deptId).list(getDialectDataSource());
         final List<Integer> ids = employee.deptId.list(getDialectDataSource());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
@@ -643,9 +643,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         try {
-            final List<Number> sums = Params.p(2).plus(1).list(getDialectDataSource());
+            final List<Number> sums = Params.p(2).add(1).list(getDialectDataSource());
             assertEquals(1, sums.size());
             assertEquals(3, sums.get(0).intValue());
         } catch (SQLException e) {
@@ -657,9 +657,9 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         try {
-            final List<Number> sums = Params.p(3).minus(2).list(getDialectDataSource());
+            final List<Number> sums = Params.p(3).sub(2).list(getDialectDataSource());
             assertEquals(1, sums.size());
             assertEquals(1, sums.get(0).intValue());
         } catch (SQLException e) {

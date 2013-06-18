@@ -22,7 +22,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
 
     private AbstractNumericExpression<Number> createExpression(final Employee employee) {
-        return employee.salary.plus(100);
+        return employee.salary.add(100);
     }
 
     public void testList() throws Exception {
@@ -64,28 +64,28 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testIsNull() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNumericExpression<Number> expression = employee.deptId.plus(1);
+        final AbstractNumericExpression<Number> expression = employee.deptId.add(1);
         final List<String> list = employee.lastName.where(expression.isNull()).list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testIsNotNull() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNumericExpression<Number> expression = employee.deptId.plus(1);
+        final AbstractNumericExpression<Number> expression = employee.deptId.add(1);
         final List<String> list = employee.lastName.where(expression.isNotNull()).orderBy(employee.lastName).list(getDialectDataSource());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testEq() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createExpression(employee).eq(employee.salary.minus(50))).list(getDialectDataSource());
+        final List<String> list = employee.lastName.where(createExpression(employee).eq(employee.salary.sub(50))).list(getDialectDataSource());
         assertEquals(0, list.size());
     }
 
     public void testNe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).ne(employee.salary.minus(50)))
+                .where(createExpression(employee).ne(employee.salary.sub(50)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -94,7 +94,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testLe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).le(employee.salary.plus(200)))
+                .where(createExpression(employee).le(employee.salary.add(200)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -103,7 +103,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testLt() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).lt(employee.salary.plus(200)))
+                .where(createExpression(employee).lt(employee.salary.add(200)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -112,7 +112,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testGe() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).ge(employee.salary.plus(200)))
+                .where(createExpression(employee).ge(employee.salary.add(200)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(), list);
@@ -121,7 +121,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testGt() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).gt(employee.salary.plus(200)))
+                .where(createExpression(employee).gt(employee.salary.add(200)))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(), list);
@@ -185,7 +185,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).in(other.salary.plus(100).where(other.retired.booleanValue().negate())))
+                .where(createExpression(employee).in(other.salary.add(100).where(other.retired.booleanValue().negate())))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
@@ -195,7 +195,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).notIn(other.salary.plus(100).where(other.retired.booleanValue().negate())))
+                .where(createExpression(employee).notIn(other.salary.add(100).where(other.retired.booleanValue().negate())))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList("Cooper"), list);
@@ -226,17 +226,17 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(-3100.0, -3100.0, -2100.0, -2100.0, -1600.0), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).plus(employee.salary.mult(2)).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).add(employee.salary.mult(2)).list(getDialectDataSource()));
         Collections.sort(list);
         final List<Double> expected = Arrays.asList(4600.0, 6100.0, 6100.0, 9100.0, 9100.0);
         assertEquals(expected, list);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).minus(employee.salary).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).sub(employee.salary).list(getDialectDataSource()));
         final List<Double> expected = Arrays.asList(100.0, 100.0, 100.0, 100.0, 100.0);
         assertEquals(expected, list);
     }
@@ -262,17 +262,17 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(expected, list);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).plus(100.0).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).add(100.0).list(getDialectDataSource()));
         Collections.sort(list);
         final List<Double> expected = Arrays.asList(1700.0, 2200.0, 2200.0, 3200.0, 3200.0);
         assertEquals(expected, list);
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).minus(500.0).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).sub(500.0).list(getDialectDataSource()));
         Collections.sort(list);
         final List<Double> expected = Arrays.asList(1100.0, 1600.0, 1600.0, 2600.0, 2600.0);
         assertEquals(expected, list);
@@ -376,7 +376,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).unionAll(employee.salary.plus(100).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).unionAll(employee.salary.add(100).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
 
@@ -384,7 +384,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).unionDistinct(employee.salary.plus(100).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).unionDistinct(employee.salary.add(100).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2100.0, 3100.0), list);
 
@@ -392,7 +392,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).union(employee.salary.plus(100).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(createExpression(employee).union(employee.salary.add(100).where(employee.lastName.eq("Cooper"))).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2100.0, 3100.0), list);
     }
@@ -516,7 +516,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryValue() throws Exception {
-        final List<Pair<Number, String>> list = new One().id.plus(10).queryValue().pair(new MyDual().dummy)
+        final List<Pair<Number, String>> list = new One().id.add(10).queryValue().pair(new MyDual().dummy)
                 .list(getDialectDataSource());
         assertEquals(1, list.size());
         assertEquals(11, list.get(0).first().intValue());
@@ -525,14 +525,14 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testWhenClause() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(createExpression(employee)).orElse(employee.salary.minus(100)).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(createExpression(employee)).orElse(employee.salary.sub(100)).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1400.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }
 
     public void testElse() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.plus(200)).orElse(createExpression(employee)).list(getDialectDataSource()));
+        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.add(200)).orElse(createExpression(employee)).list(getDialectDataSource()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2200.0, 2200.0, 3200.0, 3200.0), list);
     }

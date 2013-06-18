@@ -86,7 +86,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.id.setIgnoreType(updateTable.id.plus(1))).execute(getDialectDataSource());
+        updateTable.update(updateTable.id.setIgnoreType(updateTable.id.add(1))).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
         assertEquals(Arrays.asList(Pair.make(3, "wow")), newRows);
     }

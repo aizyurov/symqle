@@ -243,12 +243,12 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(Pair.make(-3000.0, "DEV"), Pair.make(-3000.0, "HR")), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
         final AbstractValueExpressionPrimary<Double> primary = employee.salary.min().where(employee.deptId.eq(department.deptId)).queryValue();
         final List<Pair<Number, String>> list =
-                primary.plus(department.manager().salary).pair(department.deptName)
+                primary.add(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
         assertEquals(5000.0, list.get(0).first().doubleValue());
@@ -256,12 +256,12 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(2, list.size());
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
         final AbstractValueExpressionPrimary<Double> primary = employee.salary.min().where(employee.deptId.eq(department.deptId)).queryValue();
         final List<Pair<Number, String>> list =
-                primary.minus(department.manager().salary).pair(department.deptName)
+                primary.sub(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
         assertEquals(-1000.0, list.get(0).first().doubleValue());
@@ -295,12 +295,12 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(2, list.size());
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
         final AbstractValueExpressionPrimary<Double> primary = employee.salary.min().where(employee.deptId.eq(department.deptId)).queryValue();
         final List<Pair<Number, String>> list =
-                primary.plus(500.0).pair(department.deptName)
+                primary.add(500.0).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
         assertEquals(2500.0, list.get(0).first().doubleValue());
@@ -308,12 +308,12 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(2, list.size());
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
         final AbstractValueExpressionPrimary<Double> primary = employee.salary.min().where(employee.deptId.eq(department.deptId)).queryValue();
         final List<Pair<Number, String>> list =
-                primary.minus(500.0).pair(department.deptName)
+                primary.sub(500.0).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
         assertEquals(1500.0, list.get(0).first().doubleValue());

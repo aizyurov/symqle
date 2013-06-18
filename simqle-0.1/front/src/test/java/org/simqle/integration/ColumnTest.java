@@ -465,9 +465,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(-3000.0), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.empId.plus(employee.deptId).list(getDialectDataSource());
+        final List<Number> list = employee.empId.add(employee.deptId).list(getDialectDataSource());
         final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDialectDataSource());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
@@ -480,9 +480,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.empId.minus(employee.deptId).list(getDialectDataSource());
+        final List<Number> list = employee.empId.sub(employee.deptId).list(getDialectDataSource());
         final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDialectDataSource());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
@@ -525,9 +525,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testPlusNumber() throws Exception {
+    public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> sums = employee.empId.plus(1).list(getDialectDataSource());
+        final List<Number> sums = employee.empId.add(1).list(getDialectDataSource());
         final List<Integer> list = employee.empId.list(getDialectDataSource());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n : sums) {
@@ -540,9 +540,9 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(expected, actual);
     }
 
-    public void testMinusNumber() throws Exception {
+    public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> sums = employee.empId.minus(1).list(getDialectDataSource());
+        final List<Number> sums = employee.empId.sub(1).list(getDialectDataSource());
         final List<Integer> list = employee.empId.list(getDialectDataSource());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n : sums) {

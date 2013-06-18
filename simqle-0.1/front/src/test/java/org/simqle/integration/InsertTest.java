@@ -103,7 +103,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final One one = new One();
         final Employee employee = new Employee();
         final int affectedRows = insertTable.insert(
-                insertTable.id.setIgnoreType(one.id.queryValue().plus(2)),
+                insertTable.id.setIgnoreType(one.id.queryValue().add(2)),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);

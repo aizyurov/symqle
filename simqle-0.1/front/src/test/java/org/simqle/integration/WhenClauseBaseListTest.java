@@ -404,10 +404,10 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         ), list);
     }
 
-    public void testPlus() throws Exception {
+    public void testAdd() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
-        final List<Pair<Number, String>> list = whenClauseBaseList.plus(100.0).pair(employee.lastName)
+        final List<Pair<Number, String>> list = whenClauseBaseList.add(100.0).pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
@@ -419,10 +419,10 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         ), convertToDoubleStringPairList(list));
     }
 
-    public void testMinus() throws Exception {
+    public void testSub() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
-        final List<Pair<Number, String>> list = whenClauseBaseList.minus(100.0).pair(employee.lastName)
+        final List<Pair<Number, String>> list = whenClauseBaseList.sub(100.0).pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
