@@ -8,6 +8,7 @@ Same for concat
 --Add access to DialectDataSource from Row (needed for collections) - no need, can pass DDS to Selector constructor
 
 Rename DialectDataSource -> DatabaseGate
+Remove list(DataSource,...) ?
 
 Remove setIgnoreType: methods with Mapper will do
 
