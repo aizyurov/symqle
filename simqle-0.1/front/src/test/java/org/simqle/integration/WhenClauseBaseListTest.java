@@ -620,16 +620,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testCount() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDialectDataSource());
-        try {
-            assertEquals(Arrays.asList(5), list);
-        } catch (AssertionFailedError e) {
-            // mysql counts only NOT NULL values
-            if ("mysql".equals(getDatabaseName())) {
-                assertEquals(Arrays.asList(3), list);
-            } else {
-                throw e;
-            }
-        }
+        // only NOT NULL values are counted
+        assertEquals(Arrays.asList(3), list);
     }
 
     public void testCountDistinct() throws Exception {
@@ -668,15 +660,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Number> list = whenClauseBaseList.avg().list(getDialectDataSource());
         assertEquals(1, list.size());
-        try {
-            assertEquals(900.0, list.get(0).doubleValue());
-        } catch (AssertionFailedError e) {
-            // mysql calculates average over NOT NULL values only
-            if ("mysql".equals(getDatabaseName())) {
-                assertEquals(1500.0, list.get(0).doubleValue());
-            } else {
-                throw e;
-            }
-        }
+        // average is claculated over NOT NULL values only
+        assertEquals(1500.0, list.get(0).doubleValue());
     }
 }
