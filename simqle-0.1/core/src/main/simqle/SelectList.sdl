@@ -22,7 +22,7 @@ import org.simqle.Pair;
                 RowMapper<Pair<T, U>> extractor = new RowMapper<Pair<T, U>>() {
                     @Override
                     public Pair<T, U> extract(Row row) throws SQLException {
-                        return Pair.of(query1.extract(row), query2.extract(row));
+                        return Pair.make(query1.extract(row), query2.extract(row));
                     }
                 };
                 return new ComplexQuery<Pair<T, U>>(extractor, context.get(Dialect.class).SelectList_is_SelectList_COMMA_SelectList(query1, query2));

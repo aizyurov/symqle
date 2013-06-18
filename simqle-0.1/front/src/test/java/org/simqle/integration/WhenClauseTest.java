@@ -28,11 +28,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((String)null, "Cooper"),
-                Pair.of("James", "First"),
-                Pair.of((String)null, "March"),
-                Pair.of((String)null, "Pedersen"),
-                Pair.of("Margaret", "Redwood")
+                Pair.make((String)null, "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make((String)null, "March"),
+                Pair.make((String)null, "Pedersen"),
+                Pair.make("Margaret", "Redwood")
         ), list);
     }
 
@@ -134,11 +134,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of("Anonymous", "Cooper"),
-                Pair.of("James", "First"),
-                Pair.of("Anonymous", "March"),
-                Pair.of("Anonymous", "Pedersen"),
-                Pair.of("Margaret", "Redwood")
+                Pair.make("Anonymous", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make("Anonymous", "March"),
+                Pair.make("Anonymous", "Pedersen"),
+                Pair.make("Margaret", "Redwood")
         ), list);
     }
 
@@ -149,11 +149,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of("James+", "Cooper"),
-                Pair.of("James", "First"),
-                Pair.of("Bill+", "March"),
-                Pair.of("Alex+", "Pedersen"),
-                Pair.of("Margaret", "Redwood")
+                Pair.make("James+", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make("Bill+", "March"),
+                Pair.make("Alex+", "Pedersen"),
+                Pair.make("Margaret", "Redwood")
         ), list);
     }
 
@@ -282,11 +282,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((String)null, "Cooper"),
-                Pair.of("James", "First"),
-                Pair.of("Bill", "March"),
-                Pair.of((String)null, "Pedersen"),
-                Pair.of("Margaret", "Redwood")
+                Pair.make((String)null, "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make("Bill", "March"),
+                Pair.make((String)null, "Pedersen"),
+                Pair.make("Margaret", "Redwood")
         ), list);
     }
 
@@ -378,11 +378,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((Double)null, "Cooper"),
-                Pair.of(-3000.0, "First"),
-                Pair.of((Double)null, "March"),
-                Pair.of((Double)null, "Pedersen"),
-                Pair.of(-3000.0, "Redwood")
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(-3000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(-3000.0, "Redwood")
         ), list);
     }
 
@@ -393,11 +393,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((Double)null, "Cooper"),
-                Pair.of(3100.0, "First"),
-                Pair.of((Double)null, "March"),
-                Pair.of((Double)null, "Pedersen"),
-                Pair.of(3100.0, "Redwood")
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(3100.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(3100.0, "Redwood")
         ), convertToDoubleStringPairList(list));
     }
 
@@ -408,11 +408,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((Double)null, "Cooper"),
-                Pair.of(2900.0, "First"),
-                Pair.of((Double)null, "March"),
-                Pair.of((Double)null, "Pedersen"),
-                Pair.of(2900.0, "Redwood")
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(2900.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(2900.0, "Redwood")
         ), convertToDoubleStringPairList(list));
     }
 
@@ -423,11 +423,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((Double)null, "Cooper"),
-                Pair.of(6000.0, "First"),
-                Pair.of((Double)null, "March"),
-                Pair.of((Double)null, "Pedersen"),
-                Pair.of(6000.0, "Redwood")
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(6000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(6000.0, "Redwood")
         ), convertToDoubleStringPairList(list));
     }
 
@@ -438,18 +438,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((Double)null, "Cooper"),
-                Pair.of(1000.0, "First"),
-                Pair.of((Double)null, "March"),
-                Pair.of((Double)null, "Pedersen"),
-                Pair.of(1000.0, "Redwood")
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(1000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(1000.0, "Redwood")
         ), convertToDoubleStringPairList(list));
     }
 
     private List<Pair<Double, String>> convertToDoubleStringPairList(List<Pair<Number, String>> source) {
         final List<Pair<Double, String>> result = new ArrayList<Pair<Double, String>>();
         for (Pair<Number, String> p : source) {
-            result.add(Pair.of(p.getFirst() == null ? null : p.getFirst().doubleValue(), p.getSecond()));
+            result.add(Pair.make(p.first() == null ? null : p.first().doubleValue(), p.second()));
         }
         return result;
     }
@@ -461,11 +461,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of((String) null, "Cooper"),
-                Pair.of("James+", "First"),
-                Pair.of((String) null, "March"),
-                Pair.of((String) null, "Pedersen"),
-                Pair.of("Margaret+", "Redwood")
+                Pair.make((String) null, "Cooper"),
+                Pair.make("James+", "First"),
+                Pair.make((String) null, "March"),
+                Pair.make((String) null, "Pedersen"),
+                Pair.make("Margaret+", "Redwood")
         ), list);
     }
 

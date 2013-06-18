@@ -162,7 +162,7 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
                 .pair(
                         employee.empId.count().where(employee.salary.gt(2500.0).and(employee.deptId.eq(department.deptId))).queryValue()
                 ).orderBy(department.deptName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("DEV", 1), Pair.of("HR", 1)), list);
+        assertEquals(Arrays.asList(Pair.make("DEV", 1), Pair.make("HR", 1)), list);
     }
 
 

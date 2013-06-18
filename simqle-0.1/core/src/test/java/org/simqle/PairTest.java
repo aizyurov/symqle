@@ -8,18 +8,18 @@ import junit.framework.TestCase;
 public class PairTest extends TestCase {
 
     public void testEq() {
-        final Pair<String, String> ab1 = Pair.of("a", "b");
-        final Pair<String, String> ab2 = Pair.of("a", "b");
-        final Pair<String, String> az = Pair.of("a", "z");
-        final Pair<String, String> xb = Pair.of("x", "b");
-        final Pair<String, String> an1 = Pair.of("a", null);
-        final Pair<String, String> an2 = Pair.of("a", null);
-        final Pair<String, String> xn = Pair.of("x", null);
-        final Pair<String, String> nb1 = Pair.of(null, "b");
-        final Pair<String, String> nb2 = Pair.of(null, "b");
-        final Pair<String, String> nz = Pair.of(null, "z");
-        final Pair<String, String> nn1 = Pair.of(null, null);
-        final Pair<String, String> nn2 = Pair.of(null, null);
+        final Pair<String, String> ab1 = Pair.make("a", "b");
+        final Pair<String, String> ab2 = Pair.make("a", "b");
+        final Pair<String, String> az = Pair.make("a", "z");
+        final Pair<String, String> xb = Pair.make("x", "b");
+        final Pair<String, String> an1 = Pair.make("a", null);
+        final Pair<String, String> an2 = Pair.make("a", null);
+        final Pair<String, String> xn = Pair.make("x", null);
+        final Pair<String, String> nb1 = Pair.make(null, "b");
+        final Pair<String, String> nb2 = Pair.make(null, "b");
+        final Pair<String, String> nz = Pair.make(null, "z");
+        final Pair<String, String> nn1 = Pair.make(null, null);
+        final Pair<String, String> nn2 = Pair.make(null, null);
 
         assertEquals(ab1, ab2);
         assertEquals(an1, an2);
@@ -50,8 +50,8 @@ public class PairTest extends TestCase {
         assertNotEquals(nn1, an1);
         assertNotEquals(nn1, nb1);
 
-        assertEquals(ab1.getFirst(), "a");
-        assertEquals(ab1.getSecond(), "b");
+        assertEquals(ab1.first(), "a");
+        assertEquals(ab1.second(), "b");
     }
 
 

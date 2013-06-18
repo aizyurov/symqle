@@ -264,7 +264,7 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         final List<Pair<Double,String>> list = abs(employee.salary.opposite()).pair(employee.lastName)
                 .where(employee.deptId.isNull())
                 .list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(1500.0, "Cooper")), list);
+        assertEquals(Arrays.asList(Pair.make(1500.0, "Cooper")), list);
     }
 
     public void testPlus() throws Exception {
@@ -517,7 +517,7 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         final List<Pair<String, Integer>> list = department.deptName.pair(abs(one.id.opposite()).queryValue())
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("DEV", 1), Pair.of("HR", 1)), list);
+        assertEquals(Arrays.asList(Pair.make("DEV", 1), Pair.make("HR", 1)), list);
     }
 
     public void testLike() throws Exception {

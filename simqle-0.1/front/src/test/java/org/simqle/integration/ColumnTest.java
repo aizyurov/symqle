@@ -58,7 +58,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
                 )
                 .where(employee.title.eq("guru")).list(getDialectDataSource());
         assertEquals(1, pairs.size());
-        assertEquals(Pair.of("Pedersen", "First"), pairs.get(0));
+        assertEquals(Pair.make("Pedersen", "First"), pairs.get(0));
     }
 
     public void testMultipleJoins() throws Exception {
@@ -73,7 +73,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(5, countryCodes.size());
         System.out.println(countryCodes);
         for (Pair<String, String> pair : countryCodes) {
-            assertEquals(pair.getFirst(), pair.getSecond());
+            assertEquals(pair.first(), pair.second());
         }
     }
 
@@ -475,7 +475,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         }
         final Set<Integer> expected = new HashSet<Integer>();
         for (Pair<Integer, Integer> pair : pairs) {
-            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() + pair.getSecond());
+            expected.add(pair.first() == null || pair.second() == null ? null : pair.first() + pair.second());
         }
         assertEquals(expected, actual);
     }
@@ -490,7 +490,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         }
         final Set<Integer> expected = new HashSet<Integer>();
         for (Pair<Integer, Integer> pair : pairs) {
-            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() - pair.getSecond());
+            expected.add(pair.first() == null || pair.second() == null ? null : pair.first() - pair.second());
         }
         assertEquals(expected, actual);
     }
@@ -505,7 +505,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         }
         final Set<Integer> expected = new HashSet<Integer>();
         for (Pair<Integer, Integer> pair : pairs) {
-            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() * pair.getSecond());
+            expected.add(pair.first() == null || pair.second() == null ? null : pair.first() * pair.second());
         }
         assertEquals(expected, actual);
     }
@@ -520,7 +520,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         }
         final Set<Integer> expected = new HashSet<Integer>();
         for (Pair<Integer, Integer> pair : pairs) {
-            expected.add(pair.getFirst() == null || pair.getSecond() == null ? null : pair.getFirst() / pair.getSecond());
+            expected.add(pair.first() == null || pair.second() == null ? null : pair.first() / pair.second());
         }
         assertEquals(expected, actual);
     }
@@ -647,7 +647,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<Pair<String, String>> list = dual.dummy.queryValue().pair(employee.lastName)
                 .orderBy(employee.lastName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("X", "Cooper"), Pair.of("X", "First"), Pair.of("X", "March"), Pair.of("X", "Pedersen"), Pair.of("X", "Redwood")), list);
+        assertEquals(Arrays.asList(Pair.make("X", "Cooper"), Pair.make("X", "First"), Pair.make("X", "March"), Pair.make("X", "Pedersen"), Pair.make("X", "Redwood")), list);
     }
 
     public void testLike() throws Exception {

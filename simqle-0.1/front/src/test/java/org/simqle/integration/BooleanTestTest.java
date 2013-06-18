@@ -418,7 +418,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
         try {
             final List<Pair<String,String>> list = employee.lastName.pair(basicCondition.then(employee.firstName))
                     .orderBy(employee.lastName).list(getDialectDataSource());
-            assertEquals(Arrays.asList(Pair.of("Cooper", "James"), Pair.of("First", null), Pair.of("March", null), Pair.of("Pedersen", null), Pair.of("Redwood", null)), list);
+            assertEquals(Arrays.asList(Pair.make("Cooper", "James"), Pair.make("First", null), Pair.make("March", null), Pair.make("Pedersen", null), Pair.make("Redwood", null)), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
             expectSQLException(e, "derby");
@@ -433,7 +433,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
                         employee.salary.gt(2500.0).then(employee.firstName).orWhen(basicCondition.thenNull()).orElse(Params.p(":)"))
                     )
                     .orderBy(employee.lastName).list(getDialectDataSource());
-            assertEquals(Arrays.asList(Pair.of("Cooper", null), Pair.of("First", "James"), Pair.of("March", ":)"), Pair.of("Pedersen", ":)"), Pair.of("Redwood", "Margaret")), list);
+            assertEquals(Arrays.asList(Pair.make("Cooper", null), Pair.make("First", "James"), Pair.make("March", ":)"), Pair.make("Pedersen", ":)"), Pair.make("Redwood", "Margaret")), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
             expectSQLException(e, "derby");

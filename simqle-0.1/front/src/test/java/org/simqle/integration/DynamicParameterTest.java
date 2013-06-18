@@ -81,7 +81,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<Pair<Integer, String>> redwood = Params.p(1).pair(employee.firstName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-            assertEquals(Arrays.asList(Pair.of(1, "Margaret")), redwood);
+            assertEquals(Arrays.asList(Pair.make(1, "Margaret")), redwood);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             expectSQLException(e, "derby");
@@ -91,7 +91,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
     public void testAsFunctionArgument() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<String, Double>> list = employee.lastName.pair(Functions.floor(Params.p(1.2))).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("Redwood", 1.0)), list);
+        assertEquals(Arrays.asList(Pair.make("Redwood", 1.0)), list);
     }
 
     public void testAsCondition() throws Exception {
@@ -799,7 +799,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         try {
             final List<Pair<String, String>> list = Params.p("X").queryValue().pair(employee.lastName)
                     .orderBy(employee.lastName).list(getDialectDataSource());
-            assertEquals(Arrays.asList(Pair.of("X", "Cooper"), Pair.of("X", "First"), Pair.of("X", "March"), Pair.of("X", "Pedersen"), Pair.of("X", "Redwood")), list);
+            assertEquals(Arrays.asList(Pair.make("X", "Cooper"), Pair.make("X", "First"), Pair.make("X", "March"), Pair.make("X", "Pedersen"), Pair.make("X", "Redwood")), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed
             expectSQLException(e, "derby");

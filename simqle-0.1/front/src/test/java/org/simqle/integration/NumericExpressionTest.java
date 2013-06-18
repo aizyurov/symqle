@@ -58,8 +58,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<Pair<Number, String>> list = createExpression(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDialectDataSource());
         assertEquals(1, list.size());
-        assertEquals("Cooper", list.get(0).getSecond());
-        assertEquals(1600, list.get(0).getFirst().intValue());
+        assertEquals("Cooper", list.get(0).second());
+        assertEquals(1600, list.get(0).first().intValue());
     }
 
     public void testIsNull() throws Exception {
@@ -519,8 +519,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list = new One().id.plus(10).queryValue().pair(new MyDual().dummy)
                 .list(getDialectDataSource());
         assertEquals(1, list.size());
-        assertEquals(11, list.get(0).getFirst().intValue());
-        assertEquals("X", list.get(0).getSecond());
+        assertEquals(11, list.get(0).first().intValue());
+        assertEquals("X", list.get(0).second());
     }
 
     public void testWhenClause() throws Exception {

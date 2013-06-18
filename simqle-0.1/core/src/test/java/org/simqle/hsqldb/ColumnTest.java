@@ -66,28 +66,28 @@ public class ColumnTest extends TestCase {
         final List<Pair<String,Integer>> list = person.name.pair(person.age).list(dataSource);
         assertEquals(3, list.size());
         System.out.println(list);
-        assertTrue(list.contains(Pair.of("Alice", 23)));
+        assertTrue(list.contains(Pair.make("Alice", 23)));
     }
 
     public void testWhereEq() throws Exception {
         Person person = new Person();
         final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.id.eq(2L)).list(dataSource);
         assertEquals(1, list.size());
-        assertTrue(Pair.of("Bob", 46).equals(list.get(0)));
+        assertTrue(Pair.make("Bob", 46).equals(list.get(0)));
     }
 
     public void testWhereLike() throws Exception {
         Person person = new Person();
         final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.name.like("Bo_")).list(dataSource);
         assertEquals(1, list.size());
-        assertTrue(Pair.of("Bob", 46).equals(list.get(0)));
+        assertTrue(Pair.make("Bob", 46).equals(list.get(0)));
     }
 
     public void testWhereBoolean() throws Exception {
         Person person = new Person();
         final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.alive.booleanValue().negate()).list(dataSource);
         assertEquals(1, list.size());
-        assertTrue(Pair.of("Leonardo", 546).equals(list.get(0)));
+        assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
     }
 
     public void testSubquery() throws Exception {
@@ -95,7 +95,7 @@ public class ColumnTest extends TestCase {
         Person sample = new Person();
         final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.id.in(sample.id.where(sample.name.eq("Leonardo")))).list(dataSource);
         assertEquals(1, list.size());
-        assertTrue(Pair.of("Leonardo", 546).equals(list.get(0)));
+        assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
     }
 
     public void testSubqueryAsValue() throws Exception {
@@ -103,7 +103,7 @@ public class ColumnTest extends TestCase {
         Person sample = new Person();
         final List<Pair<String,Integer>> list = person.name.pair(sample.age.where(sample.id.eq(person.id)).queryValue()).where(person.age.gt(500)).list(dataSource);
         assertEquals(1, list.size());
-        assertTrue(Pair.of("Leonardo", 546).equals(list.get(0)));
+        assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
 
     }
 
@@ -111,7 +111,7 @@ public class ColumnTest extends TestCase {
         Person person = new Person();
         final List<Pair<Pair<Long, String>, Pair<Integer, Boolean>>> list = person.id.pair(person.name).pair(person.age.pair(person.alive)).where(person.age.notLike("%6")).list(dataSource);
         assertEquals(1, list.size());
-        assertEquals(Pair.of(Pair.of(1L, "Alice"), Pair.of(23, true)), list.get(0));
+        assertEquals(Pair.make(Pair.make(1L, "Alice"), Pair.make(23, true)), list.get(0));
     }
 
     public void testCaseExpression() throws Exception {

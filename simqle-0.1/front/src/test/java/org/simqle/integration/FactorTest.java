@@ -56,7 +56,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
     public void testPair() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<Double, String>> list = createFactor(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(-1500.0, "Cooper")), list);
+        assertEquals(Arrays.asList(Pair.make(-1500.0, "Cooper")), list);
     }
 
     public void testIsNull() throws Exception {
@@ -545,7 +545,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
     public void testQueryValue() throws Exception {
         final List<Pair<Integer, String>> list = new One().id.opposite().queryValue().pair(new MyDual().dummy)
                 .list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(-1, "X")), list);
+        assertEquals(Arrays.asList(Pair.make(-1, "X")), list);
     }
 
     public void testWhenClause() throws Exception {

@@ -442,7 +442,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<Pair<String,String>> list = employee.lastName.pair(basicCondition.then(employee.firstName))
                 .orderBy(employee.lastName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("Cooper", "James"), Pair.of("First", "James"), Pair.of("March", null), Pair.of("Pedersen", null), Pair.of("Redwood", null)), list);
+        assertEquals(Arrays.asList(Pair.make("Cooper", "James"), Pair.make("First", "James"), Pair.make("March", null), Pair.make("Pedersen", null), Pair.make("Redwood", null)), list);
     }
 
     public void testThenNull() throws Exception {
@@ -452,6 +452,6 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
                     employee.salary.gt(2500.0).then(employee.firstName).orWhen(basicCondition.thenNull()).orElse(Params.p(":)"))
                 )
                 .orderBy(employee.lastName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("Cooper", null), Pair.of("First", "James"), Pair.of("March", ":)"), Pair.of("Pedersen", ":)"), Pair.of("Redwood", "Margaret")), list);
+        assertEquals(Arrays.asList(Pair.make("Cooper", null), Pair.make("First", "James"), Pair.make("March", ":)"), Pair.make("Pedersen", ":)"), Pair.make("Redwood", "Margaret")), list);
     }
 }

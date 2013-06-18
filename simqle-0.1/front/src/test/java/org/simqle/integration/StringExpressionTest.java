@@ -229,7 +229,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 .where(employee.firstName.eq("James"))
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("XYZ", "Cooper"), Pair.of("XYZ", "First")), list);
+        assertEquals(Arrays.asList(Pair.make("XYZ", "Cooper"), Pair.make("XYZ", "First")), list);
     }
 
     public void testExists() throws Exception {
@@ -510,9 +510,9 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of("James, my friend", "Cooper"),
-                Pair.of("Bill, my friend", "March"),
-                Pair.of("Alex, my friend", "Pedersen")), list);
+                Pair.make("James, my friend", "Cooper"),
+                Pair.make("Bill, my friend", "March"),
+                Pair.make("Alex, my friend", "Pedersen")), list);
     }
 
     public void testLike() throws Exception {

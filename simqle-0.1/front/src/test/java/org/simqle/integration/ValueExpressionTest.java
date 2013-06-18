@@ -58,7 +58,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testPair() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<Boolean,String>> list = createVE(employee).pair(employee.lastName).orderBy(employee.lastName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(false, "Cooper"), Pair.of(true, "First"), Pair.of(true, "March"), Pair.of(true, "Pedersen"), Pair.of(true, "Redwood")), list);
+        assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First"), Pair.make(true, "March"), Pair.make(true, "Pedersen"), Pair.make(true, "Redwood")), list);
 
     }
 
@@ -198,7 +198,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     .where(employee.firstName.eq("James"))
                     .orderBy(employee.lastName)
                     .list(getDialectDataSource());
-            assertEquals(Arrays.asList(Pair.of(false, "Cooper"), Pair.of(true, "First")), list);
+            assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First")), list);
         } catch (SQLException e) {
             // ERROR 42X37: The unary '-' operator is not allowed on the 'BOOLEAN' type.
             expectSQLException(e, "derby");
@@ -531,7 +531,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final AbstractValueExpression<Boolean> ve = myDual.dummy.eq("X").asValue();
         final List<Pair<Boolean, String>> list = ve.queryValue().pair(department.deptName)
                 .orderBy(department.deptName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(true, "DEV"), Pair.of(true, "HR")), list);
+        assertEquals(Arrays.asList(Pair.make(true, "DEV"), Pair.make(true, "HR")), list);
 
     }
 
@@ -541,11 +541,11 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of(false, "Cooper"),
-                Pair.of(true, "First"),
-                Pair.of((Boolean) null, "March"),
-                Pair.of((Boolean)null, "Pedersen"),
-                Pair.of((Boolean)null, "Redwood")), list);
+                Pair.make(false, "Cooper"),
+                Pair.make(true, "First"),
+                Pair.make((Boolean) null, "March"),
+                Pair.make((Boolean)null, "Pedersen"),
+                Pair.make((Boolean)null, "Redwood")), list);
     }
 
     public void testElse() throws Exception {
@@ -554,11 +554,11 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
         assertEquals(Arrays.asList(
-                Pair.of(false, "Cooper"),
-                Pair.of(true, "First"),
-                Pair.of(false, "March"),
-                Pair.of(false, "Pedersen"),
-                Pair.of(false, "Redwood")), list);
+                Pair.make(false, "Cooper"),
+                Pair.make(true, "First"),
+                Pair.make(false, "March"),
+                Pair.make(false, "Pedersen"),
+                Pair.make(false, "Redwood")), list);
     }
 
     public void testLike() throws Exception {

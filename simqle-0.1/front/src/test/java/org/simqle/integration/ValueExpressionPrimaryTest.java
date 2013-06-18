@@ -67,7 +67,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testPair() throws Exception {
         final Department department = new Department();
         final List<Pair<String, String>> list = creatPrimary(department).pair(department.deptName).orderBy(department.deptName.desc()).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("March", "HR"), Pair.of("First", "DEV")), list);
+        assertEquals(Arrays.asList(Pair.make("March", "HR"), Pair.make("First", "DEV")), list);
     }
 
 
@@ -240,7 +240,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.opposite().pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(-3000.0, "DEV"), Pair.of(-3000.0, "HR")), list);
+        assertEquals(Arrays.asList(Pair.make(-3000.0, "DEV"), Pair.make(-3000.0, "HR")), list);
     }
 
     public void testPlus() throws Exception {
@@ -251,8 +251,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.plus(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(5000.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(5000.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -264,8 +264,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.minus(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(-1000.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(-1000.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -277,8 +277,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.mult(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(6000000.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(6000000.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -290,8 +290,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.div(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(1.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(1.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -303,8 +303,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.plus(500.0).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(2500.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(2500.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -316,8 +316,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.minus(500.0).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(1500.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(1500.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -329,8 +329,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.mult(2).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(4000.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(4000.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 
@@ -342,8 +342,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 primary.div(2).pair(department.deptName)
                 .orderBy(department.deptName)
                 .list(getDialectDataSource());
-        assertEquals(1000.0, list.get(0).getFirst().doubleValue());
-        assertEquals("DEV", list.get(0).getSecond());
+        assertEquals(1000.0, list.get(0).first().doubleValue());
+        assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
     }
 

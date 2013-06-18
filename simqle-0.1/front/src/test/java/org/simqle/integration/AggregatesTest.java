@@ -162,7 +162,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
                 .pair(
                         employee.empId.count().queryValue()
                 ).orderBy(department.deptName).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of("DEV", 5), Pair.of("HR", 5)), list);
+        assertEquals(Arrays.asList(Pair.make("DEV", 5), Pair.make("HR", 5)), list);
     }
 
 

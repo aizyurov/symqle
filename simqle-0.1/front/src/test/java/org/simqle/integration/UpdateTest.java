@@ -21,11 +21,11 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "wow")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         updateTable.update(updateTable.id.set(3), updateTable.text.set("changed")).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(3, "changed")), newRows);
+        assertEquals(Arrays.asList(Pair.make(3, "changed")), newRows);
     }
 
     private UpdateTable clean() throws SQLException {
@@ -41,11 +41,11 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "nothing")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "nothing")), rows);
 
         updateTable.update(updateTable.text.set("changed")).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "changed")), newRows);
+        assertEquals(Arrays.asList(Pair.make(2, "changed")), newRows);
     }
 
     public void testSetNull() throws Exception {
@@ -55,11 +55,11 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "wow")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         updateTable.update(updateTable.text.setNull()).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, (String) null)), newRows);
+        assertEquals(Arrays.asList(Pair.make(2, (String) null)), newRows);
 
     }
 
@@ -70,11 +70,11 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "wow")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         updateTable.update(updateTable.text.setDefault()).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "nothing")), newRows);
+        assertEquals(Arrays.asList(Pair.make(2, "nothing")), newRows);
     }
 
     public void testSetIgnoreType() throws Exception {
@@ -84,11 +84,11 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "wow")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         updateTable.update(updateTable.id.setIgnoreType(updateTable.id.plus(1))).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(3, "wow")), newRows);
+        assertEquals(Arrays.asList(Pair.make(3, "wow")), newRows);
     }
 
     public void testSetSubquery() throws Exception {
@@ -98,7 +98,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "wow")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         final One one = new One();
         final Employee employee = new Employee();
@@ -108,7 +108,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, updatedRowsCount);
         final List<Pair<Integer,String>> updatedRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(1, "Margaret")), updatedRows);
+        assertEquals(Arrays.asList(Pair.make(1, "Margaret")), updatedRows);
     }
 
 }

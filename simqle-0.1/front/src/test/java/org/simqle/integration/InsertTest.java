@@ -22,7 +22,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "wow")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
     }
 
     private InsertTable clean() throws SQLException {
@@ -37,7 +37,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
             final int affectedRows = insertTable.insertDefault().execute(getDialectDataSource());
             assertEquals(1, affectedRows);
             final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-            assertEquals(Arrays.asList(Pair.of(1, "nothing")), rows);
+            assertEquals(Arrays.asList(Pair.make(1, "nothing")), rows);
         } catch (SQLException e) {
             // mysql: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'DEFAULT VALUES'
             // derby: ERROR 42X01: Syntax error: Encountered "DEFAULT" at line 1, column 25
@@ -52,7 +52,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, "nothing")), rows);
+        assertEquals(Arrays.asList(Pair.make(2, "nothing")), rows);
     }
 
     public void testSetNull() throws Exception {
@@ -62,7 +62,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(2, (String) null)), rows);
+        assertEquals(Arrays.asList(Pair.make(2, (String) null)), rows);
     }
 
     public void testSetDefault() throws Exception {
@@ -72,7 +72,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(3, "nothing")), rows);
+        assertEquals(Arrays.asList(Pair.make(3, "nothing")), rows);
     }
 
     public void testSetIgnoreType() throws Exception {
@@ -82,7 +82,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(3, "three")), rows);
+        assertEquals(Arrays.asList(Pair.make(3, "three")), rows);
     }
 
     public void testSetSubquery() throws Exception {
@@ -95,7 +95,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(1, "Margaret")), rows);
+        assertEquals(Arrays.asList(Pair.make(1, "Margaret")), rows);
     }
 
     public void testSetExpression() throws Exception {
@@ -108,7 +108,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(3, "Margaret")), rows);
+        assertEquals(Arrays.asList(Pair.make(3, "Margaret")), rows);
 
     }
 

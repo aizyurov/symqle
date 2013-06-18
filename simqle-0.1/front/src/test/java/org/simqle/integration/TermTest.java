@@ -58,8 +58,8 @@ public class TermTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDialectDataSource());
         assertEquals(1, list.size());
-        assertEquals(-1500, list.get(0).getFirst().intValue());
-        assertEquals("Cooper", list.get(0).getSecond());
+        assertEquals(-1500, list.get(0).first().intValue());
+        assertEquals("Cooper", list.get(0).second());
     }
 
     public void testIsNull() throws Exception {
@@ -548,7 +548,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testQueryValue() throws Exception {
         final List<Pair<Integer, String>> list = new One().id.opposite().queryValue().pair(new MyDual().dummy)
                 .list(getDialectDataSource());
-        assertEquals(Arrays.asList(Pair.of(-1, "X")), list);
+        assertEquals(Arrays.asList(Pair.make(-1, "X")), list);
     }
 
     public void testWhenClause() throws Exception {

@@ -7,24 +7,24 @@ package org.simqle;
  * Time: 15:43
  * To change this template use File | Settings | File Templates.
  */
-public class Pair<First,Second> {
-    private final First first;
-    private final Second second;
+public class Pair<First, Second> {
+    private final First _1;
+    private final Second _2;
 
     public Pair(final First first, final Second second) {
-        this.first = first;
-        this.second = second;
+        this._1 = first;
+        this._2 = second;
     }
 
-    public First getFirst() {
-        return first;
+    public First first() {
+        return _1;
     }
 
-    public Second getSecond() {
-        return second;
+    public Second second() {
+        return _2;
     }
 
-    public static <First,Second> Pair<First,Second> of(final First first, final Second second) {
+    public static <First,Second> Pair<First,Second> make(final First first, final Second second) {
         return new Pair<First, Second>(first, second);
     }
 
@@ -35,20 +35,20 @@ public class Pair<First,Second> {
 
         Pair pair = (Pair) o;
 
-        if (first != null ? !first.equals(pair.first) : pair.first != null) return false;
-        if (second != null ? !second.equals(pair.second) : pair.second != null) return false;
+        if (_1 != null ? !_1.equals(pair._1) : pair._1 != null) return false;
+        if (_2 != null ? !_2.equals(pair._2) : pair._2 != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = first != null ? first.hashCode() : 0;
-        result = 31 * result + (second != null ? second.hashCode() : 0);
+        int result = _1 != null ? _1.hashCode() : 0;
+        result = 31 * result + (_2 != null ? _2.hashCode() : 0);
         return result;
     }
 
     public String toString() {
-        return "("+getFirst()+", "+getSecond()+")";
+        return "("+ first()+", "+ second()+")";
     }
 }

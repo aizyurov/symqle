@@ -500,7 +500,7 @@ The last one is translated to equivalent non-deterministic rule (but we do not c
             public Pair<T, U> extract(final Row row) throws SQLException {
                 final T first = sql0.extract(row);
                 final U second = sql1.extract(row);
-                return Pair.of(first, second);
+                return Pair.make(first, second);
             }
         };
         return new CompoundQuery<Pair<T,U>>(extractor, new CompositeSql(sql0, SqlTerminal.COMMA, sql1));
