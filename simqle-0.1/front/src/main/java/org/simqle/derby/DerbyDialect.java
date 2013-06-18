@@ -32,7 +32,7 @@ public class DerbyDialect extends GenericDialect {
 
     @Override
     public Sql ValueExpression_is_BooleanExpression(final Sql bve) {
-        // derby dialsct misunderstands usage of BooleanExpression where ValueExpression is required;
+        // derby dialect misunderstands usage of BooleanExpression where ValueExpression is required;
         // surrounding with parentheses to avoid it
         return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
     }

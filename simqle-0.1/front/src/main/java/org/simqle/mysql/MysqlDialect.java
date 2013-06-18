@@ -2,6 +2,7 @@ package org.simqle.mysql;
 
 import org.simqle.CustomSql;
 import org.simqle.Sql;
+import org.simqle.SqlTerm;
 import org.simqle.sql.Dialect;
 import org.simqle.sql.GenericDialect;
 
@@ -32,4 +33,12 @@ public class MysqlDialect extends GenericDialect {
     public Sql FromClauseFromNothing() {
         return new CustomSql("");
     }
+
+    @Override
+    public Sql ValueExpression_is_BooleanExpression(final Sql bve) {
+        // mysql dialect misunderstands usage of BooleanExpression where ValueExpression is required;
+        // surrounding with parentheses to avoid it
+        return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
+    }
+
 }

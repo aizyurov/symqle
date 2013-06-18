@@ -2,7 +2,10 @@ package org.simqle.integration;
 
 import junit.framework.AssertionFailedError;
 import org.simqle.Pair;
+import org.simqle.front.Params;
+import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
+import org.simqle.integration.model.MyDual;
 import org.simqle.sql.AbstractValueExpression;
 
 import java.sql.SQLException;
@@ -431,5 +434,212 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<Boolean> list = createVE(employee).union(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true), list);
+    }
+
+    public void testExceptAll() throws Exception {
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).exceptAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(false, true, true, true), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExceptDistinct() throws Exception {
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).exceptDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(false), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExcept() throws Exception {
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).except(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(false), list);
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectAll() throws Exception {
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).intersectAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(true), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).intersectDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(true), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersect() throws Exception {
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).intersect(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDialectDataSource());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(true), list);
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExists() throws Exception {
+        final Employee employee = new Employee();
+        final MyDual myDual = new MyDual();
+        final List<String> list = myDual.dummy.where(createVE(employee).exists()).list(getDialectDataSource());
+        assertEquals(Arrays.asList("X"), list);
+    }
+
+    public void testAsInArgument() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<String> list = department.deptName
+                .where(department.manager().retired.in(createVE(employee)))
+                .orderBy(department.deptName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
+    public void testQueryValue() throws Exception {
+        final MyDual myDual = new MyDual();
+        final Department department = new Department();
+        final AbstractValueExpression<Boolean> ve = myDual.dummy.eq("X").asValue();
+        final List<Pair<Boolean, String>> list = ve.queryValue().pair(department.deptName)
+                .orderBy(department.deptName).list(getDialectDataSource());
+        assertEquals(Arrays.asList(Pair.of(true, "DEV"), Pair.of(true, "HR")), list);
+
+    }
+
+    public void testWhenClause() throws Exception {
+        final Employee employee = new Employee();
+        final List<Pair<Boolean, String>> list = employee.firstName.eq("James").then(createVE(employee)).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(false, "Cooper"),
+                Pair.of(true, "First"),
+                Pair.of((Boolean) null, "March"),
+                Pair.of((Boolean)null, "Pedersen"),
+                Pair.of((Boolean)null, "Redwood")), list);
+    }
+
+    public void testElse() throws Exception {
+        final Employee employee = new Employee();
+        final List<Pair<Boolean, String>> list = employee.firstName.ne("James").then(Params.p(false)).orElse(createVE(employee)).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(false, "Cooper"),
+                Pair.of(true, "First"),
+                Pair.of(false, "March"),
+                Pair.of(false, "Pedersen"),
+                Pair.of(false, "Redwood")), list);
+    }
+
+    public void testLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(createVE(employee).like("fa%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            try {
+                assertEquals(Arrays.asList("Cooper"), list);
+            } catch (AssertionFailedError e) {
+                if ("mysql".equals(getDatabaseName())) {
+                    final List<String> mySqlList = employee.lastName
+                            .where(createVE(employee).like("0%"))
+                            .orderBy(employee.lastName)
+                            .list(getDialectDataSource());
+                    assertEquals(Arrays.asList("Cooper"), mySqlList);
+                }
+            }
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testNotLike() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(createVE(employee).notLike("tr%"))
+                    .orderBy(employee.lastName)
+                    .list(getDialectDataSource());
+            try {
+                assertEquals(Arrays.asList("Cooper"), list);
+            } catch (AssertionFailedError e) {
+                final List<String> mySqlList = employee.lastName
+                        .where(createVE(employee).notLike("1%"))
+                        .orderBy(employee.lastName)
+                        .list(getDialectDataSource());
+                assertEquals(Arrays.asList("Cooper"), mySqlList);
+            }
+        } catch (SQLException e) {
+            // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testCount() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createVE(employee).count().list(getDialectDataSource());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    public void testCountDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createVE(employee).countDistinct().list(getDialectDataSource());
+        assertEquals(Arrays.asList(2), list);
+    }
+
+    public void testMin() throws Exception {
+        final Employee employee = new Employee();
+        final List<Boolean> list = createVE(employee).min().list(getDialectDataSource());
+        assertEquals(Arrays.asList(false), list);
+    }
+
+    public void testMax() throws Exception {
+        final Employee employee = new Employee();
+        final List<Boolean> list = createVE(employee).max().list(getDialectDataSource());
+        assertEquals(Arrays.asList(true), list);
+    }
+
+    public void testAvg() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Number> list = createVE(employee).avg().list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(0.8, list.get(0).doubleValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42Y22: Aggregate AVG cannot operate on type BOOLEAN.
+            expectSQLException(e, "derby");
+        }
     }
 }
