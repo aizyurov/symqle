@@ -631,6 +631,19 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(true), list);
     }
 
+    public void testSum() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Number> list = createVE(employee).avg().list(getDialectDataSource());
+            assertEquals(1, list.size());
+            assertEquals(4.0, list.get(0).doubleValue());
+        } catch (SQLException e) {
+            // derby: ERROR 42Y22: Aggregate SUM cannot operate on type BOOLEAN.
+            expectSQLException(e, "derby");
+        }
+    }
+
+
     public void testAvg() throws Exception {
         final Employee employee = new Employee();
         try {

@@ -86,16 +86,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 .list(getDialectDataSource());
         final List<String> noNulls = replaceNullsAndSort(list);
 
-        // all nulls are different, so distinct must return 2 nulls
-        try {
-            assertEquals(Arrays.asList("(null)", "(null)", "high", "low"), noNulls);
-        } catch (AssertionFailedError e) {
-            // some databases treat multiple NULLs as the same in DISTINCT
-            if ("mysql".equals(getDatabaseName()) || "derby".equals(getDatabaseName()))
-                assertEquals(Arrays.asList("(null)", "high", "low"), noNulls);
-            else
-                throw e;
-        }
+        assertEquals(Arrays.asList("(null)", "high", "low"), noNulls);
     }
 
     private List<String> replaceNullsAndSort(final List<String> list) {
@@ -400,7 +391,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     // TODO: derby objects if the argument of second THEN is ?
     public void testOpposite() throws Exception {
         final Employee employee = new Employee();
-        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Double, String>> list = whenClauseBaseList.opposite().pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
@@ -415,7 +406,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
 
     public void testPlus() throws Exception {
         final Employee employee = new Employee();
-        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.plus(100.0).pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
@@ -430,7 +421,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
 
     public void testMinus() throws Exception {
         final Employee employee = new Employee();
-        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.minus(100.0).pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
@@ -445,7 +436,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
 
     public void testMult() throws Exception {
         final Employee employee = new Employee();
-        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.mult(2).pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
@@ -460,7 +451,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
 
     public void testDiv() throws Exception {
         final Employee employee = new Employee();
-        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.div(3).pair(employee.lastName)
                 .orderBy(employee.lastName)
                 .list(getDialectDataSource());
@@ -481,7 +472,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         return result;
     }
 
-    private void testConcat() throws Exception {
+    public void testConcat() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<String, String>> list = createWhenClauseBaseList(employee).concat("+")
                 .pair(employee.lastName)
@@ -575,6 +566,117 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
             expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectAll() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        try {
+            final List<String> list = whenClauseBaseList.intersectAll(new Employee().lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(
+                    "First", "Redwood"
+            ), replaceNullsAndSort(list));
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersectDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        try {
+            final List<String> list = whenClauseBaseList.intersectDistinct(new Employee().lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(
+                    "First", "Redwood"
+            ), replaceNullsAndSort(list));
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testIntersect() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        try {
+            final List<String> list = whenClauseBaseList.intersect(new Employee().lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(
+                    "First", "Redwood"
+            ), replaceNullsAndSort(list));
+        } catch (SQLException e) {
+            // mysql: does not support INTERSECT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testCount() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDialectDataSource());
+        try {
+            assertEquals(Arrays.asList(5), list);
+        } catch (AssertionFailedError e) {
+            // mysql counts only NOT NULL values
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList(3), list);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public void testCountDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDialectDataSource());
+        assertEquals(Arrays.asList(3), list);
+    }
+
+    public void testMin() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseBaseList(employee).min().list(getDialectDataSource());
+        assertEquals(Arrays.asList("high"), list);
+    }
+
+    public void testMax() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseBaseList(employee).max().list(getDialectDataSource());
+        assertEquals(Arrays.asList("low"), list);
+    }
+
+    public void testSum() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
+        final List<Number> list = whenClauseBaseList.sum().list(getDialectDataSource());
+        assertEquals(1, list.size());
+        assertEquals(4500.0, list.get(0).doubleValue());
+
+    }
+
+    private AbstractSearchedWhenClauseBaseList<Double> createNumericWCBL(final Employee employee) {
+        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+    }
+
+    public void testAvg() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
+        final List<Number> list = whenClauseBaseList.avg().list(getDialectDataSource());
+        assertEquals(1, list.size());
+        try {
+            assertEquals(900.0, list.get(0).doubleValue());
+        } catch (AssertionFailedError e) {
+            // mysql calculates average over NOT NULL values only
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(1500.0, list.get(0).doubleValue());
+            } else {
+                throw e;
+            }
         }
     }
 }
