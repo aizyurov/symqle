@@ -634,7 +634,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testSum() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Number> list = createVE(employee).avg().list(getDialectDataSource());
+            final List<Number> list = createVE(employee).sum().list(getDialectDataSource());
             assertEquals(1, list.size());
             assertEquals(4.0, list.get(0).doubleValue());
         } catch (SQLException e) {
