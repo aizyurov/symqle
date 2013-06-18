@@ -396,4 +396,185 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             }
         }
     }
+
+    // TODO: derby objects if the argument of second THEN is ?
+    public void testOpposite() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final List<Pair<Double, String>> list = whenClauseBaseList.opposite().pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(1500.0, "Cooper"),
+                Pair.of(-3000.0, "First"),
+                Pair.of((Double)null, "March"),
+                Pair.of((Double)null, "Pedersen"),
+                Pair.of(-3000.0, "Redwood")
+        ), list);
+    }
+
+    public void testPlus() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final List<Pair<Number, String>> list = whenClauseBaseList.plus(100.0).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(-1400.0, "Cooper"),
+                Pair.of(3100.0, "First"),
+                Pair.of((Double)null, "March"),
+                Pair.of((Double)null, "Pedersen"),
+                Pair.of(3100.0, "Redwood")
+        ), convertToDoubleStringPairList(list));
+    }
+
+    public void testMinus() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final List<Pair<Number, String>> list = whenClauseBaseList.minus(100.0).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(-1600.0, "Cooper"),
+                Pair.of(2900.0, "First"),
+                Pair.of((Double)null, "March"),
+                Pair.of((Double)null, "Pedersen"),
+                Pair.of(2900.0, "Redwood")
+        ), convertToDoubleStringPairList(list));
+    }
+
+    public void testMult() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final List<Pair<Number, String>> list = whenClauseBaseList.mult(2).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(-3000.0, "Cooper"),
+                Pair.of(6000.0, "First"),
+                Pair.of((Double)null, "March"),
+                Pair.of((Double)null, "Pedersen"),
+                Pair.of(6000.0, "Redwood")
+        ), convertToDoubleStringPairList(list));
+    }
+
+    public void testDiv() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        final List<Pair<Number, String>> list = whenClauseBaseList.div(3).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of(-500.0, "Cooper"),
+                Pair.of(1000.0, "First"),
+                Pair.of((Double)null, "March"),
+                Pair.of((Double)null, "Pedersen"),
+                Pair.of(1000.0, "Redwood")
+        ), convertToDoubleStringPairList(list));
+    }
+
+    private List<Pair<Double, String>> convertToDoubleStringPairList(List<Pair<Number, String>> source) {
+        final List<Pair<Double, String>> result = new ArrayList<Pair<Double, String>>();
+        for (Pair<Number, String> p : source) {
+            result.add(Pair.of(p.getFirst() == null ? null : p.getFirst().doubleValue(), p.getSecond()));
+        }
+        return result;
+    }
+
+    private void testConcat() throws Exception {
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = createWhenClauseBaseList(employee).concat("+")
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                Pair.of("low+", "Cooper"),
+                Pair.of("high+", "First"),
+                Pair.of((String) null, "March"),
+                Pair.of((String) null, "Pedersen"),
+                Pair.of("high+", "Redwood")
+        ), list);
+    }
+
+    public void testUnionAll() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        final List<String> list = whenClauseBaseList.unionAll(new Employee().lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                "(null)", "(null)", "Cooper", "First", "First", "James", "March", "Pedersen", "Redwood", "Redwood"
+        ), replaceNullsAndSort(list));
+    }
+
+    public void testUnionDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        final List<String> list = whenClauseBaseList.unionDistinct(new Employee().lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                "(null)", "Cooper", "First", "James", "March", "Pedersen", "Redwood"
+        ), replaceNullsAndSort(list));
+    }
+
+
+    public void testUnion() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        final List<String> list = whenClauseBaseList.union(new Employee().lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList(
+                "(null)", "Cooper", "First", "James", "March", "Pedersen", "Redwood"
+        ), replaceNullsAndSort(list));
+    }
+
+    public void testExceptAll() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        try {
+            final List<String> list = whenClauseBaseList.exceptAll(new Employee().lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(
+                    "(null)", "(null)", "James"
+            ), replaceNullsAndSort(list));
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExceptDistinct() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        try {
+            final List<String> list = whenClauseBaseList.exceptDistinct(new Employee().lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(
+                    "(null)", "James"
+            ), replaceNullsAndSort(list));
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
+
+    public void testExcept() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.salary.gt(2500.0).then(employee.lastName)
+                        .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
+        try {
+            final List<String> list = whenClauseBaseList.except(new Employee().lastName).list(getDialectDataSource());
+            assertEquals(Arrays.asList(
+                    "(null)", "James"
+            ), replaceNullsAndSort(list));
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "mysql");
+        }
+    }
 }
