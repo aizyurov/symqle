@@ -544,8 +544,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                 Pair.make(false, "Cooper"),
                 Pair.make(true, "First"),
                 Pair.make((Boolean) null, "March"),
-                Pair.make((Boolean)null, "Pedersen"),
-                Pair.make((Boolean)null, "Redwood")), list);
+                Pair.make((Boolean) null, "Pedersen"),
+                Pair.make((Boolean) null, "Redwood")), list);
     }
 
     public void testElse() throws Exception {
@@ -609,6 +609,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testCount() throws Exception {
         final Employee employee = new Employee();
+        System.out.println(createVE(employee).count().show());
         final List<Integer> list = createVE(employee).count().list(getDialectDataSource());
         assertEquals(Arrays.asList(5), list);
     }
