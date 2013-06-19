@@ -24,8 +24,30 @@ NumericExpression<Number> ::=
          }
 ;
 
+:: private <T> AbstractNumericExpression<T> remap(final AbstractNumericExpression<?> e, final Mapper<T> mapper) {
+    return new AbstractNumericExpression<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$create$NumericExpression(final SqlContext context) {
+            return e.z$create$NumericExpression(context);
+        }
+    };
+}
+
 :: public AbstractNumericExpression<Number> add(final NumericExpression<?> e, final Number n) {
     return add(e, DynamicParameter.create(Mappers.NUMBER, n));
+}
+
+:: public <T> AbstractNumericExpression<T> add(final NumericExpression<?> e, final Term<?> t, final Mapper<T> mapper) {
+    return remap(add(e, t), mapper);
+}
+
+:: public <T> AbstractNumericExpression<T> add(final NumericExpression<?> e, final Number n, final Mapper<T> mapper) {
+    return remap(add(e, n), mapper);
 }
 
 :: public AbstractNumericExpression<Number> sub(final NumericExpression<?> e, final Number n) {
