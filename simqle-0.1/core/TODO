@@ -13,7 +13,7 @@ Remove list(DataSource,...) ?
 
 casts
 
-contains() for subquery
+(done) contains() for subquery
 
 (done) refactor Pair - rename all methods and variables
 

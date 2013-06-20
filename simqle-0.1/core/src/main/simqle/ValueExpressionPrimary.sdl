@@ -12,6 +12,8 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
     e:CaseExpression<T> :: implicit {}
 |
 	r:RoutineInvocation<T> :: implicit {}
+|
+    c:CastSpecification<T> :: implicit {}
 ;
 
 public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T> {}
@@ -230,3 +232,24 @@ public interface ElseClause<T> extends Scalar<T> : Sql {}
 
 <T> ElseClause<T> ::= ELSE e:ValueExpression<T> :: implicit {}
 ;
+
+public interface CastSpecification<T> extends Scalar<T> : Sql {}
+
+public abstract class AbstractCastSpecification<T> implements CastSpecification<T> {}
+
+# only ValueExpression is supported, though standard allows NullSpecification (CAST (NULL AS ...))
+<T> CastSpecification<T> ::=
+    CAST LEFT_PAREN e:ValueExpression<T> AS c:CastTarget RIGHT_PAREN :: private AbstractCastSpecification<T> cast {
+    }
+;
+
+:: public <T> AbstractCastSpecification<T> cast(final ValueExpression<T> e, final String castTarget) {
+     return cast(e, new CastTarget() {
+         @Override
+         public Sql z$create$CastTarget(final SqlContext context) {
+             return new CustomSql(castTarget);
+         }
+     });
+}
+
+public interface CastTarget : Sql {}
