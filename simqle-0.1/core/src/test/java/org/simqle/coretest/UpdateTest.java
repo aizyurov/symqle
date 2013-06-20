@@ -40,8 +40,8 @@ public class UpdateTest extends SqlTestCase {
         assertSimilar("UPDATE person SET parent_id = DEFAULT", sql);
     }
 
-    public void testSetIgnoreType() throws Exception {
-        final String sql = person.update(person.id.setIgnoreType(person.id.add(1))).show();
+    public void testSetOverrideType() throws Exception {
+        final String sql = person.update(person.id.set(person.id.add(1).map(Mappers.LONG))).show();
         assertSimilar("UPDATE person SET id = person.id + ?", sql);
     }
 

@@ -36,8 +36,8 @@ public class InsertTest extends SqlTestCase {
         assertSimilar("INSERT INTO person DEFAULT VALUES", sql);
     }
 
-    public void testSetIgnoreType() throws Exception {
-        final String sql = person.insert(person.id.setIgnoreType(DynamicParameter.create(Mappers.STRING, "1"))).show();
+    public void testSetOverrideType() throws Exception {
+        final String sql = person.insert(person.id.set(DynamicParameter.create(Mappers.STRING, "1").map(Mappers.LONG))).show();
         assertSimilar("INSERT INTO person(id) VALUES(?)", sql);
     }
 

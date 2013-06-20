@@ -131,16 +131,12 @@ SetClauseList ::=
 
 public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElement : Sql {}
 
-:: public <T> SetClause set(final ColumnName<T> c, final ValueExpression<T> e) {
-        return setIgnoreType(c, e);
-    }
-
 :: public <T> SetClause set(final ColumnName<T> column, final T value) {
-    return setIgnoreType(column, DynamicParameter.create(column.getMapper(), value));
+    return set(column, DynamicParameter.create(column.getMapper(), value));
 }
 
-SetClause ::=
-    c:ColumnName<?> EQ e:ValueExpression<?> :: public SetClause setIgnoreType {
+<T> SetClause ::=
+    c:ColumnName<T> EQ e:ValueExpression<T> :: public SetClause set {
             public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
                 return e.z$create$ValueExpression(context);
             }
@@ -149,7 +145,9 @@ SetClause ::=
                 return c.z$create$ColumnName(context);
             }
     }
-|
+;
+
+SetClause ::=
     c:ColumnName<?> EQ NULL :: public SetClause setNull {
             public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.NULL;

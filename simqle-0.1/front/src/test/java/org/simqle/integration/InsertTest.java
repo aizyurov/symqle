@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Employee;
@@ -78,7 +79,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
     public void testSetIgnoreType() throws Exception {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
-                .insert(insertTable.id.setIgnoreType(Params.p(3)), insertTable.text.set("three"))
+                .insert(insertTable.id.set(Params.p(3)), insertTable.text.set("three"))
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
@@ -103,7 +104,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final One one = new One();
         final Employee employee = new Employee();
         final int affectedRows = insertTable.insert(
-                insertTable.id.setIgnoreType(one.id.queryValue().add(2)),
+                insertTable.id.set(one.id.queryValue().add(2).map(Mappers.INTEGER)),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
                 .execute(getDialectDataSource());
         assertEquals(1, affectedRows);

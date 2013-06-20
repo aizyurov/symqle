@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.One;
@@ -86,7 +87,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.id.setIgnoreType(updateTable.id.add(1))).execute(getDialectDataSource());
+        updateTable.update(updateTable.id.set(updateTable.id.add(1).map(Mappers.INTEGER))).execute(getDialectDataSource());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDialectDataSource());
         assertEquals(Arrays.asList(Pair.make(3, "wow")), newRows);
     }
