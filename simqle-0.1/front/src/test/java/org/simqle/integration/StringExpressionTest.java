@@ -1,6 +1,7 @@
 package org.simqle.integration;
 
 import junit.framework.AssertionFailedError;
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
@@ -28,6 +29,13 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = stringExpression(employee).list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = stringExpression(employee).map(Mappers.STRING).list(getDialectDataSource());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
     }

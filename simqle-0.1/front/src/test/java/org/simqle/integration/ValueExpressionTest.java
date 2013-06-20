@@ -1,6 +1,7 @@
 package org.simqle.integration;
 
 import junit.framework.AssertionFailedError;
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Department;
@@ -27,6 +28,18 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<Boolean> list = createVE(employee).list(getDialectDataSource());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true, true, true, true), list);
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createVE(employee).map(Mappers.STRING).list(getDialectDataSource());
+        Collections.sort(list);
+        try {
+            assertEquals(Arrays.asList("false", "true", "true", "true", "true"), list);
+        } catch (AssertionFailedError e) {
+            assertTrue(getDatabaseName(), getDatabaseName().equals("mysql"));
+            assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
+        }
     }
 
     public void testAll() throws Exception {

@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Department;
@@ -29,6 +30,13 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = toListOfDouble(createTerm(employee).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createTerm(employee).map(Mappers.DOUBLE).list(getDialectDataSource());
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }

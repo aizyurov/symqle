@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Department;
@@ -28,6 +29,13 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = toListOfDouble(createExpression(employee).list(getDialectDataSource()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).list(getDialectDataSource());
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }

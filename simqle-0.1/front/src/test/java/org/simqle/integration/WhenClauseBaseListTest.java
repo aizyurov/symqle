@@ -1,6 +1,7 @@
 package org.simqle.integration;
 
 import junit.framework.AssertionFailedError;
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Employee;
@@ -65,6 +66,14 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
+                .list(getDialectDataSource());
+
+        assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseBaseList(employee).map(Mappers.STRING)
                 .list(getDialectDataSource());
 
         assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));

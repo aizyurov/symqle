@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.StatementOptions;
 import org.simqle.generic.Functions;
@@ -86,6 +87,12 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertTrue(list.toString(), list.contains("March"));
         assertTrue(list.toString(), list.contains("First"));
         assertTrue(list.toString(), list.contains("Pedersen"));
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.salary.map(Mappers.INTEGER).orderBy(employee.lastName).list(getDialectDataSource());
+        assertEquals(Arrays.asList(1500, 3000, 2000, 2000, 3000), list);
     }
 
     public void testSelectAll() throws Exception {

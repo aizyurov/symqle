@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Employee;
@@ -68,6 +69,14 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseList(employee)
+                .list(getDialectDataSource());
+
+        assertEquals(Arrays.asList("Alex", "Bill", "high", "high", "low"), replaceNullsAndSort(list));
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseList(employee).map(Mappers.STRING)
                 .list(getDialectDataSource());
 
         assertEquals(Arrays.asList("Alex", "Bill", "high", "high", "low"), replaceNullsAndSort(list));

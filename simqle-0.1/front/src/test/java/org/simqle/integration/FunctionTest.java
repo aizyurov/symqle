@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Department;
@@ -30,6 +31,13 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         final List<Double> list = abs(employee.salary.opposite()).list(getDialectDataSource());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testMap() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = abs(employee.salary.opposite()).map(Mappers.INTEGER).list(getDialectDataSource());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500, 2000, 2000, 3000, 3000), list);
     }
 
    public void testAll() throws Exception {

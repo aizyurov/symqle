@@ -51,6 +51,18 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         }
     }
 
+    public void testMap() throws Exception {
+        try {
+            final List<Long> list = DynamicParameter.create(Mappers.INTEGER, 1).map(Mappers.LONG).list(getDialectDataSource());
+            assertEquals(Arrays.asList(1L), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
+        } catch (IllegalStateException e) {
+            expectIllegalStateException(e, GenericDialect.class);
+        }
+    }
+
     public void testSelectAll() throws Exception {
         try {
             final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).all().list(getDialectDataSource());

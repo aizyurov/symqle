@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
@@ -35,6 +36,13 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.list(getDialectDataSource());
         assertEquals(Arrays.asList("X"), list);
+    }
+
+    public void testMap() throws Exception {
+        final One one = new One();
+        final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();
+        final List<String> list = primary.list(getDialectDataSource());
+        assertEquals(Arrays.asList("1"), list);
     }
 
     public void testAll() throws Exception {
