@@ -121,6 +121,11 @@ public class QueryBaseScalarTest extends SqlTestCase {
     public void testExists() throws Exception {
         final String sql = person.id.all().where(employee.name.all().exists()).show();
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT ALL T1.name FROM employee AS T1)", sql);
+    }
+
+    public void testContains() throws Exception {
+        final String sql = person.id.all().where(employee.name.all().contains("Jim")).show();
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT ALL T1.name FROM employee AS T1)", sql);
 
     }
 

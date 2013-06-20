@@ -107,6 +107,11 @@ public class QuerySpecificationTest extends SqlTestCase {
 
     }
 
+    public void testContains() throws Exception {
+        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).contains(1L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
+    }
+
 
     public void testList() throws Exception {
         new Scenario() {

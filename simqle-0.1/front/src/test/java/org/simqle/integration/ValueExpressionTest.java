@@ -528,6 +528,13 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("X"), list);
     }
 
+    public void testContains() throws Exception {
+        final Employee employee = new Employee();
+        final MyDual myDual = new MyDual();
+        final List<String> list = myDual.dummy.where(createVE(employee).contains(false)).list(getDatabaseGate());
+        assertEquals(Arrays.asList("X"), list);
+    }
+
     public void testAsInArgument() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();

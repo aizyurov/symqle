@@ -162,6 +162,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.nick IN(SELECT CASE WHEN T0.age > ? THEN T0.name END FROM person AS T0)", sql);
     }
 
+    public void testContains() throws Exception {
+        final String sql = person2.id.where(person.age.gt(20L).then(person.name).contains("Jim")).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? IN(SELECT CASE WHEN T0.age > ? THEN T0.name END FROM person AS T0)", sql);
+    }
+
     public void testAsElseArgument() throws Exception {
         final String sql = person.age.gt(50L).then(person.name).orElse(person.age.lt(20L).then(person.nick)).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE CASE WHEN T0.age < ? THEN T0.nick END END AS C0 FROM person AS T0", sql);

@@ -97,6 +97,13 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE EXISTS(SELECT SUM(T2.age) FROM person AS T2)", sql);
     }
 
+    public void testContains() throws Exception {
+        final Person parent = new Person();
+        final Person child = new Person();
+        final String sql = parent.name.where(child.age.sum().contains(1)).show();
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE ? IN(SELECT SUM(T2.age) FROM person AS T2)", sql);
+    }
+
     public void testIn() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();

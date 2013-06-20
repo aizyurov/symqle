@@ -285,6 +285,11 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id + ? FROM person AS T1)", sql);
     }
 
+    public void testContains() throws Exception {
+        final String sql = employee.id.where(person.id.add(2).contains(3)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id + ? FROM person AS T1)", sql);
+    }
+
     public void testForUpdate() throws Exception {
         final String sql = person.id.add(2).forUpdate().show();
         assertSimilar("SELECT T1.id + ? AS C1 FROM person AS T1 FOR UPDATE", sql);

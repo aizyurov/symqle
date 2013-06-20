@@ -38,6 +38,15 @@ public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
+    public void testContains() throws Exception {
+        final TrueValue trueValue = new TrueValue();
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(trueValue.value.distinct().contains(true))
+                .orderBy(employee.lastName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
     /**
      * returns James, Bill, Alex, Margaret, James, Margaret (order undefined_
      * @param employee

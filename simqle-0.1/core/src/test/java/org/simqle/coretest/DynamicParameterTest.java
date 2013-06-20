@@ -457,6 +457,16 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
+    public void testConains() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        try {
+            person.id.where(param.contains(1L)).show();
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
     public void testQueryValue() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {

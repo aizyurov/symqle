@@ -145,6 +145,16 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
+    public void testContains() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<String> list = department.deptName
+                .where(employee.salary.sum().contains(11500.0))
+                .orderBy(department.deptName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
     public void testIn() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();

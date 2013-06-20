@@ -418,7 +418,20 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             expectSQLException(e, "derby");
         }
+    }
 
+    public void testContains() throws Exception {
+        final Country country = new Country();
+        try {
+            final List<String> list = country.code.where(Params.p("Redwood").contains("Redwood")).list(getDatabaseGate());
+            assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
+        } catch (IllegalStateException e) {
+            // Generic dialect does not support selects with no tables
+            expectIllegalStateException(e, GenericDialect.class);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
+        }
     }
 
     public void testExistsWithCondition() throws Exception {

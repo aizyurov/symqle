@@ -519,6 +519,13 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(5, list.size());
     }
 
+    public void testContains() throws Exception {
+        final Employee employee = new Employee();
+        final One one = new One();
+        final List<String> list = employee.lastName.where(abs(one.id).contains(1)).list(getDatabaseGate());
+        assertEquals(5, list.size());
+    }
+
     public void testQueryValue() throws Exception {
         final Department department = new Department();
         final One one = new One();

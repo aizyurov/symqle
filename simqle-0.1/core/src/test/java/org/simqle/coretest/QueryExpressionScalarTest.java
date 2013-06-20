@@ -110,6 +110,11 @@ public class QueryExpressionScalarTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 EXCEPT SELECT T2.id FROM manager AS T2)", sql);
     }
 
+    public void testContains() throws Exception {
+        final String sql = person.name.where(employee.id.except(manager.id).contains(1L)).show();
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 EXCEPT SELECT T2.id FROM manager AS T2)", sql);
+    }
+
 
 
     public void testList() throws Exception {

@@ -515,6 +515,16 @@ public class FactorTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
+    public void testContains() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = department.deptName
+                .where(createFactor(employee).contains(-3000.0))
+                .orderBy(department.deptName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = createFactor(employee).forUpdate().list(getDatabaseGate());

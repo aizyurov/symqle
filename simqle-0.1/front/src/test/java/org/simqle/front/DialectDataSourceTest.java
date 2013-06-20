@@ -1,15 +1,20 @@
-package org.simqle.coretest;
+package org.simqle.front;
 
 import junit.framework.TestCase;
+import org.simqle.sql.GenericDialect;
 
-//import org.simqle.sql.DialectDataSource;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import static org.easymock.EasyMock.*;
+
 
 /**
  * @author lvovich
  */
 public class DialectDataSourceTest extends TestCase {
 
-    /*
     public void testConnectionSetup() throws SQLException {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
@@ -28,8 +33,5 @@ public class DialectDataSourceTest extends TestCase {
 
 
     }
-    */
-    public void testFake() {
 
-    }
 }

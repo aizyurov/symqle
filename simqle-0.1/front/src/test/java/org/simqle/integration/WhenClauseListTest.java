@@ -207,6 +207,26 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
 
+    public void testExists() throws Exception {
+        final Employee pattern = new Employee();
+        final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(pattern);
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(whenClauseList.exists())
+                .orderBy(employee.lastName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    public void testContains() throws Exception {
+        final Employee pattern = new Employee();
+        final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(pattern);
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(whenClauseList.contains("James"))
+                .orderBy(employee.lastName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
     public void testIn() throws Exception {
         final Employee employee = new Employee();
         final Employee james = new Employee();

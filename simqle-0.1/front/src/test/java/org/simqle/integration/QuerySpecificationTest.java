@@ -152,9 +152,18 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testExists() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        // subquery: all employees of this department, which have the same first name of dept manager but the managet himself
+        // subquery: all employees of any department, which have the same first name of this dept manager but the manager himself
         final AbstractQuerySpecification<Integer> subquery = employee.empId.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
         final List<String> list = department.deptName.where(subquery.exists()).list(getDatabaseGate());
+        assertEquals(Arrays.asList("DEV"), list);
+    }
+
+    public void testContains() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        // subquery: all employees of any department, which have the same first name of this dept manager but the manager himself
+        final AbstractQuerySpecification<String> subquery = employee.lastName.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
+        final List<String> list = department.deptName.where(subquery.contains("Cooper")).list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 

@@ -160,6 +160,14 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE abs(T1.id) IN(SELECT abs(T2.id) FROM employee AS T2)", sql);
     }
 
+    public void testContains() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> id2 = employee.id;
+        String sql = id.where(abs(id2).contains(1L)).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? IN(SELECT abs(T2.id) FROM employee AS T2)", sql);
+    }
+
     public void testNotInAll() throws Exception {
         final Column<Long> id  =  person.id;
         // find all but the most old

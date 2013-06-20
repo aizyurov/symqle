@@ -37,6 +37,15 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
+    public void testContains() throws Exception {
+        final TrueValue trueValue = new TrueValue();
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(trueValue.value.distinct().contains(true))
+                .orderBy(employee.lastName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
     private AbstractQueryBaseScalar<String> distinctFirstNames(final Employee employee) {
         return employee.firstName.distinct();
     }

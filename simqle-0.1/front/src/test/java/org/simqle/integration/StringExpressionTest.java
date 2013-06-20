@@ -250,6 +250,21 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
+    public void testContains() throws Exception {
+        final Department department = new Department();
+        final MyDual myDual = new MyDual();
+        final AbstractStringExpression<String> stringExpression = myDual.dummy.concat("YZ");
+        try {
+            final List<String> list = department.deptName.where(stringExpression.contains("XYZ"))
+                    .orderBy(department.deptName)
+                    .list(getDatabaseGate());
+            assertEquals(Arrays.asList("DEV", "HR"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
+            expectSQLException(e, "derby");
+        }
+    }
+
     public void testEq() throws Exception {
         final Employee employee = new Employee();
         try {

@@ -235,7 +235,14 @@ public class ColumnTest extends SqlTestCase {
         final Column<Long> age2 = person2.age;
         String sql = id.where(age2.exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1)", sql);
+    }
 
+    public void testContains() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> age2 = person2.age;
+        String sql = id.where(age2.contains(20L)).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.age FROM person AS T1)", sql);
     }
 
     public void testExistsWithCondition() throws Exception {

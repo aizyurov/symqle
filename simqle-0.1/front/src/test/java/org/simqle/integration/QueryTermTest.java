@@ -160,6 +160,17 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         assertEquals(1, list.size());
     }
 
+    public void testContains() throws Exception {
+        if (notApplicable) {
+            return;
+        }
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
+        final List<Integer> list = department.deptId.where(subquery.contains("First")).list(getDatabaseGate());
+        assertEquals(1, list.size());
+    }
+
     public void testExistsNegative() throws Exception {
         if (notApplicable) {
             return;

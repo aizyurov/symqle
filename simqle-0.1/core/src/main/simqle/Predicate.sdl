@@ -115,6 +115,10 @@ public interface InValueList<T> : Sql {}
      return notIn(p, prepareInPredicateValue(p.getMapper(), first, other));
 }
 
+:: public <T> AbstractInPredicate contains(final ScalarSubquery<T> subquery, T element) {
+    return in(DynamicParameter.create(subquery.getMapper(), element), z$InPredicateValue$from$ScalarSubquery(subquery));
+}
+
 :: protected <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {
      InValueList<T> list = createInValueList(DynamicParameter.create(mapper, first));
      for (T e: other) {
@@ -122,7 +126,6 @@ public interface InValueList<T> : Sql {}
      }
      return z$InPredicateValue$from$InValueList(list);
 }
-
 
 public interface NullPredicate : Sql {}
 

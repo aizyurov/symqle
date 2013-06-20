@@ -532,16 +532,19 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testExists() throws Exception {
-        try {
-            final Department department = new Department();
-            final List<String> list = department.deptName.where(creatPrimary(department).exists())
-                    .orderBy(department.deptName)
-                    .list(getDatabaseGate());
-            assertEquals(Arrays.asList("DEV", "HR"), list);
-        } catch (IllegalStateException e) {
-            // Generic dialect does not support selects with no tables
-            expectIllegalStateException(e, GenericDialect.class);
-        }
+        final Department department = new Department();
+        final List<String> list = department.deptName.where(creatPrimary(department).exists())
+                .orderBy(department.deptName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
+    public void testContains() throws Exception {
+        final Department department = new Department();
+        final List<String> list = department.deptName.where(creatPrimary(department).contains("March"))
+                .orderBy(department.deptName)
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("HR"), list);
     }
 
     public void testForUpdate() throws Exception {

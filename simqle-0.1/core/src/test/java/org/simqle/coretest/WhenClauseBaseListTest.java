@@ -306,6 +306,11 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T0.age > ? THEN T0.nick END FROM person AS T1)", sql);
     }
 
+    public void testContains() throws Exception {
+        final String sql = employee.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).contains("Jim")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T0.age > ? THEN T0.nick END FROM person AS T1)", sql);
+    }
+
     public void testForUpdate() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).forUpdate().show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 FOR UPDATE", sql);

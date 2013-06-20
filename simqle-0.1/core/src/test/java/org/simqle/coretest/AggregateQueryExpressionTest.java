@@ -102,6 +102,13 @@ public class AggregateQueryExpressionTest extends SqlTestCase  {
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE ? IN(SELECT COUNT(T2.id) FROM person AS T2 WHERE T2.parent_id = T1.id)", sql);
     }
 
+    public void testContains() throws Exception {
+        final Person parent = new Person();
+        final Person child = new Person();
+        final String sql = parent.name.where(child.id.count().where(child.parentId.eq(parent.id)).contains(1)).show();
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE ? IN(SELECT COUNT(T2.id) FROM person AS T2 WHERE T2.parent_id = T1.id)", sql);
+    }
+
     public void testQueryValue() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();

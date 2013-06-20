@@ -346,7 +346,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = country.code.where(department.deptId.exists()).list(getDatabaseGate());
         assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
+    }
 
+    public void testContains() throws Exception {
+        final Country country = new Country();
+        final Department department = new Department();
+        final List<String> list = country.code.where(department.deptId.contains(-1)).list(getDatabaseGate());
+        assertEquals(0, list.size());
     }
 
     public void testExistsWithCondition() throws Exception {

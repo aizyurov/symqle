@@ -3,6 +3,7 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
+import org.simqle.sql.AbstractValueExpressionPrimary;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
@@ -324,7 +325,18 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testAsInArgument() throws Exception {
         try {
-            final String sql = employee.id.where(employee.id.in(person.id.where(person.name.eq(employee.name)).queryValue())).show();
+            final AbstractValueExpressionPrimary<Long> vep = person.id.where(person.name.eq(employee.name)).queryValue();
+            final String sql = employee.id.where(employee.id.in(vep)).show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
+    public void testContains() throws Exception {
+        try {
+            final AbstractValueExpressionPrimary<Long> vep = person.id.where(person.name.eq(employee.name)).queryValue();
+            final String sql = employee.id.where(vep.contains(1L)).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -459,29 +471,6 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         verify(datasource);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private static class Person extends TableOrView {
         private Person() {
