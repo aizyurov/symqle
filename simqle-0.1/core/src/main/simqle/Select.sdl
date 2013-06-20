@@ -19,20 +19,12 @@ import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
 import org.simqle.jdbc.StatementOption;
 :: public <T> int scroll(final SelectStatement<T> statement,
-                          final DataSource datasource,
+                          final DatabaseGate gate,
                           final Callback<T> callback,
                           final StatementOption... options
                           ) throws SQLException {
-    return scroll(statement, new DialectDataSource(GenericDialect.get(), datasource), callback, options);
-}
-
-:: public <T> int scroll(final SelectStatement<T> statement,
-                          final DialectDataSource datasource,
-                          final Callback<T> callback,
-                          final StatementOption... options
-                          ) throws SQLException {
-     final Query<T> query = prepareQuery(statement, datasource.getDialect());
-     final Connection connection = datasource.getConnection();
+     final Query<T> query = prepareQuery(statement, gate.getDialect());
+     final Connection connection = gate.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
          for (final StatementOption option : options) {
@@ -66,26 +58,11 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 :: public <T> List<T> list(final SelectStatement<T> statement,
-                          final DataSource datasource,
+                          final DatabaseGate gate,
                           final StatementOption... options
                         ) throws SQLException {
         final List<T> result = new LinkedList<T>();
-        scroll(statement,  datasource,
-            new Callback<T>() {
-                public boolean iterate(T arg) {
-                    result.add(arg);
-                    return true;
-                }
-             }, options);
-        return result;
-    }
-
-:: public <T> List<T> list(final SelectStatement<T> statement,
-                          final DialectDataSource datasource,
-                          final StatementOption... options
-                        ) throws SQLException {
-        final List<T> result = new LinkedList<T>();
-        scroll(statement,  datasource,
+        scroll(statement,  gate,
             new Callback<T>() {
                 public boolean iterate(T arg) {
                     result.add(arg);
@@ -195,10 +172,18 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
      return  orderBy(qe, createOrderByClause(list));
 }
 
+import java.sql.SQLException;
+import java.sql.Connection;
+public interface DatabaseGate {
+    public Connection getConnection() throws SQLException;
+    public Dialect getDialect();
+}
+
+/*
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-public class DialectDataSource {
+public class DialectDataSource implements DatabaseGate {
     private final DataSource dataSource;
     private final Dialect dialect;
     private final String connectionSetup;
@@ -230,3 +215,4 @@ public class DialectDataSource {
         return dialect;
     }
 }
+*/

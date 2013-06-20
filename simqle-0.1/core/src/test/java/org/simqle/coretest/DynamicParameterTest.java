@@ -3,14 +3,12 @@ package org.simqle.coretest;
 import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
-
-import javax.sql.DataSource;
 
 /**
  * Created by IntelliJ IDEA.
@@ -552,32 +550,26 @@ public class DynamicParameterTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final DataSource dataSource = org.easymock.EasyMock.createMock(DataSource.class);
+        final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        // dataSource should never be called
-        org.easymock.EasyMock.replay(dataSource);
+        org.easymock.EasyMock.expect(gate.getDialect()).andReturn(GenericDialect.get());
+        org.easymock.EasyMock.replay(gate);
         try {
-            param.list(dataSource);
+            param.list(gate);
             fail ("IllegalStateException expected");
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
-        try {
-            param.list(new DialectDataSource(GenericDialect.get(), dataSource));
-            fail ("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-        org.easymock.EasyMock.verify(dataSource);
+        org.easymock.EasyMock.verify(gate);
     }
 
     public void testScroll() throws Exception {
-        final DataSource dataSource = org.easymock.EasyMock.createMock(DataSource.class);
+        final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        // dataSource should never be called
-        org.easymock.EasyMock.replay(dataSource);
+        org.easymock.EasyMock.expect(gate.getDialect()).andReturn(GenericDialect.get());
+        org.easymock.EasyMock.replay(gate);
         try {
-            param.scroll(dataSource, new Callback<Long>() {
+            param.scroll(gate, new Callback<Long>() {
                 @Override
                 public boolean iterate(final Long aLong) {
                     fail("Must not get here");
@@ -588,22 +580,7 @@ public class DynamicParameterTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
-        org.easymock.EasyMock.verify(dataSource);
-        org.easymock.EasyMock.reset(dataSource);
-        org.easymock.EasyMock.replay(dataSource);
-        try {
-            param.scroll(new DialectDataSource(GenericDialect.get(), dataSource), new Callback<Long>() {
-                @Override
-                public boolean iterate(final Long aLong) {
-                    fail("Must not get here");
-                    return true;
-                }
-            });
-            fail ("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-        org.easymock.EasyMock.verify(dataSource);
+        org.easymock.EasyMock.verify(gate);
     }
 
 

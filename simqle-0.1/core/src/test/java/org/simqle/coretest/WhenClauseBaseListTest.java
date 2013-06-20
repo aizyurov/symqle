@@ -4,12 +4,11 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractSearchedWhenClauseBaseList;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -387,17 +386,8 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
-                final List<String> list = whenClause.list(datasource);
-                assertEquals(1, list.size());
-                assertEquals("John", list.get(0));
-            }
-        }.play();
-
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
-                final List<String> list = whenClause.list(new DialectDataSource(GenericDialect.get(), datasource));
+            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException {
+                final List<String> list = whenClause.list(gate);
                 assertEquals(1, list.size());
                 assertEquals("John", list.get(0));
             }
@@ -407,26 +397,8 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     public void testScroll() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
-                whenClause.scroll(datasource, new Callback<String>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final String aString) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals("John", aString);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException {
-                whenClause.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<String>() {
+            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException {
+                whenClause.scroll(gate, new Callback<String>() {
                     int callCount = 0;
 
                     @Override
@@ -447,11 +419,12 @@ public class WhenClauseBaseListTest extends SqlTestCase {
             final AbstractSearchedWhenClauseBaseList<String> whenClause = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
             final String queryString = whenClause.show();
 
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             statement.setLong(1, 20L);
             statement.setLong(2, 1L);
@@ -462,13 +435,13 @@ public class WhenClauseBaseListTest extends SqlTestCase {
             resultSet.close();
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement, resultSet);
+            replay(gate, connection,  statement, resultSet);
 
-            runQuery(whenClause, datasource);
-            verify(datasource, connection,  statement, resultSet);
+            runQuery(whenClause, gate);
+            verify(gate, connection,  statement, resultSet);
         }
 
-        protected abstract void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DataSource datasource) throws SQLException;
+        protected abstract void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException;
     }
 
 

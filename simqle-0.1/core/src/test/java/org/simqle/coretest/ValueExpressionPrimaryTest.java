@@ -4,12 +4,11 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -373,26 +372,17 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
-        replay(datasource);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        replay(gate);
         try {
-            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(datasource);
+            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(gate);
             fail ("IllegalStateException expected but produced: "+list);
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
-        verify(datasource);
+        verify(gate);
 
-        reset(datasource);
-
-        replay(datasource);
-        try {
-            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(new DialectDataSource(GenericDialect.get(), datasource));
-            fail ("IllegalStateException expected but produced: "+list);
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-        verify(datasource);
     }
 
     public void testCount() throws Exception {
@@ -429,11 +419,12 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testQuery() throws Exception {
         final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.eq(employee.name)).queryValue().where(employee.name.isNotNull());
-        final DataSource datasource = createMock(DataSource.class);
+        final DatabaseGate datasource = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         final String queryString = querySpecification.show();
+        expect(datasource.getDialect()).andReturn(GenericDialect.get());
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -451,7 +442,8 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
     public void testScroll() throws Exception {
-        final DataSource datasource = createMock(DataSource.class);
+        final DatabaseGate datasource = createMock(DatabaseGate.class);
+        expect(datasource.getDialect()).andReturn(GenericDialect.get());
         replay(datasource);
         try {
             person.id.where(person.name.eq(employee.name)).queryValue().scroll(datasource, new Callback<Long>() {
@@ -466,21 +458,6 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         }
         verify(datasource);
 
-        reset(datasource);
-
-        replay(datasource);
-        try {
-            person.id.where(person.name.eq(employee.name)).queryValue().scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
-                @Override
-                public boolean iterate(final Long aLong) {
-                    fail("must not get here");
-                    return true;
-                }
-            });
-        } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
-        }
-        verify(datasource);
     }
 
 

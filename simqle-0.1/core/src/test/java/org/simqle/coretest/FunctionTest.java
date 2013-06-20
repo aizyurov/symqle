@@ -4,7 +4,6 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.*;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -437,47 +436,21 @@ public class FunctionTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
-                final List<Long> list = abs(person.id).list(datasource);
+            protected void runQuery(final DatabaseGate gate, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
+                final List<Long> list = abs(person.id).list(gate);
                 assertEquals(1, list.size());
                 assertEquals(123L, list.get(0).longValue());
             }
         }.play();
 
-        new Scenario() {
-            @Override
-            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
-                final List<Long> list = abs(person.id).list(new DialectDataSource(GenericDialect.get(), datasource));
-                assertEquals(1, list.size());
-                assertEquals(123L, list.get(0).longValue());
-            }
-        }.play();
     }
 
 
     public void testScroll() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
-                routineInvocation.scroll(datasource, new Callback<Long>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final Long aLong) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals(123L, aLong.longValue());
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-        new Scenario() {
-            @Override
-            protected void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
-                routineInvocation.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
+            protected void runQuery(final DatabaseGate gate, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
+                routineInvocation.scroll(gate, new Callback<Long>() {
                     int callCount = 0;
 
                     @Override
@@ -496,12 +469,13 @@ public class FunctionTest extends SqlTestCase {
 
     private static abstract class Scenario {
         public void play() throws Exception {
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate datasource = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             final AbstractRoutineInvocation<Long> routineInvocation = abs(person.id);
             final String queryString = routineInvocation.show();
+            expect(datasource.getDialect()).andReturn(GenericDialect.get());
             expect(datasource.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
@@ -519,7 +493,7 @@ public class FunctionTest extends SqlTestCase {
 
         }
 
-        protected abstract void runQuery(final DataSource datasource, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException;
+        protected abstract void runQuery(final DatabaseGate gate, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException;
     }
 
 

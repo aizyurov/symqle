@@ -4,12 +4,11 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractValueExpression;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -377,28 +376,21 @@ public class ValueExpressionTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
-                final List<Boolean> list = valueExpression.list(datasource);
-                assertEquals(1, list.size());
-                assertEquals(Boolean.TRUE, list.get(0));
-            }
-        }.play();
-
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
-                final List<Boolean> list = valueExpression.list(new DialectDataSource(GenericDialect.get(), datasource));
+            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
+                final List<Boolean> list = valueExpression.list(gate);
                 assertEquals(1, list.size());
                 assertEquals(Boolean.TRUE, list.get(0));
             }
         }.play();
     }
 
+
+
     public void testScroll() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
-                valueExpression.scroll(datasource, new Callback<Boolean>() {
+            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
+                valueExpression.scroll(gate, new Callback<Boolean>() {
                     private int callCount;
 
                     @Override
@@ -411,32 +403,18 @@ public class ValueExpressionTest extends SqlTestCase {
             }
         }.play();
 
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException {
-                valueExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Boolean>() {
-                    private int callCount;
-
-                    @Override
-                    public boolean iterate(final Boolean aBoolean) {
-                        assertEquals(0, callCount++);
-                        assertEquals(Boolean.TRUE, aBoolean);
-                        return true;
-                    }
-                });
-            }
-        }.play();
     }
 
     private static abstract class Scenario {
         public void play() throws Exception {
             final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
             final String queryString = valueExpression.show();
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
@@ -446,13 +424,13 @@ public class ValueExpressionTest extends SqlTestCase {
             resultSet.close();
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement, resultSet);
+            replay(gate, connection,  statement, resultSet);
 
-            runQuery(valueExpression, datasource);
-            verify(datasource, connection, statement, resultSet);
+            runQuery(valueExpression, gate);
+            verify(gate, connection, statement, resultSet);
         }
 
-        protected abstract void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DataSource datasource) throws SQLException;
+        protected abstract void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException;
     }
 
 

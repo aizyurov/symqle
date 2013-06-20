@@ -4,11 +4,10 @@ import org.simqle.Mappers;
 import org.simqle.sql.AbstractUpdateStatement;
 import org.simqle.sql.AbstractUpdateStatementBase;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.Table;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -104,15 +103,8 @@ public class UpdateTest extends SqlTestCase {
     public void testExecute() throws Exception {
         new ExecuteScenario() {
             @Override
-            protected void runExecute(final AbstractUpdateStatementBase update, final DataSource datasource) throws SQLException {
-                assertEquals(2, update.execute(datasource));
-            }
-        }.play();
-
-        new ExecuteScenario() {
-            @Override
-            protected void runExecute(final AbstractUpdateStatementBase update, final DataSource datasource) throws SQLException {
-                assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            protected void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException {
+                assertEquals(2, update.execute(gate));
             }
         }.play();
 
@@ -122,37 +114,31 @@ public class UpdateTest extends SqlTestCase {
         public void play() throws Exception {
             final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
             final String statementString = update.show();
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(statementString)).andReturn(statement);
             statement.setString(1, "John");
             expect(statement.executeUpdate()).andReturn(2);
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement);
+            replay(gate, connection,  statement);
 
-            runExecute(update, datasource);
+            runExecute(update, gate);
 
-            verify(datasource, connection, statement);
+            verify(gate, connection, statement);
         }
 
-        protected abstract void runExecute(final AbstractUpdateStatementBase update, final DataSource datasource) throws SQLException;
+        protected abstract void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException;
     }
 
     public void testExecuteSearched() throws Exception {
         new ExecuteSearchedScenario() {
             @Override
-            protected void runExecute(final AbstractUpdateStatement update, final DataSource datasource) throws SQLException {
-                assertEquals(1, update.execute(datasource));
-            }
-        }.play();
-
-        new ExecuteSearchedScenario() {
-            @Override
-            protected void runExecute(final AbstractUpdateStatement update, final DataSource datasource) throws SQLException {
-                assertEquals(1, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
+            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
+                assertEquals(1, update.execute(gate));
             }
         }.play();
 
@@ -162,24 +148,25 @@ public class UpdateTest extends SqlTestCase {
         public void play() throws Exception {
             final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
             final String statementString = update.show();
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(statementString)).andReturn(statement);
             statement.setString(1, "John");
             statement.setLong(2, 1L);
             expect(statement.executeUpdate()).andReturn(1);
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement);
+            replay(gate, connection,  statement);
 
-            runExecute(update, datasource);
+            runExecute(update, gate);
 
-            verify(datasource, connection, statement);
+            verify(gate, connection, statement);
         }
 
-        protected abstract void runExecute(final AbstractUpdateStatement update, final DataSource datasource) throws SQLException;
+        protected abstract void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException;
     }
 
 

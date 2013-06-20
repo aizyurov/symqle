@@ -1,13 +1,20 @@
 package org.simqle.coretest;
 
 import org.simqle.Mappers;
-import org.simqle.sql.*;
+import org.simqle.sql.AbstractInsertStatement;
+import org.simqle.sql.Column;
+import org.simqle.sql.DatabaseGate;
+import org.simqle.sql.DynamicParameter;
+import org.simqle.sql.GenericDialect;
+import org.simqle.sql.Table;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -86,34 +93,21 @@ public class InsertTest extends SqlTestCase {
     public void testExecute() throws Exception {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
         final String statementString = update.show();
-        final DataSource datasource = createMock(DataSource.class);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(statementString)).andReturn(statement);
         statement.setString(1, "John");
         expect(statement.executeUpdate()).andReturn(2);
         statement.close();
         connection.close();
-        replay(datasource, connection,  statement);
+        replay(gate, connection, statement);
 
-        assertEquals(2, update.execute(datasource));
+        assertEquals(2, update.execute(gate));
 
-        verify(datasource, connection,  statement);
-
-        reset(datasource, connection,  statement);
-
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(statementString)).andReturn(statement);
-        statement.setString(1, "John");
-        expect(statement.executeUpdate()).andReturn(2);
-        statement.close();
-        connection.close();
-        replay(datasource, connection, statement);
-
-        assertEquals(2, update.execute(new DialectDataSource(GenericDialect.get(), datasource)));
-
-        verify(datasource, connection, statement);
+        verify(gate, connection,  statement);
 
     }
 

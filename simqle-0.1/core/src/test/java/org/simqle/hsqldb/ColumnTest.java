@@ -5,12 +5,16 @@ import org.hsqldb.jdbcDriver;
 import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.sql.Column;
+import org.simqle.sql.DatabaseGate;
+import org.simqle.sql.Dialect;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +27,7 @@ public class ColumnTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         DriverManager.registerDriver(new jdbcDriver());
-        final Connection connection = dataSource.getConnection();
+        final Connection connection = gate.getConnection();
         final PreparedStatement createStatement = connection.prepareStatement("CREATE TABLE person (id BIGINT PRIMARY KEY, name VARCHAR, age INTEGER, alive BOOLEAN)");
         createStatement.executeUpdate();
         createStatement.close();
@@ -53,7 +57,7 @@ public class ColumnTest extends TestCase {
 
     @Override
     public void tearDown() throws Exception {
-        final Connection connection = dataSource.getConnection();
+        final Connection connection = gate.getConnection();
         final PreparedStatement createStatement = connection.prepareStatement("DROP TABLE person");
         createStatement.executeUpdate();
         createStatement.close();
@@ -61,9 +65,21 @@ public class ColumnTest extends TestCase {
 
     private DataSource dataSource = new DriverManagerDataSource("jdbc:hsqldb:mem:simqle", "SA", "");
 
+    private final DatabaseGate gate = new DatabaseGate() {
+        @Override
+        public Connection getConnection() throws SQLException {
+            return dataSource.getConnection();
+        }
+
+        @Override
+        public Dialect getDialect() {
+            return GenericDialect.get();
+        }
+    };
+
     public void testSelect() throws Exception {
         Person person = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(person.age).list(dataSource);
+        final List<Pair<String,Integer>> list = person.name.pair(person.age).list(gate);
         assertEquals(3, list.size());
         System.out.println(list);
         assertTrue(list.contains(Pair.make("Alice", 23)));
@@ -71,21 +87,21 @@ public class ColumnTest extends TestCase {
 
     public void testWhereEq() throws Exception {
         Person person = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.id.eq(2L)).list(dataSource);
+        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.id.eq(2L)).list(gate);
         assertEquals(1, list.size());
         assertTrue(Pair.make("Bob", 46).equals(list.get(0)));
     }
 
     public void testWhereLike() throws Exception {
         Person person = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.name.like("Bo_")).list(dataSource);
+        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.name.like("Bo_")).list(gate);
         assertEquals(1, list.size());
         assertTrue(Pair.make("Bob", 46).equals(list.get(0)));
     }
 
     public void testWhereBoolean() throws Exception {
         Person person = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.alive.booleanValue().negate()).list(dataSource);
+        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.alive.booleanValue().negate()).list(gate);
         assertEquals(1, list.size());
         assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
     }
@@ -93,7 +109,7 @@ public class ColumnTest extends TestCase {
     public void testSubquery() throws Exception {
         Person person = new Person();
         Person sample = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.id.in(sample.id.where(sample.name.eq("Leonardo")))).list(dataSource);
+        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.id.in(sample.id.where(sample.name.eq("Leonardo")))).list(gate);
         assertEquals(1, list.size());
         assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
     }
@@ -101,7 +117,7 @@ public class ColumnTest extends TestCase {
     public void testSubqueryAsValue() throws Exception {
         Person person = new Person();
         Person sample = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(sample.age.where(sample.id.eq(person.id)).queryValue()).where(person.age.gt(500)).list(dataSource);
+        final List<Pair<String,Integer>> list = person.name.pair(sample.age.where(sample.id.eq(person.id)).queryValue()).where(person.age.gt(500)).list(gate);
         assertEquals(1, list.size());
         assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
 
@@ -109,7 +125,7 @@ public class ColumnTest extends TestCase {
 
     public void testPairOfPairs() throws Exception {
         Person person = new Person();
-        final List<Pair<Pair<Long, String>, Pair<Integer, Boolean>>> list = person.id.pair(person.name).pair(person.age.pair(person.alive)).where(person.age.notLike("%6")).list(dataSource);
+        final List<Pair<Pair<Long, String>, Pair<Integer, Boolean>>> list = person.id.pair(person.name).pair(person.age.pair(person.alive)).where(person.age.notLike("%6")).list(gate);
         assertEquals(1, list.size());
         assertEquals(Pair.make(Pair.make(1L, "Alice"), Pair.make(23, true)), list.get(0));
     }
@@ -119,20 +135,20 @@ public class ColumnTest extends TestCase {
         final List<String> list = person.alive.booleanValue()
                 .then(person.name)
                 .orElse(person.name.concat(" +"))
-                .orderBy(person.name.desc()).list(dataSource);
+                .orderBy(person.name.desc()).list(gate);
         assertEquals(Arrays.asList("Leonardo +", "Bob", "Alice"), list);
     }
 
     public void testUnion() throws Exception {
         Person person = new Person();
-        final List<String> list = person.name.unionAll(person.name.concat(" ").concat(person.age)).list(dataSource);
+        final List<String> list = person.name.unionAll(person.name.concat(" ").concat(person.age)).list(gate);
         assertEquals(Arrays.asList("Alice", "Bob", "Leonardo", "Alice 23", "Bob 46", "Leonardo 546"), list);
 
     }
 
     public void testExcept() throws Exception {
         Person person = new Person();
-        final List<String> list = person.name.except(person.name.where(person.alive.booleanValue().negate())).list(dataSource);
+        final List<String> list = person.name.except(person.name.where(person.alive.booleanValue().negate())).list(gate);
         assertEquals(Arrays.asList("Alice", "Bob"), list);
     }
 

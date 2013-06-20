@@ -44,14 +44,9 @@ public interface DataChangeStatement : Sql {}
     return beautifySql(prepareUpdate(statement, dialect).getSqlText());
 }
 
-:: public int execute(final DataChangeStatement statement, final DataSource datasource) throws SQLException {
-    return execute(statement, new DialectDataSource(GenericDialect.get(), datasource));
-}
-
-
-:: public int execute(final DataChangeStatement statement, final DialectDataSource datasource) throws SQLException {
-     final Sql sql = prepareUpdate(statement, datasource.getDialect());
-     final Connection connection = datasource.getConnection();
+:: public int execute(final DataChangeStatement statement, final DatabaseGate gate) throws SQLException {
+     final Sql sql = prepareUpdate(statement, gate.getDialect());
+     final Connection connection = gate.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
          try {

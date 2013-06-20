@@ -4,12 +4,11 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractAggregateFunction;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -115,46 +114,20 @@ public class AggregatesTest extends SqlTestCase  {
     public void testList() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
-                final List<Integer> list = count.list(datasource);
+            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DatabaseGate gate) throws SQLException {
+                final List<Integer> list = count.list(gate);
                 assertEquals(1, list.size());
                 assertEquals(123, list.get(0).intValue());
             }
         }.play();
 
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
-                final List<Integer> list = count.list(new DialectDataSource(GenericDialect.get(), datasource));
-                assertEquals(1, list.size());
-                assertEquals(123, list.get(0).intValue());
-            }
-        }.play();
     }
 
     public void testScroll() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
-                count.scroll(datasource, new Callback<Integer>() {
-                    private int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final Integer integer) {
-                        if (callCount > 0) {
-                            fail("Only one call expected");
-                        }
-                        assertEquals(integer.intValue(), 123);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException {
-                count.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Integer>() {
+            protected void runQuery(final AbstractAggregateFunction<Integer> count, final DatabaseGate gate) throws SQLException {
+                count.scroll(gate, new Callback<Integer>() {
                     private int callCount = 0;
 
                     @Override
@@ -176,11 +149,12 @@ public class AggregatesTest extends SqlTestCase  {
         public void play() throws Exception {
             final AbstractAggregateFunction<Integer> count = person.id.count();
             final String queryString = count.show();
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
@@ -190,14 +164,14 @@ public class AggregatesTest extends SqlTestCase  {
             resultSet.close();
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement, resultSet);
+            replay(gate, connection,  statement, resultSet);
 
-            runQuery(count, datasource);
+            runQuery(count, gate);
 
-            verify(datasource, connection, statement, resultSet);
+            verify(gate, connection, statement, resultSet);
         }
 
-        protected abstract void runQuery(final AbstractAggregateFunction<Integer> count, final DataSource datasource) throws SQLException;
+        protected abstract void runQuery(final AbstractAggregateFunction<Integer> count, final DatabaseGate gate) throws SQLException;
     }
 
 

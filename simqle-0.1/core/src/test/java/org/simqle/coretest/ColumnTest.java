@@ -3,13 +3,12 @@ package org.simqle.coretest;
 import org.simqle.Mappers;
 import org.simqle.jdbc.StatementOption;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -491,31 +490,24 @@ public class ColumnTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final Column<Long> column, final DataSource datasource) throws SQLException {
-                final List<Long> list = column.list(datasource);
+            protected void runQuery(final Column<Long> column, final DatabaseGate gate) throws SQLException {
+                final List<Long> list = column.list(gate);
                 assertEquals(1, list.size());
                 assertEquals(123L, list.get(0).longValue());
             }
         }.play();
 
-        new Scenario() {
-            @Override
-            protected void runQuery(final Column<Long> column, final DataSource datasource) throws SQLException {
-                final List<Long> list = column.list(new DialectDataSource(GenericDialect.get(), datasource));
-                assertEquals(1, list.size());
-                assertEquals(123L, list.get(0).longValue());
-            }
-        }.play();
     }
 
     public static abstract class Scenario {
         public void play() throws Exception {
             final Column<Long> column = person.id;
             final String queryString = column.show();
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate datasource = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
+            expect(datasource.getDialect()).andReturn(GenericDialect.get());
             expect(datasource.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
@@ -533,16 +525,17 @@ public class ColumnTest extends SqlTestCase {
 
         }
 
-        protected abstract void runQuery(final Column<Long> column, final DataSource datasource) throws SQLException;
+        protected abstract void runQuery(final Column<Long> column, final DatabaseGate gate) throws SQLException;
     }
 
     public void testOptions() throws Exception {
         final Column<Long> column = person.id;
         final String queryString = column.show();
-        final DataSource datasource = createMock(DataSource.class);
+        final DatabaseGate datasource = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        expect(datasource.getDialect()).andReturn(GenericDialect.get());
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchSize(10);

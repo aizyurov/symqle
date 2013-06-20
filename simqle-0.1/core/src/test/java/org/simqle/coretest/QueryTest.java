@@ -5,12 +5,11 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,14 +25,14 @@ import static org.easymock.EasyMock.*;
  * To change this template use File | Settings | File Templates.
  */
 public class QueryTest extends SqlTestCase {
-    private DataSource datasource = createMock(DataSource.class);
+    private DatabaseGate gate = createMock(DatabaseGate.class);
     private Connection connection = createMock(Connection.class);
     private PreparedStatement statement = createMock(PreparedStatement.class);
     private ResultSet resultSet = createMock(ResultSet.class);
 
     @Override
     protected void setUp() throws Exception {
-        reset(datasource);
+        reset(gate);
         reset(connection);
         reset(statement);
         reset(resultSet);
@@ -44,29 +43,31 @@ public class QueryTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final String queryString = id.show();
         System.out.println("Show: " + queryString);
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        id.scroll(datasource, new Callback<Long>() {
+        replay(gate, connection, statement, resultSet);
+        id.scroll(gate, new Callback<Long>() {
             @Override
             public boolean iterate(Long aLong) {
                 fail("Must not be called");
                 return true;
             }
         });
-        verify(datasource, statement, connection, resultSet);
+        verify(gate, statement, connection, resultSet);
     }
 
     public void testScroll() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final String queryString = id.show();
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -76,8 +77,8 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        id.scroll(datasource, new Callback<Long>() {
+        replay(gate, connection, statement, resultSet);
+        id.scroll(gate, new Callback<Long>() {
             private int callCount = 0;
 
             @Override
@@ -91,46 +92,15 @@ public class QueryTest extends SqlTestCase {
                 return true;
             }
         });
-        verify(datasource, statement, connection, resultSet);
-    }
-
-    public void testScrollWithDialect() throws Exception {
-        final Person person = new Person();
-        final Column<Long> id = person.id;
-        final String queryString = id.show();
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection, statement, resultSet);
-        id.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<Long>() {
-            private int callCount = 0;
-
-            @Override
-            public boolean iterate(Long aLong) {
-                if (callCount > 0) {
-                    fail("Must not get here");
-                } else {
-                    callCount++;
-                    assertEquals(123, aLong.longValue());
-                }
-                return true;
-            }
-        });
-        verify(datasource, statement, connection, resultSet);
+        verify(gate, statement, connection, resultSet);
     }
 
     public void testScrollWithBreak() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final String queryString = id.show();
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -142,8 +112,8 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        int callNum = id.scroll(datasource, new Callback<Long>() {
+        replay(gate, connection, statement, resultSet);
+        int callNum = id.scroll(gate, new Callback<Long>() {
             private int callCount = 0;
             @Override
             public boolean iterate(Long aLong) {
@@ -158,14 +128,15 @@ public class QueryTest extends SqlTestCase {
             }
         });
         assertEquals(2, callNum);
-        verify(datasource, statement, connection, resultSet);
+        verify(gate, statement, connection, resultSet);
     }
 
     public void testList() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final String queryString = id.show();
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -175,11 +146,11 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        final List<Long> list = id.list(datasource);
+        replay(gate, connection, statement, resultSet);
+        final List<Long> list = id.list(gate);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
-        verify(datasource, statement, connection, resultSet);
+        verify(gate, statement, connection, resultSet);
 
     }
 
@@ -188,7 +159,8 @@ public class QueryTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 123L);
         final String queryString = id.where(id.eq(param)).show();
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setLong(1, 123L);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -199,18 +171,19 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        final List<Long> list = id.where(id.eq(param)).list(datasource);
+        replay(gate, connection, statement, resultSet);
+        final List<Long> list = id.where(id.eq(param)).list(gate);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
-        verify(datasource, statement, connection, resultSet);
+        verify(gate, statement, connection, resultSet);
     }
 
     public void testListWithComplexCondition() throws Exception {
         final Person person = new Person();
         final AbstractQuerySpecification<Long> query = person.id.where(person.age.add(1).gt(33));
         final String queryString = query.show();
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setBigDecimal(1, new BigDecimal(1));
         statement.setBigDecimal(2, new BigDecimal(33));
@@ -222,18 +195,19 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        final List<Long> list = query.list(datasource);
+        replay(gate, connection, statement, resultSet);
+        final List<Long> list = query.list(gate);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
-        verify(datasource, statement,  connection, resultSet);
+        verify(gate, statement,  connection, resultSet);
     }
 
     public void testListWithBooleanColumnCondition() throws Exception {
         final Person person = new Person();
         final AbstractQuerySpecification<Long> query = person.id.where(person.alive.eq(true));
         final String queryString = query.show();
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setBoolean(1, true);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -244,11 +218,11 @@ public class QueryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection, statement, resultSet);
-        final List<Long> list = query.list(datasource);
+        replay(gate, connection, statement, resultSet);
+        final List<Long> list = query.list(gate);
         assertEquals(1, list.size());
         assertEquals(Long.valueOf(123), list.get(0));
-        verify(datasource, statement,  connection, resultSet);
+        verify(gate, statement,  connection, resultSet);
     }
 
     private static class Person extends TableOrView {

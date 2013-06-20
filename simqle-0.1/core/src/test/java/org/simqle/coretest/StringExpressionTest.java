@@ -4,12 +4,11 @@ import org.simqle.Callback;
 import org.simqle.Mappers;
 import org.simqle.sql.AbstractStringExpression;
 import org.simqle.sql.Column;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
 import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -365,47 +364,21 @@ public class StringExpressionTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final DataSource datasource, final AbstractStringExpression<String> stringExpression) throws SQLException {
-                final List<String> list = stringExpression.list(datasource);
+            protected void runQuery(final DatabaseGate gate, final AbstractStringExpression<String> stringExpression) throws SQLException {
+                final List<String> list = stringExpression.list(gate);
                 assertEquals(1, list.size());
                 assertEquals("#123", list.get(0));
             }
         }.play();
 
-        new Scenario() {
-            @Override
-            protected void runQuery(final DataSource datasource, final AbstractStringExpression<String> stringExpression) throws SQLException {
-                final List<String> list = stringExpression.list(new DialectDataSource(GenericDialect.get(), datasource));
-                assertEquals(1, list.size());
-                assertEquals("#123", list.get(0));
-            }
-        }.play();
     }
 
 
     public void testScroll() throws Exception {
         new Scenario() {
             @Override
-            protected void runQuery(final DataSource datasource, final AbstractStringExpression<String> stringExpression) throws SQLException {
-                stringExpression.scroll(datasource, new Callback<String>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final String aString) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals("#123", aString);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-        new Scenario() {
-            @Override
-            protected void runQuery(final DataSource datasource, final AbstractStringExpression<String> stringExpression) throws SQLException {
-                stringExpression.scroll(new DialectDataSource(GenericDialect.get(), datasource), new Callback<String>() {
+            protected void runQuery(final DatabaseGate gate, final AbstractStringExpression<String> stringExpression) throws SQLException {
+                stringExpression.scroll(gate, new Callback<String>() {
                     int callCount = 0;
 
                     @Override
@@ -424,13 +397,14 @@ public class StringExpressionTest extends SqlTestCase {
 
     private static abstract class Scenario {
         public void play() throws Exception {
-            final DataSource datasource = createMock(DataSource.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             final AbstractStringExpression<String> stringExpression = numberSign.concat(person.id);
             final String queryString = stringExpression.show();
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             statement.setString(1, "#");
             expect(statement.executeQuery()).andReturn(resultSet);
@@ -440,13 +414,13 @@ public class StringExpressionTest extends SqlTestCase {
             resultSet.close();
             statement.close();
             connection.close();
-            replay(datasource, connection, statement, resultSet);
+            replay(gate, connection, statement, resultSet);
 
-            runQuery(datasource, stringExpression);
-            verify(datasource, connection, statement, resultSet);
+            runQuery(gate, stringExpression);
+            verify(gate, connection, statement, resultSet);
         }
 
-        protected abstract void runQuery(final DataSource datasource, final AbstractStringExpression<String> stringExpression) throws SQLException;
+        protected abstract void runQuery(final DatabaseGate gate, final AbstractStringExpression<String> stringExpression) throws SQLException;
     }
 
 
