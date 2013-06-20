@@ -31,6 +31,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar(sql, whenClause.show(GenericDialect.get()));
     }
 
+    public void testMap() throws Exception {
+        final AbstractSearchedWhenClause<String> whenClause = person.age.gt(20L).then(person.name);
+        final String sql = whenClause.map(Mappers.STRING).show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0", sql);
+    }
     public void testElse() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0", sql);

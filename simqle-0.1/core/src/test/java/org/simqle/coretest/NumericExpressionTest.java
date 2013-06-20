@@ -42,6 +42,11 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testMap() throws Exception {
+        final String sql = person.id.add(two).map(Mappers.INTEGER).show();
+        assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testSelectAll() throws Exception {
         final String sql = person.id.add(two).all().show();
         assertSimilar("SELECT ALL T0.id + ? AS C0 FROM person AS T0", sql);

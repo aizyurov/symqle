@@ -33,6 +33,12 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar(abs(col).show(), abs(col).show(GenericDialect.get()));
     }
 
+    public void testMap() throws Exception {
+        final Column<Long> col = person.id;
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", abs(col).map(Mappers.LONG).show());
+        assertSimilar(abs(col).show(), abs(col).show(GenericDialect.get()));
+    }
+
     public void testSelectAll() throws Exception {
         final Column<Long> col = person.id;
         assertSimilar("SELECT ALL abs(T0.id) AS C0 FROM person AS T0", abs(col).all().show());

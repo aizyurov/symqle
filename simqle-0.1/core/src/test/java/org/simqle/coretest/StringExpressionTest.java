@@ -40,6 +40,11 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar(sql, numberSign.concat(person.id).show(GenericDialect.get()));
     }
 
+    public void testMap() throws Exception {
+        final String sql = numberSign.concat(person.id).map(Mappers.STRING).show();
+        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testSelectAll() throws Exception {
         final String sql = numberSign.concat(person.id).all().show();
         assertSimilar("SELECT ALL ? || T0.id AS C0 FROM person AS T0", sql);

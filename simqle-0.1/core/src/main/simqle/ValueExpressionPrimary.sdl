@@ -16,6 +16,21 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 
 public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T> {}
 
+:: public <T> AbstractValueExpressionPrimary<T> map(final ValueExpressionPrimary<?> e, final Mapper<T> mapper) {
+    return new AbstractValueExpressionPrimary<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$create$ValueExpressionPrimary(final SqlContext context) {
+            return e.z$create$ValueExpressionPrimary(context);
+        }
+    };
+}
+
+
 
 public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 }

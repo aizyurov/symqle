@@ -30,6 +30,13 @@ public class WhenClauseListTest extends SqlTestCase {
         assertSimilar(sql, clauseList.show(GenericDialect.get()));
     }
 
+    public void testMap() throws Exception {
+        final AbstractSearchedWhenClauseList<String> clauseList = person.age.gt(20L).then(person.name).orElse(person.nick);
+        final String sql = clauseList.map(Mappers.STRING).show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0", sql);
+        assertSimilar(sql, clauseList.show(GenericDialect.get()));
+    }
+
     public void testSelectAll() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).all().show();
         assertSimilar("SELECT ALL CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0", sql);

@@ -38,6 +38,15 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         }
     }
 
+    public void testMap() throws Exception {
+        try {
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().map(Mappers.STRING).show();
+            fail ("IllegalStateException expected but produced: "+sql);
+        } catch (IllegalStateException e) {
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+        }
+    }
+
     public void testAll() throws Exception {
         try {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().all().show();

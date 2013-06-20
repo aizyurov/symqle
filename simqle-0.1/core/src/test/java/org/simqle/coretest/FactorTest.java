@@ -42,6 +42,11 @@ public class FactorTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testMap() throws Exception {
+        final String sql = person.id.opposite().map(Mappers.DOUBLE).show();
+        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testSelectAll() throws Exception {
         final String sql = person.id.opposite().all().show();
         assertSimilar("SELECT ALL - T0.id AS C0 FROM person AS T0", sql);

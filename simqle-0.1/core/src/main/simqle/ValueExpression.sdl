@@ -9,6 +9,21 @@ public interface ValueExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractValueExpression<T> implements ValueExpression<T> {}
 
+:: public <T> AbstractValueExpression<T> map(final ValueExpression<?> e, final Mapper<T> mapper) {
+    return new AbstractValueExpression<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$create$ValueExpression(final SqlContext context) {
+            return e.z$create$ValueExpression(context);
+        }
+    };
+}
+
+
 <T> ValueExpression<T> ::=
     e:NumericExpression<T> :: implicit {}
 |
@@ -25,12 +40,27 @@ ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpre
     }
 ;
 
-# no abstract class: no methods
-public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
+# no abstract class: no methods - removed as unnecessary
+// public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
 
 public interface StringExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractStringExpression<T> implements StringExpression<T> {}
+
+:: public <T> AbstractStringExpression<T> map(final StringExpression<?> e, final Mapper<T> mapper) {
+    return new AbstractStringExpression<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$create$StringExpression(final SqlContext context) {
+            return e.z$create$StringExpression(context);
+        }
+    };
+}
+
 
 <T> StringExpression<T> ::=
     p:ValueExpressionPrimary<T> :: implicit {}

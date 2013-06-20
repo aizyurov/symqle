@@ -30,6 +30,11 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testMap() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().map(Mappers.STRING).show();
+        assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0", sql);
+    }
+
     public void testAll() throws Exception {
         final String sql = person.name.eq(person.nickName).asValue().all().show();
         assertSimilar("SELECT ALL T0.name = T0.nick AS C0 FROM person AS T0", sql);

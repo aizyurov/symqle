@@ -35,6 +35,11 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.show(GenericDialect.get()));
     }
 
+    public void testMap() throws Exception {
+        final Column<Long> col = person.id;
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.map(Mappers.LONG).show());
+    }
+
     public void testSelectStatementFunctionality() throws Exception {
         final Column<Long> col = person.id;
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0", col.show());

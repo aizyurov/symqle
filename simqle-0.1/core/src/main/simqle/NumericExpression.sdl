@@ -24,7 +24,7 @@ NumericExpression<Number> ::=
          }
 ;
 
-:: private <T> AbstractNumericExpression<T> remap(final AbstractNumericExpression<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractNumericExpression<T> map(final NumericExpression<?> e, final Mapper<T> mapper) {
     return new AbstractNumericExpression<T>() {
         @Override
         public Mapper<T> getMapper() {
@@ -40,14 +40,6 @@ NumericExpression<Number> ::=
 
 :: public AbstractNumericExpression<Number> add(final NumericExpression<?> e, final Number n) {
     return add(e, DynamicParameter.create(Mappers.NUMBER, n));
-}
-
-:: public <T> AbstractNumericExpression<T> add(final NumericExpression<?> e, final Term<?> t, final Mapper<T> mapper) {
-    return remap(add(e, t), mapper);
-}
-
-:: public <T> AbstractNumericExpression<T> add(final NumericExpression<?> e, final Number n, final Mapper<T> mapper) {
-    return remap(add(e, n), mapper);
 }
 
 :: public AbstractNumericExpression<Number> sub(final NumericExpression<?> e, final Number n) {
@@ -86,6 +78,20 @@ Term<Number> ::=
     return div(t, DynamicParameter.create(Mappers.NUMBER, n));
  }
 
+:: public <T> AbstractTerm<T> map(final Term<?> e, final Mapper<T> mapper) {
+    return new AbstractTerm<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$create$Term(final SqlContext context) {
+            return e.z$create$Term(context);
+        }
+    };
+}
+
 
 public interface Factor<T> extends Scalar<T> : Sql {}
 
@@ -98,4 +104,19 @@ public class AbstractFactor<T> implements Factor<T> {}
 <T> Factor<T> ::= 
     MINUS e:ValueExpressionPrimary<T> :: public AbstractFactor<T> opposite {}
 ;
+
+:: public <T> AbstractFactor<T> map(final Factor<?> e, final Mapper<T> mapper) {
+    return new AbstractFactor<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$create$Factor(final SqlContext context) {
+            return e.z$create$Factor(context);
+        }
+    };
+}
+
 
