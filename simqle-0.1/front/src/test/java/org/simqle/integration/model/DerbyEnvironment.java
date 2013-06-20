@@ -2,8 +2,9 @@ package org.simqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
+import org.simqle.front.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.Dialect;
-import org.simqle.sql.DialectDataSource;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,7 +18,7 @@ import java.sql.PreparedStatement;
  */
 public class DerbyEnvironment implements TestEnvironment {
     private final String url = "jdbc:derby:memory:simqle";
-    private final DialectDataSource dialectDataSource = createDialectDataSource();
+    private final DatabaseGate gate = createDatabaseGate();
     private final String databaseName = "derby";
 
     private DerbyEnvironment() {
@@ -33,7 +34,7 @@ public class DerbyEnvironment implements TestEnvironment {
         return databaseName;
     }
 
-    public DialectDataSource createDialectDataSource() {
+    public DatabaseGate createDatabaseGate() {
         try {
             final Connection connection = DriverManager.getConnection(url + ";create=true");
             initDatabase(connection);
@@ -53,8 +54,8 @@ public class DerbyEnvironment implements TestEnvironment {
     }
 
     @Override
-    public DialectDataSource getDialectDataSource() {
-        return dialectDataSource;
+    public DatabaseGate getGate() {
+        return gate;
     }
 
     private void initDatabase(final Connection connection) throws Exception {

@@ -1,11 +1,11 @@
 package org.simqle.integration.model;
 
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 
 /**
  * @author lvovich
  */
 public interface TestEnvironment {
-    DialectDataSource getDialectDataSource();
+    DatabaseGate getGate();
     String getDatabaseName();
 }

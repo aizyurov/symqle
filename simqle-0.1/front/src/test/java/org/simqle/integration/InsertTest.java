@@ -20,24 +20,24 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(2), insertTable.text.set("wow"))
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
     }
 
     private InsertTable clean() throws SQLException {
         final InsertTable insertTable = new InsertTable();
-        insertTable.delete().execute(getDialectDataSource());
+        insertTable.delete().execute(getDatabaseGate());
         return insertTable;
     }
 
     public void testDefaults() throws Exception {
         final InsertTable insertTable = clean();
         try {
-            final int affectedRows = insertTable.insertDefault().execute(getDialectDataSource());
+            final int affectedRows = insertTable.insertDefault().execute(getDatabaseGate());
             assertEquals(1, affectedRows);
-            final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+            final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
             assertEquals(Arrays.asList(Pair.make(1, "nothing")), rows);
         } catch (SQLException e) {
             // mysql: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'DEFAULT VALUES'
@@ -50,9 +50,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(2))
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(2, "nothing")), rows);
     }
 
@@ -60,9 +60,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(2), insertTable.text.setNull())
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(2, (String) null)), rows);
     }
 
@@ -70,9 +70,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(3), insertTable.text.setDefault())
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(3, "nothing")), rows);
     }
 
@@ -80,9 +80,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(Params.p(3)), insertTable.text.set("three"))
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(3, "three")), rows);
     }
 
@@ -93,9 +93,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final int affectedRows = insertTable.insert(
                 insertTable.id.set(one.id.queryValue()),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(1, "Margaret")), rows);
     }
 
@@ -106,9 +106,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final int affectedRows = insertTable.insert(
                 insertTable.id.set(one.id.queryValue().add(2).map(Mappers.INTEGER)),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
-                .execute(getDialectDataSource());
+                .execute(getDatabaseGate());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDialectDataSource());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(3, "Margaret")), rows);
 
     }

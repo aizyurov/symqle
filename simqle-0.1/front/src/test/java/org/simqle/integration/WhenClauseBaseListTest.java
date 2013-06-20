@@ -27,7 +27,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final List<Pair<String,String>> list = createWhenClauseBaseList(employee)
                 .pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make("low", "Cooper"),
                 Pair.make("high", "First"),
@@ -41,7 +41,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 "low",
                 "high",
@@ -56,7 +56,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final List<String> list = createWhenClauseBaseList(employee)
                 .where(employee.firstName.eq("James"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 "low",
                 "high"
@@ -66,7 +66,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
 
         assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
     }
@@ -74,7 +74,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testMap() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee).map(Mappers.STRING)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
 
         assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
     }
@@ -83,7 +83,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
                 .all()
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
 
         assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
     }
@@ -92,7 +92,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
                 .distinct()
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         final List<String> noNulls = replaceNullsAndSort(list);
 
         assertEquals(Arrays.asList("(null)", "high", "low"), noNulls);
@@ -112,7 +112,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
-        final List<String> list = whenClauseBaseList.forUpdate().list(getDialectDataSource());
+        final List<String> list = whenClauseBaseList.forUpdate().list(getDatabaseGate());
         assertEquals(Arrays.asList("(null)", "(null)", "First", "James", "Redwood"), replaceNullsAndSort(list));
 
     }
@@ -123,7 +123,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.forReadOnly().list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList("(null)", "(null)", "First", "James", "Redwood"), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support FOR READ ONLY
@@ -139,7 +139,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             final List<Pair<String,String>> list = createWhenClauseBaseList(employee).orElse(Params.p("medium"))
                     .pair(employee.lastName)
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     Pair.make("low", "Cooper"),
                     Pair.make("high", "First"),
@@ -158,7 +158,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final List<Pair<String,String>> list = createWhenClauseBaseList(employee).orElse(employee.firstName)
                 .pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make("low", "Cooper"),
                 Pair.make("high", "First"),
@@ -175,7 +175,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                     .orElse(employee.firstName)
                     .pair(employee.lastName)
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     Pair.make("low", "Cooper"),
                     Pair.make("high", "First"),
@@ -191,7 +191,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final List<Pair<String, String>> list = whenClauseBaseList.orElse(Params.p("medium"))
                 .pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make((String) null, "Cooper"),
                 Pair.make("high", "First"),
@@ -205,7 +205,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).eq("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
@@ -213,7 +213,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).ne("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -221,7 +221,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).gt("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -229,7 +229,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).ge("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
     }
 
@@ -237,7 +237,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).lt("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(), list);
     }
 
@@ -245,7 +245,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).le("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
@@ -257,7 +257,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.in(whenClauseBaseList))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
 
@@ -269,7 +269,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         final List<String> list = employee.lastName.where(whenClauseBaseList.in(james.lastName.where(james.firstName.eq("James"))))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -281,14 +281,14 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         final List<String> list = employee.lastName.where(whenClauseBaseList.notIn(james.lastName.where(james.firstName.eq("James"))))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "Redwood"), list);
     }
     public void testInList() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).in("high", (String) null))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         // NULLs should not match to (String)null
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
@@ -297,7 +297,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseBaseList(employee).notIn("high"))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         // for NULLs NOT IN is false
         assertEquals(Arrays.asList("Cooper"), list);
     }
@@ -308,7 +308,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 .orElse(createWhenClauseBaseList(employee))
                 .pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make("low", "Cooper"),
                 Pair.make("high", "First"),
@@ -321,7 +321,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testAsSortSpec() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.orderBy(createWhenClauseBaseList(employee), employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         // order is unspecified;
         // assume NULLS LAST by default
         try {
@@ -340,7 +340,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName.orderBy(createWhenClauseBaseList(employee).nullsFirst(), employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper"), list);
         } catch (SQLException e) {
             // mysql: does not support NULLS FIRST
@@ -352,7 +352,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName.orderBy(createWhenClauseBaseList(employee).nullsLast(), employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
         } catch (SQLException e) {
             // mysql: does not support NULLS LAST:
@@ -364,7 +364,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testAsc() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.orderBy(createWhenClauseBaseList(employee).asc(), employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         // order is unspecified;
         // assume NULLS LAST by default
         try {
@@ -382,7 +382,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testDesc() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.orderBy(createWhenClauseBaseList(employee).desc(), employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         // order is unspecified;
         // assume NULLS to be at the end for DESC
         try {
@@ -403,7 +403,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Double, String>> list = whenClauseBaseList.opposite().pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make(1500.0, "Cooper"),
                 Pair.make(-3000.0, "First"),
@@ -418,7 +418,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.add(100.0).pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make(-1400.0, "Cooper"),
                 Pair.make(3100.0, "First"),
@@ -433,7 +433,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.sub(100.0).pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make(-1600.0, "Cooper"),
                 Pair.make(2900.0, "First"),
@@ -448,7 +448,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.mult(2).pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make(-3000.0, "Cooper"),
                 Pair.make(6000.0, "First"),
@@ -463,7 +463,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
         final List<Pair<Number, String>> list = whenClauseBaseList.div(3).pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make(-500.0, "Cooper"),
                 Pair.make(1000.0, "First"),
@@ -486,7 +486,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final List<Pair<String, String>> list = createWhenClauseBaseList(employee).concat("+")
                 .pair(employee.lastName)
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 Pair.make("low+", "Cooper"),
                 Pair.make("high+", "First"),
@@ -501,7 +501,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
-        final List<String> list = whenClauseBaseList.unionAll(new Employee().lastName).list(getDialectDataSource());
+        final List<String> list = whenClauseBaseList.unionAll(new Employee().lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 "(null)", "(null)", "Cooper", "First", "First", "James", "March", "Pedersen", "Redwood", "Redwood"
         ), replaceNullsAndSort(list));
@@ -512,7 +512,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
-        final List<String> list = whenClauseBaseList.unionDistinct(new Employee().lastName).list(getDialectDataSource());
+        final List<String> list = whenClauseBaseList.unionDistinct(new Employee().lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 "(null)", "Cooper", "First", "James", "March", "Pedersen", "Redwood"
         ), replaceNullsAndSort(list));
@@ -524,7 +524,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
-        final List<String> list = whenClauseBaseList.union(new Employee().lastName).list(getDialectDataSource());
+        final List<String> list = whenClauseBaseList.union(new Employee().lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList(
                 "(null)", "Cooper", "First", "James", "March", "Pedersen", "Redwood"
         ), replaceNullsAndSort(list));
@@ -536,7 +536,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.exceptAll(new Employee().lastName).list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.exceptAll(new Employee().lastName).list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     "(null)", "(null)", "James"
             ), replaceNullsAndSort(list));
@@ -552,7 +552,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.exceptDistinct(new Employee().lastName).list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.exceptDistinct(new Employee().lastName).list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     "(null)", "James"
             ), replaceNullsAndSort(list));
@@ -568,7 +568,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.except(new Employee().lastName).list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.except(new Employee().lastName).list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     "(null)", "James"
             ), replaceNullsAndSort(list));
@@ -584,7 +584,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.intersectAll(new Employee().lastName).list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.intersectAll(new Employee().lastName).list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     "First", "Redwood"
             ), replaceNullsAndSort(list));
@@ -600,7 +600,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.intersectDistinct(new Employee().lastName).list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.intersectDistinct(new Employee().lastName).list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     "First", "Redwood"
             ), replaceNullsAndSort(list));
@@ -616,7 +616,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = whenClauseBaseList.intersect(new Employee().lastName).list(getDialectDataSource());
+            final List<String> list = whenClauseBaseList.intersect(new Employee().lastName).list(getDatabaseGate());
             assertEquals(Arrays.asList(
                     "First", "Redwood"
             ), replaceNullsAndSort(list));
@@ -628,33 +628,33 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
 
     public void testCount() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDialectDataSource());
+        final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDatabaseGate());
         // only NOT NULL values are counted
         assertEquals(Arrays.asList(3), list);
     }
 
     public void testCountDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDialectDataSource());
+        final List<Integer> list = createWhenClauseBaseList(employee).count().list(getDatabaseGate());
         assertEquals(Arrays.asList(3), list);
     }
 
     public void testMin() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createWhenClauseBaseList(employee).min().list(getDialectDataSource());
+        final List<String> list = createWhenClauseBaseList(employee).min().list(getDatabaseGate());
         assertEquals(Arrays.asList("high"), list);
     }
 
     public void testMax() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createWhenClauseBaseList(employee).max().list(getDialectDataSource());
+        final List<String> list = createWhenClauseBaseList(employee).max().list(getDatabaseGate());
         assertEquals(Arrays.asList("low"), list);
     }
 
     public void testSum() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
-        final List<Number> list = whenClauseBaseList.sum().list(getDialectDataSource());
+        final List<Number> list = whenClauseBaseList.sum().list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(4500.0, list.get(0).doubleValue());
 
@@ -667,7 +667,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     public void testAvg() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
-        final List<Number> list = whenClauseBaseList.avg().list(getDialectDataSource());
+        final List<Number> list = whenClauseBaseList.avg().list(getDatabaseGate());
         assertEquals(1, list.size());
         // average is claculated over NOT NULL values only
         assertEquals(1500.0, list.get(0).doubleValue());

@@ -34,47 +34,47 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.list(getDialectDataSource());
+        final List<String> list = primary.list(getDatabaseGate());
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testMap() throws Exception {
         final One one = new One();
         final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();
-        final List<String> list = primary.list(getDialectDataSource());
+        final List<String> list = primary.list(getDatabaseGate());
         assertEquals(Arrays.asList("1"), list);
     }
 
     public void testAll() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.all().list(getDialectDataSource());
+        final List<String> list = primary.all().list(getDatabaseGate());
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testDistinct() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.distinct().list(getDialectDataSource());
+        final List<String> list = primary.distinct().list(getDatabaseGate());
         assertEquals(Arrays.asList("X"), list);
     }
 
 
     public void testWhere() throws Exception {
         final Department department = new Department();
-        final List<String> list = creatPrimary(department).where(department.deptName.eq("HR")).list(getDialectDataSource());
+        final List<String> list = creatPrimary(department).where(department.deptName.eq("HR")).list(getDatabaseGate());
         assertEquals(Arrays.asList("March"), list);
     }
 
     public void testOrderBy() throws Exception {
         final Department department = new Department();
-        final List<String> list = creatPrimary(department).orderBy(department.deptName).list(getDialectDataSource());
+        final List<String> list = creatPrimary(department).orderBy(department.deptName).list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "March"), list);
     }
 
     public void testPair() throws Exception {
         final Department department = new Department();
-        final List<Pair<String, String>> list = creatPrimary(department).pair(department.deptName).orderBy(department.deptName.desc()).list(getDialectDataSource());
+        final List<Pair<String, String>> list = creatPrimary(department).pair(department.deptName).orderBy(department.deptName.desc()).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make("March", "HR"), Pair.make("First", "DEV")), list);
     }
 
@@ -83,7 +83,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(creatPrimary(department).isNull())
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(0, list.size());
     }
 
@@ -92,7 +92,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).isNotNull())
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -101,7 +101,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).eq("March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -110,7 +110,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).ne("March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -119,7 +119,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).le("March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -128,7 +128,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).lt("March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -137,7 +137,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).ge("March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -146,7 +146,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).gt("March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(), list);
     }
 
@@ -155,7 +155,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).eq(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -164,7 +164,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).ne(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -173,7 +173,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).ge(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -182,7 +182,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).gt(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(), list);
     }
 
@@ -191,7 +191,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).le(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -200,7 +200,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).lt(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -209,7 +209,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).in(new Department().manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -218,7 +218,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).notIn(new Department().manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -227,7 +227,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).in("Cooper", "March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -236,7 +236,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).notIn("Cooper", "March"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -247,7 +247,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Double, String>> list =
                 primary.opposite().pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(-3000.0, "DEV"), Pair.make(-3000.0, "HR")), list);
     }
 
@@ -258,7 +258,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.add(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(5000.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -271,7 +271,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.sub(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(-1000.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -284,7 +284,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.mult(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(6000000.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -297,7 +297,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.div(department.manager().salary).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(1.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -310,7 +310,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.add(500.0).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(2500.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -323,7 +323,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.sub(500.0).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(1500.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -336,7 +336,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.mult(2).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(4000.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -349,7 +349,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<Pair<Number, String>> list =
                 primary.div(2).pair(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(1000.0, list.get(0).first().doubleValue());
         assertEquals("DEV", list.get(0).second());
         assertEquals(2, list.size());
@@ -361,7 +361,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(employee.firstName.eq("Margaret").asValue().where(employee.lastName.eq(department.manager().lastName)).queryValue().booleanValue())
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -369,7 +369,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = creatPrimary(department).concat(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("FirstDEV", "MarchHR"), list);
     }
 
@@ -377,7 +377,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = creatPrimary(department).concat("-").concat(department.deptName)
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
     }
 
@@ -385,7 +385,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .orderBy(creatPrimary(department))
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -394,7 +394,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             final Department department = new Department();
             final List<String> list = department.deptName
                     .orderBy(creatPrimary(department).nullsFirst())
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
@@ -407,7 +407,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             final Department department = new Department();
             final List<String> list = department.deptName
                     .orderBy(creatPrimary(department).nullsLast())
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // mysql does not support NULLS LAST
@@ -419,7 +419,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .orderBy(creatPrimary(department).asc())
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -427,13 +427,13 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .orderBy(creatPrimary(department).desc())
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR", "DEV"), list);
     }
 
     public void testUnionAll() throws Exception {
         final Department department = new Department();
-        final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).unionAll(new Department().manager().lastName).list(getDialectDataSource());
+        final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).unionAll(new Department().manager().lastName).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "First", "March", "Redwood"), list);
     }
@@ -441,7 +441,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testUnionDistinct() throws Exception {
         final Department department = new Department();
-        final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).unionDistinct(new Department().manager().lastName).list(getDialectDataSource());
+        final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).unionDistinct(new Department().manager().lastName).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "March", "Redwood"), list);
 
@@ -449,7 +449,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testUnion() throws Exception {
         final Department department = new Department();
-        final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).union(new Department().manager().lastName).list(getDialectDataSource());
+        final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).union(new Department().manager().lastName).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "March", "Redwood"), list);
 
@@ -458,7 +458,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testExceptAll() throws Exception {
         try {
             final Department department = new Department();
-            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).exceptAll(new Department().manager().lastName).list(getDialectDataSource());
+            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).exceptAll(new Department().manager().lastName).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("March"), list);
         } catch (SQLException e) {
@@ -471,7 +471,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testExceptDistinct() throws Exception {
         try {
             final Department department = new Department();
-            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).exceptDistinct(new Department().manager().lastName).list(getDialectDataSource());
+            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).exceptDistinct(new Department().manager().lastName).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("March"), list);
         } catch (SQLException e) {
@@ -484,7 +484,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testExcept() throws Exception {
         try {
             final Department department = new Department();
-            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).exceptDistinct(new Department().manager().lastName).list(getDialectDataSource());
+            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).exceptDistinct(new Department().manager().lastName).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("March"), list);
         } catch (SQLException e) {
@@ -497,7 +497,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final Department department = new Department();
-            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).intersectAll(new Department().manager().lastName).list(getDialectDataSource());
+            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).intersectAll(new Department().manager().lastName).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
@@ -510,7 +510,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final Department department = new Department();
-            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).intersectDistinct(new Department().manager().lastName).list(getDialectDataSource());
+            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).intersectDistinct(new Department().manager().lastName).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
@@ -522,7 +522,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testIntersect() throws Exception {
         try {
             final Department department = new Department();
-            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).intersect(new Department().manager().lastName).list(getDialectDataSource());
+            final List<String> list = creatPrimary(department).where(department.deptId.isNotNull()).intersect(new Department().manager().lastName).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
@@ -536,7 +536,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             final Department department = new Department();
             final List<String> list = department.deptName.where(creatPrimary(department).exists())
                     .orderBy(department.deptName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
@@ -547,7 +547,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testForUpdate() throws Exception {
         try {
             final One one = new One();
-            final List<Integer> list = one.id.queryValue().forUpdate().list(getDialectDataSource());
+            final List<Integer> list = one.id.queryValue().forUpdate().list(getDatabaseGate());
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
@@ -558,10 +558,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testForReadOnly() throws Exception {
         try {
             final One one = new One();
-            final List<Integer> list = one.id.queryValue().forReadOnly().list(getDialectDataSource());
+            final List<Integer> list = one.id.queryValue().forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
                 // should work with MysqlDialect
                 throw e;
             } else {
@@ -574,7 +574,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testQueryValue() throws Exception {
         try {
             final One one = new One();
-            final List<Integer> list = one.id.queryValue().queryValue().list(getDialectDataSource());
+            final List<Integer> list = one.id.queryValue().queryValue().list(getDatabaseGate());
             assertEquals(Arrays.asList(1), list);
         } catch (IllegalStateException e) {
             expectIllegalStateException(e, GenericDialect.class);
@@ -585,7 +585,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testWhenClause() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName.eq("DEV").then(creatPrimary(department)).orElse(department.manager().lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
@@ -595,7 +595,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).like(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -604,7 +604,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).like("_ar%"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -613,7 +613,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).notLike(department.manager().lastName))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);
     }
 
@@ -622,7 +622,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(creatPrimary(department).notLike("_ar%"))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -630,7 +630,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<Integer> list = creatPrimary(department).count()
                 .where(department.deptId.isNotNull())
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(2), list);
     }
 
@@ -638,14 +638,14 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<Integer> list = creatPrimary(department).countDistinct()
                 .where(department.deptId.isNotNull())
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList(2), list);
     }
 
     public void testAverage() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
-        final List<Number> list = employee.salary.max().where(employee.deptId.eq(department.deptId)).queryValue().avg().where(department.deptId.isNotNull()).list(getDialectDataSource());
+        final List<Number> list = employee.salary.max().where(employee.deptId.eq(department.deptId)).queryValue().avg().where(department.deptId.isNotNull()).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(3000.0, list.get(0).doubleValue());
     }
@@ -653,7 +653,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testMin() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.max().where(employee.deptId.eq(department.deptId)).queryValue().min().where(department.deptId.isNotNull()).list(getDialectDataSource());
+        final List<Double> list = employee.salary.max().where(employee.deptId.eq(department.deptId)).queryValue().min().where(department.deptId.isNotNull()).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(3000.0, list.get(0));
     }
@@ -661,7 +661,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testMax() throws Exception {
         final Department department = new Department();
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.max().where(employee.deptId.eq(department.deptId)).queryValue().max().where(department.deptId.isNotNull()).list(getDialectDataSource());
+        final List<Double> list = employee.salary.max().where(employee.deptId.eq(department.deptId)).queryValue().max().where(department.deptId.isNotNull()).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(3000.0, list.get(0));
     }

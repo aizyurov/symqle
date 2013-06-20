@@ -29,7 +29,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
     public void testAnd() throws Exception {
         final Employee employee = new Employee();
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
-        final List<String> list = employee.lastName.where(basicCondition.and(employee.salary.gt(2500.0))).list(getDialectDataSource());
+        final List<String> list = employee.lastName.where(basicCondition.and(employee.salary.gt(2500.0))).list(getDatabaseGate());
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -38,14 +38,14 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.or(employee.firstName.eq("Bill")))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First", "March"), list);
     }
 
     public void testNegate() throws Exception {
         final Employee employee = new Employee();
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
-        final List<String> list = employee.lastName.where(basicCondition.negate()).orderBy(employee.lastName).list(getDialectDataSource());
+        final List<String> list = employee.lastName.where(basicCondition.negate()).orderBy(employee.lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
 
     }
@@ -56,7 +56,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(basicCondition.isTrue())
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
@@ -70,7 +70,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotTrue())
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 96.
@@ -84,7 +84,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(basicCondition.isFalse())
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "FALSE" at line 1, column 92
@@ -98,7 +98,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotFalse())
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
@@ -112,7 +112,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(basicCondition.isUnknown())
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
@@ -126,7 +126,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotUnknown())
                     .orderBy(employee.lastName)
-                    .list(getDialectDataSource());
+                    .list(getDatabaseGate());
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 96.
@@ -139,8 +139,8 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.isNull())
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
-        System.out.println(basicCondition.asValue().pair(employee.lastName).list(getDialectDataSource()));
+                .list(getDatabaseGate());
+        System.out.println(basicCondition.asValue().pair(employee.lastName).list(getDatabaseGate()));
         try {
             assertEquals(0, list.size());
         } catch (AssertionFailedError e) {
@@ -158,7 +158,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.isNotNull())
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(5, list.size());
         } catch (AssertionFailedError e) {
@@ -176,7 +176,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.eq(employee.salary.le(2500.0)))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("Cooper", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -195,7 +195,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.ne(employee.salary.gt(2500.0)))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("Cooper", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -214,7 +214,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.gt(employee.salary.gt(2500.0)))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -223,7 +223,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.ge(employee.salary.gt(2500.0)))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen"), list);
         } catch (AssertionFailedError e) {
@@ -241,7 +241,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.lt(employee.salary.gt(2500.0)))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -259,7 +259,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.le(employee.salary.gt(2500.0)))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -277,7 +277,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.eq(false))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -295,7 +295,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.ne(true))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -313,7 +313,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.gt(false))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
 
@@ -322,7 +322,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.ge(false))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -340,7 +340,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.lt(true))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -358,7 +358,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.le(false))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -379,7 +379,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(basicCondition.in(noDeptPeople.retired.where(noDeptPeople.deptId.isNull())))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
 
@@ -391,7 +391,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(basicCondition.notIn(noDeptPeople.retired.where(noDeptPeople.deptId.isNull())))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -412,7 +412,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(basicCondition.in(true, (Boolean)null))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
 
@@ -424,7 +424,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(basicCondition.notIn(true))
                 .orderBy(employee.lastName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         try {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
@@ -441,7 +441,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final AbstractExistsPredicate basicCondition = createBasicCondition(employee);
         final List<Pair<String,String>> list = employee.lastName.pair(basicCondition.then(employee.firstName))
-                .orderBy(employee.lastName).list(getDialectDataSource());
+                .orderBy(employee.lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make("Cooper", "James"), Pair.make("First", "James"), Pair.make("March", null), Pair.make("Pedersen", null), Pair.make("Redwood", null)), list);
     }
 
@@ -451,7 +451,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
         final List<Pair<String,String>> list = employee.lastName.pair(
                     employee.salary.gt(2500.0).then(employee.firstName).orWhen(basicCondition.thenNull()).orElse(Params.p(":)"))
                 )
-                .orderBy(employee.lastName).list(getDialectDataSource());
+                .orderBy(employee.lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make("Cooper", null), Pair.make("First", "James"), Pair.make("March", ":)"), Pair.make("Pedersen", ":)"), Pair.make("Redwood", "Margaret")), list);
     }
 }

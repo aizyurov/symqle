@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.simqle.integration.model.DerbyEnvironment;
 import org.simqle.integration.model.ExternalDbEnvironment;
 import org.simqle.integration.model.TestEnvironment;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     private static TestEnvironment environment = createTestEnvironment();
 
 
-    public DialectDataSource getDialectDataSource() {
-        return environment.getDialectDataSource();
+    public DatabaseGate getDatabaseGate() {
+        return environment.getGate();
     }
 
     private static TestEnvironment createTestEnvironment() {
@@ -55,7 +55,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     protected final void expectIllegalStateException(IllegalStateException e, Class... dialects) {
-        if (Arrays.asList(dialects).contains(getDialectDataSource().getDialect().getClass())) {
+        if (Arrays.asList(dialects).contains(getDatabaseGate().getDialect().getClass())) {
             return;
         }
         throw e;

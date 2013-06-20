@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.simqle.front.StatementOptions;
 import org.simqle.integration.model.Employee;
 import org.simqle.sql.AbstractCursorSpecification;
-import org.simqle.sql.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.GenericDialect;
 
 import java.sql.Connection;
@@ -27,12 +27,12 @@ public class StatementOptionsTest extends TestCase {
         Employee employee = new Employee();
         final AbstractCursorSpecification<String> cursorSpecification = employee.firstName.orderBy(employee.firstName);
         final String queryString = cursorSpecification.show();
-        final DialectDataSource datasource = createMock(DialectDataSource.class);
+        final DatabaseGate datasource = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
         expect(datasource.getDialect()).andReturn(GenericDialect.get());
+        expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchDirection(ResultSet.FETCH_FORWARD);
         statement.setFetchSize(2);

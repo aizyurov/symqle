@@ -1,8 +1,9 @@
 package org.simqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.simqle.front.DialectDataSource;
+import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.Dialect;
-import org.simqle.sql.DialectDataSource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,12 +17,12 @@ import java.util.Properties;
  */
 public class ExternalDbEnvironment implements TestEnvironment {
 
-    private final DialectDataSource dialectDataSource;
+    private final DatabaseGate databaseGate;
     private final String databaseName;
 
     private ExternalDbEnvironment(final String databaseName) {
         this.databaseName = databaseName;
-        this.dialectDataSource = createDialectDataSource(databaseName);
+        this.databaseGate = createDialectDataSource(databaseName);
     }
 
     private final static Map<String, ExternalDbEnvironment> instances = new HashMap<String, ExternalDbEnvironment>();
@@ -41,11 +42,11 @@ public class ExternalDbEnvironment implements TestEnvironment {
         return databaseName;
     }
 
-    public DialectDataSource getDialectDataSource() {
-        return dialectDataSource;
+    public DatabaseGate getGate() {
+        return databaseGate;
     }
 
-    public DialectDataSource createDialectDataSource(final String databaseName) {
+    public DatabaseGate createDialectDataSource(final String databaseName) {
         try {
             final Properties properties = new Properties();
             final File homeDir = new File(System.getProperty("user.home"));

@@ -18,32 +18,32 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
 
     public void testSelect() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().list(getDialectDataSource());
+        final List<Integer> list = employee.empId.count().list(getDatabaseGate());
         assertEquals(Arrays.asList(5), list);
     }
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().union(employee.empId.count().where(employee.salary.gt(1800.0))).list(getDialectDataSource());
+        final List<Integer> list = employee.empId.count().union(employee.empId.count().where(employee.salary.gt(1800.0))).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList(4, 5), list);
     }
 
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().unionAll(employee.empId.count().where(employee.salary.gt(100.0))).list(getDialectDataSource());
+        final List<Integer> list = employee.empId.count().unionAll(employee.empId.count().where(employee.salary.gt(100.0))).list(getDatabaseGate());
         assertEquals(Arrays.asList(5, 5), list);
     }
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().unionDistinct(employee.empId.count().where(employee.salary.gt(100.0))).list(getDialectDataSource());
+        final List<Integer> list = employee.empId.count().unionDistinct(employee.empId.count().where(employee.salary.gt(100.0))).list(getDatabaseGate());
         assertEquals(Arrays.asList(5), list);
     }
 
     public void testExcept() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().except(employee.empId.count().where(employee.salary.gt(100.0))).list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().except(employee.empId.count().where(employee.salary.gt(100.0))).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -54,7 +54,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
     public void testExceptAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().exceptAll(employee.empId.count().where(employee.salary.gt(100.0))).list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().exceptAll(employee.empId.count().where(employee.salary.gt(100.0))).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -65,7 +65,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
     public void testExceptDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().exceptDistinct(employee.empId.count().where(employee.salary.gt(100.0))).list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().exceptDistinct(employee.empId.count().where(employee.salary.gt(100.0))).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -76,7 +76,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
     public void testIntersect() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().intersect(employee.empId.count().where(employee.salary.gt(1800.0))).list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().intersect(employee.empId.count().where(employee.salary.gt(1800.0))).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
@@ -87,7 +87,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
     public void testIntersectAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().intersectAll(employee.empId.count().where(employee.salary.lt(1800.0))).list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().intersectAll(employee.empId.count().where(employee.salary.lt(1800.0))).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
@@ -98,7 +98,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
     public void testIntersectDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().intersectDistinct(employee.empId.count().where(employee.salary.lt(1800.0))).list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().intersectDistinct(employee.empId.count().where(employee.salary.lt(1800.0))).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
@@ -111,7 +111,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
             // it is unclear, what 'for update' means when selecting count. Lock the whole table? Nevertheless, some engines allow it.
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().forUpdate().list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().forUpdate().list(getDatabaseGate());
             assertEquals(Arrays.asList(5), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
@@ -122,10 +122,10 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Integer> list = employee.empId.count().forReadOnly().list(getDialectDataSource());
+            final List<Integer> list = employee.empId.count().forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList(5), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
                 // should work with MysqlDialect
                 throw e;
             } else {
@@ -141,7 +141,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(employee.salary.sum().exists())
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -151,7 +151,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(Params.p(5).in(employee.empId.count()))
                 .orderBy(department.deptName)
-                .list(getDialectDataSource());
+                .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -161,7 +161,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         final List<Pair<String,Integer>> list = department.deptName
                 .pair(
                         employee.empId.count().queryValue()
-                ).orderBy(department.deptName).list(getDialectDataSource());
+                ).orderBy(department.deptName).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make("DEV", 5), Pair.make("HR", 5)), list);
     }
 

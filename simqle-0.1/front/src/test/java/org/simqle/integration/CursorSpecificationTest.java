@@ -21,14 +21,14 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createCursorSpecificaton(employee).list(getDialectDataSource());
+        final List<String> list = createCursorSpecificaton(employee).list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = createCursorSpecificaton(employee).forUpdate().list(getDialectDataSource());
+            final List<String> list = createCursorSpecificaton(employee).forUpdate().list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement
@@ -39,10 +39,10 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = createCursorSpecificaton(employee).forReadOnly().list(getDialectDataSource());
+            final List<String> list = createCursorSpecificaton(employee).forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
                 // should work with MysqlDialect
                 throw e;
             } else {
@@ -55,7 +55,7 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
     public void testScroll() throws Exception {
         final List<String> employees = new ArrayList<String>(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"));
         final Employee employee = new Employee();
-        createCursorSpecificaton(employee).scroll(getDialectDataSource(), new Callback<String>() {
+        createCursorSpecificaton(employee).scroll(getDatabaseGate(), new Callback<String>() {
             @Override
             public boolean iterate(final String s) {
                 assertEquals(s, employees.get(0));

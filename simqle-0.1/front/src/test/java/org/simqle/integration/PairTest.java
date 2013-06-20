@@ -24,7 +24,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).list(getDatabaseGate());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains(Pair.make(1500.0, "James")));
         assertTrue(list.toString(), list.contains(Pair.make(3000.0, "Margaret")));
@@ -36,7 +36,7 @@ public class PairTest extends AbstractIntegrationTestBase {
     public void testPair() throws Exception {
         final Employee employee = new Employee();
         final AbstractSelectList<Pair<Double, String>> pair = makePair(employee);
-        final List<Pair<Pair<Double, String>, String>> list = pair.pair(employee.department().deptName).where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        final List<Pair<Pair<Double, String>, String>> list = pair.pair(employee.department().deptName).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(Pair.make(Pair.make(3000.0, "Margaret"), "HR"), list.get(0));
     }
@@ -44,7 +44,7 @@ public class PairTest extends AbstractIntegrationTestBase {
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final AbstractSelectList<Pair<Double, String>> pair = makePair(employee);
-        final List<Pair<Double, String>> list = pair.where(employee.lastName.eq("Redwood")).list(getDialectDataSource());
+        final List<Pair<Double, String>> list = pair.where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(Pair.make(3000.0, "Margaret"), list.get(0));
 
@@ -52,7 +52,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testSelectAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).all().list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).all().list(getDatabaseGate());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains(Pair.make(1500.0, "James")));
         assertTrue(list.toString(), list.contains(Pair.make(3000.0, "Margaret")));
@@ -63,7 +63,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testSelectDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).distinct().list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).distinct().list(getDatabaseGate());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains(Pair.make(1500.0, "James")));
         assertTrue(list.toString(), list.contains(Pair.make(3000.0, "Margaret")));
@@ -74,7 +74,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testSelectForUpdate() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).forUpdate().list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).forUpdate().list(getDatabaseGate());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains(Pair.make(1500.0, "James")));
         assertTrue(list.toString(), list.contains(Pair.make(3000.0, "Margaret")));
@@ -86,7 +86,7 @@ public class PairTest extends AbstractIntegrationTestBase {
     public void testSelectForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Pair<Double, String>> list = makePair(employee).forReadOnly().list(getDialectDataSource());
+            final List<Pair<Double, String>> list = makePair(employee).forReadOnly().list(getDatabaseGate());
             assertEquals(5, list.size());
             assertTrue(list.toString(), list.contains(Pair.make(1500.0, "James")));
             assertTrue(list.toString(), list.contains(Pair.make(3000.0, "Margaret")));
@@ -94,7 +94,7 @@ public class PairTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains(Pair.make(3000.0, "James")));
             assertTrue(list.toString(), list.contains(Pair.make(2000.0, "Alex")));
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
                 // should work with MysqlDialect
                 throw e;
             } else {
@@ -106,7 +106,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName).list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName).list(getDatabaseGate());
         final List<Pair<Double, String>> expected = Arrays.asList(
                 Pair.make(1500.0, "James"),
                 Pair.make(3000.0, "James"),
@@ -118,7 +118,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testOrderByAsc() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName.asc()).list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName.asc()).list(getDatabaseGate());
         final List<Pair<Double, String>> expected = Arrays.asList(
                 Pair.make(1500.0, "James"),
                 Pair.make(3000.0, "James"),
@@ -130,7 +130,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testOrderByDesc() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName.desc()).list(getDialectDataSource());
+        final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName.desc()).list(getDatabaseGate());
         final List<Pair<Double, String>> expected = Arrays.asList(
                 Pair.make(1500.0, "James"),
                 Pair.make(3000.0, "James"),

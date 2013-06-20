@@ -5,9 +5,10 @@ import org.simqle.Mappers;
 import org.simqle.Row;
 import org.simqle.RowMapper;
 import org.simqle.sql.Column;
+import org.simqle.sql.DatabaseGate;
+import org.simqle.sql.GenericDialect;
 import org.simqle.sql.TableOrView;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,11 +44,12 @@ public class AbstractMapperTest extends TestCase {
         final Person person = new Person();
         final MapCallFromCreateMapper mapper = new MapCallFromCreateMapper(person);
         final String queryString = mapper.show();
-        final DataSource datasource = createMock(DataSource.class);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -59,26 +61,27 @@ public class AbstractMapperTest extends TestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        replay(gate, connection,  statement, resultSet);
 
         try {
-            final List<PersonDTO> list = mapper.list(datasource);
+            final List<PersonDTO> list = mapper.list(gate);
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             // Ok
         }
-        verify(datasource, connection, statement, resultSet);
+        verify(gate, connection, statement, resultSet);
     }
 
     public void testSimpleMapper() throws Exception {
         final Person person = new Person();
         final PersonMapper mapper = new PersonMapper(person);
         final String queryString = mapper.show();
-        final DataSource datasource = createMock(DataSource.class);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -89,13 +92,13 @@ public class AbstractMapperTest extends TestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        replay(gate, connection,  statement, resultSet);
 
-        final List<PersonDTO> list = mapper.list(datasource);
+        final List<PersonDTO> list = mapper.list(gate);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).id.longValue());
         assertEquals("Alex", list.get(0).name);
-        verify(datasource, connection, statement, resultSet);
+        verify(gate, connection, statement, resultSet);
 
     }
 

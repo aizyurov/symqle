@@ -21,20 +21,20 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).list(getDialectDataSource());
+        final List<String> list = querySpec(employee).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).orderBy(employee.lastName).list(getDialectDataSource());
+        final List<String> list = querySpec(employee).orderBy(employee.lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).forUpdate().list(getDialectDataSource());
+        final List<String> list = querySpec(employee).forUpdate().list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
@@ -42,11 +42,11 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).forReadOnly().list(getDialectDataSource());
+            final List<String> list = querySpec(employee).forReadOnly().list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDialectDataSource().getDialect().getClass())) {
+            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
                 // should work with MysqlDialect
                 throw e;
             } else {
@@ -58,21 +58,21 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
 
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).unionAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+        final List<String> list = querySpec(employee).unionAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First", "First", "Redwood"), list);
     }
 
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).unionDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+        final List<String> list = querySpec(employee).unionDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
     }
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).union(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+        final List<String> list = querySpec(employee).union(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
     }
@@ -80,7 +80,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testExceptAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).exceptAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+            final List<String> list = querySpec(employee).exceptAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
@@ -92,7 +92,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testExceptDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).exceptDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+            final List<String> list = querySpec(employee).exceptDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
@@ -104,7 +104,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testExcept() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).except(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+            final List<String> list = querySpec(employee).except(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
@@ -116,7 +116,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testIntersectAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+            final List<String> list = querySpec(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
@@ -128,7 +128,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testIntersectDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).intersectDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+            final List<String> list = querySpec(employee).intersectDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
@@ -140,7 +140,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
     public void testIntersect() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = querySpec(employee).intersect(employee.lastName.where(employee.firstName.eq("James"))).list(getDialectDataSource());
+            final List<String> list = querySpec(employee).intersect(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
             Collections.sort(list);
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
@@ -154,7 +154,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         // subquery: all employees of this department, which have the same first name of dept manager but the managet himself
         final AbstractQuerySpecification<Integer> subquery = employee.empId.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
-        final List<String> list = department.deptName.where(subquery.exists()).list(getDialectDataSource());
+        final List<String> list = department.deptName.where(subquery.exists()).list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV"), list);
     }
 
@@ -164,11 +164,11 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         // subquery: all employees, which have the same first name of dept manager but the managet himself
         // for "DEV" department there is only one, so it may be used for queryValue
         final AbstractQuerySpecification<String> subquery = employee.lastName.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
-        final List<String> list = subquery.queryValue().where(department.deptName.eq("DEV")).list(getDialectDataSource());
+        final List<String> list = subquery.queryValue().where(department.deptName.eq("DEV")).list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
 
         // for "HR" department there are none - depending of database it may cause SQLException or return null
-        final List<String> nothing = subquery.queryValue().where(department.deptName.eq("HR")).list(getDialectDataSource());
+        final List<String> nothing = subquery.queryValue().where(department.deptName.eq("HR")).list(getDatabaseGate());
         assertEquals(1, nothing.size());
         assertEquals(null, nothing.get(0));
 

@@ -15,7 +15,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     @Override
     protected void onSetUp() throws Exception {
-        final Connection connection = getDialectDataSource().getConnection();
+        final Connection connection = getDatabaseGate().getConnection();
         try {
             {
                 final PreparedStatement stmt = connection.prepareStatement("DELETE FROM delete_detail");
@@ -34,8 +34,8 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     public void testDeleteAll() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        assertEquals(0, master.delete().execute(getDialectDataSource()));
-        final Connection connection = getDialectDataSource().getConnection();
+        assertEquals(0, master.delete().execute(getDatabaseGate()));
+        final Connection connection = getDatabaseGate().getConnection();
         try {
             final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
             stmt.setInt(1, 1);
@@ -48,14 +48,14 @@ public class DeleteTest extends AbstractIntegrationTestBase {
         } finally {
           connection.close();
         }
-        assertEquals(Arrays.asList(1, 2), master.masterId.list(getDialectDataSource()));
-        assertEquals(2, master.delete().execute(getDialectDataSource()));
+        assertEquals(Arrays.asList(1, 2), master.masterId.list(getDatabaseGate()));
+        assertEquals(2, master.delete().execute(getDatabaseGate()));
     }
 
     public void testDeleteSome() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        assertEquals(0, master.delete().execute(getDialectDataSource()));
-        final Connection connection = getDialectDataSource().getConnection();
+        assertEquals(0, master.delete().execute(getDatabaseGate()));
+        final Connection connection = getDatabaseGate().getConnection();
         try {
             final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
             stmt.setInt(1, 1);
@@ -71,16 +71,16 @@ public class DeleteTest extends AbstractIntegrationTestBase {
         } finally {
           connection.close();
         }
-        assertEquals(Arrays.asList(1, 2, 3), master.masterId.list(getDialectDataSource()));
-        assertEquals(2, master.delete().where(master.masterId.lt(3)).execute(getDialectDataSource()));
-        assertEquals(Arrays.asList(3), master.masterId.list(getDialectDataSource()));
+        assertEquals(Arrays.asList(1, 2, 3), master.masterId.list(getDatabaseGate()));
+        assertEquals(2, master.delete().where(master.masterId.lt(3)).execute(getDatabaseGate()));
+        assertEquals(Arrays.asList(3), master.masterId.list(getDatabaseGate()));
     }
 
     public void testDeleteBySubquery() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        System.out.println(master.masterId.list(getDialectDataSource()));
-        assertEquals(0, master.delete().execute(getDialectDataSource()));
-        final Connection connection = getDialectDataSource().getConnection();
+        System.out.println(master.masterId.list(getDatabaseGate()));
+        assertEquals(0, master.delete().execute(getDatabaseGate()));
+        final Connection connection = getDatabaseGate().getConnection();
         try {
             {
                 final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
@@ -108,12 +108,12 @@ public class DeleteTest extends AbstractIntegrationTestBase {
           connection.close();
         }
         final DeleteDetail detail = new DeleteDetail();
-        assertEquals(Arrays.asList(1, 2), master.masterId.list(getDialectDataSource()));
+        assertEquals(Arrays.asList(1, 2), master.masterId.list(getDatabaseGate()));
         try {
             // delete all master records, which HAVE detail records
             assertEquals(1, master.delete()
                     .where(detail.detailId.where(detail.masterId.eq(master.masterId)).exists())
-                    .execute(getDialectDataSource()));
+                    .execute(getDatabaseGate()));
             fail("Constrain violation expected");
         } catch (SQLException e) {
             // fine
@@ -121,8 +121,8 @@ public class DeleteTest extends AbstractIntegrationTestBase {
             // delete all master records, which have no detail records
         assertEquals(1, master.delete()
                 .where(detail.detailId.where(detail.masterId.eq(master.masterId)).exists().negate())
-                .execute(getDialectDataSource()));
-        assertEquals(Arrays.asList(1), master.masterId.list(getDialectDataSource()));
+                .execute(getDatabaseGate()));
+        assertEquals(Arrays.asList(1), master.masterId.list(getDatabaseGate()));
 
     }
 }
