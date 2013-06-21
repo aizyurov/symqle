@@ -194,6 +194,11 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT - CASE WHEN T0.name = ? THEN T0.age WHEN T0.age > ? THEN T0.id END AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.name.eq("John").then(person.age).orWhen(person.age.gt(1L).then(person.id)).cast("NUMBER(12,2)").show();
+        assertSimilar("SELECT CAST(CASE WHEN T0.name = ? THEN T0.age WHEN T0.age > ? THEN T0.id END AS NUMBER(12,2)) AS C0 FROM person AS T0", sql);
+    }
+
     public void testPair() throws Exception {
         String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).pair(person.name).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0, T0.name AS C1 FROM person AS T0", sql);

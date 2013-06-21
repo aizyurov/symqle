@@ -208,6 +208,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT - CASE WHEN T0.name = ? THEN T0.age END AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.name.eq("John").then(person.age).cast("CHAR(10)").show();
+        assertSimilar("SELECT CAST(CASE WHEN T0.name = ? THEN T0.age END AS CHAR(10)) AS C0 FROM person AS T0", sql);
+    }
+
     public void testPair() throws Exception {
         String sql = person.age.gt(20L).then(person.nick).pair(person.name).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.nick END AS C0, T0.name AS C1 FROM person AS T0", sql);

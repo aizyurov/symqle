@@ -179,6 +179,11 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) || T1.id AS C0 FROM employee AS T1", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().cast("CHAR(10)").orderBy(employee.id).show();
+        assertSimilar("SELECT CAST((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS CHAR(10)) AS C0 FROM employee AS T1 ORDER BY T1.id", sql);
+    }
+
     public void testConcatString() throws Exception {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().concat(":").concat(employee.id).show();
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) || ? || T1.id AS C0 FROM employee AS T1", sql);

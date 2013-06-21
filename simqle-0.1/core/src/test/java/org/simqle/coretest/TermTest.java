@@ -173,6 +173,11 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT -(T0.id * ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.id.mult(two).cast("NUMBER(10,2)").show();
+        assertSimilar("SELECT CAST(T0.id * ? AS NUMBER(10,2)) AS C0 FROM person AS T0", sql);
+    }
+
     public void testPair() throws Exception {
         String sql = person.id.mult(two).pair(person.name).show();
         assertSimilar("SELECT T0.id * ? AS C0, T0.name AS C1 FROM person AS T0", sql);

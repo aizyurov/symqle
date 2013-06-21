@@ -247,6 +247,12 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT - abs(T0.id) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = abs(id).cast("NUMBER").show();
+        assertSimilar("SELECT CAST(abs(T0.id) AS NUMBER) AS C0 FROM person AS T0", sql);
+    }
+
     public void testPair() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;

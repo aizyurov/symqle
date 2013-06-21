@@ -71,6 +71,9 @@ public class ImplicitConversionsTest extends TestCase {
         final AbstractRoutineInvocation<Long> abs = SqlFunction.create("abs", Mappers.LONG).apply(person.id);
         final ValueExpressionPrimary<Long> valueExpressionPrimary1 = simqle.z$ValueExpressionPrimary$from$RoutineInvocation(abs);
         assertEquals(Mappers.LONG, valueExpressionPrimary1.getMapper());
+        final AbstractCastSpecification<Long> cast = person.id.cast("NUMBER");
+        final ValueExpressionPrimary<Long> valueExpressionPrimary2 = simqle.z$ValueExpressionPrimary$from$CastSpecification(cast);
+        assertEquals(Mappers.LONG, valueExpressionPrimary2.getMapper());
     }
 
     public void testCaseExpression() throws Exception {

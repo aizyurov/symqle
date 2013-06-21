@@ -1,7 +1,7 @@
 package org.simqle.coretest;
 
+import org.simqle.Callback;
 import org.simqle.Mappers;
-import org.simqle.jdbc.StatementOption;
 import org.simqle.sql.AbstractCastSpecification;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -254,6 +253,22 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE CAST(T1.id AS NUMBER(12,0)) IN(SELECT T2.id FROM employee AS T2)", sql);
     }
 
+    public void testInArgument() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> id2 = employee.id;
+        String sql = id.where(id.in(id2.cast("NUMBER (12,0)"))).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id IN(SELECT CAST(T2.id AS NUMBER(12,0)) FROM employee AS T2)", sql);
+    }
+
+    public void testNotIn() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> id2 = employee.id;
+        String sql = id.where(id.cast("NUMBER (12,0)").notIn(id2)).show();
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE CAST(T1.id AS NUMBER(12,0)) NOT IN(SELECT T2.id FROM employee AS T2)", sql);
+    }
+
     public void testInList() throws Exception {
         final Column<Long> id  =  person.id;
         // find all but the most old
@@ -285,7 +300,6 @@ public class CastSpecificationTest extends SqlTestCase {
    }
 
     public void testOrderBy() throws Exception {
-        final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
         String sql = person.id.cast("NUMBER (12,0)").orderBy(age).show();
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY T0.age", sql);
@@ -319,6 +333,13 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0)) ASC", sql);
     }
 
+    public void testSortSpecification() throws Exception {
+        final Column<Long> id  =  person.id;
+        final Column<Long> age = person.age;
+        String sql = id.orderBy(age.cast("NUMBER (12,0)")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0))", sql);
+    }
+
     public void testOperation() throws Exception {
         final AbstractCastSpecification<Long> id = person.id.cast("NUMBER (12,0)");
         final Column<Long> age = person.age;
@@ -343,124 +364,140 @@ public class CastSpecificationTest extends SqlTestCase {
 
     public void testOpposite() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.opposite().show();
-        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").opposite().show();
+        assertSimilar("SELECT - CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0", sql);
     }
 
     public void testAdd() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.add(age).show();
-        assertSimilar("SELECT T0.id + T0.age AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").add(age).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) + T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testAddNumber() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.add(1).show();
-        assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").add(1).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSub() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.sub(age).show();
-        assertSimilar("SELECT T0.id - T0.age AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").sub(age).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) - T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testSubNumber() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.sub(1.0).show();
-        assertSimilar("SELECT T0.id - ? AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").sub(1.0).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.mult(2L).show();
-        assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").mult(2L).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.div(age).show();
-        assertSimilar("SELECT T0.id / T0.age AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").div(age).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) / T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.div(3).show();
-        assertSimilar("SELECT T0.id / ? AS C0 FROM person AS T0", sql);
+        String sql = id.cast("NUMBER(12,0)").div(3).show();
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.concat(age).show();
-        assertSimilar("SELECT T0.id || T0.age AS C0 FROM person AS T0", sql);
+        String sql = id.cast("CHAR(12)").concat(age).show();
+        assertSimilar("SELECT CAST(T0.id AS CHAR(12)) || T0.age AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
         final Column<Long> id  =  person.id;
-        String sql = id.concat(" (id)").show();
-        assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0", sql);
+        String sql = id.cast("CHAR(12)").concat(" (id)").show();
+        assertSimilar("SELECT CAST(T0.id AS CHAR(12)) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testCount() throws Exception {
-        final String sql = person.id.count().show();
-        assertSimilar("SELECT COUNT(T0.id) AS C0 FROM person AS T0", sql);
+        final String sql = person.id.cast("NUMBER(12,0)").count().show();
+        assertSimilar("SELECT COUNT(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
     public void testCountDistinct() throws Exception {
-        final String sql = person.parentId.countDistinct().show();
-        assertSimilar("SELECT COUNT(DISTINCT T0.parent_id) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testAvg() throws Exception {
-        final String sql = person.age.avg().show();
-        assertSimilar("SELECT AVG(T0.age) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testSum() throws Exception {
-        final String sql = person.age.sum().show();
-        assertSimilar("SELECT SUM(T0.age) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testMin() throws Exception {
-        final String sql = person.age.min().show();
-        assertSimilar("SELECT MIN(T0.age) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testMax() throws Exception {
-        final String sql = person.age.max().show();
-        assertSimilar("SELECT MAX(T0.age) AS C0 FROM person AS T0", sql);
-    }
-
-    public void testJoin() throws Exception {
-        final Person person1 = new Person();
-        final Person person2 = new Person();
-        final Column<Long> id1 = person1.id;
-        final Column<Long> id2 = person2.id;
-        final Column<Long> parentId1 = person1.parentId;
-        final Column<Long> age1 = person1.age;
-        final Column<Long> age2 = person2.age;
-        person1.leftJoin(person2, parentId1.eq(id2));
-        // find all people who are older that parent
-        final String sql = id1.where(age1.gt(age2)).show();
-        System.out.println(sql);
-        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
-
+        final String sql = person.parentId.cast("NUMBER(12,0)").countDistinct().show();
+        assertSimilar("SELECT COUNT(DISTINCT CAST(T0.parent_id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.name.notLike(DynamicParameter.create(Mappers.STRING, "John%"))).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name NOT LIKE ?", sql);
+        final String sql = person.id.where(person.name.cast("CHAR(12)").notLike(DynamicParameter.create(Mappers.STRING, "John%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.name AS CHAR(12)) NOT LIKE ?", sql);
     }
 
     public void testNotLikeString() throws Exception {
-        final String sql = person.id.where(person.name.notLike("John%")).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name NOT LIKE ?", sql);
+        final String sql = person.id.where(person.name.cast("CHAR(12)").notLike("John%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.name AS CHAR(12)) NOT LIKE ?", sql);
     }
+
+    public void testLike() throws Exception {
+        final String sql = person.id.where(person.name.cast("CHAR(12)").like(DynamicParameter.create(Mappers.STRING, "John%"))).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.name AS CHAR(12)) LIKE ?", sql);
+    }
+
+    public void testLikeString() throws Exception {
+        final String sql = person.id.where(person.name.cast("CHAR(12)").like("John%")).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.name AS CHAR(12)) LIKE ?", sql);
+    }
+
+    public void testAvg() throws Exception {
+        final String sql = person.id.cast("NUMBER(12,0)").avg().show();
+        assertSimilar("SELECT AVG(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSum() throws Exception {
+        final String sql = person.id.cast("NUMBER(12,0)").sum().show();
+        assertSimilar("SELECT SUM(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMax() throws Exception {
+        final String sql = person.id.cast("NUMBER(12,0)").max().show();
+        assertSimilar("SELECT MAX(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMin() throws Exception {
+        final String sql = person.id.cast("NUMBER(12,0)").min().show();
+        assertSimilar("SELECT MIN(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testBooleanValue() throws Exception {
+        final String sql = person.id.where(person.name.cast("BOOLEAN").booleanValue()).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.name AS BOOLEAN)", sql);
+    }
+
+    public void testCast() throws Exception {
+        final String sql = person.id.cast("NUMBER").cast("NUMBER(12,0)").show();
+        assertSimilar("SELECT CAST(CAST(T0.id AS NUMBER) AS NUMBER(12,0)) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testQueryValue() throws Exception {
+        final String sql = person.id.cast("NUMBER").queryValue().where(employee.id.isNotNull()).show();
+        assertSimilar("SELECT(SELECT CAST(T0.id AS NUMBER) FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.id IS NOT NULL", sql);
+    }
+
+    public void testElse() throws Exception {
+        final String sql = person.name.isNotNull().then(person.id).orElse(person.id.cast("NUMBER")).show();
+        assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id ELSE CAST(T0.id AS NUMBER) END AS C0 FROM person AS T0", sql);
+    }
+
+
 
     public void testList() throws Exception {
         new Scenario() {
@@ -471,7 +508,23 @@ public class CastSpecificationTest extends SqlTestCase {
                 assertEquals(123L, list.get(0).longValue());
             }
         }.play();
+    }
 
+    public void testScroll() throws Exception {
+        new Scenario() {
+            @Override
+            protected void runQuery(final AbstractCastSpecification<Long> column, final DatabaseGate gate) throws SQLException {
+                column.scroll(gate, new Callback<Long>() {
+                    int rowNum = 0;
+                    @Override
+                    public boolean iterate(final Long value) {
+                        assertEquals(1, ++rowNum);
+                        assertEquals(123L, value.longValue());
+                        return true;
+                    }
+                });
+            }
+        }.play();
     }
 
     public static abstract class Scenario {
@@ -502,40 +555,6 @@ public class CastSpecificationTest extends SqlTestCase {
 
         protected abstract void runQuery(final AbstractCastSpecification<Long> column, final DatabaseGate gate) throws SQLException;
     }
-
-    public void testOptions() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
-        final String queryString = column.show();
-        final DatabaseGate datasource = createMock(DatabaseGate.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getDialect()).andReturn(GenericDialect.get());
-        expect(datasource.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setFetchSize(10);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(datasource, connection,  statement, resultSet);
-
-        final List<Long> list = column.list(datasource, new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setFetchSize(10);
-            }
-        });
-        assertEquals(1, list.size());
-        assertEquals(123L, list.get(0).longValue());
-        verify(datasource, connection, statement, resultSet);
-
-    }
-
 
     private static class Person extends TableOrView {
         private Person() {

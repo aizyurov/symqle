@@ -124,6 +124,11 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT -(T0.name = T0.nick) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().cast("CHAR(10)").show();
+        assertSimilar("SELECT CAST(T0.name = T0.nick AS CHAR(10)) AS C0 FROM person AS T0", sql);
+    }
+
     public void testIn() throws Exception {
         final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(employee.remote)).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IN(SELECT T1.remote FROM employee AS T1)", sql);

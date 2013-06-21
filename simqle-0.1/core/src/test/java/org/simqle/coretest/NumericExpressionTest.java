@@ -173,6 +173,10 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT -(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.id.add(two).cast("NUMBER").show();
+        assertSimilar("SELECT CAST(T0.id + ? AS NUMBER) AS C0 FROM person AS T0", sql);
+    }
 
     public void testAdd() throws Exception {
         String sql = person.id.add(two).add(person.id.add(two)).show();

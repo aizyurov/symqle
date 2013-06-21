@@ -152,6 +152,10 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT -(- T0.id) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.id.opposite().cast("NUMBER").show();
+        assertSimilar("SELECT CAST(- T0.id AS NUMBER) AS C0 FROM person AS T0", sql);
+    }
 
     public void testAdd() throws Exception {
         String sql = person.id.opposite().add(person.id.opposite()).show();

@@ -301,6 +301,13 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT - ? AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
+    public void testCast() throws Exception {
+        final Column<Long> id  =  person.id;
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        String sql = param.cast("INTEGER").where(id.booleanValue()).show();
+        assertSimilar("SELECT CAST(? AS INTEGER) AS C0 FROM person AS T0 WHERE T0.id", sql);
+    }
+
     public void testAdd() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);

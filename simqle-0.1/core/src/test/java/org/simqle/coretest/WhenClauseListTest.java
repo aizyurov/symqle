@@ -179,6 +179,11 @@ public class WhenClauseListTest extends SqlTestCase {
         assertSimilar("SELECT - CASE WHEN T0.name = ? THEN T0.age ELSE T0.id END AS C0 FROM person AS T0", sql);
     }
 
+    public void testCast() throws Exception {
+        final String sql = person.name.eq("John").then(person.age).orElse(person.id).cast("NUMBER(10,2)").show();
+        assertSimilar("SELECT CAST(CASE WHEN T0.name = ? THEN T0.age ELSE T0.id END AS NUMBER(10,2)) AS C0 FROM person AS T0", sql);
+    }
+
     public void testPair() throws Exception {
         String sql = person.age.gt(20L).then(person.nick).orElse(person.name).pair(person.name).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.nick ELSE T0.name END AS C0, T0.name AS C1 FROM person AS T0", sql);
