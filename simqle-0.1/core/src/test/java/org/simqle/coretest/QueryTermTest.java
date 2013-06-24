@@ -48,6 +48,16 @@ public class QueryTermTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 FOR READ ONLY", sql);
     }
 
+    public void testOrderAsc() throws Exception {
+        final String sql = employee.id.intersect(manager.id).orderAsc().show();
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 ORDER BY C0", sql);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final String sql = employee.id.intersect(manager.id).orderDesc().show();
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 ORDER BY C0 DESC", sql);
+    }
+
     public void testUnion() throws Exception {
         final String sql = employee.id.intersect(manager.id).union(person.id).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION SELECT T0.id AS C0 FROM person AS T0", sql);

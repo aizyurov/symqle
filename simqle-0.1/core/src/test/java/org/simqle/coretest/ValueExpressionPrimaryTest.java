@@ -212,6 +212,24 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0 FROM employee AS T1 ORDER BY T1.id", sql);
     }
 
+    public void testOrderAsc() throws Exception {
+        try {
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().orderAsc().show();
+            fail("IllegalStateException expected");
+        } catch (Exception e) {
+            // OK
+        }
+    }
+
+    public void testOrderDesc() throws Exception {
+        try {
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().orderDesc().show();
+            fail("IllegalStateException expected");
+        } catch (Exception e) {
+            // OK
+        }
+    }
+
     public void testAsSortSpecification() throws Exception {
         final String sql = employee.id.orderBy(person.id.where(person.name.eq(employee.name)).queryValue()).show();
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 ORDER BY(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name)", sql);
@@ -446,7 +464,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.getLong(matches("[CS][0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();

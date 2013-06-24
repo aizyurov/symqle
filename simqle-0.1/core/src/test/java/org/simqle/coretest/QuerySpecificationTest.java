@@ -35,9 +35,14 @@ public class QuerySpecificationTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
-    public void testOrderBy() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).orderBy(person.name).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY T0.name", sql);
+    public void testOrderAsc() throws Exception {
+        final String sql = person.id.where(person.name.isNotNull()).orderAsc().show();
+        assertSimilar("SELECT T0.id AS S0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY S0", sql);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final String sql = person.id.where(person.name.isNotNull()).orderDesc().show();
+        assertSimilar("SELECT T0.id AS S0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY S0 DESC", sql);
     }
 
     public void testForUpdate() throws Exception {
@@ -160,7 +165,7 @@ public class QuerySpecificationTest extends SqlTestCase {
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.getLong("S0")).andReturn(123L);
             expect(resultSet.wasNull()).andReturn(false);
             expect(resultSet.next()).andReturn(false);
             resultSet.close();

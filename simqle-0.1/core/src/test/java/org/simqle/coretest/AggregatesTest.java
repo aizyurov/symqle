@@ -89,6 +89,16 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 WHERE T1.name IS NULL", sql);
     }
 
+    public void testAsc() throws Exception {
+        final String sql = person.id.count().orderAsc().show();
+        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 ORDER BY C1", sql);
+    }
+
+    public void testDesc() throws Exception {
+        final String sql = person.id.count().orderDesc().show();
+        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 ORDER BY C1 DESC", sql);
+    }
+
     public void testExists() throws Exception {
         // rather meaningless
         final Person parent = new Person();
@@ -165,7 +175,7 @@ public class AggregatesTest extends SqlTestCase  {
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getInt(matches("C[0-9]"))).andReturn(123);
+            expect(resultSet.getInt("S0")).andReturn(123);
             expect(resultSet.wasNull()).andReturn(false);
             expect(resultSet.next()).andReturn(false);
             resultSet.close();

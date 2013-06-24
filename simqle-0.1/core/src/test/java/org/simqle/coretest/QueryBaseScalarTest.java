@@ -1,7 +1,9 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
+import org.simqle.CustomSql;
 import org.simqle.Mappers;
+import org.simqle.Sql;
 import org.simqle.sql.AbstractQueryBaseScalar;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -48,13 +50,33 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
 
     public void testWhere() throws Exception {
-        final String sql = person.id.all().where(person.name.isNotNull()).show();
+        final String sql = person.id.all().where(person.name.isNotNull()).show(new GenericDialect() {
+            @Override
+            public Sql FromClauseFromNothing() {
+                return new CustomSql("FROM ???") ;
+            }
+        });
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
     }
 
-    public void testOrderBy() throws Exception {
-        final String sql = person.id.all().orderBy(person.name).show();
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY T0.name", sql);
+    public void testOrderAsc() throws Exception {
+        final String sql = person.id.all().orderAsc().show();
+        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0", sql);
+    }
+
+    public void testAllForUpdate() throws Exception {
+        final String sql = person.id.all().forUpdate().show();
+        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 FOR UPDATE", sql);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final String sql = person.id.all().orderDesc().show();
+        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0 DESC", sql);
+    }
+
+    public void testDistincgForUpdate() throws Exception {
+        final String sql = person.id.distinct().forUpdate().show();
+        assertSimilar("SELECT DISTINCT T0.id AS S0 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testForUpdate() throws Exception {
@@ -182,7 +204,7 @@ public class QueryBaseScalarTest extends SqlTestCase {
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+            expect(resultSet.getLong("S0")).andReturn(123L);
             expect(resultSet.wasNull()).andReturn(false);
             expect(resultSet.next()).andReturn(false);
             resultSet.close();

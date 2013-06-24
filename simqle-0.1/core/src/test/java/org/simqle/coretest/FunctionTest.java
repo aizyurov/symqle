@@ -213,6 +213,18 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 ORDER BY abs(T0.age)", sql);
     }
 
+    public void testAsc() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = abs(id).orderAsc().show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
+    public void testDesc() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = abs(id).orderDesc().show();
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
+    }
+
     public void testOrderByNullsFirst() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;

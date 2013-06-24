@@ -165,7 +165,7 @@ public class QueryTest extends SqlTestCase {
         statement.setLong(1, 123L);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.getLong("S0")).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
@@ -189,7 +189,7 @@ public class QueryTest extends SqlTestCase {
         statement.setBigDecimal(2, new BigDecimal(33));
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.getLong(matches("[CS][0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();
@@ -206,13 +206,14 @@ public class QueryTest extends SqlTestCase {
         final Person person = new Person();
         final AbstractQuerySpecification<Long> query = person.id.where(person.alive.eq(true));
         final String queryString = query.show();
+        System.out.println(queryString);
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setBoolean(1, true);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.getLong(matches("[CS][0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();

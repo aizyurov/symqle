@@ -147,6 +147,16 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0 ORDER BY T0.id * ?", sql);
     }
 
+    public void testOrderAsc() throws Exception {
+        String sql = person.id.mult(two).orderAsc().show();
+        assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
+    public void testOrderDesc() throws Exception {
+        String sql = person.id.mult(two).orderDesc().show();
+        assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
+    }
+
     public void testOrderByNullsFirst() throws Exception {
         String sql = person.id.orderBy(person.id.mult(two).nullsFirst()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id * ? NULLS FIRST", sql);
