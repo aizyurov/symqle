@@ -316,6 +316,18 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = id.orderAsc().show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = id.orderDesc().show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
+    }
+
     public void testOrderByTwoColumns() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
