@@ -71,6 +71,22 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
     }
 
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseBaseList(employee)
+                .cast("CHAR(4)")
+                .list(getDatabaseGate());
+        try {
+            assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low "), replaceNullsAndSort(list));
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
+            } else {
+                throw e;
+            }
+        }
+    }
+
     public void testMap() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee).map(Mappers.STRING)

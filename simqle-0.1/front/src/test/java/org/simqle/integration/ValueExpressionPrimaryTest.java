@@ -38,6 +38,13 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("X"), list);
     }
 
+    public void testCast() throws Exception {
+        final MyDual myDual = new MyDual();
+        final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
+        final List<String> list = primary.cast("CHAR(1)").list(getDatabaseGate());
+        assertEquals(Arrays.asList("X"), list);
+    }
+
     public void testMap() throws Exception {
         final One one = new One();
         final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();

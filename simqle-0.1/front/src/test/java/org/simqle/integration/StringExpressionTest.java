@@ -33,6 +33,22 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
     }
 
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = stringExpression(employee).cast("CHAR(20)").list(getDatabaseGate());
+        Collections.sort(list);
+        try {
+            assertEquals(Arrays.asList("Alex, my friend     ", "Bill, my friend     ", "James, my friend    ", "James, my friend    ", "Margaret, my friend "), list);
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                // mysql treats CHAR as VARCHAR, does not append blanks
+            assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     public void testMap() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = stringExpression(employee).map(Mappers.STRING).list(getDatabaseGate());
@@ -613,6 +629,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate MIN cannot operate on type LONG VARCHAR.
             expectSQLException(e, "derby");
+            // workaround: cast to VARCHAR
         }
     }
 
@@ -624,6 +641,9 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate MIN cannot operate on type LONG VARCHAR.
             expectSQLException(e, "derby");
+            // workaround: cast to VARCHAR
+            final List<String> list = stringExpression(employee).cast("VARCHAR(256)").max().list(getDatabaseGate());
+            assertEquals(Arrays.asList("Margaret, my friend"), list);
         }
     }
 

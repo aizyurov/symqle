@@ -33,6 +33,13 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }
 
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = toListOfDouble(createExpression(employee).cast("DECIMAL(7,2)").list(getDatabaseGate()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
+    }
+
     public void testMap() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).list(getDatabaseGate());

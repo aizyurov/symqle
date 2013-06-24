@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import junit.framework.AssertionFailedError;
 import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.Params;
@@ -72,6 +73,23 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
                 .list(getDatabaseGate());
 
         assertEquals(Arrays.asList("Alex", "Bill", "high", "high", "low"), replaceNullsAndSort(list));
+    }
+
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseList(employee)
+                .cast("CHAR(4)")
+                .list(getDatabaseGate());
+
+        try {
+            assertEquals(Arrays.asList("Alex", "Bill", "high", "high", "low "), replaceNullsAndSort(list));
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList("Alex", "Bill", "high", "high", "low"), replaceNullsAndSort(list));
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void testMap() throws Exception {

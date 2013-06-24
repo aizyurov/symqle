@@ -79,6 +79,24 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
     }
 
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee)
+                .cast("CHAR(8)")
+                .list(getDatabaseGate());
+
+        try {
+            assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James   ", "Margaret"), replaceNullsAndSort(list));
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
+            } else {
+                throw e;
+            }
+
+        }
+    }
+
     public void testAll() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClause(employee)

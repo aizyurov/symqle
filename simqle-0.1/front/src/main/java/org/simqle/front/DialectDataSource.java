@@ -28,6 +28,7 @@ public class DialectDataSource implements DatabaseGate {
 
     public Connection getConnection() throws SQLException {
         final Connection connection = dataSource.getConnection();
+//        System.out.println("database product name is "+connection.getMetaData().getDatabaseProductName());
         if (connectionSetup != null) {
             final Statement statement = connection.createStatement();
             try {

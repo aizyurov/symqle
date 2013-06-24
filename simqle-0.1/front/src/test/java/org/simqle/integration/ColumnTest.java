@@ -1,5 +1,6 @@
 package org.simqle.integration;
 
+import junit.framework.AssertionFailedError;
 import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.front.StatementOptions;
@@ -87,6 +88,22 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertTrue(list.toString(), list.contains("March"));
         assertTrue(list.toString(), list.contains("First"));
         assertTrue(list.toString(), list.contains("Pedersen"));
+    }
+
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(8)").list(getDatabaseGate());
+        Collections.sort(list);
+        try {
+            assertEquals(Arrays.asList("Cooper  ", "First   ", "March   ", "Pedersen", "Redwood "), list);
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                // mysql trheats CHAR as VARCHAR, blanks are not appended
+                assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void testMap() throws Exception {

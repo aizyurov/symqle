@@ -33,6 +33,13 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).cast("DECIMAL(7,2)").list(getDatabaseGate());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
     public void testMap() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = abs(employee.salary.opposite()).map(Mappers.INTEGER).list(getDatabaseGate());

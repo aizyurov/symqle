@@ -30,6 +30,22 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }
 
+    public void testCast() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getDatabaseGate());
+        Collections.sort(list);
+        try {
+            assertEquals(Arrays.asList("false", "true ", "true ", "true ", "true "), list);
+        } catch (AssertionFailedError e) {
+            // mysql converts Booleans to "0"/"1"
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     public void testMap() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createVE(employee).map(Mappers.STRING).list(getDatabaseGate());

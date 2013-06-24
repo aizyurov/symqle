@@ -55,10 +55,6 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.distinct().show());
     }
 
-    public void testEscapeSpecialSymbols() {
-        assertEquals("abs\\(T0\\.id\\)", escapeSpecialSymbols("abs(T0.id)"));
-    }
-
     public void testAsFunctionArgument() throws Exception {
         final String sql = SqlFunction.create("abs", Mappers.LONG).apply(person.id.cast("NUMBER (12,0)")).show();
         assertSimilar("SELECT abs(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
@@ -340,7 +336,7 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0))", sql);
     }
 
-    public void testOperation() throws Exception {
+    public void testMult() throws Exception {
         final AbstractCastSpecification<Long> id = person.id.cast("NUMBER (12,0)");
         final Column<Long> age = person.age;
         String sql = id.mult(age).show();
