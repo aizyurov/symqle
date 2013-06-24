@@ -63,11 +63,11 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
 
 
 <T> StringExpression<T> ::=
-    p:ValueExpressionPrimary<T> :: implicit {}
+    cf:CharacterFactor<T> :: implicit {}
 ;
 
 StringExpression<String> ::=
-    s:StringExpression<?> CONCAT e:ValueExpressionPrimary<?>
+    s:StringExpression<?> CONCAT e:CharacterFactor<?>
         :: public AbstractStringExpression<String> concat {
                 public Mapper<String> getMapper() {
                     return Mappers.STRING;
@@ -77,5 +77,26 @@ StringExpression<String> ::=
 
 :: public AbstractStringExpression<String> concat(final StringExpression<?> e, final String s) {
     return concat(e,  DynamicParameter.create(Mappers.STRING, s));
+}
+
+public interface CharacterFactor<T> extends Scalar<T> : Sql {}
+
+public class AbstractCharacterFactor<T> implements CharacterFactor<T> {}
+
+public interface CollationName : Sql {}
+
+<T> CharacterFactor<T> ::=
+    e:ValueExpressionPrimary<T> :: implicit {}
+|
+    e:ValueExpressionPrimary<T> COLLATE cn:CollationName :: private AbstractCharacterFactor<T> collate {}
+;
+
+:: public <T> AbstractCharacterFactor<T> collate (final ValueExpressionPrimary<T> e, final String collationName) {
+     return collate(e, new CollationName() {
+         @Override
+         public Sql z$create$CollationName(final SqlContext context) {
+             return new CustomSql(collationName);
+         }
+     });
 }
 

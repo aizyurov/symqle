@@ -55,12 +55,12 @@ public class ImplicitConversionsTest extends TestCase {
         final Simqle simqle = Simqle.get();
         final ValueExpressionPrimary<String> valueExpressionPrimary = simqle.z$ValueExpressionPrimary$from$ColumnReference(person.name);
         assertEquals(Mappers.STRING, valueExpressionPrimary.getMapper());
-        final StringExpression<String> stringExpression = simqle.z$StringExpression$from$ValueExpressionPrimary(valueExpressionPrimary);
-        assertEquals(Mappers.STRING, stringExpression.getMapper());
-        final ValueExpression<String> valueExpression = simqle.z$ValueExpression$from$StringExpression(stringExpression);
-        assertEquals(Mappers.STRING, valueExpression.getMapper());
-        final Predicand<String> predicand = simqle.z$Predicand$from$StringExpression(stringExpression);
-        assertEquals(Mappers.STRING, predicand.getMapper());
+//        final StringExpression<String> stringExpression = simqle.z$StringExpression$from$ValueExpressionPrimary(valueExpressionPrimary);
+//        assertEquals(Mappers.STRING, stringExpression.getMapper());
+//        final ValueExpression<String> valueExpression = simqle.z$ValueExpression$from$StringExpression(stringExpression);
+//        assertEquals(Mappers.STRING, valueExpression.getMapper());
+//        final Predicand<String> predicand = simqle.z$Predicand$from$StringExpression(stringExpression);
+//        assertEquals(Mappers.STRING, predicand.getMapper());
     }
 
     public void testValueExpressionPrimary() throws Exception {
