@@ -1,7 +1,9 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
+import org.simqle.CustomSql;
 import org.simqle.Mappers;
+import org.simqle.Sql;
 import org.simqle.sql.AbstractSearchedWhenClauseList;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -38,6 +40,7 @@ public class WhenClauseListTest extends SqlTestCase {
 
     public void testSelectAll() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).all().show();
+
         assertSimilar("SELECT ALL CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0", sql);
     }
 
@@ -151,6 +154,16 @@ public class WhenClauseListTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).orderBy(person.nick).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0 ORDER BY T0.nick", sql);
+    }
+
+    public void testOrderAsc() throws Exception {
+        final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).orderAsc().show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).orderDesc().show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
