@@ -3,6 +3,8 @@ package org.simqle;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 /**
  * Created by IntelliJ IDEA.
@@ -92,6 +94,31 @@ public class Mappers {
             param.setDate(value);
         }
     };
+
+    public static final Mapper<Time> TIME = new Mapper<Time>() {
+        @Override
+        public Time value(final Element element) throws SQLException {
+            return element.getTime();
+        }
+
+        @Override
+        public void setValue(final SqlParameter param, final Time value) throws SQLException {
+            param.setTime(value);
+        }
+    };
+
+    public static final Mapper<Timestamp> TIMESTAMP = new Mapper<Timestamp>() {
+        @Override
+        public Timestamp value(final Element element) throws SQLException {
+            return element.getTimestamp();
+        }
+
+        @Override
+        public void setValue(final SqlParameter param, final Timestamp value) throws SQLException {
+            param.setTimestamp(value);
+        }
+    };
+
 
     public static final Mapper<Double> DOUBLE = new Mapper<Double>() {
         @Override

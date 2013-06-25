@@ -253,3 +253,30 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
 }
 
 public interface CastTarget : Sql {}
+
+# Special ValueExpressionPrimary, which may have different names in dialects
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+ValueExpressionPrimary<Date> ::= CURRENT_DATE :: public AbstractValueExpressionPrimary<Date> currentDate {
+    public Mapper<Date> getMapper() {
+        return Mappers.DATE;
+    }
+}
+;
+
+ValueExpressionPrimary<Timestamp> ::= CURRENT_TIMESTAMP
+ :: public AbstractValueExpressionPrimary<Timestamp> currentTimestamp {
+   public Mapper<Timestamp> getMapper() {
+       return Mappers.TIMESTAMP;
+   }
+}
+;
+
+ValueExpressionPrimary<Time> ::= CURRENT_TIME
+ :: public AbstractValueExpressionPrimary<Time> currentTime {
+   public Mapper<Time> getMapper() {
+       return Mappers.TIME;
+   }
+}
+;

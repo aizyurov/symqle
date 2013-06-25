@@ -29,3 +29,5 @@ public SetList.append() to reuse the same code for insert and update
 
 (done) collate clause
 
+Symqle methods visibility. Package scope and public methods of Simqle become public in abstract classes. Protected methods make no sense - to be removed. 
+

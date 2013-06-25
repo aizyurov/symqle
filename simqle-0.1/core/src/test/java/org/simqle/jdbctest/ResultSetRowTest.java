@@ -176,6 +176,40 @@ public class ResultSetRowTest extends TestCase {
         verify(element);
     }
 
+    public void testTimestampMapper() throws Exception {
+        final SqlParameter param = createMock(SqlParameter.class);
+        final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        param.setTimestamp(timestamp);
+        replay(param);
+        Mappers.TIMESTAMP.setValue(param, timestamp);
+        verify(param);
+
+        Element element = createMock(Element.class);
+        expect(element.getTimestamp()).andReturn(timestamp);
+
+        replay(element);
+
+        assertEquals(timestamp, Mappers.TIMESTAMP.value(element));
+        verify(element);
+    }
+
+    public void testTimeMapper() throws Exception {
+        final SqlParameter param = createMock(SqlParameter.class);
+        final Time time = new Time(System.currentTimeMillis());
+        param.setTime(time);
+        replay(param);
+        Mappers.TIME.setValue(param, time);
+        verify(param);
+
+        Element element = createMock(Element.class);
+        expect(element.getTime()).andReturn(time);
+
+        replay(element);
+
+        assertEquals(time, Mappers.TIME.value(element));
+        verify(element);
+    }
+
     public void testTimestamp() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
         final Timestamp now = new Timestamp(System.currentTimeMillis());
