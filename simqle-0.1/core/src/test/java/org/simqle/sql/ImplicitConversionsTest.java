@@ -100,6 +100,22 @@ public class ImplicitConversionsTest extends TestCase {
         assertEquals(Mappers.INTEGER, count.getMapper());
         assertEquals(Mappers.INTEGER, aggregateSelectSublist.getMapper());
     }
+
+    public void testAlternateWayToOrderBy() {
+        final Simqle simqle = Simqle.get();
+        {
+            final AbstractCastSpecification<Long> cast = person.id.cast("DECIMAL(6)");
+            final String sql1 = cast.orderBy(person.id).show();
+            final String sql2 = simqle.orderBy(simqle.z$QueryExpression$from$QueryBase(cast), person.id).show();
+            assertEquals(sql1, sql2);
+        }
+        {
+            final AbstractCharacterFactor<String> characterFactor = person.name.collate("latin1_general_ci");
+            final String sql1 = characterFactor.orderBy(person.id).show();
+            final String sql2 = simqle.orderBy(simqle.z$QueryExpression$from$QueryBase(characterFactor), person.id).show();
+            assertEquals(sql1, sql2);
+        }
+    }
 //
 //    public void testAggregateQuerySpecification() throws Exception {
 //        final Simqle simqle = Simqle.get();
