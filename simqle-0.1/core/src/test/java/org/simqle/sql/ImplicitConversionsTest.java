@@ -55,12 +55,14 @@ public class ImplicitConversionsTest extends TestCase {
         final Simqle simqle = Simqle.get();
         final ValueExpressionPrimary<String> valueExpressionPrimary = simqle.z$ValueExpressionPrimary$from$ColumnReference(person.name);
         assertEquals(Mappers.STRING, valueExpressionPrimary.getMapper());
-//        final StringExpression<String> stringExpression = simqle.z$StringExpression$from$ValueExpressionPrimary(valueExpressionPrimary);
-//        assertEquals(Mappers.STRING, stringExpression.getMapper());
-//        final ValueExpression<String> valueExpression = simqle.z$ValueExpression$from$StringExpression(stringExpression);
-//        assertEquals(Mappers.STRING, valueExpression.getMapper());
-//        final Predicand<String> predicand = simqle.z$Predicand$from$StringExpression(stringExpression);
-//        assertEquals(Mappers.STRING, predicand.getMapper());
+        final CharacterFactor<String> characterFactor = simqle.z$CharacterFactor$from$ValueExpressionPrimary(valueExpressionPrimary);
+        assertEquals(Mappers.STRING, characterFactor.getMapper());
+        final StringExpression<String> stringExpression = simqle.z$StringExpression$from$CharacterFactor(characterFactor);
+        assertEquals(Mappers.STRING, stringExpression.getMapper());
+        final ValueExpression<String> valueExpression = simqle.z$ValueExpression$from$StringExpression(stringExpression);
+        assertEquals(Mappers.STRING, valueExpression.getMapper());
+        final Predicand<String> predicand = simqle.z$Predicand$from$StringExpression(stringExpression);
+        assertEquals(Mappers.STRING, predicand.getMapper());
     }
 
     public void testValueExpressionPrimary() throws Exception {
@@ -91,27 +93,30 @@ public class ImplicitConversionsTest extends TestCase {
         assertEquals(Mappers.LONG, elseClause.getMapper());
     }
 
-    public void testQueryPrimary() throws Exception {
-        final Simqle simqle = Simqle.get();
-        final AbstractAggregateQuerySpecification<Integer> aggr = person.id.count().where(person.name.isNull());
-        final QueryPrimary<Integer> queryPrimary = simqle.z$QueryPrimary$from$AggregateQuerySpecification(aggr);
-        assertEquals(Mappers.INTEGER, queryPrimary.getMapper());
-    }
-
-    public void testAggregateQuerySpecification() throws Exception {
+    public void testQueryBaseScalar() throws Exception {
         final Simqle simqle = Simqle.get();
         final AbstractAggregateFunction<Integer> count = person.id.count();
-        final AggregateQuerySpecification<Integer> querySpecification = simqle.z$AggregateQuerySpecification$from$AggregateQueryBase(count);
-        assertEquals(Mappers.INTEGER,  querySpecification.getMapper());
+        final AggregateSelectSublist<Integer> aggregateSelectSublist = simqle.z$AggregateSelectSublist$from$AggregateFunction(count);
+        final QueryBaseScalar<Integer> queryBaseScalar = simqle.z$QueryBaseScalar$from$AggregateSelectSublist(aggregateSelectSublist);
+        assertEquals(Mappers.INTEGER, count.getMapper());
+        assertEquals(Mappers.INTEGER, aggregateSelectSublist.getMapper());
+        assertEquals(Mappers.INTEGER, queryBaseScalar.getMapper());
     }
-
-    public void testAggregateQueryBase() throws Exception {
-        final Simqle simqle = Simqle.get();
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final AggregateQueryBase<Integer> aggregateQueryBase = simqle.z$AggregateQueryBase$from$AggregateSelectSublist(count);
-        assertEquals(Mappers.INTEGER, aggregateQueryBase.getMapper());
-    }
-
+//
+//    public void testAggregateQuerySpecification() throws Exception {
+//        final Simqle simqle = Simqle.get();
+//        final AbstractAggregateFunction<Integer> count = person.id.count();
+//        final AggregateQuerySpecification<Integer> querySpecification = simqle.z$AggregateQuerySpecification$from$AggregateQueryBase(count);
+//        assertEquals(Mappers.INTEGER,  querySpecification.getMapper());
+//    }
+//
+//    public void testAggregateQueryBase() throws Exception {
+//        final Simqle simqle = Simqle.get();
+//        final AbstractAggregateFunction<Integer> count = person.id.count();
+//        final AggregateQueryBase<Integer> aggregateQueryBase = simqle.z$AggregateQueryBase$from$AggregateSelectSublist(count);
+//        assertEquals(Mappers.INTEGER, aggregateQueryBase.getMapper());
+//    }
+//
     private static class Person extends TableOrView {
         private Person() {
             super("person");

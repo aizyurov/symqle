@@ -189,6 +189,11 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) || ? || T1.id AS C0 FROM employee AS T1", sql);
     }
 
+    public void testCollate() throws Exception {
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().collate("latin1_general_ci").concat(employee.id).show();
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) COLLATE latin1_general_ci || T1.id AS C0 FROM employee AS T1", sql);
+    }
+
     public void testForReadOnly() throws Exception {
         try {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forReadOnly().show();

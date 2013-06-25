@@ -343,6 +343,12 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testCollate() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = abs(id).collate("latin1_general_ci").show();
+        assertSimilar("SELECT abs(T0.id) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
+    }
+
     public void testUnion() throws Exception {
         final String sql = abs(person.id).union(person2.id).show();
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 UNION SELECT T1.id AS C0 FROM person AS T1", sql);

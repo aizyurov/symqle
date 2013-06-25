@@ -2,6 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractComparisonPredicate;
 import org.simqle.sql.AbstractStringExpression;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -91,7 +92,9 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testEqValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).eq("#12")).show();
+        final AbstractStringExpression<String> stringExpression = numberSign.concat(person.id);
+        final AbstractComparisonPredicate predicate = stringExpression.eq("#12");
+        final String sql = person.id.where(predicate).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
     }
 
@@ -244,6 +247,12 @@ public class StringExpressionTest extends SqlTestCase {
     public void testConcatString() throws Exception {
         String sql = numberSign.concat(person.id).concat(" test").show();
         assertSimilar("SELECT ? || T0.id || ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testCollate() throws Exception {
+        String sql = numberSign.concat(person.id).collate("latin1_general_ci").show();
+        // concat have less precedence, so parenthesized
+        assertSimilar("SELECT(? || T0.id) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
     }
 
     public void testUnion() throws Exception {

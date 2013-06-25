@@ -34,6 +34,11 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1", col.show(GenericDialect.get()));
     }
 
+    public void testCollate() throws Exception {
+        final String sql = person.name.cast("CHAR(10)").collate("latin1_general_ci").show();
+        assertSimilar("SELECT CAST(T1.name AS CHAR(10)) COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
+    }
+
     public void testMap() throws Exception {
         final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
         assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1", col.map(Mappers.LONG).show());

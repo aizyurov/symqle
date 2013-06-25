@@ -210,6 +210,11 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(T0.name = T0.nick) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testCollate() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().collate("latin1_general_ci").show();
+        assertSimilar("SELECT(T0.name = T0.nick) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
+    }
+
     public void testForReadOnly() throws Exception {
         final String sql = person.name.eq(person.nickName).asValue().forReadOnly().show();
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 FOR READ ONLY", sql);

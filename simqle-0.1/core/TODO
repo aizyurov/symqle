@@ -4,14 +4,14 @@ Same for concat
 
 (done) Rename plus -> add, minus -> sub
 
-(discarder) Add access to DialectDataSource from Row (needed for collections) - no need, can pass DDS to Selector constructor
+(discarded) Add access to DialectDataSource from Row (needed for collections) - no need, can pass DDS to Selector constructor
 
 (done) Refactor DialectDataSource -> DatabaseGate - transaction suport! is DataSource enough?
 Remove list(DataSource,...) ?
 
 (done) Remove setIgnoreType: methods with Mapper will do
 
-casts
+(d0ne) casts
 
 (done) contains() for subquery
 
@@ -19,11 +19,13 @@ casts
 
 LIMIT/OFFSET
 
-(?) add ORDER BY for union/except/intersect (without parameter, there is only one column accessible via Context)
+(done) add ORDER BY for union/except/intersect (without parameter, there is only one column accessible via Context)
 
-map() for WhenClause*; rename methods (orWhen -> option ; orElse => otherwise)
+fix orderAsc/orderDesc: remove literal "S0"
 
+(done) map() for WhenClause*; rename methods (orWhen -> option ; orElse => otherwise)
 
+public SetList.append() to reuse the same code for insert and update
 
-
+(done) collate clause
 

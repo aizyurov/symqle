@@ -380,6 +380,12 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testCollate() throws Exception {
+        final DynamicParameter<String> param = DynamicParameter.create(Mappers.STRING, "abc ");
+        final String sql = param.collate("latin1_general_ci").concat(person.name).show();
+        assertSimilar("SELECT ? COLLATE latin1_general_ci || T0.name AS C0 FROM person AS T0", sql);
+    }
+
     public void testString() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);

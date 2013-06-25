@@ -284,6 +284,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testCollate() throws Exception {
+        final String sql = person.age.gt(20L).then(person.name).collate("latin1_general_ci").show();
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
+    }
+
     public void testUnion() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).union(person2.nick).show();
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 UNION SELECT T1.nick AS C0 FROM person AS T1", sql);

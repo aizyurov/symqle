@@ -249,6 +249,11 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT(T0.id * ?) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testCollate() throws Exception {
+        String sql = person.id.mult(two).collate("latin1_general_ci").show();
+        assertSimilar("SELECT(T0.id * ?) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
+    }
+
     public void testUnion() throws Exception {
         final String sql = employee.id.where(person.id.mult(2).union(person2.id.mult(1).where(person2.name.eq(employee.name))).exists()).show();
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id * ? FROM person AS T1 UNION SELECT T2.id * ? FROM person AS T2 WHERE T2.name = T0.name)", sql);
