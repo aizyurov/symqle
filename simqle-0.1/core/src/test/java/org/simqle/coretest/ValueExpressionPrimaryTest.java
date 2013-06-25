@@ -2,13 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
-import org.simqle.sql.AbstractQuerySpecification;
-import org.simqle.sql.AbstractValueExpressionPrimary;
-import org.simqle.sql.Column;
-import org.simqle.sql.DatabaseGate;
-import org.simqle.sql.DynamicParameter;
-import org.simqle.sql.GenericDialect;
-import org.simqle.sql.TableOrView;
+import org.simqle.sql.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

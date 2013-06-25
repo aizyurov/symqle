@@ -175,7 +175,7 @@ public class AggregatesTest extends SqlTestCase  {
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getInt("S0")).andReturn(123);
+            expect(resultSet.getInt(matches("[SC][0-9]"))).andReturn(123);
             expect(resultSet.wasNull()).andReturn(false);
             expect(resultSet.next()).andReturn(false);
             resultSet.close();

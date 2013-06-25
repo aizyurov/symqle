@@ -12,6 +12,8 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
     qb:QueryBase<T> :: implicit {}
 |
     qb:QueryBase<T> wc:WhereClause :: public AbstractQueryExpression<T> where {}
+|
+    qs:QuerySpecification<T> :: implicit {}
 ;
 
 public interface QueryExpressionScalar<T> extends Scalar<T> : Query<T> {}
@@ -229,11 +231,27 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 
 public interface QueryPrimary<T> extends Scalar<T>  : Query<T> {}
 
+public class AbstractQueryPrimary<T> implements QueryPrimary<T> {}
+
 <T> QueryPrimary<T> ::=
     qs:QuerySpecification<T> :: implicit {}
 |
     LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN :: implicit {}
+|
+    SELECT sl:AggregateSelectSublist<T> fc:FromClause wc:WhereClause :: private AbstractQueryPrimary<T> selectAggregate {}
+|
+    SELECT sl:AggregateSelectSublist<T> fc:FromClause :: private AbstractQueryPrimary<T> selectAggregate {}
 ;
+
+
+:: public <T> AbstractQueryPrimary<T> where(final AggregateSelectSublist<T> sl, final WhereClause wc) {
+    return selectAggregate(sl, new ImplicitFromClause(), wc);
+}
+
+:: <T> QueryPrimary<T> implicit(final AggregateSelectSublist<T> sl) {
+    return selectAggregate(sl, new ImplicitFromClause());
+}
+
 
 public interface QuerySpecification<T> extends Scalar<T> : Query<T> {}
 
@@ -246,6 +264,8 @@ public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
     qb:QueryBaseScalar<T> wc:WhereClause ::
          public AbstractQuerySpecification<T> where {}
 ;
+
+
 
 
 

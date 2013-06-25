@@ -64,6 +64,11 @@ public class QueryBaseScalarTest extends SqlTestCase {
         assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0", sql);
     }
 
+    public void testOrderBy() throws Exception {
+        final String sql = person.id.all().orderBy(person.name).show();
+        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY T0.name", sql);
+    }
+
     public void testAllForUpdate() throws Exception {
         final String sql = person.id.all().forUpdate().show();
         assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 FOR UPDATE", sql);
@@ -204,7 +209,7 @@ public class QueryBaseScalarTest extends SqlTestCase {
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getLong("S0")).andReturn(123L);
+            expect(resultSet.getLong(matches("[SC][0-9]"))).andReturn(123L);
             expect(resultSet.wasNull()).andReturn(false);
             expect(resultSet.next()).andReturn(false);
             resultSet.close();

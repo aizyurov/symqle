@@ -165,7 +165,7 @@ public class QueryTest extends SqlTestCase {
         statement.setLong(1, 123L);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong("S0")).andReturn(123L);
+        expect(resultSet.getLong(matches("[SC][0-9]"))).andReturn(123L);
         expect(resultSet.wasNull()).andReturn(false);
         expect(resultSet.next()).andReturn(false);
         resultSet.close();

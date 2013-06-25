@@ -2,6 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractAggregateFunction;
 import org.simqle.sql.AbstractValueExpression;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -367,7 +368,8 @@ public class ValueExpressionTest extends SqlTestCase {
     }
     
     public void testCount() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().count().show();
+        final AbstractAggregateFunction<Integer> count = person.name.eq(person.nickName).asValue().count();
+        final String sql = count.show();
         assertSimilar("SELECT COUNT(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
 

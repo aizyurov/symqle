@@ -97,10 +97,8 @@ public class ImplicitConversionsTest extends TestCase {
         final Simqle simqle = Simqle.get();
         final AbstractAggregateFunction<Integer> count = person.id.count();
         final AggregateSelectSublist<Integer> aggregateSelectSublist = simqle.z$AggregateSelectSublist$from$AggregateFunction(count);
-        final QueryBaseScalar<Integer> queryBaseScalar = simqle.z$QueryBaseScalar$from$AggregateSelectSublist(aggregateSelectSublist);
         assertEquals(Mappers.INTEGER, count.getMapper());
         assertEquals(Mappers.INTEGER, aggregateSelectSublist.getMapper());
-        assertEquals(Mappers.INTEGER, queryBaseScalar.getMapper());
     }
 //
 //    public void testAggregateQuerySpecification() throws Exception {

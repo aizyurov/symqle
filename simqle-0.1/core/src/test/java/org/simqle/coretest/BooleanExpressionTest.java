@@ -1,6 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Mappers;
+import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
 import org.simqle.sql.TableOrView;
 
@@ -45,8 +46,9 @@ public class BooleanExpressionTest extends SqlTestCase {
     }
 
     public void testIsUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).isUnknown()).show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) IS UNKNOWN", sql);
+        final AbstractQuerySpecification<Long> where = person.id.where(person.alive.booleanValue().or(person.cute.booleanValue()).isUnknown());
+        final String sql = where.orderBy(person.id).show();
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) IS UNKNOWN ORDER BY T0.id", sql);
     }
 
     public void testIsNotUnknown() throws Exception {
