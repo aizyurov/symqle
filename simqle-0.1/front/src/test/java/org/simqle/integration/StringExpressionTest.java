@@ -110,6 +110,31 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
        assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
    }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = stringExpression(employee).orderAsc().list(getDatabaseGate());
+            assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
+        } catch (SQLException e) {
+            // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY, GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
+            expectSQLException(e, "derby");
+            // workaround: cast to VARCHAR
+            final List<String> list = stringExpression(employee).cast("VARCHAR(256)").orderAsc().list(getDatabaseGate());
+            assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
+        }
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = stringExpression(employee).orderDesc().list(getDatabaseGate());
+            assertEquals(Arrays.asList("Margaret, my friend", "James, my friend", "James, my friend", "Bill, my friend", "Alex, my friend"), list);
+        } catch (SQLException e) {
+            // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY, GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
+            expectSQLException(e, "derby");
+        }
+    }
+
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = stringExpression(employee)
@@ -600,6 +625,31 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             } else {
                 throw e;
             }
+        }
+    }
+
+    public void testConcat() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = stringExpression(employee).concat(employee.lastName).list(getDatabaseGate());
+        Collections.sort(list);
+        assertEquals(Arrays.asList("Alex, my friendPedersen", "Bill, my friendMarch", "James, my friendCooper", "James, my friendFirst", "Margaret, my friendRedwood"), list);
+    }
+
+    public void testConcatString() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = stringExpression(employee).concat(".").list(getDatabaseGate());
+        Collections.sort(list);
+        assertEquals(Arrays.asList("Alex, my friend.", "Bill, my friend.", "James, my friend.", "James, my friend.", "Margaret, my friend."), list);
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = stringExpression(employee).collate("utf8_unicode_ci").orderAsc().list(getDatabaseGate());
+            assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 28.
+            expectSQLException(e, "derby");
         }
     }
 

@@ -35,7 +35,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.or(employee.firstName.eq("Bill")))
-                .orderBy(employee.lastName)
+                .orderAsc()
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen"), list);
     }
@@ -53,7 +53,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
         final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isTrue())
-                    .orderBy(employee.lastName)
+                    .orderAsc()
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "Pedersen"), list);
         } catch (SQLException e) {
@@ -67,7 +67,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
         final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotTrue())
-                    .orderBy(employee.lastName)
+                    .orderAsc()
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("March", "Redwood"), list);
         } catch (SQLException e) {
@@ -81,7 +81,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
         final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isFalse())
-                    .orderBy(employee.lastName)
+                    .orderAsc()
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("March", "Redwood"), list);
         } catch (SQLException e) {
@@ -95,7 +95,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
         final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotFalse())
-                    .orderBy(employee.lastName)
+                    .orderAsc()
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "Pedersen"), list);
         } catch (SQLException e) {
@@ -109,7 +109,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
         final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isUnknown())
-                    .orderBy(employee.lastName)
+                    .orderAsc()
                     .list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {

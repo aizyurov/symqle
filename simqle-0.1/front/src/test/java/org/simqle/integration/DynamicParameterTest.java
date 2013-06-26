@@ -526,7 +526,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        System.out.println(employee.lastName.orderBy(Params.p("James")).show(getDatabaseGate().getDialect()));
         try {
             final List<String> list = employee.lastName.orderBy(Params.p("James")).list(getDatabaseGate());
             final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
@@ -573,6 +572,30 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
             expectSQLException(e, "derby", "mysql");
+        }
+    }
+
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = Params.p("abc").orderAsc().list(getDatabaseGate());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("abc"));
+            assertEquals(expected, list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = Params.p("abc").orderDesc().list(getDatabaseGate());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("abc"));
+            assertEquals(expected, list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, "derby");
         }
     }
 
@@ -749,6 +772,17 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Success expected"), list);
         } catch (SQLException e) {
             // ERROR 42X35: It is not allowed for both operands of '||' to be ? parameters.
+            expectSQLException(e, "derby");
+        }
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = Params.p("Success").collate("utf8mb4_unicode_ci").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+            assertEquals(Arrays.asList("Success"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 10.
             expectSQLException(e, "derby");
         }
     }

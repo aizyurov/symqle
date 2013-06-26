@@ -22,6 +22,18 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(4), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(4), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(4), list);
+    }
+
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).union(employee.empId.count()).list(getDatabaseGate());
@@ -140,7 +152,7 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = department.deptName
                 .where(employee.salary.sum().where(employee.deptId.eq(department.deptId)).exists())
-                .orderBy(department.deptName)
+                .orderAsc()
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
@@ -150,7 +162,7 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = department.deptName
                 .where(employee.salary.sum().where(employee.deptId.eq(department.deptId)).contains(5000.0))
-                .orderBy(department.deptName)
+                .orderAsc()
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
@@ -160,7 +172,7 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = department.deptName
                 .where(Params.p(2).in(employee.empId.count().where(employee.deptId.eq(department.deptId))))
-                .orderBy(department.deptName)
+                .orderAsc()
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }

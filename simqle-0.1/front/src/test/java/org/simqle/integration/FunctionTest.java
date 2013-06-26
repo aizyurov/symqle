@@ -233,6 +233,19 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
     }
 
+
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = abs(employee.salary.opposite()).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(3000.0, 3000.0, 2000.0, 2000.0, 1500.0), list);
+    }
+
     public void testOrderByNullsFirst() throws Exception {
         final Employee employee = new Employee();
         try {
@@ -376,6 +389,21 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("1500 marsian dollars", "3000 marsian dollars", "2000 marsian dollars", "2000 marsian dollars", "3000 marsian dollars"), list);
         } catch (SQLException e) {
             // derby: Cannot convert types 'DOUBLE' to 'VARCHAR'.
+            expectSQLException(e, "derby");
+        }
+
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = abs(employee.salary.opposite())
+                    .collate("latin1_general_ci")
+                    .concat(" marsian dollars")
+                    .orderBy(employee.lastName).list(getDatabaseGate());
+            assertEquals(Arrays.asList("1500 marsian dollars", "3000 marsian dollars", "2000 marsian dollars", "2000 marsian dollars", "3000 marsian dollars"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
             expectSQLException(e, "derby");
         }
 

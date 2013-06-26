@@ -349,10 +349,37 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         }
     }
 
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = createExpression(employee)
+                    .collate("latin1_general_ci")
+                    .concat(" marsian $")
+                    .orderBy(employee.lastName)
+                    .list(getDatabaseGate());
+            assertEquals(Arrays.asList("1600 marsian $", "3100 marsian $", "2100 marsian $", "2100 marsian $", "3100 marsian $"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
+            expectSQLException(e, "derby");
+        }
+    }
+
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = toListOfDouble(createExpression(employee).orderBy(createExpression(employee)).list(getDatabaseGate()));
         assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
+    }
+
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(3100.0, 3100.0, 2100.0, 2100.0, 1600.0), list);
     }
 
     public void testOrderByNullsFirst() throws Exception {

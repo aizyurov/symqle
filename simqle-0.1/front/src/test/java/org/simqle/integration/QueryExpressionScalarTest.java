@@ -179,6 +179,20 @@ public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
         }
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = firstNames(employee).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList("Alex", "Bill", "James", "James", "Margaret", "Margaret"), list);
+
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = firstNames(employee).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList("Margaret", "Margaret", "James", "James", "Bill", "Alex"), list);
+
+    }
+
     public void testList() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = firstNames(employee).list(getDatabaseGate());

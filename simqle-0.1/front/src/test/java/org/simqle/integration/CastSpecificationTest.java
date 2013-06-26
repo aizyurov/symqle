@@ -63,6 +63,20 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1500.0, 3000.0, 2000.0, 2000.0, 3000.0), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createCast(employee).orderAsc().list(getDatabaseGate());
+        // Cooper, First, March, Pedersen, Redwood
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createCast(employee).orderDesc().list(getDatabaseGate());
+        // Cooper, First, March, Pedersen, Redwood
+        assertEquals(Arrays.asList(3000.0, 3000.0, 2000.0, 2000.0, 1500.0), list);
+    }
+
     public void testSortSpecification() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
@@ -300,14 +314,23 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
+        final List<String> list = employee.firstName.cast("CHAR(5)").concat(employee.lastName)
+                .where(employee.lastName.eq("Cooper"))
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList("JamesCooper"), list);
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
         try {
-            final List<String> list = employee.salary.cast("CHAR(256)").concat(employee.lastName)
+            final List<String> list = employee.firstName.cast("CHAR(5)").map(Mappers.STRING).collate("utf8mb4_unicode_ci")
                     .where(employee.lastName.eq("Cooper"))
                     .list(getDatabaseGate());
-            assertEquals(Arrays.asList("1500Cooper"), list);
+            assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
-            // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'.
+            // derby: does not support COLLATE
             expectSQLException(e, "derby");
         }
     }
+
 }

@@ -30,6 +30,18 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Boolean> list = createVE(employee).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(false, true, true, true, true), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Boolean> list = createVE(employee).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(true, true, true, true, false), list);
+    }
+
     public void testCast() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getDatabaseGate());
@@ -397,6 +409,28 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             if ("mysql".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("0-"), list);
             }
+        }
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = createVE(employee)
+                    .collate("latin1_general_ci")
+                    .concat("-")
+                    .where(employee.lastName.eq("Cooper"))
+                    .orderBy(employee.lastName)
+                    .list(getDatabaseGate());
+            try {
+                assertEquals(Arrays.asList("false-"), list);
+            } catch (AssertionFailedError e) {
+                if ("mysql".equals(getDatabaseName())) {
+                    assertEquals(Arrays.asList("0-"), list);
+                }
+            }
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 34.
+            expectSQLException(e, "derby");
         }
     }
 

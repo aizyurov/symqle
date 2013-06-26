@@ -51,6 +51,61 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         ), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseBaseList(employee)
+                .orderAsc()
+                .list(getDatabaseGate());
+        // expect NULLS LAST
+        try {
+            assertEquals(Arrays.asList(
+                    "high",
+                    "high",
+                    "low",
+                (String)null,
+                (String)null
+            ), list);
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList(
+                        (String)null,
+                        (String)null,
+                        "high",
+                        "high",
+                        "low"
+                ), list);
+            }
+        }
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseBaseList(employee)
+                .orderDesc()
+                .list(getDatabaseGate());
+        // expect NULLS FIRST for reverse sort
+        try {
+            assertEquals(Arrays.asList(
+                    (String)null,
+                    (String)null,
+                    "low",
+                    "high",
+                    "high"
+            ), list);
+        } catch (AssertionFailedError e) {
+            if ("mysql".equals(getDatabaseName())) {
+                assertEquals(Arrays.asList(
+                        "low",
+                        "high",
+                        "high",
+                        (String)null,
+                        (String)null
+                ), list);
+            }
+
+        }
+    }
+
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
@@ -534,6 +589,28 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 Pair.make((String) null, "Pedersen"),
                 Pair.make("high+", "Redwood")
         ), list);
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<Pair<String, String>> list = createWhenClauseBaseList(employee)
+                    .collate("utf8mb4_unicode_ci")
+                    .concat("+")
+                    .pair(employee.lastName)
+                    .orderBy(employee.lastName)
+                    .list(getDatabaseGate());
+            assertEquals(Arrays.asList(
+                    Pair.make("low+", "Cooper"),
+                    Pair.make("high+", "First"),
+                    Pair.make((String) null, "March"),
+                    Pair.make((String) null, "Pedersen"),
+                    Pair.make("high+", "Redwood")
+            ), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
+            expectSQLException(e, "derby");
+        }
     }
 
     public void testUnionAll() throws Exception {

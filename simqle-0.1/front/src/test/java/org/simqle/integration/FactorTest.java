@@ -374,10 +374,36 @@ public class FactorTest extends AbstractIntegrationTestBase {
         }
     }
 
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = createFactor(employee).map(Mappers.STRING).collate("latin1_general_ci")
+                    .concat(" marsian $")
+                    .orderBy(employee.lastName)
+                    .list(getDatabaseGate());
+            assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 21.
+            expectSQLException(e, "derby");
+        }
+    }
+
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = createFactor(employee).orderBy(createFactor(employee)).list(getDatabaseGate());
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createFactor(employee).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createFactor(employee).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList(-1500.0, -2000.0, -2000.0, -3000.0, -3000.0), list);
     }
 
     public void testOrderByNullsFirst() throws Exception {

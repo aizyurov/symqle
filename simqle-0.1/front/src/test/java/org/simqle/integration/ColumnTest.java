@@ -630,6 +630,18 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Margaret expected"), list);
     }
 
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
+        try {
+            final List<String> list = employee.firstName.collate("utf8_unicode_ci").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+            assertEquals(Arrays.asList("Margaret"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 63
+            expectSQLException(e, "derby");
+        }
+    }
+
     public void testCount() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = employee.lastName.count().list(getDatabaseGate());

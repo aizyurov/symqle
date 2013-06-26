@@ -38,6 +38,20 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("X"), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final MyDual myDual = new MyDual();
+        final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
+        final List<String> list = primary.orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList("X"), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final MyDual myDual = new MyDual();
+        final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
+        final List<String> list = primary.orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList("X"), list);
+    }
+
     public void testCast() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
@@ -386,6 +400,21 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 .orderBy(department.deptName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
+    }
+
+    public void testCollate() throws Exception {
+        final Department department = new Department();
+        try {
+            final List<String> list = creatPrimary(department)
+                    .collate("utf8_unicode_ci")
+                    .concat("-").concat(department.deptName)
+                    .orderBy(department.deptName)
+                    .list(getDatabaseGate());
+            assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
+            expectSQLException(e, "derby");
+        }
     }
 
     public void testOrderByArgument() throws Exception {

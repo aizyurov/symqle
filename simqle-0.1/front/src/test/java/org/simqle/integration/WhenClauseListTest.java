@@ -55,6 +55,34 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
         ), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseList(employee)
+                .orderAsc()
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList(
+                "Alex",
+                "Bill",
+                "high",
+                "high",
+                "low"
+        ), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClauseList(employee)
+                .orderDesc()
+                .list(getDatabaseGate());
+        assertEquals(Arrays.asList(
+                "low",
+                "high",
+                "high",
+                "Bill",
+                "Alex"
+        ), list);
+    }
+
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseList(employee)
@@ -442,6 +470,27 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
                 Pair.make("Alex+", "Pedersen"),
                 Pair.make("high+", "Redwood")
         ), list);
+    }
+
+    public void testCollate() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = createWhenClauseList(employee)
+                    .collate("utf8_unicode_ci")
+                    .concat("+")
+                    .orderAsc()
+                    .list(getDatabaseGate());
+            assertEquals(Arrays.asList(
+                    "Alex+",
+                    "Bill+",
+                    "high+",
+                    "high+",
+                    "low+"
+            ), list);
+        } catch (SQLException e) {
+            // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
+            expectSQLException(e, "derby");
+        }
     }
 
     public void testUnionAll() throws Exception {

@@ -32,6 +32,18 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
+    public void testOrderAsc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = querySpec(employee).orderAsc().list(getDatabaseGate());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    public void testOrderDesc() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = querySpec(employee).orderDesc().list(getDatabaseGate());
+        assertEquals(Arrays.asList("Redwood", "First"), list);
+    }
+
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = querySpec(employee).forUpdate().list(getDatabaseGate());
