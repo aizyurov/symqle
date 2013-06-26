@@ -37,7 +37,7 @@ public class QuerySpecificationTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = person.id.where(person.name.isNotNull()).orderAsc().show();
-        assertSimilar("SELECT T0.id AS S0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY S0", sql);
+        assertSimilar("SELECT T0.id AS S0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY S0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

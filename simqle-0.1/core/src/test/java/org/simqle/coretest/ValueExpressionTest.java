@@ -233,7 +233,7 @@ public class ValueExpressionTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = person.name.eq(person.nickName).asValue().orderAsc().show();
-        assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0", sql);
+        assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

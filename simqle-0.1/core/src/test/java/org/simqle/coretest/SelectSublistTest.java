@@ -18,7 +18,7 @@ public class SelectSublistTest extends SqlTestCase {
 
     public void testAllOrderAsc() throws Exception {
         String sql = person.id.all().orderAsc().show();
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0", sql);
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
     public void testDistinct() throws Exception {

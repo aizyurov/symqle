@@ -249,7 +249,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             final String sql = param.orderAsc().show();
-//            assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY C1", sql);
+//            assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY C1 ASC", sql);
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             // expected

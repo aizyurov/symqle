@@ -62,7 +62,7 @@ public class CastSpecificationTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
-        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0", col.orderAsc().show());
+        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0 ASC", col.orderAsc().show());
     }
 
     public void testOrderDesc() throws Exception {

@@ -38,11 +38,16 @@ public interface SortOrderingSpecification : Sql {}
 
 public class AbstractSortOrderingSpecification implements SortOrderingSpecification {}
 
+public interface SortKey : Sql {}
+
+SortKey ::= ve:ValueExpression<?> :: implicit {}
+;
+
 SortOrderingSpecification ::=
-    key:ValueExpression<?> :: implicit {}
+    key:SortKey :: implicit {}
 |
-    key:ValueExpression<?> ASC
+    key:SortKey ASC
      :: public AbstractSortOrderingSpecification asc {}
-|  key:ValueExpression<?> DESC
+|  key:SortKey DESC
      :: public AbstractSortOrderingSpecification desc {}
 ;

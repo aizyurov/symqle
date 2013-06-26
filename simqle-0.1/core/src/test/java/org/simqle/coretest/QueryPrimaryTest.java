@@ -102,7 +102,7 @@ public class QueryPrimaryTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = queryPrimary.orderAsc().show();
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM employee AS T1 WHERE T1.name LIKE ? ORDER BY C1", sql);
+        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM employee AS T1 WHERE T1.name LIKE ? ORDER BY C1 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

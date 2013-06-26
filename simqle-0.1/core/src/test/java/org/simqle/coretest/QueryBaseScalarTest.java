@@ -61,7 +61,7 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = person.id.all().orderAsc().show();
-        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0", sql);
+        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0 ASC", sql);
     }
 
     public void testOrderBy() throws Exception {

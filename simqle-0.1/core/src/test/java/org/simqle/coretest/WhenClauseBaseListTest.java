@@ -170,7 +170,7 @@ public class WhenClauseBaseListTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).orderAsc().show();
-        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 ORDER BY C0", sql);
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

@@ -319,7 +319,7 @@ public class ColumnTest extends SqlTestCase {
     public void testOrderAsc() throws Exception {
         final Column<Long> id  =  person.id;
         String sql = id.orderAsc().show();
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY C0", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

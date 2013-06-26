@@ -50,7 +50,7 @@ public class QueryExpressionScalarTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = employee.id.union(manager.id).orderAsc().show();
-        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 ORDER BY C0", sql);
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 ORDER BY C0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

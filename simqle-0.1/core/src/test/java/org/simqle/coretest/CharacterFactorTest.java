@@ -29,7 +29,7 @@ public class CharacterFactorTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = characterFactor.orderAsc().show();
-        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 ORDER BY C1", sql);
+        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 ORDER BY C1 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {

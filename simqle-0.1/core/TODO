@@ -21,7 +21,7 @@ LIMIT/OFFSET
 
 (done) add ORDER BY for union/except/intersect (without parameter, there is only one column accessible via Context)
 
-fix orderAsc/orderDesc: remove literal "S0"
+(done) fix orderAsc/orderDesc: remove literal "S0"
 
 (done) map() for WhenClause*; rename methods (orWhen -> option ; orElse => otherwise)
 
