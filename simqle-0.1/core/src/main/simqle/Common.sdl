@@ -47,6 +47,10 @@ public final class Simqle  {
 
 
 import org.simqle.Sql;
+/** This interface declares methods for construction of SQL nonterminal symbols.
+*   Each method corresponds to one syntactic rule. Method arguments are nonterminal symbols
+* from the right part. Terminal symbols are not parameters; they have fixed values.
+*/
 public interface Dialect  {
 
     Sql FromClauseFromNothing();
@@ -55,6 +59,13 @@ public interface Dialect  {
 import org.simqle.SqlParameters;
 import org.simqle.Sql;
 import static org.simqle.SqlTerm.*;
+/**
+* A standard straighforward implementation of Dialect.
+* Each nonterminal symbol is constructed exactly as required by the rule.
+* Subclasses may override methods preserving semantics.
+* e.g. replace {@code concat(qe, EXCEPT, qt)} for {@code concat(qe, MINUS, qt)}
+* in {@link #QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_QueryTerm(org.simqle.Sql, org.simqle.Sql)}
+*/
 public class GenericDialect implements Dialect {
 
     private static final Dialect instance = new GenericDialect();
