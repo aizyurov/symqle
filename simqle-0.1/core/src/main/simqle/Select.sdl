@@ -18,7 +18,18 @@ import org.simqle.Row;
 import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
 import org.simqle.jdbc.StatementOption;
-:: public <T> int scroll(final SelectStatement<T> statement,
+::
+    /**
+     *
+     * @param statement
+     * @param gate
+     * @param callback
+     * @param options
+     * @param <T>
+     * @return
+     * @throws SQLException
+     */
+public <T> int scroll(final SelectStatement<T> statement,
                           final DatabaseGate gate,
                           final Callback<T> callback,
                           final StatementOption... options
@@ -128,6 +139,13 @@ import java.util.List;
 <T> SelectStatement<T> ::=
     cspec:CursorSpecification<T> :: implicit {}
 |
+    /**
+    * Creates select statement for read only.
+    * The locking of selected rows depends on transaction isolation.
+    * @param cspec the cursor specification to be selected in read only mode.
+    * @param <T> the type of objects, to which result set rows will be converted.
+    * @return new select statement
+    */
     cspec:CursorSpecification<T>  FOR READ ONLY ::
         import java.util.LinkedList;
         public AbstractSelectStatement<T> forReadOnly {}
