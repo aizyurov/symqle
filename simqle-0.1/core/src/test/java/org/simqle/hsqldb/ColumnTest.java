@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import org.hsqldb.jdbcDriver;
 import org.simqle.Mappers;
 import org.simqle.Pair;
+import org.simqle.jdbc.Configuration;
+import org.simqle.jdbc.UpdatableConfiguration;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.Dialect;
@@ -74,6 +76,11 @@ public class ColumnTest extends TestCase {
         @Override
         public Dialect getDialect() {
             return GenericDialect.get();
+        }
+
+        @Override
+        public Configuration getConfiguration() {
+            return new UpdatableConfiguration();
         }
     };
 

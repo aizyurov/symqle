@@ -219,11 +219,12 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
       }
 
 
-
+import org.simqle.jdbc.Configuration;
 import java.sql.SQLException;
 import java.sql.Connection;
 public interface DatabaseGate {
     public Connection getConnection() throws SQLException;
     public Dialect getDialect();
+    Configuration getConfiguration();
 }
 
