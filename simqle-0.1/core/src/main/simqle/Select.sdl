@@ -20,14 +20,14 @@ import org.simqle.jdbc.StatementParameters;
 import org.simqle.jdbc.StatementOption;
 ::
     /**
-     *
-     * @param statement
-     * @param gate
-     * @param callback
-     * @param options
-     * @param <T>
-     * @return
-     * @throws SQLException
+     * Executes a statement and calls callback for each returned row.
+     * @param statement provides the query and mapper.
+     * @param gate provides connection to DB
+     * @param callback will be called until it returns false or there are no more rows
+     * @param options will be applied to java.sql.Statement
+     * @param <T> the type of object passed to callback
+     * @return number of calls to callback
+     * @throws SQLException from the underlying jdbc driver
      */
 public <T> int scroll(final SelectStatement<T> statement,
                           final DatabaseGate gate,
