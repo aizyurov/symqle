@@ -26,8 +26,8 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
         }
 
         @Override
-        public Sql z$create$ValueExpressionPrimary(final SqlContext context) {
-            return e.z$create$ValueExpressionPrimary(context);
+        public Sql z$sqlOfValueExpressionPrimary(final SqlContext context) {
+            return e.z$sqlOfValueExpressionPrimary(context);
         }
     };
 }
@@ -57,7 +57,7 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
             * @param context the Sql construction context
             * @return sql conforming to <code>this</code> syntax
             */
-            public final Sql z$create$DynamicParameterSpecification(SqlContext context) {
+            public final Sql z$sqlOfDynamicParameterSpecification(SqlContext context) {
                 return new Sql() {
                     @Override
                     public String getSqlText() {
@@ -99,13 +99,13 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
         this.owner = owner;
      }
 
-    public Sql z$create$ColumnReference(SqlContext context) {
+    public Sql z$sqlOfColumnReference(SqlContext context) {
         final String correlationName = context.get(TableRegistry.class).getCorrelationName(owner);
         return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new CustomSql(correlationName),
-                z$create$ColumnName(context));
+                z$sqlOfColumnName(context));
     }
 
-    public Sql z$create$ColumnName(final SqlContext context) {
+    public Sql z$sqlOfColumnName(final SqlContext context) {
         // make sure that owner is valid in the context
         // by getting correlation name; the result is not used
         context.get(TableRegistry.class).getCorrelationName(owner);
@@ -166,7 +166,7 @@ public class SqlFunction<T> implements RoutineName<T> {
         this.mapper = mapper;
     }
 
-    public Sql z$create$RoutineName(SqlContext context) {
+    public Sql z$sqlOfRoutineName(SqlContext context) {
         return new CustomSql(name);
     }
 
@@ -246,7 +246,7 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
 :: public <T> AbstractCastSpecification<T> cast(final ValueExpression<T> e, final String castTarget) {
      return cast(e, new CastTarget() {
          @Override
-         public Sql z$create$CastTarget(final SqlContext context) {
+         public Sql z$sqlOfCastTarget(final SqlContext context) {
              return new CustomSql(castTarget);
          }
      });

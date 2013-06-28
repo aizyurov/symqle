@@ -134,7 +134,7 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
             * @param context the Sql construction context
             * @return sql conforming to <code>this</code> syntax
             */
-            public Sql z$create$TableName(SqlContext context) {
+            public Sql z$sqlOfTableName(SqlContext context) {
                 return new CustomSql(name);
             }
             /**
@@ -142,8 +142,8 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
             * @param context the Sql construction context
             * @return sql conforming to <code>this</code> syntax
             */
-            public Sql z$create$TablePrimary(SqlContext context) {
-                return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$create$TableName(context),
+            public Sql z$sqlOfTablePrimary(SqlContext context) {
+                return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
                         new CustomSql(context.get(TableRegistry.class).getCorrelationName(this)));
             }
             /**
@@ -151,8 +151,8 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
             * @param context the Sql construction context
             * @return sql conforming to <code>this</code> syntax
             */
-            public Sql z$create$TableReference(SqlContext context) {
-                return tableReference.z$create$TableReference(context);
+            public Sql z$sqlOfTableReference(SqlContext context) {
+                return tableReference.z$sqlOfTableReference(context);
             }
 
 }
@@ -180,10 +180,10 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
 
 
 public class ImplicitFromClause implements FromClause {
-            public Sql z$create$FromClause(SqlContext context) {
+            public Sql z$sqlOfFromClause(SqlContext context) {
                 SelectTableRegistry registry = (SelectTableRegistry) context.get(TableRegistry.class);
                 return registry.generateFromClause()
-                        .z$create$FromClause(context);
+                        .z$sqlOfFromClause(context);
             }
 }
 
@@ -254,7 +254,7 @@ public class SelectTableRegistry implements TableRegistry {
     protected FromClause generateEmptyFromClause() {
         return new FromClause() {
             @Override
-            public Sql z$create$FromClause(final SqlContext context) {
+            public Sql z$sqlOfFromClause(final SqlContext context) {
                 return context.get(Dialect.class).FromClauseFromNothing();
             }
         };

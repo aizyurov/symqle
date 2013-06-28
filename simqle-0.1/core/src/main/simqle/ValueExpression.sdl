@@ -17,8 +17,8 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
         }
 
         @Override
-        public Sql z$create$ValueExpression(final SqlContext context) {
-            return e.z$create$ValueExpression(context);
+        public Sql z$sqlOfValueExpression(final SqlContext context) {
+            return e.z$sqlOfValueExpression(context);
         }
     };
 }
@@ -55,8 +55,8 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
         }
 
         @Override
-        public Sql z$create$StringExpression(final SqlContext context) {
-            return e.z$create$StringExpression(context);
+        public Sql z$sqlOfStringExpression(final SqlContext context) {
+            return e.z$sqlOfStringExpression(context);
         }
     };
 }
@@ -94,7 +94,7 @@ public interface CollationName : Sql {}
 :: public <T> AbstractCharacterFactor<T> collate (final ValueExpressionPrimary<T> e, final String collationName) {
      return collate(e, new CollationName() {
          @Override
-         public Sql z$create$CollationName(final SqlContext context) {
+         public Sql z$sqlOfCollationName(final SqlContext context) {
              return new CustomSql(collationName);
          }
      });

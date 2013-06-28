@@ -5,7 +5,7 @@
 # 
 # public class RowValue<T> implements zSelectList<T> with selectList, zRowValueExpression<T>
 #  {
-#     public Sql z$create$zRowValueExpression(final SqlContext context) {
+#     public Sql z$sqlOfzRowValueExpression(final SqlContext context) {
 #         // This is tricky: we form a new SqlContext without
 #         // ColumnNameProvider
 #         // then delegate to selectList
@@ -15,7 +15,7 @@
 #         fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
 #         fakeContext.set(FromClause.class, context.get(FromClause.class));
 #         fakeContext.set(UniqueNameProvider.class, new NullColumnNameProvider());
-#         return this.selectList.z$create$zSelectList(fakeContext);
+#         return this.selectList.z$sqlOfzSelectList(fakeContext);
 #     }
 # 
 #     public void z$prepare$zRowValueExpression(final SqlContext context) {
@@ -64,8 +64,8 @@
 # 		{
 #             return new zExplicitRowValueConstructor<Pair<T, U>>() {
 #                 @Override
-#                 public Sql z$create$zExplicitRowValueConstructor(final SqlContext context) {
-#                     return new CompositeSql(l1.z$create$zRowValueConstructorElementList(context), LEFT_PAREN, l2.z$create$zRowValueConstructorElementList(context));
+#                 public Sql z$sqlOfzExplicitRowValueConstructor(final SqlContext context) {
+#                     return new CompositeSql(l1.z$sqlOfzRowValueConstructorElementList(context), LEFT_PAREN, l2.z$sqlOfzRowValueConstructorElementList(context));
 #                 }
 # 
 #                 @Override

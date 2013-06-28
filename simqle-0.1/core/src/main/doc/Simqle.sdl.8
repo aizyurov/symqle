@@ -27,7 +27,7 @@ import java.sql.SQLException;
         context.set(ColumnNameProvider.class, new ColumnNameProvider());
         this.z$prepare$select_statement(context);
         final List<T> list = new LinkedList<T>();
-        final Query<T> query = this.z$create$select_statement(context);
+        final Query<T> query = this.z$sqlOfselect_statement(context);
         database.query(query, new IteratorCallback<Row>() {
             public int iterate(final Row row) throws SQLException {
                 list.add(query.extract(row));
@@ -271,8 +271,8 @@ class QueryPrimaryScalar<T> implements zQueryPrimaryScalar<T> with sqlBuilder ;
 
 |  LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
 {
-public Query<T> z$create$zQueryPrimaryScalar(SqlContext context) {
-    final Query<T> base = arg0.z$create$zQueryExpressionScalar(context);
+public Query<T> z$sqlOfzQueryPrimaryScalar(SqlContext context) {
+    final Query<T> base = arg0.z$sqlOfzQueryExpressionScalar(context);
     return new CompoundQuery<T>(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
         }
 }
@@ -350,9 +350,9 @@ class QueryBaseScalar<T> implements zQueryBaseScalar<T> with sqlBuilder;
 
 <T> zQueryBase<T> ::= SELECT zSelectList<T> zFromClause
 {
-public Query<T> z$create$zQueryBase(SqlContext context) {
-    final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
-    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, selectListQuery, arg1.z$create$zFromClause(context)));
+public Query<T> z$sqlOfzQueryBase(SqlContext context) {
+    final Query<T> selectListQuery = arg0.z$sqlOfzSelectList(context);
+    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, selectListQuery, arg1.z$sqlOfzFromClause(context)));
         }
 }
     ( QueryBase<T> ::= RowValue<T> ) {
@@ -369,9 +369,9 @@ public Query<T> z$create$zQueryBase(SqlContext context) {
 
 | SELECT ALL zSelectList<T> zFromClause
 {
-public Query<T> z$create$zQueryBase(SqlContext context) {
-    final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
-    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$zFromClause(context)));
+public Query<T> z$sqlOfzQueryBase(SqlContext context) {
+    final Query<T> selectListQuery = arg0.z$sqlOfzSelectList(context);
+    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$sqlOfzFromClause(context)));
         }
 }
      ( + RowValue<T> )
@@ -384,9 +384,9 @@ public Query<T> z$create$zQueryBase(SqlContext context) {
 
 | SELECT DISTINCT zSelectList<T> zFromClause
 {
-public Query<T> z$create$zQueryBase(SqlContext context) {
-    final Query<T> selectListQuery = arg0.z$create$zSelectList(context);
-    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$create$zFromClause(context)));
+public Query<T> z$sqlOfzQueryBase(SqlContext context) {
+    final Query<T> selectListQuery = arg0.z$sqlOfzSelectList(context);
+    return new CompoundQuery<T>(selectListQuery, new CompositeSql(SELECT, ALL, selectListQuery, arg1.z$sqlOfzFromClause(context)));
         }
 }
      ( + RowValue<T> )
@@ -403,9 +403,9 @@ public Query<T> z$create$zQueryBase(SqlContext context) {
 
 <T> zQueryBaseScalar<T> ::= SELECT zSelectSublist<T> zFromClause
 {
-public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
-    final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
-    final Sql sql1 = arg1.z$create$zFromClause(context);
+public Query<T> z$sqlOfzQueryBaseScalar(SqlContext context) {
+    final Query<T> sql0 = arg0.z$sqlOfzSelectSublist(context);
+    final Sql sql1 = arg1.z$sqlOfzFromClause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, sql0, sql1));
         }
 }
@@ -419,9 +419,9 @@ public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
 
 | SELECT ALL zSelectSublist<T> zFromClause
 {
-public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
-    final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
-    final Sql sql1 = arg1.z$create$zFromClause(context);
+public Query<T> z$sqlOfzQueryBaseScalar(SqlContext context) {
+    final Query<T> sql0 = arg0.z$sqlOfzSelectSublist(context);
+    final Sql sql1 = arg1.z$sqlOfzFromClause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, ALL, sql0, sql1));
         }
 }
@@ -435,9 +435,9 @@ public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
 
 | SELECT DISTINCT zSelectSublist<T> zFromClause
 {
-public Query<T> z$create$zQueryBaseScalar(SqlContext context) {
-    final Query<T> sql0 = arg0.z$create$zSelectSublist(context);
-    final Sql sql1 = arg1.z$create$zFromClause(context);
+public Query<T> z$sqlOfzQueryBaseScalar(SqlContext context) {
+    final Query<T> sql0 = arg0.z$sqlOfzSelectSublist(context);
+    final Sql sql1 = arg1.z$sqlOfzFromClause(context);
     return new CompoundQuery<T>(sql0, new CompositeSql(SELECT, DISTINCT, sql0, sql1));
         }
 }
@@ -460,7 +460,7 @@ A more expressive and neutral name given.
 
 class RowValue<T> implements zSelectList<T> with selectList, zRowValueExpression<T>
  {
-    public Sql z$create$zRowValueExpression(final SqlContext context) {
+    public Sql z$sqlOfzRowValueExpression(final SqlContext context) {
         // This is tricky: we form a new SqlContext without
         // ColumnNameProvider
         // then delegate to selectList
@@ -469,7 +469,7 @@ class RowValue<T> implements zSelectList<T> with selectList, zRowValueExpression
         SqlContext fakeContext = new SqlContext();
         fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
         fakeContext.set(FromClause.class, context.get(FromClause.class));
-        return this.selectList.z$create$zSelectList(fakeContext);
+        return this.selectList.z$sqlOfzSelectList(fakeContext);
     }
 
     public void z$prepare$zRowValueExpression(final SqlContext context) {
@@ -493,9 +493,9 @@ The last one is translated to equivalent non-deterministic rule (but we do not c
 
 <T,U> zSelectList<Pair<T,U>> ::= zSelectList<T> COMMA zSelectList<U>
 {
-    public Query<Pair<T,U>> z$create$zSelectList(final SqlContext context) {
-        final Query<T> sql0 = arg0.z$create$zSelectList(context);
-        final Query<U> sql1 = arg1.z$create$zSelectList(context);
+    public Query<Pair<T,U>> z$sqlOfzSelectList(final SqlContext context) {
+        final Query<T> sql0 = arg0.z$sqlOfzSelectList(context);
+        final Query<U> sql1 = arg1.z$sqlOfzSelectList(context);
         DataExtractor<Pair<T,U>> extractor = new DataExtractor<Pair<T, U>>() {
             public Pair<T, U> extract(final Row row) throws SQLException {
                 final T first = sql0.extract(row);
@@ -538,7 +538,7 @@ may override in dialects.
             }
         };
         return new CompoundQuery<T>(extractor,
-            new CompositeSql(arg0.z$create$value_expression(context), SqlTerminal.AS, arg1));
+            new CompositeSql(arg0.z$sqlOfvalue_expression(context), SqlTerminal.AS, arg1));
     }
 }
 
@@ -549,9 +549,9 @@ public Query<T> _GET_SQL_(SqlContext context) {
         Identifier identifier = columnNameProvider.getUniqueName();
         if (identifier!=null) {
             return zSelectSublist_is_value_expression_AS_Identifier(arg0,
-            identifier).z$create$zSelectSublist(context);
+            identifier).z$sqlOfzSelectSublist(context);
         } else {
-            return new CompoundQuery<T>(new NullDataExtractor<T>(), arg0.z$create$value_expression(context));
+            return new CompoundQuery<T>(new NullDataExtractor<T>(), arg0.z$sqlOfvalue_expression(context));
         }
     }
 }
@@ -1079,7 +1079,7 @@ abstract class Column<T> implements column_reference<T>
      * @param context - construction context: dialect, tables available in this and enclosing contexts etc.
      * @return sql as required for column_reference syntax
      */
-    public Sql z$create$column_reference(SqlContext context) {
+    public Sql z$sqlOfcolumn_reference(SqlContext context) {
         final FromClause fromClause = context.get(FromClause.class);
         final Identifier tableCorrelationName = fromClause.getCorrelationName(owner);
         return new CompositeSql(tableCorrelationName, SqlTerminal.PERIOD, name);
@@ -1096,14 +1096,14 @@ class NextValueExpression<T> implements next_value_expression<T> with sqlBuilder
 
 <T> zScalarSubquery<T> ::= LEFT_PAREN zQueryExpressionScalar<T> RIGHT_PAREN
 {
-    public Sql z$create$zScalarSubquery(SqlContext context) {
+    public Sql z$sqlOfzScalarSubquery(SqlContext context) {
         SqlContext innerContext = new SqlContext();
         innerContext.set(ColumnNameProvider.class, new NullColumnNameProvider());
         innerContext.set(SqlFactory.class, context.get(SqlFactory.class));
         // create an empty FromClase for zQueryExpressionScalar with current FromClause as enclosing
         innerContext.set(FromClause.class, new FromClause(context.get(FromClause.class)));
         arg0.z$prepare$zQueryExpressionScalar(innerContext);
-        final Query<T> base = arg0.z$create$zQueryExpressionScalar(innerContext);
+        final Query<T> base = arg0.z$sqlOfzQueryExpressionScalar(innerContext);
         return new CompoundQuery(base, new CompositeSql(LEFT_PAREN, base, RIGHT_PAREN));
     }
 
@@ -1228,7 +1228,7 @@ import org.simqle.util.TSort;
         }
     }
 
-    public Sql z$create$zFromClause(final SqlContext context) {
+    public Sql z$sqlOfzFromClause(final SqlContext context) {
         TSort<Table> tSort = new TSort<Table>();
         // TODO some RDBMS allow emtry FromClause
         if (localTables.size()==0) {
@@ -1259,7 +1259,7 @@ import org.simqle.util.TSort;
             tableReference = t.makeJoinedTable(tableReference);
         }
         // TODO take SqlFactory from the context
-        return SqlFactory.getInstance().zFromClause_is_FROM_zTableReference(tableReference).z$create$zFromClause(context);
+        return SqlFactory.getInstance().zFromClause_is_FROM_zTableReference(tableReference).z$sqlOfzFromClause(context);
     }
 
     private boolean isAvailable(Table table) {
@@ -1311,7 +1311,7 @@ class Table implements zTablePrimary {
     }
 
 
-    public Sql z$create$zTablePrimary(final SqlContext context) {
+    public Sql z$sqlOfzTablePrimary(final SqlContext context) {
         final FromClause fromClause = context.get(FromClause.class);
         final Identifier correlationName = fromClause.getCorrelationName(this);
         return new CompositeSql(tableOrQueryName, correlationName);

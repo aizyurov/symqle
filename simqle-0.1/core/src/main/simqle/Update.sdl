@@ -33,7 +33,7 @@ public interface DataChangeStatement : Sql {}
 :: private Sql prepareUpdate(final DataChangeStatement statement, final Dialect dialect) {
     final SqlContext context = new SqlContext();
     context.set(Dialect.class, dialect);
-    return statement.z$create$DataChangeStatement(context);
+    return statement.z$sqlOfDataChangeStatement(context);
 }
 
 :: public String show(final DataChangeStatement statement) {
@@ -78,11 +78,11 @@ UpdateStatement ::=
 |
     b:UpdateStatementBase wc:WhereClause ::
         public AbstractUpdateStatement where {
-            public Sql z$create$UpdateStatement(final SqlContext context) {
-                // a trick here: z$create$UpdateStatementBase modifies uts argument
-                final Sql base = b.z$create$UpdateStatementBase(context);
+            public Sql z$sqlOfUpdateStatement(final SqlContext context) {
+                // a trick here: z$sqlOfUpdateStatementBase modifies uts argument
+                final Sql base = b.z$sqlOfUpdateStatementBase(context);
                 final SqlContext inner = createInnerContext(context);
-                final Sql where = wc.z$create$WhereClause(inner);
+                final Sql where = wc.z$sqlOfWhereClause(inner);
                 return context.get(Dialect.class).UpdateStatement_is_UpdateStatementBase_WhereClause(base, where);
             }
         }
@@ -94,12 +94,12 @@ public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 
 UpdateStatementBase ::=
     UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {
-        public Sql z$create$UpdateStatementBase(final SqlContext context) {
+        public Sql z$sqlOfUpdateStatementBase(final SqlContext context) {
             // Modifies outer context by setting TableRegistry!
             TableRegistry registry = new DataChangeTableRegistry(t);
             context.set(TableRegistry.class, registry);
             // no name provider
-            return context.get(Dialect.class).UpdateStatementBase_is_UPDATE_TargetTable_SET_SetClauseList(t.z$create$TargetTable(context), l.z$create$SetClauseList(context));
+            return context.get(Dialect.class).UpdateStatementBase_is_UPDATE_TargetTable_SET_SetClauseList(t.z$sqlOfTargetTable(context), l.z$sqlOfSetClauseList(context));
         }
     }
 ;
@@ -132,32 +132,32 @@ public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElemen
 
 <T> SetClause ::=
     c:ColumnName<T> EQ e:ValueExpression<T> :: public SetClause set {
-            public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
-                return e.z$create$ValueExpression(context);
+            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+                return e.z$sqlOfValueExpression(context);
             }
 
-            public Sql z$create$InsertColumn(final SqlContext context) {
-                return c.z$create$ColumnName(context);
+            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+                return c.z$sqlOfColumnName(context);
             }
     }
 ;
 
 SetClause ::=
     c:ColumnName<?> EQ NULL :: public SetClause setNull {
-            public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
+            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.NULL;
             }
-            public Sql z$create$InsertColumn(final SqlContext context) {
-                return c.z$create$ColumnName(context);
+            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+                return c.z$sqlOfColumnName(context);
             }
     }
 |
     c:ColumnName<?> EQ DEFAULT :: public SetClause setDefault {
-            public Sql z$create$ContextuallyTypedRowValueElement(final SqlContext context) {
+            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.DEFAULT;
             }
-            public Sql z$create$InsertColumn(final SqlContext context) {
-                return c.z$create$ColumnName(context);
+            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+                return c.z$sqlOfColumnName(context);
             }
     }
 ;
@@ -171,7 +171,7 @@ public class Table extends TableOrView implements TargetTable {
         super(name);
     }
 
-    public Sql z$create$TargetTable(final SqlContext context) {
+    public Sql z$sqlOfTargetTable(final SqlContext context) {
         return new CustomSql(getName());
     }
 }
@@ -223,13 +223,13 @@ InsertStatement ::=
 #|
     INSERT INTO t:TargetTable s:FromConstructor
         :: protected AbstractInsertStatement fromConstructor {
-            public Sql z$create$InsertStatement(final SqlContext context) {
+            public Sql z$sqlOfInsertStatement(final SqlContext context) {
                 // Modifies outer context by setting TableRegistry!
                 TableRegistry registry = new DataChangeTableRegistry(t);
                 context.set(TableRegistry.class, registry);
                 // no name provider
                 return context.get(Dialect.class).InsertStatement_is_INSERT_INTO_TargetTable_FromConstructor(
-                        t.z$create$TargetTable(context), s.z$create$FromConstructor(context));
+                        t.z$sqlOfTargetTable(context), s.z$sqlOfFromConstructor(context));
             }
         }
 |
@@ -303,12 +303,12 @@ public interface DeleteStatementBase : Sql {}
 public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 
 DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {
-            public Sql z$create$DeleteStatementBase(final SqlContext context) {
+            public Sql z$sqlOfDeleteStatementBase(final SqlContext context) {
                 // Modifies outer context by setting TableRegistry!
                 TableRegistry registry = new DataChangeTableRegistry(t);
                 context.set(TableRegistry.class, registry);
                 // no name provider
-                return context.get(Dialect.class).DeleteStatementBase_is_DELETE_FROM_TargetTable(t.z$create$TargetTable(context));
+                return context.get(Dialect.class).DeleteStatementBase_is_DELETE_FROM_TargetTable(t.z$sqlOfTargetTable(context));
             }
 }
 ;

@@ -27,7 +27,7 @@ public abstract class AbstractMapper<D> extends AbstractSelectList<D> {
     protected abstract D create(final Row row) throws SQLException;
 
     @Override
-    public final Query<D> z$create$SelectList(final SqlContext context) {
+    public final Query<D> z$sqlOfSelectList(final SqlContext context) {
         keysLocked.set(true);
         if (keys.isEmpty()) {
             throw new IllegalStateException("No mappings defined");
@@ -36,7 +36,7 @@ public abstract class AbstractMapper<D> extends AbstractSelectList<D> {
         for (int i=1; i<keys.size(); i++) {
             result = result.pair(keys.get(i).selectList);
         }
-        final Query<?> query = result.z$create$SelectList(context);
+        final Query<?> query = result.z$sqlOfSelectList(context);
         return new Query<D>() {
             @Override
             public D extract(final Row row) throws SQLException {
@@ -72,8 +72,8 @@ public abstract class AbstractMapper<D> extends AbstractSelectList<D> {
         private KeyImpl(final SelectList<E> selectList) {
             this.selectList = new AbstractSelectList<E>() {
                 @Override
-                public Query<E> z$create$SelectList(final SqlContext context) {
-                    final Query<E> query = selectList.z$create$SelectList(context);
+                public Query<E> z$sqlOfSelectList(final SqlContext context) {
+                    final Query<E> query = selectList.z$sqlOfSelectList(context);
                     rowMapper = query;
                     return query;
                 }

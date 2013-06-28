@@ -32,8 +32,8 @@ NumericExpression<Number> ::=
         }
 
         @Override
-        public Sql z$create$NumericExpression(final SqlContext context) {
-            return e.z$create$NumericExpression(context);
+        public Sql z$sqlOfNumericExpression(final SqlContext context) {
+            return e.z$sqlOfNumericExpression(context);
         }
     };
 }
@@ -86,8 +86,8 @@ Term<Number> ::=
         }
 
         @Override
-        public Sql z$create$Term(final SqlContext context) {
-            return e.z$create$Term(context);
+        public Sql z$sqlOfTerm(final SqlContext context) {
+            return e.z$sqlOfTerm(context);
         }
     };
 }
@@ -113,8 +113,8 @@ public class AbstractFactor<T> implements Factor<T> {}
         }
 
         @Override
-        public Sql z$create$Factor(final SqlContext context) {
-            return e.z$create$Factor(context);
+        public Sql z$sqlOfFactor(final SqlContext context) {
+            return e.z$sqlOfFactor(context);
         }
     };
 }

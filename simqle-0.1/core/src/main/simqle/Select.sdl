@@ -101,7 +101,7 @@ import java.util.List;
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
             context.set(Dialect.class, DebugDialect.get());
-            statement.z$create$SelectStatement(context);
+            statement.z$sqlOfSelectStatement(context);
         }
         // real generation of Sql
         final Query<T> query;
@@ -110,7 +110,7 @@ import java.util.List;
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
             context.set(Dialect.class, dialect);
-            query = statement.z$create$SelectStatement(context);
+            query = statement.z$sqlOfSelectStatement(context);
         }
         return query;
     }
@@ -168,10 +168,10 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
     qe:QueryExpression<T> :: implicit {}
 |
     qe:QueryExpressionScalar<T> :: implicit {
-            public Query<T> z$create$CursorSpecification(final SqlContext context) {
+            public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
             // changes outer context!
                 context.set(UniqueNameProvider.class, new ScalarNameProvider());
-                final Query<T> __rowMapper = qe.z$create$QueryExpressionScalar(context);
+                final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
                 return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar(__rowMapper));
             }/*delegation*/
 
@@ -180,11 +180,11 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
     qe:QueryExpression<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {}
 |
     qe:QueryExpressionScalar<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {
-            public Query<T> z$create$CursorSpecification(final SqlContext context) {
+            public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
             // changes outer context!
                 context.set(UniqueNameProvider.class, new ScalarNameProvider());
-                final Query<T> __rowMapper = qe.z$create$QueryExpressionScalar(context);
-                return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar_OrderByClause(__rowMapper, obc.z$create$OrderByClause(context)));
+                final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
+                return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar_OrderByClause(__rowMapper, obc.z$sqlOfOrderByClause(context)));
             }/*delegation*/
     }
 ;
@@ -212,7 +212,7 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 ::    private SortKey createScalarSortKey() {
           return new SortKey() {
               @Override
-              public Sql z$create$SortKey(final SqlContext context) {
+              public Sql z$sqlOfSortKey(final SqlContext context) {
                   return new CustomSql(context.get(UniqueNameProvider.class).getUniqueName());
               }
           };
