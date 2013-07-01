@@ -34,12 +34,24 @@ public class DynamicParameterTest extends SqlTestCase {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         try {
-            param.show(GenericDialect.get());
+            param.show(GenericDialect.get(), Option.allowNoTables(true));
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("At least one table is required for FROM clause", e.getMessage());
+            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
     }
+
+    public void testOracleLikeDialect() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.show(new GenericDialect() {
+            @Override
+            public String fallbackTableName() {
+                return "dual";
+            }
+        }, Option.allowNoTables(true));
+        assertSimilar("SELECT ? AS C1 FROM dual AS T1", sql);
+    }
+
 
     public void testSelectAll() throws Exception {
         final Column<Long> id = person.id;

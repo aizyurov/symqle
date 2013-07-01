@@ -1,9 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Callback;
-import org.simqle.CustomSql;
 import org.simqle.Mappers;
-import org.simqle.Sql;
 import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractQueryBaseScalar;
 import org.simqle.sql.Column;
@@ -28,9 +26,10 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
 
     public void testShow() throws Exception {
-        final String sql = person.id.all().show();
+        final AbstractQueryBaseScalar<Long> qbs = person.id.all();
+        final String sql = qbs.show();
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0", sql);
-        final String sql2 = person.id.all().show(GenericDialect.get());
+        final String sql2 = qbs.show(GenericDialect.get());
         assertSimilar(sql, sql2);
     }
 
@@ -52,13 +51,9 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
 
     public void testWhere() throws Exception {
-        final String sql = person.id.all().where(person.name.isNotNull()).show(new GenericDialect() {
-            @Override
-            public Sql FromClauseFromNothing() {
-                return new CustomSql("FROM ???") ;
-            }
-        });
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
+
+        final String sql = person.id.all().where(person.name.isNotNull()).show();
+        assertSimilar("SELECT ALL T2.id AS C1 FROM person AS T2 WHERE T2.name IS NOT NULL", sql);
     }
 
     public void testOrderAsc() throws Exception {

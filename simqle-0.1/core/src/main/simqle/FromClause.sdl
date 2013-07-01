@@ -258,7 +258,16 @@ public class SelectTableRegistry implements TableRegistry {
         return new FromClause() {
             @Override
             public Sql z$sqlOfFromClause(final SqlContext context) {
-                return context.get(Dialect.class).FromClauseFromNothing();
+                final Dialect dialect = context.get(Dialect.class);
+                final String fallbackTableName = dialect.fallbackTableName();
+                if (fallbackTableName == null) {
+                    return new CustomSql("");
+                } else {
+                    // add table to the context and retry: recursion!
+                    final TableOrView fallbackTable = new TableOrView(fallbackTableName);
+                    final TableReferenceList tableReferenceList = Simqle.get().createTableReferenceList(fallbackTable);
+                    return Simqle.get().createFrom(tableReferenceList).z$sqlOfFromClause(context);
+                }
             }
         };
     }

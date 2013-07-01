@@ -53,8 +53,7 @@ import org.simqle.Sql;
 * from the right part. Terminal symbols are not parameters; they have fixed values.
 */
 public interface Dialect  {
-
-    Sql FromClauseFromNothing();
+    String fallbackTableName();
 }
 
 import org.simqle.SqlParameters;
@@ -77,7 +76,7 @@ public class GenericDialect implements Dialect {
          return instance;
     }
 
-    public Sql FromClauseFromNothing() {
+    public String fallbackTableName() {
         throw new IllegalStateException("Generic dialect does not support selects with no tables");
     }
 
@@ -158,9 +157,11 @@ class DebugDialect extends GenericDialect {
         return instance;
     }
 
-    public Sql FromClauseFromNothing() {
-        return new CustomSql("FROM ###");
+    @Override
+    public String fallbackTableName() {
+        return null;
     }
+
 }
 
 
