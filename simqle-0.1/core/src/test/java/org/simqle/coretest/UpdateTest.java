@@ -76,7 +76,7 @@ public class UpdateTest extends SqlTestCase {
             final String sql = person.update(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show();
             fail("IllegalStateException expected but was " + sql);
         } catch (IllegalStateException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("does not support"));
+            assertEquals(e.getMessage(), "At least one table is required for FROM clause");
         }
     }
 

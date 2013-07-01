@@ -186,7 +186,7 @@ public class DynamicParameterTest extends SqlTestCase {
             String sql = id.where(id.in(param)).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertTrue(e.getMessage().contains("does not support"));
+            assertEquals(e.getMessage(), "At least one table is required for FROM clause");
         }
     }
 

@@ -20,45 +20,37 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     // show is not applicable to subquery
     public void testShow() throws Exception {
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show();
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("At least one table is required for FROM clause", e.getMessage());
+        {
+            try {
+                final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show();
+                fail("expected IllegalStateException but was " + sql);
+            } catch (IllegalStateException e) {
+                assertEquals("Implicit cross joins are not allowed", e.getMessage());
+            }
         }
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show(GenericDialect.get());
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("At least one table is required for FROM clause", e.getMessage());
+        {
+            try {
+                final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
+                fail("expected IllegalStateException but was " + sql);
+            } catch (IllegalStateException e) {
+                assertEquals("At least one table is required for FROM clause", e.getMessage());
+            }
         }
     }
 
     public void testMap() throws Exception {
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().map(Mappers.STRING).show();
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("At least one table is required for FROM clause", e.getMessage());
-        }
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().map(Mappers.STRING).orderBy(employee.name).show();
+        assertSimilar("SELECT(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
     }
 
     public void testAll() throws Exception {
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().all().show();
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("At least one table is required for FROM clause", e.getMessage());
-        }
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().all().orderBy(employee.name).show();
+        assertSimilar("SELECT ALL(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
     }
 
     public void testDistinct() throws Exception {
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().distinct().show();
-            fail ("IllegalStateException expected but produced: "+sql);
-        } catch (IllegalStateException e) {
-            assertEquals("At least one table is required for FROM clause", e.getMessage());
-        }
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().distinct().orderBy(employee.name).show();
+        assertSimilar("SELECT DISTINCT(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
     }
 
     public void testWhere() throws Exception {
@@ -192,8 +184,8 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testForReadOnly() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forReadOnly().show();
-            fail ("IllegalStateException expected but produced: "+sql);
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forReadOnly().show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
+            fail("IllegalStateException expected but produced: " + sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
@@ -201,7 +193,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testForUpdate() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forUpdate().show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forUpdate().show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -258,7 +250,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testUnion() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().union(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().union(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -267,7 +259,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testUnionAll() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().unionAll(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().unionAll(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -276,7 +268,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testUnionDistinct() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().unionDistinct(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().unionDistinct(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -286,7 +278,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testExcept() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().except(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().except(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -295,7 +287,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testExceptAll() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().exceptAll(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().exceptAll(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -304,7 +296,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testExceptDistinct() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().exceptDistinct(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().exceptDistinct(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -313,7 +305,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testIntersect() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersect(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersect(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -322,7 +314,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testIntersectAll() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersectAll(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersectAll(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -331,7 +323,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testIntersectDistinct() throws Exception {
         try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersectDistinct(employee.id).show();
+            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersectDistinct(employee.id).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());

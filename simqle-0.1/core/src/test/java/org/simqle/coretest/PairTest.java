@@ -132,9 +132,15 @@ public class PairTest extends SqlTestCase {
     public void testImplicitCrossJoin() throws Exception {
         final Person person1 = new Person();
         final Person person2 = new Person();
-        final String sql = person1.name.pair(person2.age).where(person1.id.eq(person2.id)).show();
-        System.out.println(sql);
-
+        final String badSql;
+        try {
+            badSql = person1.name.pair(person2.age).where(person1.id.eq(person2.id)).show();
+            fail("expected IllegalStateException but was " + badSql);
+        } catch (IllegalStateException e) {
+            // fine
+        }
+        final String goodSql = person1.name.pair(person2.age).where(person1.id.eq(person2.id)).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
+        assertSimilar("SELECT T1.name AS C1, T2.age AS C2 FROM person AS T1, person AS T2 WHERE T1.id = T2.id", goodSql);
     }
 
 
