@@ -1,0 +1,53 @@
+# OrderByClause ::= ORDER BY SortSpecificationList
+# SortSpecificationList ::= SortSpecification [ { comma zSortSpecification }... ]
+# SortSpecification ::= SortKey [ ordering_specification ] [ null_ordering ]
+# SortKey ::= ValueExpression
+# ordering_specification ::= ASC | DESC
+# null_ordering ::= NULLS FIRST | NULLS LAST
+# 
+# rephrased in trivial manner - see below
+# 
+
+public interface OrderByClause : Sql {}
+
+OrderByClause ::= ORDER BY ssl:SortSpecificationList :: protected OrderByClause createOrderByClause {}
+;
+
+public interface SortSpecificationList : Sql {}
+
+#
+SortSpecificationList ::=
+    ss:SortSpecification :: protected SortSpecificationList createSortSpecificationList {}
+|
+    ssl:SortSpecificationList COMMA ss:SortSpecification :: protected SortSpecificationList appendSortSpecification {}
+;
+
+public interface SortSpecification : Sql {}
+
+public class AbstractSortSpecification implements SortSpecification {}
+
+SortSpecification ::=
+    sos:SortOrderingSpecification :: implicit {}
+|
+    sos:SortOrderingSpecification NULLS FIRST :: public AbstractSortSpecification nullsFirst {}
+|
+    sos:SortOrderingSpecification NULLS LAST :: public AbstractSortSpecification nullsLast {}
+;
+
+public interface SortOrderingSpecification : Sql {}
+
+public class AbstractSortOrderingSpecification implements SortOrderingSpecification {}
+
+public interface SortKey : Sql {}
+
+SortKey ::= ve:ValueExpression<?> :: implicit {}
+;
+
+SortOrderingSpecification ::=
+    key:SortKey :: implicit {}
+|
+    key:SortKey ASC
+     :: public AbstractSortOrderingSpecification asc {}
+|  key:SortKey DESC
+     :: public AbstractSortOrderingSpecification desc {}
+;

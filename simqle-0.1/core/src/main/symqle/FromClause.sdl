@@ -1,0 +1,321 @@
+public interface FromClause : Sql {}
+
+# <from clause> ::= FROM <table reference list>
+#
+# <table reference list> ::= <table reference> [ { <comma> <table reference> }... ]
+
+FromClause ::= FROM t:TableReferenceList :: protected FromClause createFrom {}
+;
+
+public interface TableReferenceList : Sql {}
+
+TableReferenceList ::= r:TableReference :: protected TableReferenceList createTableReferenceList {}
+|
+    l:TableReferenceList COMMA r:TableReference :: protected TableReferenceList appendTableReferenceList {}
+;
+
+# <table reference> ::= <table primary or joined table> [ <sample clause> ]
+# Symqle does not support <sample clause>, so we are omitting <tableprimary or joined table>
+
+public interface TableReference : Sql {}
+
+TableReference ::=
+    t:TablePrimary :: protected TableReference tableReferenceFromPrimary {}
+|
+    t:JoinedTable :: protected TableReference tableReferenceFromJoinedTable {}
+;
+
+public interface JoinedTable : Sql {}
+
+# <table primary> ::=
+#		<table or query name> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
+#	|	<derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<lateral derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<collection derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<table function derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<only spec> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
+#	|	<left paren> <joined table> <right paren>
+#
+# only the first one is supported, AS <correlation name> is always used <correlation name> is just Identifier
+
+public interface TablePrimary : Sql {}
+
+TablePrimary ::= t:TableName AS id:Identifier
+;
+
+JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable leftJoin {}
+;
+
+public interface TableName : Sql {
+}
+
+# a simgle class TableOrView implements both TableName and Join
+# Tables are handled specially by SelectTableRegistry
+
+# TableOrView implements TableReference by having a TableReference inside
+import org.symqle.CustomSql;
+import org.symqle.Mapper;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.HashSet;
+public class TableOrView implements TableName, TablePrimary, TableReference {
+    private final String name;
+
+    // initialized by converting from TablePrimary
+    private TableReference tableReference = Symqle.get().tableReferenceFromPrimary(this);
+
+    private TableOrView referral = null;
+
+    private Set<TableOrView> referents = new LinkedHashSet<TableOrView>();
+
+    protected TableOrView(final String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public <T> Column<T> defineColumn(final Mapper<T> mapper, final String name) {
+        return new Column(mapper, name, this);
+    }
+
+    private void checkJoin(TableOrView other) {
+        if (other.referral != null) {
+            throw new IllegalStateException(other + "is already joined to "+ other.referral);
+        }
+        other.referral = this;
+        referents.add(other);
+        Set<TableOrView> foundReferrals = new HashSet<TableOrView>();
+        Set<TableOrView> maybeCycle = new HashSet<TableOrView>();
+        // try to find cycle starting from other
+        TableOrView t;
+        for (t = this; t != null; t = t.referral) {
+            maybeCycle.add(t);
+            if (other==t) {
+                // cycle!
+                throw new IllegalStateException("Cyclic join: " + maybeCycle);
+            }
+        }
+        // OK, came to the root
+    }
+
+    public TableOrView joinedTableRoot() {
+        return referral == null ? this : referral.joinedTableRoot();
+    }
+        public Set<TableOrView> joinedTableParticipants() {
+            if (referral != null) {
+                return referral.joinedTableParticipants();
+            } else {
+                Set<TableOrView> participants = new LinkedHashSet<TableOrView>();
+                participants.add(this);
+                participants.addAll(reachableReferents());
+                return participants;
+            }
+        }
+
+        private Set<TableOrView> reachableReferents() {
+            Set<TableOrView> reachable = new LinkedHashSet<TableOrView>();
+            reachable.addAll(referents);
+            for (TableOrView t: referents) {
+                reachable.addAll(t.reachableReferents());
+            }
+            return reachable;
+        }
+
+    public void leftJoin(TableOrView other, BooleanExpression condition) {
+        final Symqle simqle = Symqle.get();
+        checkJoin(other);
+        final JoinedTable joinedTable = simqle.leftJoin(tableReference, other, condition);
+        tableReference = simqle.tableReferenceFromJoinedTable(joinedTable);
+    }
+            /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public Sql z$sqlOfTableName(SqlContext context) {
+                return new CustomSql(name);
+            }
+            /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public Sql z$sqlOfTablePrimary(SqlContext context) {
+                return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
+                        new CustomSql(context.get(TableRegistry.class).getCorrelationName(this)));
+            }
+            /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public Sql z$sqlOfTableReference(SqlContext context) {
+                return tableReference.z$sqlOfTableReference(context);
+            }
+
+}
+
+# <joined table> ::=
+#		<cross join>
+#	|	<qualified join>
+#	|	<natural join>
+#	|	<union join>
+#
+# <cross join> ::= <table reference> CROSS JOIN <table primary>
+#
+# <qualified join> ::= <table reference> [ <join type> ] JOIN <table reference> <join specification>
+#
+# <natural join> ::= <table reference> NATURAL [ <join type> ] JOIN <table primary>
+#
+# <union join> ::= <table reference> UNION JOIN <table primary>
+#
+# Symqle supports only cross join and qualified join. We are introducing
+# intermediate non-terminal Join, which is CROSS JOIN <table primary> or <join type> JOIN <table reference> <join specification>
+# a limitation: in qualified join the second <table reference> can be only <table primary>
+#
+# <join specification> ::= <join condition> | <named columns join>
+# Symqle does not support/use <named columns join>, so we are inlining <join condition> in Join productions
+
+
+public class ImplicitFromClause implements FromClause {
+            public Sql z$sqlOfFromClause(SqlContext context) {
+                SelectTableRegistry registry = (SelectTableRegistry) context.get(TableRegistry.class);
+                final Configuration configuration = context.get(Configuration.class);
+                final boolean allowNoFrom = configuration.allowNoFrom();
+                final boolean allowImplicitCrossJoins = configuration.allowImplicitCrossJoins();
+                return registry.generateFromClause(allowNoFrom, allowImplicitCrossJoins)
+                        .z$sqlOfFromClause(context);
+            }
+}
+
+
+public interface TableRegistry {
+
+    String getCorrelationName(TableOrView table);
+
+    String generateUniqueName();
+
+    String findCorrelationName(TableOrView table);
+
+
+}
+
+
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import org.symqle.TableNameProvider;
+import org.symqle.UniqueNameProvider;
+import org.symqle.Sql;
+import org.symqle.CustomSql;
+import org.symqle.SqlContext;
+public class SelectTableRegistry implements TableRegistry {
+    private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
+
+    private final TableRegistry parent;
+
+    private final UniqueNameProvider nameProvider;
+
+
+    public SelectTableRegistry(UniqueNameProvider nameProvider) {
+        parent = null;
+        this.nameProvider = nameProvider;
+    }
+
+
+
+    public SelectTableRegistry(final TableRegistry parent) {
+        this.parent = parent;
+        this.nameProvider = null;
+    }
+
+    @Override
+    public String generateUniqueName() {
+        return parent != null ? parent.generateUniqueName() : nameProvider.getUniqueName();
+    }
+
+
+    private void addToLocalTables(TableOrView table) {
+            final String newName = generateUniqueName();
+            localTables.put(table, newName);
+    }
+
+
+    @Override
+    public String findCorrelationName(TableOrView table) {
+        // first search in parent
+        final String nameFromParent = parent == null ? null :
+                parent.findCorrelationName(table);
+        return nameFromParent != null ? nameFromParent : localTables.get(table);
+    }
+
+
+    protected FromClause generateEmptyFromClause() {
+        return new FromClause() {
+            @Override
+            public Sql z$sqlOfFromClause(final SqlContext context) {
+                final Dialect dialect = context.get(Dialect.class);
+                final String fallbackTableName = dialect.fallbackTableName();
+                if (fallbackTableName == null) {
+                    return new CustomSql("");
+                } else {
+                    // add table to the context and retry: recursion!
+                    final TableOrView fallbackTable = new TableOrView(fallbackTableName);
+                    final TableReferenceList tableReferenceList = Symqle.get().createTableReferenceList(fallbackTable);
+                    return Symqle.get().createFrom(tableReferenceList).z$sqlOfFromClause(context);
+                }
+            }
+        };
+    }
+
+
+    public FromClause generateFromClause(final boolean allowNoFrom, final boolean allowImplicitCrossJoins) {
+        if (localTables.isEmpty()) {
+            if (allowNoFrom) {
+                return generateEmptyFromClause();
+            } else {
+                throw new IllegalStateException("At least one table is required for FROM clause");
+            }
+        }
+        final Set<TableOrView> roots = new HashSet<TableOrView>();
+        for (TableOrView t: localTables.keySet()) {
+            roots.add(t.joinedTableRoot());
+        }
+        final Iterator<TableOrView> iterator = roots.iterator();
+        TableReferenceList tableReferenceList = Symqle.get().createTableReferenceList(iterator.next());
+        while (iterator.hasNext()) {
+            if (!allowImplicitCrossJoins) {
+                throw new IllegalStateException("Implicit cross joins are not allowed");
+            }
+            tableReferenceList = Symqle.get().appendTableReferenceList(tableReferenceList, iterator.next());
+        }
+        return Symqle.get().createFrom(tableReferenceList);
+    }
+
+    public String getCorrelationName(TableOrView table) {
+        final String found = findCorrelationName(table);
+        if (found != null) {
+            return found;
+        } else {
+            for (TableOrView t : table.joinedTableParticipants()) {
+                addToLocalTables(t);
+            }
+            return localTables.get(table);
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+

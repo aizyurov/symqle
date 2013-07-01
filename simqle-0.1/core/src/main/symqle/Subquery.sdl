@@ -1,0 +1,22 @@
+public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
+
+<T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN ::
+        implicit
+        {
+         public Sql z$sqlOfScalarSubquery(SqlContext context) {
+            final SqlContext innerContext = createInnerContext(context);
+            // learning
+            innerContext.set(Dialect.class, DebugDialect.get());
+            innerContext.set(Configuration.class, getDebugConfiguration());
+            qe.z$sqlOfQueryExpressionScalar(innerContext);
+            // real Sql generation
+            innerContext.set(Dialect.class, context.get(Dialect.class));
+             innerContext.set(Configuration.class, context.get(Configuration.class));
+             final Sql base = qe.z$sqlOfQueryExpressionScalar(innerContext);
+             return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_QueryExpressionScalar_RIGHT_PAREN(base);
+         }
+}
+;
+
+
+# todo Row subqueries support

@@ -1,0 +1,334 @@
+# <update statement: searched> ::= UPDATE <target table> SET <set clause list> [ WHERE <search condition> ]
+# <set clause list> ::= <set clause> [ { <comma> <set clause> }... ]
+# <set clause> ::=
+#		<multiple column assignment>
+#	|	<set target> <equals operator> <update source>
+#
+# <set target> ::= <update target> | <mutated set clause>
+#
+# <multiple column assignment> ::= <set target list> <equals operator> <assigned row>
+#
+# <set target list> ::= <left paren> <set target> [ { <comma> <set target> }... ] <right paren>
+#
+# <assigned row> ::= <contextually typed row value expression>
+#
+# <update target> ::=
+#		<object column>
+#	|	<object column> <left bracket or trigraph> <simple value specification> <right bracket or trigraph>
+#
+# <object column> ::= <column name>
+#
+# <mutated set clause> ::= <mutated target> <period> <method name>
+# <update source> ::= <value expression> | <contextually typed value specification>
+# <contextually typed value specification> ::=
+#  		<implicitly typed value specification> | <default specification>
+#
+#  <implicitly typed value specification> ::= <null specification> | <empty specification>
+#
+#  <null specification> ::= NULL
+#  <default specification> ::= DEFAULT
+
+public interface DataChangeStatement : Sql {}
+
+:: private Sql prepareUpdate(final DataChangeStatement statement, final Dialect dialect, final Configuration configuration) {
+    final SqlContext context = new SqlContext();
+    context.set(Dialect.class, dialect);
+    context.set(Configuration.class, configuration);
+    return statement.z$sqlOfDataChangeStatement(context);
+}
+
+:: public String show(final DataChangeStatement statement) {
+    return show(statement, GenericDialect.get());
+}
+
+:: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
+     final UpdatableConfiguration configuration = new UpdatableConfiguration();
+     for (final Option option : options) {
+        option.apply(configuration);
+     }
+    return beautifySql(prepareUpdate(statement, dialect, configuration).getSqlText());
+}
+
+:: public int execute(final DataChangeStatement statement, final DatabaseGate gate, final Option... options) throws SQLException {
+     final UpdatableConfiguration configuration = new UpdatableConfiguration();
+     final List<Option> defaultOptions = gate.getOptions();
+     for (final Option option : defaultOptions) {
+        option.apply(configuration);
+    }
+     for (final Option option : options) {
+        option.apply(configuration);
+     }
+     final Sql sql = prepareUpdate(statement, gate.getDialect(), configuration);
+     final Connection connection = gate.getConnection();
+     try {
+         final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
+         for (final Option option : defaultOptions) {
+             option.apply(preparedStatement);
+         }
+          for (final Option option : options) {
+             option.apply(preparedStatement);
+          }
+         try {
+             sql.setParameters(new StatementParameters(preparedStatement));
+             return preparedStatement.executeUpdate();
+         } finally {
+             preparedStatement.close();
+         }
+     } finally {
+         connection.close();
+     }
+}
+
+DataChangeStatement ::=
+    s:UpdateStatement :: implicit {}
+|
+    s:InsertStatement :: implicit {}
+|
+    s:DeleteStatement :: implicit {}
+;
+
+public interface UpdateStatement : Sql {}
+
+public class AbstractUpdateStatement implements UpdateStatement {}
+
+UpdateStatement ::=
+    b:UpdateStatementBase :: implicit {}
+|
+    b:UpdateStatementBase wc:WhereClause ::
+        public AbstractUpdateStatement where {
+            public Sql z$sqlOfUpdateStatement(final SqlContext context) {
+                // a trick here: z$sqlOfUpdateStatementBase modifies uts argument
+                final Sql base = b.z$sqlOfUpdateStatementBase(context);
+                final SqlContext inner = createInnerContext(context);
+                final Sql where = wc.z$sqlOfWhereClause(inner);
+                return context.get(Dialect.class).UpdateStatement_is_UpdateStatementBase_WhereClause(base, where);
+            }
+        }
+;
+
+public interface UpdateStatementBase : Sql {}
+
+public class AbstractUpdateStatementBase implements UpdateStatementBase {}
+
+UpdateStatementBase ::=
+    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {
+        public Sql z$sqlOfUpdateStatementBase(final SqlContext context) {
+            // Modifies outer context by setting TableRegistry!
+            TableRegistry registry = new DataChangeTableRegistry(t);
+            context.set(TableRegistry.class, registry);
+            // no name provider
+            return context.get(Dialect.class).UpdateStatementBase_is_UPDATE_TargetTable_SET_SetClauseList(t.z$sqlOfTargetTable(context), l.z$sqlOfSetClauseList(context));
+        }
+    }
+;
+
+public interface TargetTable : Sql {
+    public String getName();
+}
+
+public interface SetClauseList : Sql {}
+
+SetClauseList ::=
+    c:SetClause :: protected SetClauseList initSetList {}
+|
+    l:SetClauseList COMMA c:SetClause :: protected SetClauseList appendSetList {}
+;
+
+:: public AbstractUpdateStatementBase update(final TargetTable t, final SetClause first, final SetClause... other) {
+    SetClauseList l = initSetList(first);
+    for (SetClause c: other) {
+        l = appendSetList(l, c);
+    }
+    return createUpdate(t, l);
+}
+
+public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElement : Sql {}
+
+:: public <T> SetClause set(final ColumnName<T> column, final T value) {
+    return set(column, DynamicParameter.create(column.getMapper(), value));
+}
+
+<T> SetClause ::=
+    c:ColumnName<T> EQ e:ValueExpression<T> :: public SetClause set {
+            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+                return e.z$sqlOfValueExpression(context);
+            }
+
+            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+                return c.z$sqlOfColumnName(context);
+            }
+    }
+;
+
+SetClause ::=
+    c:ColumnName<?> EQ NULL :: public SetClause setNull {
+            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+                return SqlTerm.NULL;
+            }
+            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+                return c.z$sqlOfColumnName(context);
+            }
+    }
+|
+    c:ColumnName<?> EQ DEFAULT :: public SetClause setDefault {
+            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+                return SqlTerm.DEFAULT;
+            }
+            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+                return c.z$sqlOfColumnName(context);
+            }
+    }
+;
+
+
+public interface ColumnName<T> extends Scalar<T> : Sql {}
+
+
+public class Table extends TableOrView implements TargetTable {
+    public Table(String name) {
+        super(name);
+    }
+
+    public Sql z$sqlOfTargetTable(final SqlContext context) {
+        return new CustomSql(getName());
+    }
+}
+
+import org.symqle.UniqueNameProvider;
+import org.symqle.TableNameProvider;
+class DataChangeTableRegistry implements TableRegistry {
+
+    final TargetTable targetTable;
+    final UniqueNameProvider nameProvider = new TableNameProvider();
+
+
+    public DataChangeTableRegistry(final TargetTable targetTable) {
+        this.targetTable = targetTable;
+    }
+
+    public String findCorrelationName(TableOrView table) {
+        if (table.equals(targetTable)) {
+            return targetTable.getName();
+        } else {
+            return null;
+        }
+    }
+
+
+    public String generateUniqueName() {
+        return nameProvider.getUniqueName();
+    }
+
+
+    public String getCorrelationName(TableOrView table) {
+        if (table.equals(targetTable)) {
+            return targetTable.getName();
+        } else {
+            throw new IllegalArgumentException(table + " is not legal in this context");
+        }
+    }
+}
+
+public interface InsertStatement : Sql {}
+
+public class AbstractInsertStatement implements InsertStatement {}
+
+# TODO <override clause> not implemented
+
+InsertStatement ::=
+#    INSERT INTO t:TargetTable s:FromSubquery
+#        :: protected AbstractInsertStatement fromSubquery {}
+#|
+    INSERT INTO t:TargetTable s:FromConstructor
+        :: protected AbstractInsertStatement fromConstructor {
+            public Sql z$sqlOfInsertStatement(final SqlContext context) {
+                // Modifies outer context by setting TableRegistry!
+                TableRegistry registry = new DataChangeTableRegistry(t);
+                context.set(TableRegistry.class, registry);
+                // no name provider
+                return context.get(Dialect.class).InsertStatement_is_INSERT_INTO_TargetTable_FromConstructor(
+                        t.z$sqlOfTargetTable(context), s.z$sqlOfFromConstructor(context));
+            }
+        }
+|
+    INSERT INTO t:TargetTable DEFAULT VALUES
+        :: public AbstractInsertStatement insertDefault {}
+;
+
+# interface FromSubquery : Sql {}
+
+interface FromConstructor : Sql {}
+
+# FromSubquery ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN e:QueryExpression
+#         :: protected FromSubquery createFromSubquery {}
+# ;
+
+FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstructor
+         :: protected FromConstructor createFromConstructor {}
+;
+
+interface InsertColumnList : Sql {}
+InsertColumnList ::=
+    c:InsertColumn :: protected InsertColumnList initColumnList {}
+|
+    l:InsertColumnList COMMA c:InsertColumn :: protected InsertColumnList appendColumnList {}
+;
+
+public interface InsertColumn : Sql {}
+
+interface TableValueConstructor : Sql {}
+
+# only one row is supported so far. The syntax is not that of SQL-2011, but is supported by all major databases
+# (standard define
+TableValueConstructor ::= VALUES LEFT_PAREN l:ContextuallyTypedRowValueList RIGHT_PAREN :: protected TableValueConstructor createTableValueConstructor {}
+;
+
+interface ContextuallyTypedRowValueList : Sql {}
+
+ContextuallyTypedRowValueList ::=
+    e:ContextuallyTypedRowValueElement
+        :: protected ContextuallyTypedRowValueList initRowValueList {}
+|
+    l:ContextuallyTypedRowValueList COMMA d:ContextuallyTypedRowValueElement
+        :: protected ContextuallyTypedRowValueList appendRowValueList {}
+;
+
+public interface ContextuallyTypedRowValueElement : Sql {}
+
+:: public AbstractInsertStatement insert(TargetTable targetTable, SetClause first, SetClause... other) {
+    InsertColumnList columnList = initColumnList(first);
+    ContextuallyTypedRowValueList valueList = initRowValueList(first);
+    for (SetClause next: other) {
+        columnList = appendColumnList(columnList, next);
+        valueList = appendRowValueList(valueList, next);
+    }
+    return fromConstructor(targetTable,
+        createFromConstructor(columnList, createTableValueConstructor(valueList)));
+}
+
+
+public interface DeleteStatement : Sql {}
+
+public class AbstractDeleteStatement implements DeleteStatement {}
+
+DeleteStatement ::= b:DeleteStatementBase :: implicit {}
+|
+    b:DeleteStatementBase wc:WhereClause :: public AbstractDeleteStatement where {}
+;
+
+public interface DeleteStatementBase : Sql {}
+
+public class AbstractDeleteStatementBase implements DeleteStatementBase {}
+
+DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {
+            public Sql z$sqlOfDeleteStatementBase(final SqlContext context) {
+                // Modifies outer context by setting TableRegistry!
+                TableRegistry registry = new DataChangeTableRegistry(t);
+                context.set(TableRegistry.class, registry);
+                // no name provider
+                return context.get(Dialect.class).DeleteStatementBase_is_DELETE_FROM_TargetTable(t.z$sqlOfTargetTable(context));
+            }
+}
+;
+
+

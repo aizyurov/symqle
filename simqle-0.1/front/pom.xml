@@ -3,14 +3,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>simqle-parent</artifactId>
-    <groupId>org.simqle</groupId>
+    <artifactId>symqle-parent</artifactId>
+    <groupId>org.symqle</groupId>
     <version>0.1</version>
   </parent>
-  <groupId>org.simqle</groupId>
-  <artifactId>simqle-front</artifactId>
+  <groupId>org.symqle</groupId>
+  <artifactId>symqle-front</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <name>simqle-front</name>
+  <name>symqle-front</name>
   <url>http://simqle.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,8 +30,8 @@
   </build>
   <dependencies>
       <dependency>
-          <groupId>org.simqle</groupId>
-          <artifactId>simqle-core</artifactId>
+          <groupId>org.symqle</groupId>
+          <artifactId>symqle-core</artifactId>
           <version>0.1-SNAPSHOT</version>
       </dependency>
       <dependency>

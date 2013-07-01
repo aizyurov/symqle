@@ -1,0 +1,282 @@
+public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
+
+<T> ValueExpressionPrimary<T> ::=
+    LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit {}
+|
+    p:DynamicParameterSpecification<T> :: implicit {}
+|
+	c:ColumnReference<T> :: implicit {}
+|
+	s:ScalarSubquery<T> :: public AbstractValueExpressionPrimary<T> queryValue {}
+|
+    e:CaseExpression<T> :: implicit {}
+|
+	r:RoutineInvocation<T> :: implicit {}
+|
+    c:CastSpecification<T> :: implicit {}
+;
+
+public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T> {}
+
+:: public <T> AbstractValueExpressionPrimary<T> map(final ValueExpressionPrimary<?> e, final Mapper<T> mapper) {
+    return new AbstractValueExpressionPrimary<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return mapper;
+        }
+
+        @Override
+        public Sql z$sqlOfValueExpressionPrimary(final SqlContext context) {
+            return e.z$sqlOfValueExpressionPrimary(context);
+        }
+    };
+}
+
+
+
+public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
+}
+
+import org.symqle.SqlParameter;
+import org.symqle.SqlParameters;
+public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
+    private final Mapper<T> mapper;
+    private final T value;
+
+    private DynamicParameter(final Mapper<T> mapper, T value) {
+        this.mapper = mapper;
+        this.value = value;
+     }
+
+     public static <T> DynamicParameter<T> create(final Mapper<T> mapper, final T value) {
+        return new DynamicParameter<T>(mapper, value); 
+     }
+
+            /**
+            * Creates an Sql representing <code>this</code>
+            * @param context the Sql construction context
+            * @return sql conforming to <code>this</code> syntax
+            */
+            public final Sql z$sqlOfDynamicParameterSpecification(SqlContext context) {
+                return new Sql() {
+                    @Override
+                    public String getSqlText() {
+                        return "?";
+                    }
+
+                    @Override
+                    public void setParameters(final SqlParameters p) throws SQLException {
+                        mapper.setValue(p.next(), value);
+                    }
+                };
+            }
+
+            /**
+            * Implement in derived classes
+            */
+             public final Mapper<T> getMapper() {
+                return mapper;
+             }
+
+}
+
+public interface ColumnReference<T> extends Scalar<T> : Sql {}
+
+<T> ColumnReference<T> ::= tableRef:Identifier PERIOD columnName:ColumnName<T>
+;
+
+import org.symqle.CustomSql;
+import org.symqle.SqlTerm;
+import org.symqle.Mapper;
+public class Column<T> implements ColumnReference<T>, ColumnName<T> {
+    private final String columnName;
+    private final TableOrView owner;
+    private final Mapper mapper;
+
+    Column(final Mapper mapper, final String name,  final TableOrView owner)  {
+        this.mapper = mapper;
+        this.columnName = name;
+        this.owner = owner;
+     }
+
+    public Sql z$sqlOfColumnReference(SqlContext context) {
+        final String correlationName = context.get(TableRegistry.class).getCorrelationName(owner);
+        return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new CustomSql(correlationName),
+                z$sqlOfColumnName(context));
+    }
+
+    public Sql z$sqlOfColumnName(final SqlContext context) {
+        // make sure that owner is valid in the context
+        // by getting correlation name; the result is not used
+        context.get(TableRegistry.class).getCorrelationName(owner);
+        return new CustomSql(columnName);
+    }
+
+    public final Mapper<T> getMapper() {
+        return mapper;
+    }
+}
+
+
+public interface RoutineInvocation<T> extends Scalar<T> : Sql {}
+
+public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
+
+import java.util.Set;
+import java.util.Collections;
+<T> RoutineInvocation<T> ::=
+    rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
+        :: private AbstractRoutineInvocation<T> invoke {}
+|
+    rn:RoutineName<T> LEFT_PAREN RIGHT_PAREN
+        :: private AbstractRoutineInvocation<T> invoke {}
+;
+
+:: public <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
+    if (arg.length == 0) {
+        return invoke(routine);
+    } else {
+        ArgumentList al = createArgument(arg[0]);
+        int i;
+        for (i=1; i<arg.length; i++) {
+            al = appendArgument(al, arg[i]);
+        }
+        return invoke(routine, al);
+    }
+}
+
+public interface RoutineName<T> extends Scalar<T> : Sql {}
+
+public interface ArgumentList : Sql {}
+
+ArgumentList ::=
+    e:ValueExpression<?> :: protected ArgumentList createArgument {}
+|
+    al:ArgumentList COMMA e:ValueExpression<?>
+        :: protected ArgumentList appendArgument {}
+;
+
+import org.symqle.CustomSql;
+public class SqlFunction<T> implements RoutineName<T> {
+    private final String name;
+    private final Mapper<T> mapper;
+
+    private SqlFunction(final String name, final Mapper<T> mapper) {
+        this.name = name;
+        this.mapper = mapper;
+    }
+
+    public Sql z$sqlOfRoutineName(SqlContext context) {
+        return new CustomSql(name);
+    }
+
+    public Mapper<T> getMapper() {
+        return mapper;
+    }
+
+    public static <T> SqlFunction<T> create(final String name, final Mapper<T> mapper) {
+        return new SqlFunction<T>(name, mapper);
+    }
+
+}
+
+
+public interface CaseExpression<T> extends Scalar<T> : Sql {}
+
+# Case abbreviations are not included here (considering them as functions, e.g nullIf)
+# only <searched case> is supported
+# <searched case> ::= CASE <searched when clause>... [ <else clause> ] END
+
+<T> CaseExpression<T> ::= CASE l:SearchedWhenClauseList<T> END :: implicit {}
+;
+
+public interface SearchedWhenClauseList<T> extends Scalar<T> : Sql {}
+
+public class AbstractSearchedWhenClauseList<T> implements SearchedWhenClauseList<T> {}
+
+<T> SearchedWhenClauseList<T> ::=
+    l:SearchedWhenClauseBaseList<T> :: implicit {}
+|
+    l:SearchedWhenClauseBaseList<T> e:ElseClause<T> :: public AbstractSearchedWhenClauseList<T> orElse {}
+;
+
+public interface SearchedWhenClauseBaseList<T> extends Scalar<T> : Sql {}
+public class AbstractSearchedWhenClauseBaseList<T> implements SearchedWhenClauseBaseList<T> {}
+
+<T> SearchedWhenClauseBaseList<T> ::=
+    c:SearchedWhenClause<T> :: implicit {}
+|
+    l:SearchedWhenClauseBaseList<T> c:SearchedWhenClause<T> :: public AbstractSearchedWhenClauseBaseList<T> orWhen {}
+|
+    l:SearchedWhenClauseBaseList<T> c:ThenNullClause :: public AbstractSearchedWhenClauseBaseList<T> orWhen {}
+;
+
+public interface SearchedWhenClause<T> extends Scalar<T> : Sql {}
+public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
+
+<T> SearchedWhenClause<T> ::=
+    WHEN cond:BooleanExpression THEN e:ValueExpression<T> :: public AbstractSearchedWhenClause<T> then {
+        private final Mapper<T> mapper = e.getMapper();
+        public final Mapper<T> getMapper() {
+            return mapper;
+        }
+    }
+;
+
+public interface ThenNullClause : Sql {}
+
+ThenNullClause ::= WHEN cond:BooleanExpression THEN NULL :: public ThenNullClause thenNull {}
+;
+
+public interface ElseClause<T> extends Scalar<T> : Sql {}
+
+<T> ElseClause<T> ::= ELSE e:ValueExpression<T> :: implicit {}
+;
+
+public interface CastSpecification<T> extends Scalar<T> : Sql {}
+
+public abstract class AbstractCastSpecification<T> implements CastSpecification<T> {}
+
+# only ValueExpression is supported, though standard allows NullSpecification (CAST (NULL AS ...))
+<T> CastSpecification<T> ::=
+    CAST LEFT_PAREN e:ValueExpression<T> AS c:CastTarget RIGHT_PAREN :: private AbstractCastSpecification<T> cast {
+    }
+;
+
+:: public <T> AbstractCastSpecification<T> cast(final ValueExpression<T> e, final String castTarget) {
+     return cast(e, new CastTarget() {
+         @Override
+         public Sql z$sqlOfCastTarget(final SqlContext context) {
+             return new CustomSql(castTarget);
+         }
+     });
+}
+
+public interface CastTarget : Sql {}
+
+# Special ValueExpressionPrimary, which may have different names in dialects
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+ValueExpressionPrimary<Date> ::= CURRENT_DATE :: public AbstractValueExpressionPrimary<Date> currentDate {
+    public Mapper<Date> getMapper() {
+        return Mappers.DATE;
+    }
+}
+;
+
+ValueExpressionPrimary<Timestamp> ::= CURRENT_TIMESTAMP
+ :: public AbstractValueExpressionPrimary<Timestamp> currentTimestamp {
+   public Mapper<Timestamp> getMapper() {
+       return Mappers.TIMESTAMP;
+   }
+}
+;
+
+ValueExpressionPrimary<Time> ::= CURRENT_TIME
+ :: public AbstractValueExpressionPrimary<Time> currentTime {
+   public Mapper<Time> getMapper() {
+       return Mappers.TIME;
+   }
+}
+;

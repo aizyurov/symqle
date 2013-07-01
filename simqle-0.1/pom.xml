@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.simqle</groupId>
-  <artifactId>simqle-parent</artifactId>
+  <groupId>org.symqle</groupId>
+  <artifactId>symqle-parent</artifactId>
   <packaging>pom</packaging>
   <version>0.1</version>
-  <name>simqle</name>
-  <url>http://simqle.org</url>
+  <name>symqle settings</name>
+  <url>http://symqle.org</url>
 
     <build>
        <plugins>

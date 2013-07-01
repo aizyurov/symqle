@@ -1,0 +1,256 @@
+# # corresponds to direct_select-statement in Sql-2003.2
+public interface SelectStatement<T> : Query<T>
+{}
+
+public class AbstractSelectStatement<T> implements SelectStatement<T>
+{}
+
+# key Symqle methods to query values
+
+import org.symqle.Callback;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import org.symqle.Callback;
+import org.symqle.Row;
+import org.symqle.jdbc.ResultSetRow;
+import org.symqle.jdbc.StatementParameters;
+import org.symqle.jdbc.Option;
+import org.symqle.jdbc.Configuration;
+import org.symqle.jdbc.UpdatableConfiguration;
+::
+    /**
+     * Executes a statement and calls callback for each returned row.
+     * @param statement provides the query and mapper.
+     * @param gate provides connection to DB
+     * @param callback will be called until it returns false or there are no more rows
+     * @param options will be applied to java.sql.Statement
+     * @param <T> the type of object passed to callback
+     * @return number of calls to callback
+     * @throws SQLException from the underlying jdbc driver
+     */
+public <T> int scroll(final SelectStatement<T> statement,
+                          final DatabaseGate gate,
+                          final Callback<T> callback,
+                          final Option... options
+                          ) throws SQLException {
+    final UpdatableConfiguration configuration = new UpdatableConfiguration();
+    final List<Option> defaultOptions = gate.getOptions();
+    for (final Option option : defaultOptions) {
+       option.apply(configuration);
+   }
+    for (final Option option : options) {
+       option.apply(configuration);
+    }
+    final Query<T> query = prepareQuery(statement, gate.getDialect(), configuration);
+    final Connection connection = gate.getConnection();
+    try {
+        final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
+           for (final Option option : defaultOptions) {
+               option.apply(preparedStatement);
+           }
+        for (final Option option : options) {
+           option.apply(preparedStatement);
+        }
+        try {
+            query.setParameters(new StatementParameters(preparedStatement));
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            final Row row = new ResultSetRow(resultSet);
+            try {
+               int count = 0;
+                while (resultSet.next()) {
+                    count++;
+                    if (!callback.iterate(query.extract(row))) {
+                       break;
+                    }
+                }
+                return count;
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            preparedStatement.close();
+        }
+    } finally {
+        connection.close();
+    }
+}
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+:: public <T> List<T> list(final SelectStatement<T> statement,
+                          final DatabaseGate gate,
+                          final Option... options
+                        ) throws SQLException {
+        final List<T> result = new LinkedList<T>();
+        scroll(statement,  gate,
+            new Callback<T>() {
+                public boolean iterate(T arg) {
+                    result.add(arg);
+                    return true;
+                }
+             }, options);
+        return result;
+    }
+
+:: public String show(final SelectStatement<?> statement) {
+     return show(statement, GenericDialect.get());
+    }
+
+:: private Configuration getDebugConfiguration() {
+    final UpdatableConfiguration configuration = new UpdatableConfiguration();
+    configuration.setNoFromOk(true);
+    configuration.setImplicitCrossJoinsOk(true);
+    return configuration;
+}
+
+:: public String show(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
+     final UpdatableConfiguration configuration = new UpdatableConfiguration();
+     for (Option option : options) {
+         option.apply(configuration);
+     }
+     String sql = prepareQuery(statement, dialect, configuration).getSqlText();
+     return beautifySql(sql);
+    }
+
+:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
+        final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
+        // training: learn all tables participating in query
+        {
+            final SqlContext context = new SqlContext();
+            context.set(UniqueNameProvider.class, new ColumnNameProvider());
+            context.set(TableRegistry.class, tableRegistry);
+            context.set(Dialect.class, DebugDialect.get());
+            context.set(Configuration.class, getDebugConfiguration());
+            statement.z$sqlOfSelectStatement(context);
+        }
+        // real generation of Sql
+        final Query<T> query;
+        {
+            final SqlContext context = new SqlContext();
+            context.set(UniqueNameProvider.class, new ColumnNameProvider());
+            context.set(TableRegistry.class, tableRegistry);
+            context.set(Dialect.class, dialect);
+            context.set(Configuration.class, configuration);
+            query = statement.z$sqlOfSelectStatement(context);
+        }
+        return query;
+    }
+
+
+:: private String beautifySql(final String source) {
+        return source
+                .replaceAll("([(.])\\s+", "$1")
+                .replaceAll("\\s+([().,])", "$1")
+                .trim();
+    }
+
+
+
+
+# # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification
+# # zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
+# # updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
+# 
+# # Symqle re-defines this in the following way:
+# # updateability_clause moves to zSelectStatement;
+# # OF column_name_list is not supported in the current version (0.7)
+# 
+# forward references: CursorSpecification, AbstractCursorSpecification
+
+<T> SelectStatement<T> ::=
+    cspec:CursorSpecification<T> :: implicit {}
+|
+    /**
+    * Creates select statement for read only.
+    * The locking of selected rows depends on transaction isolation.
+    * @param cspec the cursor specification to be selected in read only mode.
+    * @param <T> the type of objects, to which result set rows will be converted.
+    * @return new select statement
+    */
+    cspec:CursorSpecification<T>  FOR READ ONLY ::
+        import java.util.LinkedList;
+        public AbstractSelectStatement<T> forReadOnly {}
+|
+    cspec:CursorSpecification<T> FOR UPDATE
+        :: public AbstractSelectStatement<T> forUpdate {}
+;
+
+
+public interface CursorSpecification<T> : Query<T> {}
+
+public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
+
+# #zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
+# #updatability_clause moved to zSelectStatement
+# 
+# see QueryExpression.sdl, Sort.sdl
+
+<T> CursorSpecification<T> ::=
+    qe:QueryExpression<T> :: implicit {}
+|
+    qe:QueryExpressionScalar<T> :: implicit {
+            public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
+            // changes outer context!
+                context.set(UniqueNameProvider.class, new ScalarNameProvider());
+                final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
+                return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar(__rowMapper));
+            }/*delegation*/
+
+    }
+|
+    qe:QueryExpression<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {}
+|
+    qe:QueryExpressionScalar<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {
+            public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
+            // changes outer context!
+                context.set(UniqueNameProvider.class, new ScalarNameProvider());
+                final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
+                return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar_OrderByClause(__rowMapper, obc.z$sqlOfOrderByClause(context)));
+            }/*delegation*/
+    }
+;
+
+::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpression<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+    SortSpecificationList list = createSortSpecificationList(sort);
+     for (SortSpecification add: additionalSort) {
+         list = appendSortSpecification(list, add);
+     }
+     return  orderBy(qe, createOrderByClause(list));
+}
+
+::  public <T> AbstractCursorSpecification<T> orderAsc(final QueryExpressionScalar<T> qe) {
+      final SortSpecification sortSpec = z$SortSpecification$from$SortOrderingSpecification(asc(createScalarSortKey()));
+      SortSpecificationList list = createSortSpecificationList(sortSpec);
+      return orderBy(qe, createOrderByClause(list));
+}
+
+::  public <T> AbstractCursorSpecification<T> orderDesc(final QueryExpressionScalar<T> qe) {
+      final SortSpecification sortSpec = z$SortSpecification$from$SortOrderingSpecification(desc(createScalarSortKey()));
+      SortSpecificationList list = createSortSpecificationList(sortSpec);
+      return orderBy(qe, createOrderByClause(list));
+}
+
+::    private SortKey createScalarSortKey() {
+          return new SortKey() {
+              @Override
+              public Sql z$sqlOfSortKey(final SqlContext context) {
+                  return new CustomSql(context.get(UniqueNameProvider.class).getUniqueName());
+              }
+          };
+      }
+
+
+import org.symqle.jdbc.Option;
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.util.List;
+public interface DatabaseGate {
+    public Connection getConnection() throws SQLException;
+    public Dialect getDialect();
+    List<Option> getOptions();
+}
+

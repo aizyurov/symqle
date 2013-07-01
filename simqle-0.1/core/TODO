@@ -29,7 +29,7 @@ LIMIT/OFFSET
 
 (done) collate clause
 
-Symqle methods visibility. Package scope and public methods of Simqle become public in abstract classes. Protected methods make no sense - to be removed. 
+Symqle methods visibility. Package scope and public methods of Symqle become public in abstract classes. Protected methods make no sense - to be removed. 
 
 rename booleanValue -> asPredicate
 

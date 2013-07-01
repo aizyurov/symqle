@@ -1,0 +1,4 @@
+public interface WhereClause : Sql {}
+
+WhereClause ::= WHERE cond:BooleanExpression :: implicit {}
+;

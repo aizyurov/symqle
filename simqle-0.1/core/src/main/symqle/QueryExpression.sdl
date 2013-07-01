@@ -1,0 +1,217 @@
+
+public interface QueryExpression<T> : Query<T> {}
+
+public class AbstractQueryExpression<T> implements QueryExpression<T> {}
+
+# we have different rules for QueryExpression and QueryExpressionScalar
+# the first one is just QueryBase with (maybe) WhereClause
+# the second one is really an expression, which may include union, intersection etc.
+# see QueryBase.sdl, Where.sdl
+
+<T> QueryExpression<T> ::=
+    qb:QueryBase<T> :: implicit {}
+|
+    qb:QueryBase<T> wc:WhereClause :: public AbstractQueryExpression<T> where {}
+|
+    qs:QuerySpecification<T> :: implicit {}
+;
+
+public interface QueryExpressionScalar<T> extends Scalar<T> : Query<T> {}
+
+public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T> {}
+
+:: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionScalar<T> qe, final QueryTerm<T> qt) {
+       // left and right parts have separate contexts
+       final SqlContext leftContext = createScalarInnerContext(context);
+       final SqlContext rightContext = createScalarInnerContext(context);
+       // learning
+       leftContext.set(Dialect.class, DebugDialect.get());
+       leftContext.set(Configuration.class, getDebugConfiguration());
+       rightContext.set(Dialect.class, DebugDialect.get());
+       rightContext.set(Configuration.class, getDebugConfiguration());
+       qe.z$sqlOfQueryExpressionScalar(leftContext);
+       qt.z$sqlOfQueryTerm(rightContext);
+       // construction
+       leftContext.set(Dialect.class, context.get(Dialect.class));
+       leftContext.set(Configuration.class, context.get(Configuration.class));
+       rightContext.set(Dialect.class, context.get(Dialect.class));
+       rightContext.set(Configuration.class, context.get(Configuration.class));
+       final Query<T> left = qe.z$sqlOfQueryExpressionScalar(leftContext);
+       final Query<T> right = qt.z$sqlOfQueryTerm(rightContext);
+       return Pair.make(left, right);
+}
+
+
+<T> QueryExpressionScalar<T> ::=
+    qt:QueryTerm<T> :: implicit {}
+|
+    qe:QueryExpressionScalar<T> UNION ALL qt:QueryTerm<T> ::
+        public AbstractQueryExpressionScalar<T> unionAll {
+            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
+
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_ALL_QueryTerm(operands.first(), operands.second()));
+            }
+        }
+|
+    qe:QueryExpressionScalar<T> UNION DISTINCT qt:QueryTerm<T> ::
+        public AbstractQueryExpressionScalar<T> unionDistinct {
+            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
+
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_DISTINCT_QueryTerm(operands.first(), operands.second()));
+            }
+        }
+|
+    qe:QueryExpressionScalar<T> UNION qt:QueryTerm<T> ::
+        public AbstractQueryExpressionScalar<T> union {
+            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
+
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_QueryTerm(operands.first(), operands.second()));
+            }
+        }
+|
+    qe:QueryExpressionScalar<T> EXCEPT ALL qt:QueryTerm<T> ::
+        public AbstractQueryExpressionScalar<T> exceptAll {
+            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
+
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_ALL_QueryTerm(operands.first(), operands.second()));
+            }
+        }
+|
+    qe:QueryExpressionScalar<T> EXCEPT DISTINCT qt:QueryTerm<T> ::
+        public AbstractQueryExpressionScalar<T> exceptDistinct {
+            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
+
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_DISTINCT_QueryTerm(operands.first(), operands.second()));
+            }
+        }
+|
+    qe:QueryExpressionScalar<T> EXCEPT qt:QueryTerm<T> ::
+        public AbstractQueryExpressionScalar<T> except {
+            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
+
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_QueryTerm(operands.first(), operands.second()));
+            }
+        }
+;
+
+# zQueryTerm is always scalar; we do not add suffix _scalar for brevity
+#
+public interface QueryTerm<T> extends Scalar<T> :  Query<T> {}
+
+public class AbstractQueryTerm<T> implements QueryTerm<T> {}
+
+:: private <T> Pair<Query<T>, Query<T>> prepareIntersectOperands(final SqlContext context, final QueryTerm<T> qt, final QueryPrimary<T> qp) {
+   final SqlContext leftContext = createScalarInnerContext(context);
+   final SqlContext rightContext = createScalarInnerContext(context);
+   // learning
+   leftContext.set(Dialect.class, DebugDialect.get());
+   rightContext.set(Dialect.class, DebugDialect.get());
+   leftContext.set(Configuration.class, getDebugConfiguration());
+   rightContext.set(Configuration.class, getDebugConfiguration());
+   qt.z$sqlOfQueryTerm(leftContext);
+   qp.z$sqlOfQueryPrimary(rightContext);
+   // construction
+   leftContext.set(Dialect.class, context.get(Dialect.class));
+   rightContext.set(Dialect.class, context.get(Dialect.class));
+   leftContext.set(Configuration.class, context.get(Configuration.class));
+   rightContext.set(Configuration.class, context.get(Configuration.class));
+   final Query<T> left = qt.z$sqlOfQueryTerm(leftContext);
+   final Query<T> right = qp.z$sqlOfQueryPrimary(rightContext);
+   return Pair.make(left, right);
+}
+
+
+<T> QueryTerm<T> ::=
+    qp:QueryPrimary<T> :: implicit {}
+|
+    qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
+        public AbstractQueryTerm<T> intersectAll {
+            public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareIntersectOperands(context, qt, qp);
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryTerm_is_QueryTerm_INTERSECT_ALL_QueryPrimary(operands.first(), operands.second()));
+            }
+        }
+|
+    qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
+          public AbstractQueryTerm<T> intersectDistinct {
+            public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareIntersectOperands(context, qt, qp);
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryTerm_is_QueryTerm_INTERSECT_DISTINCT_QueryPrimary(operands.first(), operands.second()));
+            }
+          }
+|
+    qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
+          public AbstractQueryTerm<T> intersect {
+            public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
+                Pair<Query<T>, Query<T>> operands = prepareIntersectOperands(context, qt, qp);
+                return new ComplexQuery<T>(operands.first(),
+                    context.get(Dialect.class)
+                        .QueryTerm_is_QueryTerm_INTERSECT_QueryPrimary(operands.first(), operands.second()));
+            }
+          }
+;
+
+public interface QueryPrimary<T> extends Scalar<T>  : Query<T> {}
+
+public class AbstractQueryPrimary<T> implements QueryPrimary<T> {}
+
+<T> QueryPrimary<T> ::=
+    qs:QuerySpecification<T> :: implicit {}
+|
+    LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN :: implicit {}
+|
+    SELECT sl:AggregateSelectSublist<T> fc:FromClause wc:WhereClause :: private AbstractQueryPrimary<T> selectAggregate {}
+|
+    SELECT sl:AggregateSelectSublist<T> fc:FromClause :: private AbstractQueryPrimary<T> selectAggregate {}
+;
+
+
+:: public <T> AbstractQueryPrimary<T> where(final AggregateSelectSublist<T> sl, final WhereClause wc) {
+    return selectAggregate(sl, new ImplicitFromClause(), wc);
+}
+
+:: <T> QueryPrimary<T> implicit(final AggregateSelectSublist<T> sl) {
+    return selectAggregate(sl, new ImplicitFromClause());
+}
+
+
+public interface QuerySpecification<T> extends Scalar<T> : Query<T> {}
+
+
+public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
+
+<T> QuerySpecification<T> ::=
+    qb:QueryBaseScalar<T> :: implicit {}
+|
+    qb:QueryBaseScalar<T> wc:WhereClause ::
+         public AbstractQuerySpecification<T> where {}
+;
+
+
+
+
+
+
+

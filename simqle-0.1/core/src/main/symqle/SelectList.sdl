@@ -1,0 +1,95 @@
+
+public interface SelectList<T> : Query<T> {}
+
+public class AbstractSelectList<T> implements SelectList<T> {}
+
+<T> SelectList<T> ::=
+    sl:SelectSublist<T> :: implicit {}
+;
+
+# non-trivial construction of resulting Query; cannot be derived automatically
+import org.symqle.Pair;
+<T, U> SelectList<Pair<T, U>> ::= sl1:SelectList<T> COMMA sl2:SelectList<U> ::
+    public AbstractSelectList<Pair<T, U>> pair {
+            /**
+            * Creates a Query representing <code>this</code>
+            * @param context the Sql construction context
+            * @return query conforming to <code>this</code> syntax
+            */
+            public Query<Pair<T, U>> z$sqlOfSelectList(final SqlContext context) {
+                final Query<T> query1 = sl1.z$sqlOfSelectList(context);
+                final Query<U> query2 = sl2.z$sqlOfSelectList(context);
+                RowMapper<Pair<T, U>> extractor = new RowMapper<Pair<T, U>>() {
+                    @Override
+                    public Pair<T, U> extract(Row row) throws SQLException {
+                        return Pair.make(query1.extract(row), query2.extract(row));
+                    }
+                };
+                return new ComplexQuery<Pair<T, U>>(extractor, context.get(Dialect.class).SelectList_is_SelectList_COMMA_SelectList(query1, query2));
+            }
+    }
+;
+
+
+
+public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
+
+public interface Identifier : Sql {}
+
+<T> SelectSublist<T> ::= ve:ValueExpression<T> ::
+    implicit {
+            /**
+            * Creates a Query representing <code>this</code>
+            * @param context the Sql construction context
+            * @return query conforming to <code>this</code> syntax
+            */
+            public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
+                final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                final Sql veSql = ve.z$sqlOfValueExpression(context);
+                if (nameProvider == null) {
+                    return new ComplexQuery<T>(new NullRowMapper<T>(),
+                    context.get(Dialect.class).SelectSublist_is_ValueExpression(veSql));
+                } else {
+                    final String name = nameProvider.getUniqueName();
+                    return new ComplexQuery<T>(new RowMapper<T>(){
+                                @Override
+                                public T extract(Row row) throws SQLException {
+                                    return getMapper().value(row.getValue(name));
+                                }
+                            }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new CustomSql(name)));
+                }           
+            }
+    }
+|
+    ve:ValueExpression<T> AS id:Identifier
+;
+
+public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
+
+<T> AggregateSelectSublist<T> ::= aggr:AggregateFunction<T> ::
+    implicit {
+            /**
+            * Creates a Query representing <code>this</code>
+            * @param context the Sql construction context
+            * @return query conforming to <code>this</code> syntax
+            */
+            public Query<T> z$sqlOfAggregateSelectSublist(final SqlContext context) {
+                final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                final Sql aggrSql = aggr.z$sqlOfAggregateFunction(context);
+                if (nameProvider == null) {
+                    return new ComplexQuery<T>(new NullRowMapper<T>(),
+                    context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction(aggrSql));
+                } else {
+                    final String name = nameProvider.getUniqueName();
+                    return new ComplexQuery<T>(new RowMapper<T>(){
+                                @Override
+                                public T extract(Row row) throws SQLException {
+                                    return getMapper().value(row.getValue(name));
+                                }
+                            }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new CustomSql(name)));
+                }
+            }
+    }
+|
+    aggr:AggregateFunction<T> AS id:Identifier
+;

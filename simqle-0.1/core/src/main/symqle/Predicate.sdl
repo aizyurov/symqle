@@ -1,0 +1,176 @@
+public interface Predicate : Sql {}
+
+Predicate ::=
+ 		p:ComparisonPredicate :: implicit {}
+|
+        p:InPredicate :: implicit {}
+|
+        p:NullPredicate :: implicit {}
+|
+        p:ExistsPredicate :: implicit {}
+|
+        p:LikePredicate :: implicit {}
+;
+
+# All predicates use Predicand (<row value predicand>)
+# in current version of Symqle it can be only scalar
+
+public interface Predicand<T> extends Scalar<T> : Sql {}
+
+<T> Predicand<T> ::=
+    e:NumericExpression<T> :: implicit {}
+|
+    e:StringExpression<T> :: implicit {}
+|
+    e:ValueExpressionPrimary<T> :: implicit {}
+;
+
+Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {
+            public Mapper<Boolean> getMapper() {
+                return Mappers.BOOLEAN;
+            }
+    }
+;
+
+
+public interface ComparisonPredicate : Sql {}
+
+public class AbstractComparisonPredicate implements ComparisonPredicate {}
+
+<T> ComparisonPredicate ::=
+     p1:Predicand<T> EQ p2:Predicand<T>
+        :: public AbstractComparisonPredicate eq {}
+|
+
+     p1:Predicand<T> NE p2:Predicand<T>
+        :: public AbstractComparisonPredicate ne {}
+|
+     p1:Predicand<T> GT p2:Predicand<T>
+        :: public AbstractComparisonPredicate gt {}
+|
+     p1:Predicand<T> GE p2:Predicand<T>
+        :: public AbstractComparisonPredicate ge {}
+|
+     p1:Predicand<T> LT p2:Predicand<T>
+        :: public AbstractComparisonPredicate lt {}
+|
+     p1:Predicand<T> LE p2:Predicand<T>
+        :: public AbstractComparisonPredicate le {}
+;
+
+:: public <T> AbstractComparisonPredicate eq(Predicand<T> p, T v) {
+    return eq(p, DynamicParameter.create(p.getMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate ne(Predicand<T> p, T v) {
+    return ne(p, DynamicParameter.create(p.getMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate gt(Predicand<T> p, T v) {
+    return gt(p, DynamicParameter.create(p.getMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate ge(Predicand<T> p, T v) {
+    return ge(p, DynamicParameter.create(p.getMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate lt(Predicand<T> p, T v) {
+    return lt(p, DynamicParameter.create(p.getMapper(), v));
+}
+:: public <T> AbstractComparisonPredicate le(Predicand<T> p, T v) {
+    return le(p, DynamicParameter.create(p.getMapper(), v));
+}
+
+
+public interface InPredicate : Sql {}
+
+public class AbstractInPredicate implements InPredicate {
+}
+
+<T> InPredicate ::=
+    p:Predicand<T> IN v:InPredicateValue<T> :: public AbstractInPredicate in {}
+|
+        p:Predicand<T> NOT IN v:InPredicateValue<T> :: public AbstractInPredicate notIn {}
+;
+
+public interface InPredicateValue<T> : Sql {}
+
+<T> InPredicateValue<T> ::=
+    s:ScalarSubquery<T> :: implicit {}
+|
+    LEFT_PAREN l:InValueList<T> RIGHT_PAREN :: implicit {}
+;
+
+public interface InValueList<T> : Sql {}
+
+<T>  InValueList<T> ::=
+    e1:ValueExpression<T> :: protected InValueList<T> createInValueList {}
+|
+    l:InValueList<T> COMMA e:ValueExpression<T> :: protected InValueList<T> append {}
+;
+
+# public convenience methods for construction of InPredicate from list of ValueExpression
+
+:: public <T> AbstractInPredicate in(final Predicand<T> p, final T first, final T... other) {
+     return in(p, prepareInPredicateValue(p.getMapper(), first, other));
+}
+
+:: public <T> AbstractInPredicate notIn(final Predicand<T> p, final T first, final T... other) {
+     return notIn(p, prepareInPredicateValue(p.getMapper(), first, other));
+}
+
+:: public <T> AbstractInPredicate contains(final ScalarSubquery<T> subquery, T element) {
+    return in(DynamicParameter.create(subquery.getMapper(), element), z$InPredicateValue$from$ScalarSubquery(subquery));
+}
+
+:: protected <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {
+     InValueList<T> list = createInValueList(DynamicParameter.create(mapper, first));
+     for (T e: other) {
+         list = append(list, DynamicParameter.create(mapper, e));
+     }
+     return z$InPredicateValue$from$InValueList(list);
+}
+
+public interface NullPredicate : Sql {}
+
+public class AbstractNullPredicate implements NullPredicate {}
+
+NullPredicate ::=
+    p:Predicand<?> IS NULL :: public AbstractNullPredicate isNull {}
+|
+    p:Predicand<?> IS NOT NULL :: public AbstractNullPredicate isNotNull {}
+;
+
+public interface ExistsPredicate : Sql {}
+
+public class AbstractExistsPredicate implements ExistsPredicate {}
+
+ExistsPredicate ::= EXISTS s:ScalarSubquery<?> :: public AbstractExistsPredicate exists {}
+;
+
+public interface LikePredicate : Sql {}
+public class AbstractLikePredicate implements LikePredicate {}
+
+# BLOB like not supported yet
+LikePredicate ::=
+    b:LikePredicateBase :: implicit {}
+|
+    b:LikePredicateBase ESCAPE esc:StringExpression<String> :: public AbstractLikePredicate escape {}
+;
+
+:: public AbstractLikePredicate escape(final LikePredicateBase base, final char escapeCharacter) {
+    return escape(base, DynamicParameter.create(Mappers.STRING, new String(new char[] {escapeCharacter})));
+}
+
+public interface LikePredicateBase : Sql {}
+public class AbstractLikePredicateBase implements LikePredicateBase {}
+
+LikePredicateBase ::=
+    e:ValueExpression<?> LIKE p:StringExpression<String> :: public AbstractLikePredicateBase like {}
+|
+    e:ValueExpression<?> NOT LIKE p:StringExpression<String> :: public AbstractLikePredicateBase notLike {}
+;
+
+:: public AbstractLikePredicateBase like(ValueExpression<?> expr, String pattern) {
+      return like(expr, DynamicParameter.create(Mappers.STRING, pattern));
+}
+
+:: public AbstractLikePredicateBase notLike(ValueExpression<?> expr, String pattern) {
+      return notLike(expr, DynamicParameter.create(Mappers.STRING, pattern));
+}
