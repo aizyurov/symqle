@@ -1,7 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Mappers;
-import org.simqle.jdbc.StatementOption;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
@@ -568,12 +568,7 @@ public class ColumnTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = column.list(datasource, new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setFetchSize(10);
-            }
-        });
+        final List<Long> list = column.list(datasource, Option.setFetchSize(10)); 
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);

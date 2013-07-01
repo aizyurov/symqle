@@ -17,7 +17,7 @@ import org.simqle.Callback;
 import org.simqle.Row;
 import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
-import org.simqle.jdbc.StatementOption;
+import org.simqle.jdbc.Option;
 ::
     /**
      * Executes a statement and calls callback for each returned row.
@@ -32,13 +32,13 @@ import org.simqle.jdbc.StatementOption;
 public <T> int scroll(final SelectStatement<T> statement,
                           final DatabaseGate gate,
                           final Callback<T> callback,
-                          final StatementOption... options
+                          final Option... options
                           ) throws SQLException {
      final Query<T> query = prepareQuery(statement, gate.getDialect());
      final Connection connection = gate.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
-         for (final StatementOption option : options) {
+         for (final Option option : options) {
             option.apply(preparedStatement);
          }
          try {
@@ -70,7 +70,7 @@ import java.sql.SQLException;
 import java.util.List;
 :: public <T> List<T> list(final SelectStatement<T> statement,
                           final DatabaseGate gate,
-                          final StatementOption... options
+                          final Option... options
                         ) throws SQLException {
         final List<T> result = new LinkedList<T>();
         scroll(statement,  gate,
