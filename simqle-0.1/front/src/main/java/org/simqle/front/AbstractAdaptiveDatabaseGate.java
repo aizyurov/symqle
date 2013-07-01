@@ -96,7 +96,7 @@ public abstract class AbstractAdaptiveDatabaseGate implements DatabaseGate {
     };
 
     private ConnectionCallbackFactory[] knownConnectionCallbackFactories = {
-
+        new MySqlConnectionCallbackFactory()
     };
 
     private static class NullConnectionCallback implements ConnectionCallback {

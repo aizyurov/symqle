@@ -47,7 +47,7 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "mysql");
+                expectSQLException(e, "MySQL");
             }
         }
     }

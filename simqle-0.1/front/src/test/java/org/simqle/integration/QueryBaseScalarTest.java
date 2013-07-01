@@ -79,7 +79,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -91,7 +91,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -103,7 +103,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -115,7 +115,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -127,7 +127,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -139,7 +139,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -206,7 +206,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "mysql");
+                expectSQLException(e, "MySQL");
             }
         }
     }

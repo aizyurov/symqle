@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class StringExpressionTest extends AbstractIntegrationTestBase {
 
-    private final List<String> caseInsensitiveLikeDatabases = Arrays.asList("mysql");
+    private final List<String> caseInsensitiveLikeDatabases = Arrays.asList("MySQL");
 
     private AbstractStringExpression<String> stringExpression(final Employee employee) {
         return employee.firstName.concat(", my friend");
@@ -40,7 +40,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         try {
             assertEquals(Arrays.asList("Alex, my friend     ", "Bill, my friend     ", "James, my friend    ", "James, my friend    ", "Margaret, my friend "), list);
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 // mysql treats CHAR as VARCHAR, does not append blanks
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
             } else {
@@ -99,7 +99,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "mysql");
+                expectSQLException(e, "MySQL");
             }
         }
    }
@@ -191,7 +191,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -206,7 +206,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -221,7 +221,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -236,7 +236,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -251,7 +251,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -266,7 +266,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 

@@ -66,7 +66,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                 (String)null
             ), list);
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList(
                         (String)null,
                         (String)null,
@@ -93,7 +93,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
                     "high"
             ), list);
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList(
                         "low",
                         "high",
@@ -134,7 +134,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         try {
             assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low "), replaceNullsAndSort(list));
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));
             } else {
                 throw e;
@@ -198,7 +198,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("(null)", "(null)", "First", "James", "Redwood"), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support FOR READ ONLY
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
 
     }
@@ -423,7 +423,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
         } catch (AssertionFailedError e) {
             // mysql: default is NULLS FIRST
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper"), list);
             } else {
                 throw e;
@@ -439,7 +439,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper"), list);
         } catch (SQLException e) {
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -452,7 +452,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // mysql: does not support NULLS LAST:
                 // You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'NULLS LAST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -466,7 +466,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
         } catch (AssertionFailedError e) {
             // mysql: default is NULLS FIRST
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper"), list);
             } else {
                 throw e;
@@ -484,7 +484,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Cooper", "First", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // mysql: default is NULLS FIRST, reversed for DESC
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("Cooper", "First", "Redwood", "March", "Pedersen"), list);
             } else {
                 throw e;
@@ -659,7 +659,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -675,7 +675,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -691,7 +691,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -707,7 +707,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -723,7 +723,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -739,7 +739,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), replaceNullsAndSort(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 

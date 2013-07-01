@@ -97,7 +97,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         try {
             assertEquals(Arrays.asList("Cooper  ", "First   ", "March   ", "Pedersen", "Redwood "), list);
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 // mysql trheats CHAR as VARCHAR, blanks are not appended
                 assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
             } else {
@@ -228,7 +228,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -240,7 +240,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -255,7 +255,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains("Alex"));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -298,7 +298,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -310,7 +310,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -322,7 +322,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -353,7 +353,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "mysql");
+                expectSQLException(e, "MySQL");
             }
         }
     }
@@ -456,7 +456,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -468,7 +468,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
             // mysql does not support NULLS LAST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -749,7 +749,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         Collections.sort(list);
         // some database engines to not honor setMaxFieldSize
         // mysql,...
-        if ("mysql".equals(getDatabaseName())) {
+        if ("MySQL".equals(getDatabaseName())) {
             assertEquals(fullNames, list);
         } else {
             assertEquals(truncatedNames, list);

@@ -7,7 +7,7 @@ public class MySqlConnectionCallbackFactory implements ConnectionCallbackFactory
 
     @Override
     public String getName() {
-        return "MySql";
+        return "MySQL";
     }
 
     @Override

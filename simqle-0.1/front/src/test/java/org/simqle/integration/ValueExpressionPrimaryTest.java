@@ -435,7 +435,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -448,7 +448,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // mysql does not support NULLS LAST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -500,7 +500,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
 
     }
@@ -513,7 +513,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
 
     }
@@ -526,7 +526,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -539,7 +539,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -552,7 +552,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -564,7 +564,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -606,7 +606,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "mysql");
+                expectSQLException(e, "MySQL");
             }
         }
     }

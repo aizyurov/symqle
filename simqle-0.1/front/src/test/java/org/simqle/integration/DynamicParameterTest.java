@@ -250,7 +250,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
@@ -267,7 +267,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
@@ -283,7 +283,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
@@ -354,7 +354,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
@@ -370,7 +370,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
@@ -386,7 +386,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         } catch (IllegalStateException e) {
             // Generic dialect does not support selects with no tables
             expectIllegalStateException(e, GenericDialect.class);
@@ -560,7 +560,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -572,7 +572,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 
@@ -625,7 +625,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby", "mysql");
+            expectSQLException(e, "Apache Derby", "MySQL");
         }
     }
 

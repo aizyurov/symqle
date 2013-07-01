@@ -106,7 +106,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
             // mysql;: does not support NULLS FIRST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -118,7 +118,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
             assertEquals("Cooper", list.get(4));
         } catch (SQLException e) {
             // mysql;: does not support NULLS LAST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -137,7 +137,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
-        final String castTarget = "mysql".equals(getDatabaseName()) ? "DECIMAL(1)" : "BOOLEAN";
+        final String castTarget = "MySQL".equals(getDatabaseName()) ? "DECIMAL(1)" : "BOOLEAN";
         final List<String> list = employee.lastName
                 .where(employee.retired.cast(castTarget).booleanValue())
                 .orderBy(employee.lastName)
@@ -309,7 +309,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 

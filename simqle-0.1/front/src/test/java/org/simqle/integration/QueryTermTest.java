@@ -25,7 +25,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     @Override
     protected void onSetUp() throws Exception {
         // skip databases, which do not support INTERSECT
-        notApplicable = Arrays.asList("mysql").contains(getDatabaseName());
+        notApplicable = Arrays.asList("MySQL").contains(getDatabaseName());
     }
 
     public void testList() throws Exception {

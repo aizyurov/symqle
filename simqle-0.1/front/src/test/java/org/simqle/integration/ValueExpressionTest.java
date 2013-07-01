@@ -50,7 +50,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("false", "true ", "true ", "true ", "true "), list);
         } catch (AssertionFailedError e) {
             // mysql converts Booleans to "0"/"1"
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
             } else {
                 throw e;
@@ -65,7 +65,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         try {
             assertEquals(Arrays.asList("false", "true", "true", "true", "true"), list);
         } catch (AssertionFailedError e) {
-            assertTrue(getDatabaseName(), getDatabaseName().equals("mysql"));
+            assertTrue(getDatabaseName(), getDatabaseName().equals("MySQL"));
             assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
         }
     }
@@ -391,7 +391,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         try {
             assertEquals(Arrays.asList("falseCooper"), list);
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("0Cooper"), list);
             }
         }
@@ -406,7 +406,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         try {
             assertEquals(Arrays.asList("false-"), list);
         } catch (AssertionFailedError e) {
-            if ("mysql".equals(getDatabaseName())) {
+            if ("MySQL".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("0-"), list);
             }
         }
@@ -424,7 +424,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             try {
                 assertEquals(Arrays.asList("false-"), list);
             } catch (AssertionFailedError e) {
-                if ("mysql".equals(getDatabaseName())) {
+                if ("MySQL".equals(getDatabaseName())) {
                     assertEquals(Arrays.asList("0-"), list);
                 }
             }
@@ -450,7 +450,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -462,7 +462,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -507,7 +507,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(false, true, true, true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -519,7 +519,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -531,7 +531,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -543,7 +543,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -555,7 +555,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -567,7 +567,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "mysql");
+            expectSQLException(e, "MySQL");
         }
     }
 
@@ -641,7 +641,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             try {
                 assertEquals(Arrays.asList("Cooper"), list);
             } catch (AssertionFailedError e) {
-                if ("mysql".equals(getDatabaseName())) {
+                if ("MySQL".equals(getDatabaseName())) {
                     final List<String> mySqlList = employee.lastName
                             .where(createVE(employee).like("0%"))
                             .orderBy(employee.lastName)

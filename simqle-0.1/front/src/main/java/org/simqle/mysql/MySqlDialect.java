@@ -21,7 +21,7 @@ public class MySqlDialect extends GenericDialect {
 
     @Override
     public String getName() {
-        return "MySql";
+        return "MySQL";
     }
 
     /**
