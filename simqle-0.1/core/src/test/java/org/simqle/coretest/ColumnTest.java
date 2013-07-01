@@ -558,6 +558,10 @@ public class ColumnTest extends SqlTestCase {
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchSize(10);
+        statement.setFetchDirection(ResultSet.FETCH_FORWARD);
+        statement.setMaxFieldSize(15);
+        statement.setMaxRows(5);
+        statement.setQueryTimeout(100);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
         expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
@@ -568,7 +572,11 @@ public class ColumnTest extends SqlTestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
 
-        final List<Long> list = column.list(datasource, Option.setFetchSize(10)); 
+        final List<Long> list = column.list(datasource, Option.setFetchSize(10),
+                Option.setFetchDirection(ResultSet.FETCH_FORWARD),
+                Option.setMaxFieldSize(15),
+                Option.setMaxRows(5),
+                Option.setQueryTimeout(100));
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(datasource, connection, statement, resultSet);
