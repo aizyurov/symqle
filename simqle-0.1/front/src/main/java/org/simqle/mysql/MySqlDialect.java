@@ -1,6 +1,5 @@
 package org.simqle.mysql;
 
-import org.simqle.CustomSql;
 import org.simqle.Sql;
 import org.simqle.SqlTerm;
 import org.simqle.sql.Dialect;
@@ -9,15 +8,20 @@ import org.simqle.sql.GenericDialect;
 /**
  * @author lvovich
  */
-public class MysqlDialect extends GenericDialect {
+public class MySqlDialect extends GenericDialect {
 
-    private final static Dialect instance = new MysqlDialect();
+    private final static Dialect instance = new MySqlDialect();
 
-    private MysqlDialect() {
+    private MySqlDialect() {
     }
 
     public static Dialect get() {
         return instance;
+    }
+
+    @Override
+    public String getName() {
+        return "MySql";
     }
 
     /**
@@ -30,8 +34,8 @@ public class MysqlDialect extends GenericDialect {
     }
 
     @Override
-    public Sql FromClauseFromNothing() {
-        return new CustomSql("");
+    public String fallbackTableName() {
+        return null;
     }
 
     @Override

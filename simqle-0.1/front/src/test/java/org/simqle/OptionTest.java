@@ -1,8 +1,8 @@
 package org.simqle;
 
 import junit.framework.TestCase;
-import org.simqle.front.StatementOptions;
 import org.simqle.integration.model.Employee;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractCursorSpecification;
 import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.GenericDialect;
@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
@@ -21,7 +22,7 @@ import static org.easymock.EasyMock.replay;
 /**
  * @author lvovich
  */
-public class StatementOptionsTest extends TestCase {
+public class OptionTest extends TestCase {
 
     public void testOptions() throws Exception {
         Employee employee = new Employee();
@@ -31,6 +32,7 @@ public class StatementOptionsTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        expect(datasource.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(datasource.getDialect()).andReturn(GenericDialect.get());
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -50,11 +52,11 @@ public class StatementOptionsTest extends TestCase {
         connection.close();
         replay(datasource, connection,  statement, resultSet);
         final List<String> list = cursorSpecification.list(datasource,
-                StatementOptions.setFetchDirection(ResultSet.FETCH_FORWARD),
-                StatementOptions.setFetchSize(2),
-                StatementOptions.setMaxFieldSize(5),
-                StatementOptions.setMaxRows(10),
-                StatementOptions.setQueryTimeout(7));
+                Option.setFetchDirection(ResultSet.FETCH_FORWARD),
+                Option.setFetchSize(2),
+                Option.setMaxFieldSize(5),
+                Option.setMaxRows(10),
+                Option.setQueryTimeout(7));
         assertEquals(Arrays.asList("Alex"), list);
     }
 }

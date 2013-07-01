@@ -1,6 +1,5 @@
 package org.simqle.derby;
 
-import org.simqle.CustomSql;
 import org.simqle.Sql;
 import org.simqle.SqlTerm;
 import org.simqle.sql.Dialect;
@@ -14,6 +13,11 @@ public class DerbyDialect extends GenericDialect {
     private DerbyDialect() {
     }
 
+    @Override
+    public String getName() {
+        return "Apache Derby";
+    }
+
     private static Dialect instance = new DerbyDialect();
 
     public static Dialect get() {
@@ -21,8 +25,8 @@ public class DerbyDialect extends GenericDialect {
     }
 
     @Override
-    public Sql FromClauseFromNothing() {
-        return new CustomSql("FROM (VALUES(1)) dummy");
+    public String fallbackTableName() {
+        return "(VALUES(1))";
     }
 
     @Override

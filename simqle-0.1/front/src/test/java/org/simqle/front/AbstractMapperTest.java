@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import org.simqle.Mappers;
 import org.simqle.Row;
 import org.simqle.RowMapper;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.GenericDialect;
@@ -13,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -48,6 +50,7 @@ public class AbstractMapperTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -80,6 +83,7 @@ public class AbstractMapperTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);

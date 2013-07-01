@@ -1,47 +1,47 @@
 package org.simqle.front;
 
-import org.simqle.sql.DatabaseGate;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.Dialect;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author lvovich
  */
-public class DialectDataSource implements DatabaseGate {
+public class DialectDataSource extends  AbstractAdaptiveDatabaseGate {
     private final DataSource dataSource;
-    private final Dialect dialect;
-    private final String connectionSetup;
+    private final List<Option> options;
 
-    public DialectDataSource(final Dialect dialect, final DataSource dataSource, final String connectionSetup) {
-        this.dialect = dialect;
+    public DialectDataSource(final DataSource dataSource) {
         this.dataSource = dataSource;
-        this.connectionSetup = connectionSetup;
+        options = Collections.emptyList();
     }
 
-    public DialectDataSource(final Dialect dialect, final DataSource dataSource) {
-        this(dialect, dataSource, null);
+    public DialectDataSource(final DataSource dataSource, final Dialect dialect) {
+        super(dialect);
+        this.dataSource = dataSource;
+        options = Collections.emptyList();
     }
 
-    public Connection getConnection() throws SQLException {
-        final Connection connection = dataSource.getConnection();
-//        System.out.println("database product name is "+connection.getMetaData().getDatabaseProductName());
-        if (connectionSetup != null) {
-            final Statement statement = connection.createStatement();
-            try {
-                statement.executeUpdate(connectionSetup);
-            } finally {
-                statement.close();
-            }
-        }
-        return connection;
+    public DialectDataSource(final DataSource dataSource, final Dialect dialect, final Option... options) {
+        super(dialect);
+        this.dataSource = dataSource;
+        this.options = Arrays.asList(options);
     }
 
-    public Dialect getDialect() {
-        return dialect;
+    @Override
+    protected Connection connect() throws SQLException {
+        return dataSource.getConnection();
     }
 
+    @Override
+    public List<Option> getOptions() {
+        return new ArrayList<Option>(options);
+    }
 }

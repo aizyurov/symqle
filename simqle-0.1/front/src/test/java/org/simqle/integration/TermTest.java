@@ -7,7 +7,7 @@ import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
 import org.simqle.integration.model.One;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractFactor;
 import org.simqle.sql.AbstractTerm;
 
@@ -347,7 +347,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby:GenericDialect ERROR 42X19: The WHERE or HAVING clause or CHECK CONSTRAINT definition is a 'DOUBLE' expression.  It must be a BOOLEAN expression.
             // derby:DerbyDialect ERROR 42846: Cannot convert types 'DOUBLE' to 'BOOLEAN'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -360,7 +360,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("-1500Cooper", "-3000First", "-2000March", "-2000Pedersen", "-3000Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -373,7 +373,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -388,7 +388,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 23.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -576,8 +576,8 @@ public class TermTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
@@ -626,7 +626,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -639,7 +639,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -652,7 +652,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -665,7 +665,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 

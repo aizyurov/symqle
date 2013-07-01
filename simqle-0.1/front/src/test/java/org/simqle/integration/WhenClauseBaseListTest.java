@@ -220,7 +220,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X87: At least one result expression (THEN or ELSE) of the 'conditional' expression must not be a '?'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -609,7 +609,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 

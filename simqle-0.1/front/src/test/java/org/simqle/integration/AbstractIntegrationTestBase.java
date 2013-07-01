@@ -34,7 +34,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     private static TestEnvironment createTestEnvironment() {
-        final String database = System.getProperty("org.simqle.integration.database");
+        final String database = System.getProperty("org.simqle.integration.config");
         return database == null ? DerbyEnvironment.getInstance() : ExternalDbEnvironment.getInstance(database);
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     protected final void expectSQLException(SQLException e, String... databaseNames) throws SQLException {
-        if (Arrays.asList(databaseNames).contains(environment.getDatabaseName())) {
+        if (Arrays.asList(databaseNames).contains(environment.getGate().getDialect().getName())) {
             return;
         }
         throw e;
@@ -62,7 +62,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     protected final String getDatabaseName() {
-        return environment.getDatabaseName();
+        return environment.getGate().getDialect().getName();
     }
 
     public static List<Double> toListOfDouble(final List<Number> list, Double nullReplacement) {

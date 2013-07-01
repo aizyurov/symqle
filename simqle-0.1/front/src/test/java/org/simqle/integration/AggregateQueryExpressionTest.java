@@ -4,7 +4,7 @@ import org.simqle.Pair;
 import org.simqle.front.Params;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.mysql.MySqlDialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -127,7 +127,7 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(4), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -137,8 +137,8 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
             final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList(4), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively

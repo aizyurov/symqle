@@ -489,7 +489,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 

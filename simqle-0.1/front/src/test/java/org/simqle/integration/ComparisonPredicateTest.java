@@ -57,7 +57,7 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -71,7 +71,7 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 96.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -85,7 +85,7 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "FALSE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -99,7 +99,7 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -113,7 +113,7 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -127,7 +127,7 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 96.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 

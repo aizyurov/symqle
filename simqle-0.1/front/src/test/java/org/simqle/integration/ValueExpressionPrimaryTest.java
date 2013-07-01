@@ -6,7 +6,8 @@ import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
 import org.simqle.integration.model.One;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.jdbc.Option;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractValueExpressionPrimary;
 import org.simqle.sql.GenericDialect;
 
@@ -34,49 +35,49 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testList() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.list(getDatabaseGate());
+        final List<String> list = primary.list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testOrderAsc() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.orderAsc().list(getDatabaseGate());
+        final List<String> list = primary.orderAsc().list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testOrderDesc() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.orderDesc().list(getDatabaseGate());
+        final List<String> list = primary.orderDesc().list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testCast() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.cast("CHAR(1)").list(getDatabaseGate());
+        final List<String> list = primary.cast("CHAR(1)").list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testMap() throws Exception {
         final One one = new One();
         final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();
-        final List<String> list = primary.list(getDatabaseGate());
+        final List<String> list = primary.list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("1"), list);
     }
 
     public void testAll() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.all().list(getDatabaseGate());
+        final List<String> list = primary.all().list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testDistinct() throws Exception {
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.distinct().list(getDatabaseGate());
+        final List<String> list = primary.distinct().list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 
@@ -413,7 +414,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -571,7 +572,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = department.deptName.where(creatPrimary(department).exists())
                 .orderBy(department.deptName)
-                .list(getDatabaseGate());
+                .list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -579,29 +580,29 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final List<String> list = department.deptName.where(creatPrimary(department).contains("March"))
                 .orderBy(department.deptName)
-                .list(getDatabaseGate());
+                .list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("HR"), list);
     }
 
     public void testForUpdate() throws Exception {
         try {
             final One one = new One();
-            final List<Integer> list = one.id.queryValue().forUpdate().list(getDatabaseGate());
+            final List<Integer> list = one.id.queryValue().forUpdate().list(getDatabaseGate(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
     public void testForReadOnly() throws Exception {
         try {
             final One one = new One();
-            final List<Integer> list = one.id.queryValue().forReadOnly().list(getDatabaseGate());
+            final List<Integer> list = one.id.queryValue().forReadOnly().list(getDatabaseGate(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
@@ -613,7 +614,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testQueryValue() throws Exception {
         try {
             final One one = new One();
-            final List<Integer> list = one.id.queryValue().queryValue().list(getDatabaseGate());
+            final List<Integer> list = one.id.queryValue().queryValue().list(getDatabaseGate(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (IllegalStateException e) {
             expectIllegalStateException(e, GenericDialect.class);

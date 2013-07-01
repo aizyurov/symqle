@@ -2,7 +2,7 @@ package org.simqle.integration;
 
 import org.simqle.Callback;
 import org.simqle.integration.model.Employee;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractCursorSpecification;
 
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -42,8 +42,8 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
             final List<String> list = createCursorSpecificaton(employee).forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively

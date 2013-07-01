@@ -261,7 +261,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testInArgument() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.salary.in(createCast(employee)))
+        final Employee another = new Employee();
+        final List<String> list = employee.lastName.where(employee.salary.in(createCast(another)))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -329,7 +330,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // derby: does not support COLLATE
-            expectSQLException(e, "derby");
+            System.out.println(getDatabaseName());
+            expectSQLException(e, "Apache Derby");
         }
     }
 

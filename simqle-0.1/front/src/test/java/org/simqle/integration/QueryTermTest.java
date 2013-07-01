@@ -2,6 +2,7 @@ package org.simqle.integration;
 
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractQueryTerm;
 
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -174,7 +175,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
-        final List<Integer> list = department.deptId.where(subquery.exists()).list(getDatabaseGate());
+        final List<Integer> list = department.deptId.where(subquery.exists()).list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(1, list.size());
     }
 
@@ -185,7 +186,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
-        final List<Integer> list = department.deptId.where(subquery.contains("First")).list(getDatabaseGate());
+        final List<Integer> list = department.deptId.where(subquery.contains("First")).list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(1, list.size());
     }
 
@@ -194,8 +195,9 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
+        final Employee manager = new Employee();
         final Department department = new Department();
-        final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("HR")));
+        final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(manager.lastName.where(manager.empId.eq(department.manager().empId).and(department.deptName.eq("HR"))));
         final List<Integer> list2 = department.deptId.where(subquery2.exists()).list(getDatabaseGate());
         assertEquals(0, list2.size());
     }
@@ -207,7 +209,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
-        final List<String> list = subquery.queryValue().list(getDatabaseGate());
+        final List<String> list = subquery.queryValue().list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -216,7 +218,8 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.where(employee.lastName.in(queryTerm(employee))).list(getDatabaseGate());
+        final Employee another = new Employee();
+        final List<Double> list = employee.salary.where(employee.lastName.in(queryTerm(another))).list(getDatabaseGate());
         assertEquals(Arrays.asList(3000.0), list);
     }
 

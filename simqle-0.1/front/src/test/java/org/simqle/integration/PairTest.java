@@ -2,7 +2,7 @@ package org.simqle.integration;
 
 import org.simqle.Pair;
 import org.simqle.integration.model.Employee;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractSelectList;
 
 import java.sql.SQLException;
@@ -94,8 +94,8 @@ public class PairTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains(Pair.make(3000.0, "James")));
             assertTrue(list.toString(), list.contains(Pair.make(2000.0, "Alex")));
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively

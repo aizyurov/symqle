@@ -7,7 +7,7 @@ import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
 import org.simqle.integration.model.One;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractStringExpression;
 
 import java.sql.SQLException;
@@ -76,7 +76,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
             // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -94,8 +94,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
@@ -117,7 +117,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY, GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
             // workaround: cast to VARCHAR
             final List<String> list = stringExpression(employee).cast("VARCHAR(256)").orderAsc().list(getDatabaseGate());
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
@@ -131,7 +131,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Margaret, my friend", "James, my friend", "James, my friend", "Bill, my friend", "Alex, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY, GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -162,7 +162,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
             // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -176,7 +176,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
             // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -191,7 +191,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "derby", "mysql");
+            expectSQLException(e, "Apache Derby", "mysql");
         }
     }
 
@@ -206,7 +206,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "derby", "mysql");
+            expectSQLException(e, "Apache Derby", "mysql");
         }
     }
 
@@ -221,7 +221,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "derby", "mysql");
+            expectSQLException(e, "Apache Derby", "mysql");
         }
     }
 
@@ -236,7 +236,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "derby", "mysql");
+            expectSQLException(e, "Apache Derby", "mysql");
         }
     }
 
@@ -251,7 +251,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "derby", "mysql");
+            expectSQLException(e, "Apache Derby", "mysql");
         }
     }
 
@@ -266,7 +266,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, "derby", "mysql");
+            expectSQLException(e, "Apache Derby", "mysql");
         }
     }
 
@@ -302,7 +302,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // derby: ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -319,7 +319,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -337,7 +337,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -355,7 +355,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -373,7 +373,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -391,7 +391,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -409,7 +409,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -446,7 +446,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -465,7 +465,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -483,7 +483,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -502,7 +502,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -514,7 +514,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(15, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -526,7 +526,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(9, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -538,7 +538,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(36, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -550,7 +550,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(4, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -562,7 +562,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals("-12", list.get(0));
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -649,7 +649,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 28.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -667,7 +667,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -678,7 +678,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate MIN cannot operate on type LONG VARCHAR.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
             // workaround: cast to VARCHAR
         }
     }
@@ -690,7 +690,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Margaret, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate MIN cannot operate on type LONG VARCHAR.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
             // workaround: cast to VARCHAR
             final List<String> list = stringExpression(employee).cast("VARCHAR(256)").max().list(getDatabaseGate());
             assertEquals(Arrays.asList("Margaret, my friend"), list);
@@ -705,7 +705,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(12, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 }

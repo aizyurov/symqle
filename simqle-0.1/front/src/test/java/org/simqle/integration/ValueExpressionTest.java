@@ -242,7 +242,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First")), list);
         } catch (SQLException e) {
             // ERROR 42X37: The unary '-' operator is not allowed on the 'BOOLEAN' type.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -258,7 +258,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(3001.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '+' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
 
     }
@@ -275,7 +275,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(-2999.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '-' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -291,7 +291,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -307,7 +307,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -323,7 +323,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(3.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '+' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
 
     }
@@ -340,7 +340,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.5, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '-' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -356,7 +356,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -372,7 +372,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -430,7 +430,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             }
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 34.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -651,7 +651,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             }
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -673,7 +673,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             }
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -710,7 +710,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(4.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate SUM cannot operate on type BOOLEAN.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -723,7 +723,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.8, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate AVG cannot operate on type BOOLEAN.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 }

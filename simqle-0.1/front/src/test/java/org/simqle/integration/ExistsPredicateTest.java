@@ -60,7 +60,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -74,7 +74,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 96.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -88,7 +88,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "FALSE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -102,7 +102,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -116,7 +116,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -130,7 +130,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 96.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -145,7 +145,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(0, list.size());
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(3, list.size());
             } else {
                 throw e;
@@ -163,7 +163,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(5, list.size());
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(2, list.size());
             } else {
                 throw e;
@@ -181,7 +181,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("Cooper"), list);
             } else {
                 throw e;
@@ -200,7 +200,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("Cooper"), list);
             } else {
                 throw e;
@@ -228,7 +228,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("Cooper", "First"), list);
             } else {
                 throw e;
@@ -246,7 +246,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;
@@ -264,7 +264,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("First"), list);
             } else {
                 throw e;
@@ -282,7 +282,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;
@@ -300,7 +300,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;
@@ -327,7 +327,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(Arrays.asList("Cooper", "First"), list);
             } else {
                 throw e;
@@ -345,7 +345,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;
@@ -363,7 +363,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;
@@ -396,7 +396,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;
@@ -429,7 +429,7 @@ public class ExistsPredicateTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (AssertionFailedError e) {
             // derby: EXISTS return TRUE if the sublist is not empty and NULL if empty
-            if ("derby".equals(getDatabaseName())) {
+            if ("Apache Derby".equals(getDatabaseName())) {
                 assertEquals(0, list.size());
             } else {
                 throw e;

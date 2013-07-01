@@ -182,7 +182,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
         } catch (SQLException e) {
             //derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
 
     }
@@ -373,7 +373,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
 //                	at org.apache.derby.impl.sql.execute.BasicNoPutResultSetImpl.open(Unknown Source)
 //                	at org.apache.derby.impl.sql.GenericPreparedStatement.executeStmt(Unknown Source)
 //                	at org.apache.derby.impl.sql.GenericPreparedStatement.execute(Unknown Source)
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -589,7 +589,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 

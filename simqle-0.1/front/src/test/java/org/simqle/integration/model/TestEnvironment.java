@@ -7,5 +7,4 @@ import org.simqle.sql.DatabaseGate;
  */
 public interface TestEnvironment {
     DatabaseGate getGate();
-    String getDatabaseName();
 }

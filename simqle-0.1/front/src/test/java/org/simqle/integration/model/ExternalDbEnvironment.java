@@ -18,53 +18,47 @@ import java.util.Properties;
 public class ExternalDbEnvironment implements TestEnvironment {
 
     private final DatabaseGate databaseGate;
-    private final String databaseName;
 
-    private ExternalDbEnvironment(final String databaseName) {
-        this.databaseName = databaseName;
-        this.databaseGate = createDialectDataSource(databaseName);
+    private ExternalDbEnvironment(final String configFile) {
+        this.databaseGate = createDialectDataSource(configFile);
     }
 
     private final static Map<String, ExternalDbEnvironment> instances = new HashMap<String, ExternalDbEnvironment>();
 
-    public static ExternalDbEnvironment getInstance(String databaseName) {
+    public static ExternalDbEnvironment getInstance(String configFile) {
         synchronized (instances) {
-            ExternalDbEnvironment environment = instances.get(databaseName);
+            ExternalDbEnvironment environment = instances.get(configFile);
             if (environment == null) {
-                environment = new ExternalDbEnvironment(databaseName);
-                instances.put(databaseName, environment);
+                environment = new ExternalDbEnvironment(configFile);
+                instances.put(configFile, environment);
             }
             return environment;
         }
-    }
-
-    public String getDatabaseName() {
-        return databaseName;
     }
 
     public DatabaseGate getGate() {
         return databaseGate;
     }
 
-    public DatabaseGate createDialectDataSource(final String databaseName) {
+    public DatabaseGate createDialectDataSource(final String configFile) {
         try {
             final Properties properties = new Properties();
-            final File homeDir = new File(System.getProperty("user.home"));
-            final File simqleSettingsDir = new File(homeDir, ".simqle");
-            final File propertiesFile = new File(simqleSettingsDir, databaseName+".properties");
+            final File propertiesFile = new File(configFile);
             properties.load(new FileInputStream(propertiesFile));
             final ComboPooledDataSource pool = new ComboPooledDataSource();
             pool.setJdbcUrl(properties.getProperty("simqle.jdbc.url"));
             pool.setDriverClass(properties.getProperty("simqle.jdbc.driverClass"));
             pool.setUser(properties.getProperty("simqle.jdbc.user"));
             pool.setPassword(properties.getProperty("simqle.jdbc.password"));
-            final String dialectClass = properties.getProperty("simqle.jdbc.dialectClass");
-            final String connectionSetup = properties.getProperty("simqle.jdbc.connectionSetup");
-            final String effectiveClass = System.getProperty("org.simqle.integration.dialect", dialectClass);
-            final Class<?> dialectClazz = Class.forName(effectiveClass);
-            final Method getMethod = dialectClazz.getMethod("get");
-            final Dialect dialect = (Dialect) getMethod.invoke(null);
-            return new DialectDataSource(dialect, pool, connectionSetup);
+            final String dialectClass = System.getProperty("org.simqle.integration.dialect");
+            if (dialectClass != null) {
+                final Class<?> dialectClazz = Class.forName(dialectClass);
+                final Method getMethod = dialectClazz.getMethod("get");
+                final Dialect dialect = (Dialect) getMethod.invoke(null);
+                return new DialectDataSource(pool, dialect);
+            } else {
+                return new DialectDataSource(pool);
+            }
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

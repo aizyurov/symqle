@@ -31,7 +31,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -45,7 +45,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "March"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -57,7 +57,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
 
     }
@@ -72,7 +72,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -86,7 +86,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 96.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -100,7 +100,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "FALSE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -114,7 +114,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -128,7 +128,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -142,7 +142,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -156,7 +156,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -170,7 +170,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -184,7 +184,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
 
     }
@@ -199,7 +199,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
 
     }
@@ -214,7 +214,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -228,7 +228,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -242,7 +242,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -256,7 +256,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -270,7 +270,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -284,7 +284,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -298,7 +298,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -312,7 +312,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -326,7 +326,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -340,7 +340,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -357,7 +357,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -374,7 +374,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -391,7 +391,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -408,7 +408,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -421,7 +421,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(Pair.make("Cooper", "James"), Pair.make("First", null), Pair.make("March", null), Pair.make("Pedersen", null), Pair.make("Redwood", null)), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -436,7 +436,7 @@ public class BooleanTestTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(Pair.make("Cooper", null), Pair.make("First", "James"), Pair.make("March", ":)"), Pair.make("Pedersen", ":)"), Pair.make("Redwood", "Margaret")), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 }

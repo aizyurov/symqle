@@ -3,14 +3,14 @@ package org.simqle.integration;
 import junit.framework.AssertionFailedError;
 import org.simqle.Mappers;
 import org.simqle.Pair;
-import org.simqle.front.StatementOptions;
 import org.simqle.generic.Functions;
 import org.simqle.integration.model.BigTable;
 import org.simqle.integration.model.Country;
 import org.simqle.integration.model.Department;
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.MyDual;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.jdbc.Option;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractSelectList;
 import org.simqle.sql.Dialect;
 
@@ -348,8 +348,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains("First"));
             assertTrue(list.toString(), list.contains("Pedersen"));
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
@@ -638,7 +638,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 63
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -713,7 +713,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMaxRows() throws Exception {
             final Employee employee = new Employee();
-            final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), StatementOptions.setMaxRows(2));
+            final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), Option.setMaxRows(2));
             assertEquals(2, list.size());
             assertTrue(list.toString(), list.contains("First"));
             assertTrue(list.toString(), list.contains("Cooper"));
@@ -721,7 +721,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testFetchSize() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.list(getDatabaseGate(), StatementOptions.setFetchSize(2));
+        final List<String> list = employee.lastName.list(getDatabaseGate(), Option.setFetchSize(2));
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains("Cooper"));
         assertTrue(list.toString(), list.contains("Redwood"));
@@ -732,7 +732,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testFetchDirection() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), StatementOptions.setFetchDirection(ResultSet.FETCH_REVERSE));
+        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), Option.setFetchDirection(ResultSet.FETCH_REVERSE));
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -741,7 +741,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMaxFieldSize() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), StatementOptions.setMaxFieldSize(5));
+        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), Option.setMaxFieldSize(5));
         final ArrayList<String> truncatedNames = new ArrayList<String>(Arrays.asList("March", "First", "Peder", "Redwo", "Coope"));
         final ArrayList<String> fullNames = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(truncatedNames);
@@ -759,7 +759,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testQueryTimeout() throws Exception {
         // derby: does not honor queryTimeout
         // skip this test
-        if ("derby".equals(getDatabaseName())) {
+        if ("Apache Derby".equals(getDatabaseName())) {
             return;
         }
         final Connection connection = getDatabaseGate().getConnection();
@@ -778,7 +778,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final long start = System.currentTimeMillis();
 
         try {
-            final List<Integer> list = bigTable.num.list(getDatabaseGate(), StatementOptions.setQueryTimeout(1));
+            final List<Integer> list = bigTable.num.list(getDatabaseGate(), Option.setQueryTimeout(1));
             fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
         } catch (SQLException e) {
             System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");

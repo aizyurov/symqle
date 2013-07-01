@@ -2,7 +2,7 @@ package org.simqle.integration;
 
 import org.simqle.integration.model.Employee;
 import org.simqle.integration.model.TrueValue;
-import org.simqle.mysql.MysqlDialect;
+import org.simqle.mysql.MySqlDialect;
 import org.simqle.sql.AbstractQueryBaseScalar;
 
 import java.sql.SQLException;
@@ -160,7 +160,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James", "Bill", "Alex", "Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42879: The ORDER BY clause may not contain column 'LAST_NAME', since the query specifies DISTINCT and that column does not appear in the query result
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -190,7 +190,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "derby");
+            expectSQLException(e, "Apache Derby");
         }
     }
 
@@ -201,8 +201,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (MysqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MysqlDialect
+            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+                // should work with MySqlDialect
                 throw e;
             } else {
                 // mysql does not support FOR READ ONLY natively
