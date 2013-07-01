@@ -53,6 +53,7 @@ import org.simqle.Sql;
 * from the right part. Terminal symbols are not parameters; they have fixed values.
 */
 public interface Dialect  {
+    String getName();
     String fallbackTableName();
 }
 
@@ -74,6 +75,10 @@ public class GenericDialect implements Dialect {
 
     public static Dialect get() {
          return instance;
+    }
+
+    public String getName() {
+        return "Generic";
     }
 
     public String fallbackTableName() {
