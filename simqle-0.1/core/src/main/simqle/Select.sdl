@@ -18,6 +18,9 @@ import org.simqle.Row;
 import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
 import org.simqle.jdbc.Option;
+import org.simqle.jdbc.Configuration;
+import org.simqle.jdbc.DebugConfiguration;
+import org.simqle.jdbc.UpdatableConfiguration;
 ::
     /**
      * Executes a statement and calls callback for each returned row.
@@ -34,35 +37,49 @@ public <T> int scroll(final SelectStatement<T> statement,
                           final Callback<T> callback,
                           final Option... options
                           ) throws SQLException {
-     final Query<T> query = prepareQuery(statement, gate.getDialect());
-     final Connection connection = gate.getConnection();
-     try {
-         final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
-         for (final Option option : options) {
-            option.apply(preparedStatement);
-         }
-         try {
-             query.setParameters(new StatementParameters(preparedStatement));
-             final ResultSet resultSet = preparedStatement.executeQuery();
-             final Row row = new ResultSetRow(resultSet);
-             try {
-                int count = 0;
-                 while (resultSet.next()) {
-                     count++;
-                     if (!callback.iterate(query.extract(row))) {
-                        break;
-                     }
-                 }
-                 return count;
-             } finally {
-                 resultSet.close();
-             }
-         } finally {
-             preparedStatement.close();
-         }
-     } finally {
-         connection.close();
-     }
+    final UpdatableConfiguration configuration = new UpdatableConfiguration();
+    final List<Option> defaultOptions = gate.getOptions();
+    for (final Option option : defaultOptions) {
+       option.apply(configuration);
+   }
+    for (final Option option : options) {
+       option.apply(configuration);
+    }
+    for (final Option option : options) {
+       option.apply(configuration);
+    }
+    final Query<T> query = prepareQuery(statement, gate.getDialect(), configuration);
+    final Connection connection = gate.getConnection();
+    try {
+        final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
+           for (final Option option : defaultOptions) {
+               option.apply(preparedStatement);
+           }
+        for (final Option option : options) {
+           option.apply(preparedStatement);
+        }
+        try {
+            query.setParameters(new StatementParameters(preparedStatement));
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            final Row row = new ResultSetRow(resultSet);
+            try {
+               int count = 0;
+                while (resultSet.next()) {
+                    count++;
+                    if (!callback.iterate(query.extract(row))) {
+                       break;
+                    }
+                }
+                return count;
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            preparedStatement.close();
+        }
+    } finally {
+        connection.close();
+    }
 }
 
 import javax.sql.DataSource;
@@ -84,16 +101,15 @@ import java.util.List;
     }
 
 :: public String show(final SelectStatement<?> statement) {
-     String sql = prepareQuery(statement, GenericDialect.get()).getSqlText();
-     return beautifySql(sql);
+     return show(statement, GenericDialect.get());
     }
 
 :: public String show(final SelectStatement<?> statement, final Dialect dialect) {
-     String sql = prepareQuery(statement, dialect).getSqlText();
+     String sql = prepareQuery(statement, dialect, new DebugConfiguration()).getSqlText();
      return beautifySql(sql);
     }
 
-:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect) {
+:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
         final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
         // training: learn all tables participating in query
         {
@@ -101,6 +117,7 @@ import java.util.List;
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
             context.set(Dialect.class, DebugDialect.get());
+            context.set(Configuration.class, new DebugConfiguration());
             statement.z$sqlOfSelectStatement(context);
         }
         // real generation of Sql
@@ -110,6 +127,7 @@ import java.util.List;
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
             context.set(Dialect.class, dialect);
+            context.set(Configuration.class, configuration);
             query = statement.z$sqlOfSelectStatement(context);
         }
         return query;
@@ -219,12 +237,13 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
       }
 
 
-import org.simqle.jdbc.Configuration;
+import org.simqle.jdbc.Option;
 import java.sql.SQLException;
 import java.sql.Connection;
+import java.util.List;
 public interface DatabaseGate {
     public Connection getConnection() throws SQLException;
     public Dialect getDialect();
-    Configuration getConfiguration();
+    List<Option> getOptions();
 }
 

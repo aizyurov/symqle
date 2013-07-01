@@ -5,6 +5,7 @@ import org.hsqldb.jdbcDriver;
 import org.simqle.Mappers;
 import org.simqle.Pair;
 import org.simqle.jdbc.Configuration;
+import org.simqle.jdbc.Option;
 import org.simqle.jdbc.UpdatableConfiguration;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -18,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,8 +81,8 @@ public class ColumnTest extends TestCase {
         }
 
         @Override
-        public Configuration getConfiguration() {
-            return new UpdatableConfiguration();
+        public List<Option> getOptions() {
+            return Collections.emptyList();
         }
     };
 
