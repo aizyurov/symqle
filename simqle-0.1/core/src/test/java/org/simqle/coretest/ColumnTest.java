@@ -579,7 +579,8 @@ public class ColumnTest extends SqlTestCase {
                 Option.setFetchDirection(ResultSet.FETCH_FORWARD),
                 Option.setMaxFieldSize(15),
                 Option.setMaxRows(5),
-                Option.setQueryTimeout(100));
+                Option.setQueryTimeout(100),
+                Option.allowNoTables(false));
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
         verify(gate, connection, statement, resultSet);
