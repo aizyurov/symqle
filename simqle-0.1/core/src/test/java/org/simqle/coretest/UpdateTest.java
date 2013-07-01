@@ -78,6 +78,12 @@ public class UpdateTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals(e.getMessage(), "At least one table is required for FROM clause");
         }
+        try {
+            final String sql = person.update(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show(GenericDialect.get(), Option.allowNoTables(true));
+            fail("IllegalStateException expected but was " + sql);
+        } catch (IllegalStateException e) {
+            assertEquals(e.getMessage(), "Generic dialect does not support selects with no tables");
+        }
     }
 
     public void testWrongTarget() throws Exception {
@@ -173,6 +179,43 @@ public class UpdateTest extends SqlTestCase {
         protected abstract void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException;
     }
 
+    public void testExecuteWithOptions() throws Exception {
+        new ExecuteWithOptionsScenario() {
+            @Override
+            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
+                assertEquals(1, update.execute(gate, Option.setQueryTimeout(20)));
+            }
+        }.play();
+
+    }
+
+    private abstract static class ExecuteWithOptionsScenario {
+        public void play() throws Exception {
+            final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
+            final String statementString = update.show();
+            final DatabaseGate gate = createMock(DatabaseGate.class);
+            final Connection connection = createMock(Connection.class);
+            final PreparedStatement statement = createMock(PreparedStatement.class);
+            expect(gate.getOptions()).andReturn(Collections.<Option>singletonList(Option.setQueryTimeout(10)));
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
+            expect(connection.prepareStatement(statementString)).andReturn(statement);
+            statement.setQueryTimeout(10);
+            statement.setQueryTimeout(20);
+            statement.setString(1, "John");
+            statement.setLong(2, 1L);
+            expect(statement.executeUpdate()).andReturn(1);
+            statement.close();
+            connection.close();
+            replay(gate, connection,  statement);
+
+            runExecute(update, gate);
+
+            verify(gate, connection, statement);
+        }
+
+        protected abstract void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException;
+    }
 
     private static class Person extends Table {
         private Person() {

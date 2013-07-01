@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -584,6 +585,46 @@ public class ColumnTest extends SqlTestCase {
         verify(gate, connection, statement, resultSet);
 
     }
+
+    public void testGateOptions() throws Exception {
+        final Column<Long> column = person.id;
+        final String queryString = column.show();
+        final DatabaseGate gate = createMock(DatabaseGate.class);
+        final Connection connection = createMock(Connection.class);
+        final PreparedStatement statement = createMock(PreparedStatement.class);
+        final ResultSet resultSet = createMock(ResultSet.class);
+        expect(gate.getOptions()).andReturn(Arrays.<Option>asList(Option.setFetchSize(10),
+                Option.setFetchDirection(ResultSet.FETCH_FORWARD),
+                Option.setQueryTimeout(100)));
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
+        expect(connection.prepareStatement(queryString)).andReturn(statement);
+        statement.setFetchSize(10);
+        statement.setFetchDirection(ResultSet.FETCH_FORWARD);
+        statement.setQueryTimeout(100);
+        statement.setMaxFieldSize(15);
+        statement.setMaxRows(5);
+        statement.setQueryTimeout(50);
+        expect(statement.executeQuery()).andReturn(resultSet);
+        expect(resultSet.next()).andReturn(true);
+        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+        expect(resultSet.wasNull()).andReturn(false);
+        expect(resultSet.next()).andReturn(false);
+        resultSet.close();
+        statement.close();
+        connection.close();
+        replay(gate, connection,  statement, resultSet);
+
+        final List<Long> list = column.list(gate,
+                Option.setMaxFieldSize(15),
+                Option.setMaxRows(5),
+                Option.setQueryTimeout(50));
+        assertEquals(1, list.size());
+        assertEquals(123L, list.get(0).longValue());
+        verify(gate, connection, statement, resultSet);
+
+    }
+
 
 
     private static class Person extends TableOrView {
