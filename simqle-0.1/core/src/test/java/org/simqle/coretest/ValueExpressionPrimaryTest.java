@@ -24,13 +24,13 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         try {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show(GenericDialect.get());
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -39,7 +39,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().map(Mappers.STRING).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -48,7 +48,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().all().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -57,7 +57,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().distinct().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -195,7 +195,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forReadOnly().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -204,7 +204,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().forUpdate().show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -261,7 +261,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().union(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -270,7 +270,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().unionAll(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -279,7 +279,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().unionDistinct(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -289,7 +289,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().except(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -298,7 +298,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().exceptAll(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -307,7 +307,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().exceptDistinct(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -316,7 +316,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersect(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -325,7 +325,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersectAll(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -334,7 +334,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().intersectDistinct(employee.id).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -343,7 +343,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).queryValue().exists()).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -353,7 +353,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = employee.id.where(employee.id.in(vep)).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -363,7 +363,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = employee.id.where(vep.contains(1L)).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -372,7 +372,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
             final String sql = person.id.where(person.name.eq(employee.name)).queryValue().queryValue().where(employee.id.eq(1L)).show();
             fail ("IllegalStateException expected but produced: "+sql);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -413,10 +413,10 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         replay(gate);
         try {
-            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(gate);
+            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(gate, Option.allowImplicitCrossJoins(true));
             fail ("IllegalStateException expected but produced: "+list);
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         verify(gate);
 
@@ -491,9 +491,9 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
                     fail("must not get here");
                     return true;
                 }
-            });
+            }, Option.allowImplicitCrossJoins(true));
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         verify(gate);
 

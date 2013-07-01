@@ -1,6 +1,7 @@
 package org.simqle.coretest;
 
 import org.simqle.Mappers;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractInsertStatement;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -10,6 +11,7 @@ import org.simqle.sql.Table;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Collections;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -96,6 +98,7 @@ public class InsertTest extends SqlTestCase {
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(statementString)).andReturn(statement);

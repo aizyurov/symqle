@@ -182,7 +182,10 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
 public class ImplicitFromClause implements FromClause {
             public Sql z$sqlOfFromClause(SqlContext context) {
                 SelectTableRegistry registry = (SelectTableRegistry) context.get(TableRegistry.class);
-                return registry.generateFromClause()
+                final Configuration configuration = context.get(Configuration.class);
+                final boolean allowNoFrom = configuration.allowNoFrom();
+                final boolean allowImplicitCrossJoins = configuration.allowImplicitCrossJoins();
+                return registry.generateFromClause(allowNoFrom, allowImplicitCrossJoins)
                         .z$sqlOfFromClause(context);
             }
 }
@@ -261,9 +264,13 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
 
-    public FromClause generateFromClause() {
+    public FromClause generateFromClause(final boolean allowNoFrom, final boolean allowImplicitCrossJoins) {
         if (localTables.isEmpty()) {
-            return generateEmptyFromClause();
+            if (allowNoFrom) {
+                return generateEmptyFromClause();
+            } else {
+                throw new IllegalStateException("At least one table is required for FROM clause");
+            }
         }
         final Set<TableOrView> roots = new HashSet<TableOrView>();
         for (TableOrView t: localTables.keySet()) {
@@ -272,11 +279,13 @@ public class SelectTableRegistry implements TableRegistry {
         final Iterator<TableOrView> iterator = roots.iterator();
         TableReferenceList tableReferenceList = Simqle.get().createTableReferenceList(iterator.next());
         while (iterator.hasNext()) {
+            if (!allowImplicitCrossJoins) {
+                throw new IllegalStateException("Implicit cross joins are not allowed");
+            }
             tableReferenceList = Simqle.get().appendTableReferenceList(tableReferenceList, iterator.next());
         }
         return Simqle.get().createFrom(tableReferenceList);
     }
-
 
     public String getCorrelationName(TableOrView table) {
         final String found = findCorrelationName(table);

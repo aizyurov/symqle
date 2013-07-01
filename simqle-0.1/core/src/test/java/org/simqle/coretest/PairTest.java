@@ -129,6 +129,14 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name FOR READ ONLY", sql);
     }
 
+    public void testImplicitCrossJoin() throws Exception {
+        final Person person1 = new Person();
+        final Person person2 = new Person();
+        final String sql = person1.name.pair(person2.age).where(person1.id.eq(person2.id)).show();
+        System.out.println(sql);
+
+    }
+
 
 
 

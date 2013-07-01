@@ -28,6 +28,7 @@ public final class Simqle  {
         SqlContext innerContext = new SqlContext();
         innerContext.set(UniqueNameProvider.class, null);
         innerContext.set(Dialect.class, context.get(Dialect.class));
+        innerContext.set(Configuration.class, context.get(Configuration.class));
         // create an empty AbstractFromClause for QueryExpressionScalar with current FromClause as enclosing
         innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;

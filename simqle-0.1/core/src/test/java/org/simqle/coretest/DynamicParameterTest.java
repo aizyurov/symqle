@@ -31,13 +31,13 @@ public class DynamicParameterTest extends SqlTestCase {
             param.show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         try {
             param.show(GenericDialect.get());
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -404,7 +404,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.union(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -414,7 +414,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.unionAll(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -424,7 +424,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.unionDistinct(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -434,7 +434,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.except(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -444,7 +444,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.exceptDistinct(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -454,7 +454,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.exceptAll(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -464,7 +464,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.intersect(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -474,7 +474,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.intersectAll(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -484,7 +484,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.intersectDistinct(person.id).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -494,7 +494,7 @@ public class DynamicParameterTest extends SqlTestCase {
             person.id.where(param.exists()).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -504,7 +504,7 @@ public class DynamicParameterTest extends SqlTestCase {
             person.id.where(param.contains(1L)).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -514,7 +514,7 @@ public class DynamicParameterTest extends SqlTestCase {
             person.id.where(param.queryValue().eq(param)).show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -564,7 +564,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.forUpdate().show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -574,7 +574,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.forReadOnly().show();
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
 
@@ -610,7 +610,7 @@ public class DynamicParameterTest extends SqlTestCase {
             param.list(gate);
             fail ("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         org.easymock.EasyMock.verify(gate);
     }
@@ -631,7 +631,7 @@ public class DynamicParameterTest extends SqlTestCase {
             });
             fail ("IllegalStateException expected");
         } catch (IllegalStateException e) {
-            assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
+            assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         org.easymock.EasyMock.verify(gate);
     }

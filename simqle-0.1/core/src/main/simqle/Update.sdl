@@ -30,9 +30,10 @@
 
 public interface DataChangeStatement : Sql {}
 
-:: private Sql prepareUpdate(final DataChangeStatement statement, final Dialect dialect) {
+:: private Sql prepareUpdate(final DataChangeStatement statement, final Dialect dialect, final Configuration configuration) {
     final SqlContext context = new SqlContext();
     context.set(Dialect.class, dialect);
+    context.set(Configuration.class, configuration);
     return statement.z$sqlOfDataChangeStatement(context);
 }
 
@@ -40,15 +41,33 @@ public interface DataChangeStatement : Sql {}
     return show(statement, GenericDialect.get());
 }
 
-:: public String show(final DataChangeStatement statement, final Dialect dialect) {
-    return beautifySql(prepareUpdate(statement, dialect).getSqlText());
+:: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
+     final UpdatableConfiguration configuration = new UpdatableConfiguration();
+     for (final Option option : options) {
+        option.apply(configuration);
+     }
+    return beautifySql(prepareUpdate(statement, dialect, configuration).getSqlText());
 }
 
-:: public int execute(final DataChangeStatement statement, final DatabaseGate gate) throws SQLException {
-     final Sql sql = prepareUpdate(statement, gate.getDialect());
+:: public int execute(final DataChangeStatement statement, final DatabaseGate gate, final Option... options) throws SQLException {
+     final UpdatableConfiguration configuration = new UpdatableConfiguration();
+     final List<Option> defaultOptions = gate.getOptions();
+     for (final Option option : defaultOptions) {
+        option.apply(configuration);
+    }
+     for (final Option option : options) {
+        option.apply(configuration);
+     }
+     final Sql sql = prepareUpdate(statement, gate.getDialect(), configuration);
      final Connection connection = gate.getConnection();
      try {
          final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
+         for (final Option option : defaultOptions) {
+             option.apply(preparedStatement);
+         }
+          for (final Option option : options) {
+             option.apply(preparedStatement);
+          }
          try {
              sql.setParameters(new StatementParameters(preparedStatement));
              return preparedStatement.executeUpdate();
@@ -58,7 +77,6 @@ public interface DataChangeStatement : Sql {}
      } finally {
          connection.close();
      }
-
 }
 
 DataChangeStatement ::=

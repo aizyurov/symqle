@@ -44,9 +44,6 @@ public <T> int scroll(final SelectStatement<T> statement,
     for (final Option option : options) {
        option.apply(configuration);
     }
-    for (final Option option : options) {
-       option.apply(configuration);
-    }
     final Query<T> query = prepareQuery(statement, gate.getDialect(), configuration);
     final Connection connection = gate.getConnection();
     try {
@@ -110,8 +107,12 @@ import java.util.List;
     return configuration;
 }
 
-:: public String show(final SelectStatement<?> statement, final Dialect dialect) {
-     String sql = prepareQuery(statement, dialect, getDebugConfiguration()).getSqlText();
+:: public String show(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
+     final UpdatableConfiguration configuration = new UpdatableConfiguration();
+     for (Option option : options) {
+         option.apply(configuration);
+     }
+     String sql = prepareQuery(statement, dialect, configuration).getSqlText();
      return beautifySql(sql);
     }
 
