@@ -2,6 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
 import org.simqle.sql.DynamicParameter;
@@ -9,6 +10,10 @@ import org.simqle.sql.GenericDialect;
 import org.simqle.sql.SqlFunction;
 import org.simqle.sql.TableOrView;
 import org.simqle.sql.ValueExpression;
+
+import java.util.Collections;
+
+import static org.easymock.EasyMock.expect;
 
 /**
  * Created by IntelliJ IDEA.
@@ -598,7 +603,8 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testList() throws Exception {
         final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        org.easymock.EasyMock.expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
         org.easymock.EasyMock.replay(gate);
         try {
             param.list(gate);
@@ -612,7 +618,8 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testScroll() throws Exception {
         final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        org.easymock.EasyMock.expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
         org.easymock.EasyMock.replay(gate);
         try {
             param.scroll(gate, new Callback<Long>() {

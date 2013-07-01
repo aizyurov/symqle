@@ -2,11 +2,13 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -407,6 +409,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testList() throws Exception {
         final DatabaseGate gate = createMock(DatabaseGate.class);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         replay(gate);
         try {
@@ -453,13 +456,14 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
 
     public void testQuery() throws Exception {
         final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.eq(employee.name)).queryValue().where(employee.name.isNotNull());
-        final DatabaseGate datasource = createMock(DatabaseGate.class);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         final String queryString = querySpecification.show();
-        expect(datasource.getDialect()).andReturn(GenericDialect.get());
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -469,18 +473,19 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection,  statement, resultSet);
-        final List<Long> list = querySpecification.list(datasource);
+        replay(gate, connection,  statement, resultSet);
+        final List<Long> list = querySpecification.list(gate);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
     }
 
     public void testScroll() throws Exception {
-        final DatabaseGate datasource = createMock(DatabaseGate.class);
-        expect(datasource.getDialect()).andReturn(GenericDialect.get());
-        replay(datasource);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        replay(gate);
         try {
-            person.id.where(person.name.eq(employee.name)).queryValue().scroll(datasource, new Callback<Long>() {
+            person.id.where(person.name.eq(employee.name)).queryValue().scroll(gate, new Callback<Long>() {
                 @Override
                 public boolean iterate(final Long aLong) {
                     fail("must not get here");
@@ -490,7 +495,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         } catch (IllegalStateException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
-        verify(datasource);
+        verify(gate);
 
     }
 

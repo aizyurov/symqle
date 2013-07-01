@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -522,12 +522,13 @@ public class ColumnTest extends SqlTestCase {
         public void play() throws Exception {
             final Column<Long> column = person.id;
             final String queryString = column.show();
-            final DatabaseGate datasource = createMock(DatabaseGate.class);
+            final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
-            expect(datasource.getDialect()).andReturn(GenericDialect.get());
-            expect(datasource.getConnection()).andReturn(connection);
+            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);
             expect(resultSet.next()).andReturn(true);
@@ -537,10 +538,10 @@ public class ColumnTest extends SqlTestCase {
             resultSet.close();
             statement.close();
             connection.close();
-            replay(datasource, connection,  statement, resultSet);
+            replay(gate, connection,  statement, resultSet);
 
-            runQuery(column, datasource);
-            verify(datasource, connection, statement, resultSet);
+            runQuery(column, gate);
+            verify(gate, connection, statement, resultSet);
 
         }
 
@@ -550,12 +551,13 @@ public class ColumnTest extends SqlTestCase {
     public void testOptions() throws Exception {
         final Column<Long> column = person.id;
         final String queryString = column.show();
-        final DatabaseGate datasource = createMock(DatabaseGate.class);
+        final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(datasource.getDialect()).andReturn(GenericDialect.get());
-        expect(datasource.getConnection()).andReturn(connection);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchSize(10);
         statement.setFetchDirection(ResultSet.FETCH_FORWARD);
@@ -570,16 +572,16 @@ public class ColumnTest extends SqlTestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(datasource, connection,  statement, resultSet);
+        replay(gate, connection,  statement, resultSet);
 
-        final List<Long> list = column.list(datasource, Option.setFetchSize(10),
+        final List<Long> list = column.list(gate, Option.setFetchSize(10),
                 Option.setFetchDirection(ResultSet.FETCH_FORWARD),
                 Option.setMaxFieldSize(15),
                 Option.setMaxRows(5),
                 Option.setQueryTimeout(100));
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).longValue());
-        verify(datasource, connection, statement, resultSet);
+        verify(gate, connection, statement, resultSet);
 
     }
 

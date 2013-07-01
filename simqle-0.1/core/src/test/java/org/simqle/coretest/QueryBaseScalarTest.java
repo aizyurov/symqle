@@ -4,6 +4,7 @@ import org.simqle.Callback;
 import org.simqle.CustomSql;
 import org.simqle.Mappers;
 import org.simqle.Sql;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractQueryBaseScalar;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -15,6 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -204,6 +206,7 @@ public class QueryBaseScalarTest extends SqlTestCase {
             final ResultSet resultSet = createMock(ResultSet.class);
             final AbstractQueryBaseScalar<Long> queryBaseScalar = person.id.all();
             final String queryString = queryBaseScalar.show();
+            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
             expect(gate.getDialect()).andReturn(GenericDialect.get());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);

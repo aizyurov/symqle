@@ -19,7 +19,6 @@ import org.simqle.jdbc.ResultSetRow;
 import org.simqle.jdbc.StatementParameters;
 import org.simqle.jdbc.Option;
 import org.simqle.jdbc.Configuration;
-import org.simqle.jdbc.DebugConfiguration;
 import org.simqle.jdbc.UpdatableConfiguration;
 ::
     /**
@@ -104,8 +103,15 @@ import java.util.List;
      return show(statement, GenericDialect.get());
     }
 
+:: private Configuration getDebugConfiguration() {
+    final UpdatableConfiguration configuration = new UpdatableConfiguration();
+    configuration.setNoFromOk(true);
+    configuration.setImplicitCrossJoinsOk(true);
+    return configuration;
+}
+
 :: public String show(final SelectStatement<?> statement, final Dialect dialect) {
-     String sql = prepareQuery(statement, dialect, new DebugConfiguration()).getSqlText();
+     String sql = prepareQuery(statement, dialect, getDebugConfiguration()).getSqlText();
      return beautifySql(sql);
     }
 
@@ -117,7 +123,7 @@ import java.util.List;
             context.set(UniqueNameProvider.class, new ColumnNameProvider());
             context.set(TableRegistry.class, tableRegistry);
             context.set(Dialect.class, DebugDialect.get());
-            context.set(Configuration.class, new DebugConfiguration());
+            context.set(Configuration.class, getDebugConfiguration());
             statement.z$sqlOfSelectStatement(context);
         }
         // real generation of Sql

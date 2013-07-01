@@ -2,6 +2,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractCharacterFactor;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -13,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -431,6 +433,7 @@ public class CharacterFactorTest extends SqlTestCase {
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             final String queryString = characterFactor.show();
+            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
             expect(gate.getDialect()).andReturn(GenericDialect.get());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);

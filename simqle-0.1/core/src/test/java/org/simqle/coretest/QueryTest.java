@@ -3,6 +3,7 @@ package org.simqle.coretest;
 
 import org.simqle.Callback;
 import org.simqle.Mappers;
+import org.simqle.jdbc.Option;
 import org.simqle.sql.AbstractQuerySpecification;
 import org.simqle.sql.Column;
 import org.simqle.sql.DatabaseGate;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -43,6 +45,7 @@ public class QueryTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final String queryString = id.show();
         System.out.println("Show: " + queryString);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -66,6 +69,7 @@ public class QueryTest extends SqlTestCase {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final String queryString = id.show();
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -99,6 +103,7 @@ public class QueryTest extends SqlTestCase {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final String queryString = id.show();
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -135,6 +140,7 @@ public class QueryTest extends SqlTestCase {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final String queryString = id.show();
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -159,6 +165,7 @@ public class QueryTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 123L);
         final String queryString = id.where(id.eq(param)).show();
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -182,6 +189,7 @@ public class QueryTest extends SqlTestCase {
         final Person person = new Person();
         final AbstractQuerySpecification<Long> query = person.id.where(person.age.add(1).gt(33));
         final String queryString = query.show();
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
@@ -207,6 +215,7 @@ public class QueryTest extends SqlTestCase {
         final AbstractQuerySpecification<Long> query = person.id.where(person.alive.eq(true));
         final String queryString = query.show();
         System.out.println(queryString);
+        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
         expect(gate.getDialect()).andReturn(GenericDialect.get());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
