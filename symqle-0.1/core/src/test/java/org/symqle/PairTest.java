@@ -1,6 +1,7 @@
 package org.symqle;
 
 import junit.framework.TestCase;
+import org.symqle.common.Pair;
 
 /**
  * @author lvovich

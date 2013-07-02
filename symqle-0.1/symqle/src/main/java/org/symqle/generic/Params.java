@@ -1,6 +1,6 @@
 package org.symqle.generic;
 
-import org.symqle.Mappers;
+import org.symqle.common.Mappers;
 import org.symqle.sql.DynamicParameter;
 
 /**

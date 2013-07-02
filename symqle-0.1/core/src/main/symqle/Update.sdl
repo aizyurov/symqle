@@ -197,8 +197,8 @@ public class Table extends TableOrView implements TargetTable {
     }
 }
 
-import org.symqle.UniqueNameProvider;
-import org.symqle.TableNameProvider;
+import org.symqle.querybuilder.UniqueNameProvider;
+import org.symqle.querybuilder.TableNameProvider;
 class DataChangeTableRegistry implements TableRegistry {
 
     final TargetTable targetTable;

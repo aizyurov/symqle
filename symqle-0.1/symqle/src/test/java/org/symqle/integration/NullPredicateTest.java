@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.Pair;
+import org.symqle.common.Pair;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractNullPredicate;

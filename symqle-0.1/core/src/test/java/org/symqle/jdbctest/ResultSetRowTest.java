@@ -1,9 +1,9 @@
 package org.symqle.jdbctest;
 
 import junit.framework.TestCase;
-import org.symqle.Element;
-import org.symqle.Mappers;
-import org.symqle.SqlParameter;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
 import org.symqle.jdbc.ResultSetRow;
 
 import java.math.BigDecimal;

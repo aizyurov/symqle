@@ -1,4 +1,10 @@
-package org.symqle;
+package org.symqle.querybuilder;
+
+import org.symqle.common.Query;
+import org.symqle.common.Row;
+import org.symqle.common.RowMapper;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlParameters;
 
 import java.sql.SQLException;
 

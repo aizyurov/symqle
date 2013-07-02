@@ -53,8 +53,8 @@ public interface TableName : Sql {
 # Tables are handled specially by SelectTableRegistry
 
 # TableOrView implements TableReference by having a TableReference inside
-import org.symqle.CustomSql;
-import org.symqle.Mapper;
+import org.symqle.querybuilder.CustomSql;
+import org.symqle.common.Mapper;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.HashSet;
@@ -209,11 +209,11 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import org.symqle.TableNameProvider;
-import org.symqle.UniqueNameProvider;
-import org.symqle.Sql;
-import org.symqle.CustomSql;
-import org.symqle.SqlContext;
+import org.symqle.querybuilder.TableNameProvider;
+import org.symqle.querybuilder.UniqueNameProvider;
+import org.symqle.common.Sql;
+import org.symqle.querybuilder.CustomSql;
+import org.symqle.common.SqlContext;
 public class SelectTableRegistry implements TableRegistry {
     private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
 

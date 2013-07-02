@@ -1,4 +1,7 @@
-package org.symqle;
+package org.symqle.common;
+
+import org.symqle.common.Element;
+import org.symqle.common.SqlParameter;
 
 import java.sql.SQLException;
 

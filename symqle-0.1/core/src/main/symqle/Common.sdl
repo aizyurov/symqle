@@ -12,7 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import javax.sql.DataSource;
-import org.symqle.*;
+import org.symqle.common.*;
+import org.symqle.querybuilder.*;
 import org.symqle.jdbc.ResultSetRow;
 import org.symqle.jdbc.StatementParameters;
 import org.symqle.jdbc.Configuration;
@@ -49,7 +50,7 @@ public final class Symqle  {
 }
 
 
-import org.symqle.Sql;
+import org.symqle.common.Sql;
 /** This interface declares methods for construction of SQL nonterminal symbols.
 *   Each method corresponds to one syntactic rule. Method arguments are nonterminal symbols
 * from the right part. Terminal symbols are not parameters; they have fixed values.
@@ -61,15 +62,15 @@ public interface Dialect  {
 
 
 import java.sql.SQLException;
-import org.symqle.SqlParameters;
-import org.symqle.Sql;
-import static org.symqle.SqlTerm.*;
+import org.symqle.common.SqlParameters;
+import org.symqle.common.Sql;
+import static org.symqle.querybuilder.SqlTerm.*;
 /**
 * A standard straighforward implementation of Dialect.
 * Each nonterminal symbol is constructed exactly as required by the rule.
 * Subclasses may override methods preserving semantics.
 * e.g. replace {@code concat(qe, EXCEPT, qt)} for {@code concat(qe, MINUS, qt)}
-* in {@link #QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_QueryTerm(org.symqle.Sql, org.symqle.Sql)}
+* in {@link #QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_QueryTerm(org.symqle.common.Sql, org.symqle.common.Sql)}
 */
 public class GenericDialect implements Dialect {
 
@@ -154,7 +155,7 @@ public class GenericDialect implements Dialect {
 
 }
 
-import org.symqle.Sql;
+import org.symqle.common.Sql;
 class DebugDialect extends GenericDialect {
 
     private static final Dialect instance = new DebugDialect();
@@ -173,7 +174,7 @@ class DebugDialect extends GenericDialect {
 }
 
 
-import org.symqle.Mapper;
+import org.symqle.common.Mapper;
 
 /**
  * Scalar corresponds to one element of a tuple.

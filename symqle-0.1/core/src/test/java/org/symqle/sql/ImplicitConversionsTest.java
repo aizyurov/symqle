@@ -1,7 +1,7 @@
 package org.symqle.sql;
 
 import junit.framework.TestCase;
-import org.symqle.Mappers;
+import org.symqle.common.Mappers;
 
 /**
  * @author lvovich

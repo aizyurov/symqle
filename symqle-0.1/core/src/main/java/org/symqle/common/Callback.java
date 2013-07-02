@@ -1,7 +1,7 @@
 /*
 * Copyright Alexander Izyurov 2010
 */
-package org.symqle;
+package org.symqle.common;
 
 /**
  * <br/>07.12.2010

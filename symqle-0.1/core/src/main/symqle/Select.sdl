@@ -8,7 +8,7 @@ public class AbstractSelectStatement<T> implements SelectStatement<T>
 # key Symqle methods to query values
 
 import java.sql.SQLException;
-import org.symqle.Callback;
+import org.symqle.common.Callback;
 import org.symqle.jdbc.Option;
 ::
     /**

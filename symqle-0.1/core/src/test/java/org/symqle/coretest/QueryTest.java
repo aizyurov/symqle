@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
 
-import org.symqle.Callback;
-import org.symqle.Mappers;
+import org.symqle.common.Callback;
+import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractQuerySpecification;
 import org.symqle.sql.Column;

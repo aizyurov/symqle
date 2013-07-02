@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
-import org.symqle.SqlParameter;
-import org.symqle.SqlParameters;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 
 import java.math.BigDecimal;
 import java.sql.*;

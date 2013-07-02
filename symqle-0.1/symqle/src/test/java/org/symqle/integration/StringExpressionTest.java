@@ -1,8 +1,8 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
-import org.symqle.Mappers;
-import org.symqle.Pair;
+import org.symqle.common.Mappers;
+import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;

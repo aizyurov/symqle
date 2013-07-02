@@ -1,4 +1,4 @@
-package org.symqle;
+package org.symqle.common;
 
 /**
  * Created by IntelliJ IDEA.

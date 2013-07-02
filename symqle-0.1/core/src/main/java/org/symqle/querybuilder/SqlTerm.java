@@ -1,7 +1,10 @@
 /*
 * Copyright Alexander Izyurov 2010
 */
-package org.symqle;
+package org.symqle.querybuilder;
+
+import org.symqle.common.Sql;
+import org.symqle.common.SqlParameters;
 
 /**
  * <br/>16.03.2010

@@ -1,6 +1,9 @@
 package org.symqle;
 
 import junit.framework.TestCase;
+import org.symqle.common.Row;
+import org.symqle.common.RowMapper;
+import org.symqle.querybuilder.NullRowMapper;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;

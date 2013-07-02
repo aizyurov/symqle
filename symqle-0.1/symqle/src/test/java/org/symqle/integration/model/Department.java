@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.Mappers;
+import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
 import org.symqle.util.LazyRef;

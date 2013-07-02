@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.Mappers;
+import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractDeleteStatement;
 import org.symqle.sql.AbstractDeleteStatementBase;

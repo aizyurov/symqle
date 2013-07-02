@@ -1,10 +1,10 @@
-package org.symqle;
+package org.symqle.common;
 
 import java.sql.SQLException;
 
 /**
  * Represents a factory of Java Objects of JavaType class, which can construct them from a single
- * {@link Element}}.
+ * {@link org.symqle.common.Element}}.
  * @author Alexander Izyurov
  * @param <JavaType> the type of associated Java objects
   */

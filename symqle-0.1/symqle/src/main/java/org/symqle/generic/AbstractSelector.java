@@ -1,10 +1,10 @@
 package org.symqle.generic;
 
-import org.symqle.Query;
-import org.symqle.Row;
-import org.symqle.RowMapper;
-import org.symqle.SqlContext;
-import org.symqle.SqlParameters;
+import org.symqle.common.Query;
+import org.symqle.common.Row;
+import org.symqle.common.RowMapper;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.SelectList;
 

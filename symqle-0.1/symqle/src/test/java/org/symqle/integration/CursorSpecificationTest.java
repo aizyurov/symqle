@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.Callback;
+import org.symqle.common.Callback;
 import org.symqle.integration.model.Employee;
 import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractCursorSpecification;

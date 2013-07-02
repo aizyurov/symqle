@@ -1,7 +1,7 @@
 package org.symqle.jdbctest;
 
 import junit.framework.TestCase;
-import org.symqle.SqlParameters;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.StatementParameters;
 
 import java.math.BigDecimal;

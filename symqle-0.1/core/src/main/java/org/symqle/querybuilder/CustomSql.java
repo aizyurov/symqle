@@ -1,4 +1,7 @@
-package org.symqle;
+package org.symqle.querybuilder;
+
+import org.symqle.common.Sql;
+import org.symqle.common.SqlParameters;
 
 /**
  * Created by IntelliJ IDEA.

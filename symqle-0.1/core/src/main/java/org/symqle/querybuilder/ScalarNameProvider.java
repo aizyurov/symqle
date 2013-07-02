@@ -1,4 +1,4 @@
-package org.symqle;
+package org.symqle.querybuilder;
 
 /**
  * @author lvovich

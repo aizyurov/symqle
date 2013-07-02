@@ -1,8 +1,7 @@
 package org.symqle.generic;
 
 import junit.framework.TestCase;
-import org.symqle.Mappers;
-import org.symqle.generic.Functions;
+import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.TableOrView;

@@ -1,7 +1,7 @@
 /*
 * Copyright Alexander Izyurov 2010
 */
-package org.symqle;
+package org.symqle.common;
 
 import java.math.BigDecimal;
 import java.sql.Date;

@@ -2,11 +2,9 @@ package org.symqle.hsqldb;
 
 import junit.framework.TestCase;
 import org.hsqldb.jdbcDriver;
-import org.symqle.Mappers;
-import org.symqle.Pair;
-import org.symqle.jdbc.Configuration;
+import org.symqle.common.Mappers;
+import org.symqle.common.Pair;
 import org.symqle.jdbc.Option;
-import org.symqle.jdbc.UpdatableConfiguration;
 import org.symqle.sql.Column;
 import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.Dialect;

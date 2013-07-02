@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.Mappers;
+import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.TableOrView;
 

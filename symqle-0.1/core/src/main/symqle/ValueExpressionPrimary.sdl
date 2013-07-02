@@ -37,8 +37,8 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
 public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 }
 
-import org.symqle.SqlParameter;
-import org.symqle.SqlParameters;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
     private final Mapper<T> mapper;
     private final T value;
@@ -85,9 +85,9 @@ public interface ColumnReference<T> extends Scalar<T> : Sql {}
 <T> ColumnReference<T> ::= tableRef:Identifier PERIOD columnName:ColumnName<T>
 ;
 
-import org.symqle.CustomSql;
-import org.symqle.SqlTerm;
-import org.symqle.Mapper;
+import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.SqlTerm;
+import org.symqle.common.Mapper;
 public class Column<T> implements ColumnReference<T>, ColumnName<T> {
     private final String columnName;
     private final TableOrView owner;
@@ -156,7 +156,7 @@ ArgumentList ::=
         :: protected ArgumentList appendArgument {}
 ;
 
-import org.symqle.CustomSql;
+import org.symqle.querybuilder.CustomSql;
 public class SqlFunction<T> implements RoutineName<T> {
     private final String name;
     private final Mapper<T> mapper;

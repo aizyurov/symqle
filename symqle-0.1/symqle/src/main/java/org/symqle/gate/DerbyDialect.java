@@ -1,7 +1,7 @@
 package org.symqle.gate;
 
-import org.symqle.Sql;
-import org.symqle.SqlTerm;
+import org.symqle.common.Sql;
+import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 

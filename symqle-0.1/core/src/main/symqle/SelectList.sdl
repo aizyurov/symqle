@@ -8,7 +8,7 @@ public class AbstractSelectList<T> implements SelectList<T> {}
 ;
 
 # non-trivial construction of resulting Query; cannot be derived automatically
-import org.symqle.Pair;
+import org.symqle.common.Pair;
 <T, U> SelectList<Pair<T, U>> ::= sl1:SelectList<T> COMMA sl2:SelectList<U> ::
     public AbstractSelectList<Pair<T, U>> pair {
             /**

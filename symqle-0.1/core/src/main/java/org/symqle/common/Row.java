@@ -1,7 +1,7 @@
 /*
 * Copyright Alexander Izyurov 2010
 */
-package org.symqle;
+package org.symqle.common;
 
 /**
  * An abstraction of a single row of a result set.

@@ -1,4 +1,4 @@
-package org.symqle;
+package org.symqle.common;
 
 /**
  * This interface extends Sql and RowMapper<JavaType>.

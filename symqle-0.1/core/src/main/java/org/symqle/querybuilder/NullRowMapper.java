@@ -1,4 +1,7 @@
-package org.symqle;
+package org.symqle.querybuilder;
+
+import org.symqle.common.Row;
+import org.symqle.common.RowMapper;
 
 /**
  * Created by IntelliJ IDEA.
