@@ -124,10 +124,10 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
         }
 
     public void leftJoin(TableOrView other, BooleanExpression condition) {
-        final Symqle simqle = Symqle.get();
+        final Symqle symqle = Symqle.get();
         checkJoin(other);
-        final JoinedTable joinedTable = simqle.leftJoin(tableReference, other, condition);
-        tableReference = simqle.tableReferenceFromJoinedTable(joinedTable);
+        final JoinedTable joinedTable = symqle.leftJoin(tableReference, other, condition);
+        tableReference = symqle.tableReferenceFromJoinedTable(joinedTable);
     }
             /**
             * Creates an Sql representing <code>this</code>

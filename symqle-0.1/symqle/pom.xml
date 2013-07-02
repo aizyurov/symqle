@@ -11,7 +11,7 @@
   <artifactId>symqle-front</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>symqle-front</name>
-  <url>http://simqle.org</url>
+  <url>http://symqle.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
