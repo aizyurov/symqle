@@ -1,4 +1,4 @@
-package org.symqle.front;
+package org.symqle.generic;
 
 import org.symqle.Mappers;
 import org.symqle.sql.DynamicParameter;

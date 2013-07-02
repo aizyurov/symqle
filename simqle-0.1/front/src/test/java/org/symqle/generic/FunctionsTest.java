@@ -1,4 +1,4 @@
-package org.symqle.front;
+package org.symqle.generic;
 
 import junit.framework.TestCase;
 import org.symqle.Mappers;

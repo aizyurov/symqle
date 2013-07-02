@@ -2,8 +2,8 @@ package org.symqle.integration;
 
 import org.symqle.Mappers;
 import org.symqle.Pair;
-import org.symqle.derby.DerbyDialect;
-import org.symqle.front.Params;
+import org.symqle.gate.DerbyDialect;
+import org.symqle.generic.Params;
 import org.symqle.generic.Functions;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;

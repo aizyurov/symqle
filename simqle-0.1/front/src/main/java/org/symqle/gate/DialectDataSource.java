@@ -1,4 +1,4 @@
-package org.symqle.front;
+package org.symqle.gate;
 
 import org.symqle.jdbc.Option;
 import org.symqle.sql.Dialect;
@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,15 +17,9 @@ public class DialectDataSource extends  AbstractAdaptiveDatabaseGate {
     private final DataSource dataSource;
     private final List<Option> options;
 
-    public DialectDataSource(final DataSource dataSource) {
+    public DialectDataSource(final DataSource dataSource, final Option... options) {
         this.dataSource = dataSource;
-        options = Collections.emptyList();
-    }
-
-    public DialectDataSource(final DataSource dataSource, final Dialect dialect) {
-        super(dialect);
-        this.dataSource = dataSource;
-        options = Collections.emptyList();
+        this.options = Arrays.asList(options);
     }
 
     public DialectDataSource(final DataSource dataSource, final Dialect dialect, final Option... options) {

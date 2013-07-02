@@ -1,4 +1,4 @@
-package org.symqle.front;
+package org.symqle.generic;
 
 import org.symqle.Query;
 import org.symqle.Row;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author lvovich
  * @param <D> data type
  */
-public abstract class AbstractMapper<D> extends AbstractSelectList<D> {
+public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
 
 
     private final List<KeyImpl<?>> keys = new ArrayList<KeyImpl<?>>();

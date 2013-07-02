@@ -1,7 +1,7 @@
 package org.symqle.integration;
 
 import org.symqle.Pair;
-import org.symqle.front.Params;
+import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.sql.AbstractLikePredicateBase;

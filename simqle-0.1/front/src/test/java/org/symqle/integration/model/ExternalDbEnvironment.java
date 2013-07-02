@@ -1,7 +1,7 @@
 package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import org.symqle.front.DialectDataSource;
+import org.symqle.gate.DialectDataSource;
 import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.Dialect;
 

@@ -2,11 +2,11 @@ package org.symqle.integration;
 
 import org.symqle.Mappers;
 import org.symqle.Pair;
-import org.symqle.front.Params;
+import org.symqle.generic.Params;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.One;
-import org.symqle.mysql.MySqlDialect;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractRoutineInvocation;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.ValueExpression;

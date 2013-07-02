@@ -1,4 +1,4 @@
-package org.symqle.derby;
+package org.symqle.gate;
 
 import org.symqle.Sql;
 import org.symqle.SqlTerm;

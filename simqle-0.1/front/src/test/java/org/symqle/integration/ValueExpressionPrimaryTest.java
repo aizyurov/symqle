@@ -7,7 +7,7 @@ import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
 import org.symqle.jdbc.Option;
-import org.symqle.mysql.MySqlDialect;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractValueExpressionPrimary;
 import org.symqle.sql.GenericDialect;
 

@@ -1,4 +1,4 @@
-package org.symqle.front;
+package org.symqle.generic;
 
 import junit.framework.TestCase;
 import org.symqle.Mappers;
@@ -26,14 +26,14 @@ public class AbstractMapperTest extends TestCase {
 
     public void testSimpleMapperSql() {
         final Person person = new Person();
-        final PersonMapper mapper = new PersonMapper(person);
+        final PersonSelector mapper = new PersonSelector(person);
         final String queryString = mapper.show();
         System.out.println(queryString);
         assertEquals("SELECT T1.id AS C1, T1.name AS C2 FROM person AS T1", queryString);
     }
 
     public void testNoMappers() {
-        final EmptyPersonMapper mapper = new EmptyPersonMapper();
+        final EmptyPersonSelector mapper = new EmptyPersonSelector();
         try {
             final String sql = mapper.show();
             fail("IllegalStateException expected but returned: "+sql);
@@ -44,7 +44,7 @@ public class AbstractMapperTest extends TestCase {
 
     public void testMapFromCreate() throws Exception {
         final Person person = new Person();
-        final MapCallFromCreateMapper mapper = new MapCallFromCreateMapper(person);
+        final MapCallFromCreateSelector mapper = new MapCallFromCreateSelector(person);
         final String queryString = mapper.show();
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
@@ -77,7 +77,7 @@ public class AbstractMapperTest extends TestCase {
 
     public void testSimpleMapper() throws Exception {
         final Person person = new Person();
-        final PersonMapper mapper = new PersonMapper(person);
+        final PersonSelector mapper = new PersonSelector(person);
         final String queryString = mapper.show();
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
@@ -116,12 +116,12 @@ public class AbstractMapperTest extends TestCase {
         }
     }
 
-    private static class PersonMapper extends AbstractMapper<PersonDTO> {
+    private static class PersonSelector extends AbstractSelector<PersonDTO> {
 
         private final RowMapper<Long> idKey;
         private final RowMapper<String> nameKey;
 
-        public PersonMapper(final Person person) {
+        public PersonSelector(final Person person) {
             idKey = map(person.id);
             nameKey = map(person.name);
         }
@@ -133,17 +133,17 @@ public class AbstractMapperTest extends TestCase {
         }
     }
 
-    private static class EmptyPersonMapper extends AbstractMapper<PersonDTO> {
+    private static class EmptyPersonSelector extends AbstractSelector<PersonDTO> {
         @Override
         protected PersonDTO create(final Row row) throws SQLException {
             return null;
         }
     }
 
-    private static class MapCallFromCreateMapper extends AbstractMapper<PersonDTO> {
+    private static class MapCallFromCreateSelector extends AbstractSelector<PersonDTO> {
         private final Person person;
 
-        private MapCallFromCreateMapper(final Person person) {
+        private MapCallFromCreateSelector(final Person person) {
             this.person = person;
             map(person.id);
         }

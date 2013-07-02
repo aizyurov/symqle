@@ -1,4 +1,4 @@
-package org.symqle.front;
+package org.symqle.gate;
 
 import java.sql.Connection;
 import java.sql.SQLException;

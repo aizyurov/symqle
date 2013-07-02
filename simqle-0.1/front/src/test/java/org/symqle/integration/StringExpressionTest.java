@@ -7,7 +7,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
-import org.symqle.mysql.MySqlDialect;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractStringExpression;
 
 import java.sql.SQLException;

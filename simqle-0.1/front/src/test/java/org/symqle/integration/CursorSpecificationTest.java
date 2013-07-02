@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.Callback;
 import org.symqle.integration.model.Employee;
-import org.symqle.mysql.MySqlDialect;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractCursorSpecification;
 
 import java.sql.SQLException;

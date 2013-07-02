@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.Mappers;
 import org.symqle.Pair;
-import org.symqle.front.Params;
+import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.integration.model.One;

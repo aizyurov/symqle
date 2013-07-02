@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.TrueValue;
-import org.symqle.mysql.MySqlDialect;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractQueryBaseScalar;
 
 import java.sql.SQLException;
