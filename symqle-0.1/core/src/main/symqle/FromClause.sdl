@@ -179,6 +179,7 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
 # Symqle does not support/use <named columns join>, so we are inlining <join condition> in Join productions
 
 
+import org.symqle.jdbc.Configuration;
 public class ImplicitFromClause implements FromClause {
             public Sql z$sqlOfFromClause(SqlContext context) {
                 SelectTableRegistry registry = (SelectTableRegistry) context.get(TableRegistry.class);

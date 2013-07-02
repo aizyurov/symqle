@@ -41,6 +41,7 @@ public interface DataChangeStatement : Sql {}
     return show(statement, GenericDialect.get());
 }
 
+import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
      final UpdatableConfiguration configuration = new UpdatableConfiguration();
      for (final Option option : options) {
@@ -49,6 +50,8 @@ public interface DataChangeStatement : Sql {}
     return beautifySql(prepareUpdate(statement, dialect, configuration).getSqlText());
 }
 
+import org.symqle.jdbc.Option;
+import java.sql.SQLException;
 :: public int execute(final DataChangeStatement statement, final DatabaseGate gate, final Option... options) throws SQLException {
      final UpdatableConfiguration configuration = new UpdatableConfiguration();
      final List<Option> defaultOptions = gate.getOptions();

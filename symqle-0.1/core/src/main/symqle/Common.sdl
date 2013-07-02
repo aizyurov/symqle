@@ -15,6 +15,8 @@ import javax.sql.DataSource;
 import org.symqle.*;
 import org.symqle.jdbc.ResultSetRow;
 import org.symqle.jdbc.StatementParameters;
+import org.symqle.jdbc.Configuration;
+import org.symqle.jdbc.UpdatableConfiguration;
 public final class Symqle  {
     private static final Symqle instance = new Symqle();
 
@@ -57,6 +59,8 @@ public interface Dialect  {
     String fallbackTableName();
 }
 
+
+import java.sql.SQLException;
 import org.symqle.SqlParameters;
 import org.symqle.Sql;
 import static org.symqle.SqlTerm.*;
@@ -150,7 +154,6 @@ public class GenericDialect implements Dialect {
 
 }
 
-import org.symqle.CustomSql;
 import org.symqle.Sql;
 class DebugDialect extends GenericDialect {
 

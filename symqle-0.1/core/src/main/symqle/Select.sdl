@@ -7,19 +7,9 @@ public class AbstractSelectStatement<T> implements SelectStatement<T>
 
 # key Symqle methods to query values
 
-import org.symqle.Callback;
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import org.symqle.Callback;
-import org.symqle.Row;
-import org.symqle.jdbc.ResultSetRow;
-import org.symqle.jdbc.StatementParameters;
 import org.symqle.jdbc.Option;
-import org.symqle.jdbc.Configuration;
-import org.symqle.jdbc.UpdatableConfiguration;
 ::
     /**
      * Executes a statement and calls callback for each returned row.
@@ -78,9 +68,9 @@ public <T> int scroll(final SelectStatement<T> statement,
     }
 }
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
+import org.symqle.jdbc.Option;
 :: public <T> List<T> list(final SelectStatement<T> statement,
                           final DatabaseGate gate,
                           final Option... options

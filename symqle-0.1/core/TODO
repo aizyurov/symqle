@@ -33,6 +33,15 @@ Symqle methods visibility. Package scope and public methods of Symqle become pub
 
 rename booleanValue -> asPredicate
 
-ImplicitFromClause should be provided by the gate. Each subclass can specify what to do when context does not contain any table. For example, add new TableOrView("dual") or new TableOrView("(values (1))") to the context and continue, or just return ImplicitFromClause and wait for call to z$FromClauseFromNothing.
+(done) ImplicitFromClause should be provided by the gate. Each subclass can specify what to do when context does not contain any table. For example, add new TableOrView("dual") or new TableOrView("(values (1))") to the context and continue, or just return ImplicitFromClause and wait for call to z$FromClauseFromNothing.
 ImplicitFromClause should provide a hook for adding table (other logic is final!). Also, provide configurable allowNoTables and allowImplicitCrossJoins. If allowNoTables is false and there are no tables, an exception is thrown immediately. 
+
+http://kobyleha.com/en/programming/java/how_to_build_skin_for_maven_2_site_plugin
+
+sequences
+
+ALL/ANY/SOME (future release)
+
+return generated keys
+
 
