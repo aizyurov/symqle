@@ -13,16 +13,16 @@ import java.util.List;
 /**
  * @author lvovich
  */
-public class DialectDataSource extends  AbstractAdaptiveDatabaseGate {
+public class DataSourceGate extends  AbstractAdaptiveDatabaseGate {
     private final DataSource dataSource;
     private final List<Option> options;
 
-    public DialectDataSource(final DataSource dataSource, final Option... options) {
+    public DataSourceGate(final DataSource dataSource, final Option... options) {
         this.dataSource = dataSource;
         this.options = Arrays.asList(options);
     }
 
-    public DialectDataSource(final DataSource dataSource, final Dialect dialect, final Option... options) {
+    public DataSourceGate(final DataSource dataSource, final Dialect dialect, final Option... options) {
         super(dialect);
         this.dataSource = dataSource;
         this.options = Arrays.asList(options);

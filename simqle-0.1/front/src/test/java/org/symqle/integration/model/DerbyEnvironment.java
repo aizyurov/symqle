@@ -2,7 +2,8 @@ package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
-import org.symqle.gate.DialectDataSource;
+import org.symqle.gate.DataSourceGate;
+import org.symqle.gate.DataSourceGate;
 import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.Dialect;
 
@@ -41,9 +42,9 @@ public class DerbyEnvironment implements TestEnvironment {
                 final Class<?> dialectClazz = Class.forName(dialectClass);
                 final Method getMethod = dialectClazz.getMethod("get");
                 final Dialect dialect = (Dialect) getMethod.invoke(null);
-                return new DialectDataSource(dataSource, dialect);
+                return new DataSourceGate(dataSource, dialect);
             } else {
-                return new DialectDataSource(dataSource);
+                return new DataSourceGate(dataSource);
             }
         } catch (RuntimeException e) {
             throw e;

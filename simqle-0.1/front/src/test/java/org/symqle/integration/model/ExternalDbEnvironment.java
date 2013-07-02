@@ -1,7 +1,8 @@
 package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import org.symqle.gate.DialectDataSource;
+import org.symqle.gate.DataSourceGate;
+import org.symqle.gate.DataSourceGate;
 import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.Dialect;
 
@@ -55,9 +56,9 @@ public class ExternalDbEnvironment implements TestEnvironment {
                 final Class<?> dialectClazz = Class.forName(dialectClass);
                 final Method getMethod = dialectClazz.getMethod("get");
                 final Dialect dialect = (Dialect) getMethod.invoke(null);
-                return new DialectDataSource(pool, dialect);
+                return new DataSourceGate(pool, dialect);
             } else {
-                return new DialectDataSource(pool);
+                return new DataSourceGate(pool);
             }
         } catch (RuntimeException e) {
             throw e;

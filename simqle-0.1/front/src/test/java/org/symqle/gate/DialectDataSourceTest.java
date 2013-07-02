@@ -28,7 +28,7 @@ public class DialectDataSourceTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement setupStatement = createMock(PreparedStatement.class);
         final String connectionSetup = "set session sql_mode=?";
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final PreparedStatement queryModeStatement = createMock(PreparedStatement.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
@@ -52,8 +52,8 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection,  setupStatement, queryModeStatement, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
-        assertEquals("MySQL", dialectDataSource.getDialect().getName());
+        assertNotNull(dataSourceGate.getConnection());
+        assertEquals("MySQL", dataSourceGate.getDialect().getName());
 
         verify(datasource, connection, setupStatement, queryModeStatement, metaData, resultSet);
     }
@@ -63,7 +63,7 @@ public class DialectDataSourceTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement setupStatement = createMock(PreparedStatement.class);
         final String connectionSetup = "set session sql_mode=?";
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final PreparedStatement queryModeStatement = createMock(PreparedStatement.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
@@ -83,7 +83,7 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection,  setupStatement, queryModeStatement, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
 
         verify(datasource, connection, setupStatement, queryModeStatement, metaData, resultSet);
     }
@@ -93,7 +93,7 @@ public class DialectDataSourceTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement setupStatement = createMock(PreparedStatement.class);
         final String connectionSetup = "set session sql_mode=?";
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final PreparedStatement queryModeStatement = createMock(PreparedStatement.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
@@ -126,8 +126,8 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection,  setupStatement, queryModeStatement, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
-        assertNotNull(dialectDataSource.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
 
         verify(datasource, connection, setupStatement, queryModeStatement, metaData, resultSet);
 
@@ -142,7 +142,7 @@ public class DialectDataSourceTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement setupStatement = createMock(PreparedStatement.class);
         final String connectionSetup = "set session sql_mode=?";
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final PreparedStatement queryModeStatement = createMock(PreparedStatement.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
@@ -179,8 +179,8 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection,  setupStatement, queryModeStatement, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
-        assertNotNull(dialectDataSource.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
 
         verify(datasource, connection, setupStatement, queryModeStatement, metaData, resultSet);
 
@@ -191,7 +191,7 @@ public class DialectDataSourceTest extends TestCase {
         final Connection connection = createMock(Connection.class);
         final PreparedStatement setupStatement = createMock(PreparedStatement.class);
         final String connectionSetup = "set session sql_mode=?";
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final PreparedStatement queryModeStatement = createMock(PreparedStatement.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
@@ -228,8 +228,8 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection,  setupStatement, queryModeStatement, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
-        assertNotNull(dialectDataSource.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
 
         verify(datasource, connection, setupStatement, queryModeStatement, metaData, resultSet);
     }
@@ -237,7 +237,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testUnknownDatabase() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         expect(datasource.getConnection()).andReturn(connection);
@@ -250,10 +250,10 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
-        assertNotNull(dialectDataSource.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
 
-        assertEquals("Generic", dialectDataSource.getDialect().getName());
+        assertEquals("Generic", dataSourceGate.getDialect().getName());
 
         verify(datasource, connection, metaData, resultSet);
 
@@ -262,7 +262,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testForceDialect() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource, GenericDialect.get());
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource, GenericDialect.get());
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         expect(datasource.getConnection()).andReturn(connection);
@@ -275,10 +275,10 @@ public class DialectDataSourceTest extends TestCase {
 
         replay(datasource, connection, metaData, resultSet);
 
-        assertNotNull(dialectDataSource.getConnection());
-        assertNotNull(dialectDataSource.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
+        assertNotNull(dataSourceGate.getConnection());
 
-        assertEquals("Generic", dialectDataSource.getDialect().getName());
+        assertEquals("Generic", dataSourceGate.getDialect().getName());
 
         verify(datasource, connection, metaData, resultSet);
     }
@@ -286,7 +286,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testOptions() throws Exception {
             final DataSource datasource = createMock(DataSource.class);
             final Connection connection = createMock(Connection.class);
-            final DialectDataSource dialectDataSource = new DialectDataSource(datasource, Option.setQueryTimeout(100), Option.setFetchSize(10));
+            final DataSourceGate dataSourceGate = new DataSourceGate(datasource, Option.setQueryTimeout(100), Option.setFetchSize(10));
             final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             expect(datasource.getConnection()).andReturn(connection);
@@ -298,10 +298,10 @@ public class DialectDataSourceTest extends TestCase {
 
             replay(datasource, connection, metaData, resultSet);
 
-            assertNotNull(dialectDataSource.getConnection());
+            assertNotNull(dataSourceGate.getConnection());
 
-            assertEquals("Apache Derby", dialectDataSource.getDialect().getName());
-            assertEquals(2, dialectDataSource.getOptions().size());
+            assertEquals("Apache Derby", dataSourceGate.getDialect().getName());
+            assertEquals(2, dataSourceGate.getOptions().size());
 
             verify(datasource, connection, metaData, resultSet);
     }
@@ -309,7 +309,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testForceDialectAndOptions() throws Exception {
             final DataSource datasource = createMock(DataSource.class);
             final Connection connection = createMock(Connection.class);
-            final DialectDataSource dialectDataSource = new DialectDataSource(datasource, GenericDialect.get(), Option.setQueryTimeout(100), Option.setFetchSize(10));
+            final DataSourceGate dataSourceGate = new DataSourceGate(datasource, GenericDialect.get(), Option.setQueryTimeout(100), Option.setFetchSize(10));
             final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             expect(datasource.getConnection()).andReturn(connection);
@@ -321,10 +321,10 @@ public class DialectDataSourceTest extends TestCase {
 
             replay(datasource, connection, metaData, resultSet);
 
-            assertNotNull(dialectDataSource.getConnection());
+            assertNotNull(dataSourceGate.getConnection());
 
-            assertEquals("Generic", dialectDataSource.getDialect().getName());
-            assertEquals(2, dialectDataSource.getOptions().size());
+            assertEquals("Generic", dataSourceGate.getDialect().getName());
+            assertEquals(2, dataSourceGate.getOptions().size());
 
             verify(datasource, connection, metaData, resultSet);
     }
@@ -332,7 +332,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testSQLException() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
-        final DialectDataSource dialectDataSource = new DialectDataSource(datasource);
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.getMetaData()).andReturn(metaData);
@@ -343,7 +343,7 @@ public class DialectDataSourceTest extends TestCase {
         replay(datasource, connection, metaData);
 
         try {
-            final Dialect dialect = dialectDataSource.getDialect();
+            final Dialect dialect = dataSourceGate.getDialect();
             fail("IllegalStateException expected but returned " + dialect);
         } catch (IllegalStateException e) {
             assertEquals(sqlException, e.getCause());
