@@ -1,7 +1,9 @@
 package org.symqle.util;
 
 /**
- * @author lvovich
+ * A reference, which can create a referent on demand.
+ * Referent can be null.
+ * @param <T> referent type
  */
 public abstract class LazyRef<T> {
     private T referent;

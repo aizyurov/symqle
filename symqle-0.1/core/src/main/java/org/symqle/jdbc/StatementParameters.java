@@ -20,7 +20,12 @@ import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
 
 /**
  * An implementation of SqlParameters, which is a proxy to a PreparedStatement.
@@ -38,7 +43,7 @@ public class StatementParameters implements SqlParameters {
     }
 
     @Override
-    public SqlParameter next() {
+    public final SqlParameter next() {
         return new StatementParameter(++position);
     }
 

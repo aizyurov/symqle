@@ -24,7 +24,7 @@ public class ScalarNameProvider implements UniqueNameProvider {
     private boolean called = false;
 
     @Override
-    public String getUniqueName() {
+    public final String getUniqueName() {
         if (called) {
             throw new IllegalStateException("Can be called only once");
         }

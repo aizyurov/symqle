@@ -24,23 +24,23 @@ import org.symqle.common.SqlParameters;
  * The  text is provided in the constructor.
  */
 public class CustomSql implements Sql {
-    final String text;
+    private final String text;
 
     /**
-     * Constructs with a given text
-     * @param text
+     * Constructs from a given text.
+     * @param text the Sql text
      */
     public CustomSql(String text) {
         this.text = text;
     }
 
     @Override
-    public String getSqlText() {
+    public final String getSqlText() {
         return text;
     }
 
     @Override
-    public void setParameters(SqlParameters p) {
+    public final void setParameters(final SqlParameters p) {
         // do nothing
     }
 }

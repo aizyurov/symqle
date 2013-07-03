@@ -34,8 +34,8 @@ public interface Sql {
     /**
      * Provide values for dynamic parameters.
      * @param p SqlParameters to write parameter values into
+     * @throws SQLException if jdbc driver cannot set parameters
      */
     void setParameters(SqlParameters p) throws SQLException;
-;
 
 }

@@ -49,22 +49,29 @@ public class Pair<First, Second> {
      * @param second the second object
      * @param <First> type of {@code first}
      * @param <Second> type of {@code second}
-     * @return
+     * @return new Pair
      */
-    public static <First,Second> Pair<First,Second> make(final First first, final Second second) {
+    public static <First, Second> Pair<First, Second> make(final First first, final Second second) {
         return new Pair<First, Second>(first, second);
     }
 
     @Override
     public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Pair pair = (Pair) o;
 
-        if (o1 != null ? !o1.equals(pair.o1) : pair.o1 != null) return false;
-        if (o2 != null ? !o2.equals(pair.o2) : pair.o2 != null) return false;
-
+        if (o1 != null ? !o1.equals(pair.o1) : pair.o1 != null) {
+            return false;
+        }
+        if (o2 != null ? !o2.equals(pair.o2) : pair.o2 != null) {
+            return false;
+        }
         return true;
     }
 

@@ -23,10 +23,11 @@ import org.symqle.common.RowMapper;
  * Fake implementation of RowMapper.
  * Used when a RowMapper is required but never invoked.
  * Its {@link #extract(org.symqle.common.Row)} always throws RuntimeException.
+ * @param <T> type of mapped objects
  */
 public class NullRowMapper<T> implements RowMapper<T> {
     @Override
-    public T extract(final Row row) {
+    public final T extract(final Row row) {
         // must never get here
         throw new RuntimeException("Not implemented");
     }

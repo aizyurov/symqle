@@ -22,7 +22,7 @@ package org.symqle.querybuilder;
 public class ColumnNameProvider extends PrefixedNameProvider {
 
     /**
-     * No-arg constructor
+     * No-arg constructor.
      */
     public ColumnNameProvider() {
         super("C");

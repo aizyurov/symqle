@@ -40,7 +40,7 @@ public class SqlContext {
     }
 
     /**
-     * Gets an object from the context by key
+     * Gets an object from the context by key.
      * @param clazz the key
      * @param <T> type of the returned value
      * @return the object stored under this key; null if not found

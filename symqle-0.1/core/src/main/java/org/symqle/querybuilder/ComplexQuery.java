@@ -30,21 +30,21 @@ import java.sql.SQLException;
  * @param <T> type of objects created by row mapper.
  */
 public class ComplexQuery<T> implements Query<T> {
-    final RowMapper<T> extractor;
-    final Sql sql;
+    private final RowMapper<T> extractor;
+    private final Sql sql;
 
     /**
      * Constructs from components.
      * @param rowMapper RowMapper to use for {@link #extract(org.symqle.common.Row)}
      * @param sql provides {@link #getSqlText()} and {@link #setParameters(org.symqle.common.SqlParameters)}
      */
-    public ComplexQuery(RowMapper<T> rowMapper, Sql sql) {
+    public ComplexQuery(final RowMapper<T> rowMapper, final Sql sql) {
         this.extractor = rowMapper;
         this.sql = sql;
     }
 
     @Override
-    public T extract(Row row) throws SQLException {
+    public T extract(final Row row) throws SQLException {
         return extractor.extract(row);
     }
 

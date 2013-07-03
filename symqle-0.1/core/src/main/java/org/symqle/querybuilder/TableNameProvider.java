@@ -21,6 +21,9 @@ package org.symqle.querybuilder;
  */
 public class TableNameProvider extends PrefixedNameProvider {
 
+    /**
+     * No-arg constructor
+     */
     public TableNameProvider() {
         super("T");
     }

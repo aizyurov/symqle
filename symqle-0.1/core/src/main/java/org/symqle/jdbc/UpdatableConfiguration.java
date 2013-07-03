@@ -22,32 +22,32 @@ package org.symqle.jdbc;
  *
  */
 public class UpdatableConfiguration implements Configuration {
-    boolean noFromOk = false;
-    boolean implicitCrossJoinsOk = false;
+    private boolean noFromOk = false;
+    private boolean implicitCrossJoinsOk = false;
 
     /**
      * Sets allowNoFrom.
      * @param noFromOk true to allow
      */
-    public void setNoFromOk(final boolean noFromOk) {
+    public final void setNoFromOk(final boolean noFromOk) {
         this.noFromOk = noFromOk;
     }
 
     /**
-     * Sets allowImplicitCrossJoins
+     * Sets allowImplicitCrossJoins.
      * @param implicitCrossJoinsOk  true to allow
      */
-    public void setImplicitCrossJoinsOk(final boolean implicitCrossJoinsOk) {
+    public final void setImplicitCrossJoinsOk(final boolean implicitCrossJoinsOk) {
         this.implicitCrossJoinsOk = implicitCrossJoinsOk;
     }
 
     @Override
-    public boolean allowImplicitCrossJoins() {
+    public final boolean allowImplicitCrossJoins() {
         return implicitCrossJoinsOk;
     }
 
     @Override
-    public boolean allowNoFrom() {
+    public final boolean allowNoFrom() {
         return noFromOk;
     }
 

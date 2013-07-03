@@ -27,6 +27,9 @@ import java.sql.Timestamp;
  */
 public final class Mappers {
 
+    /**
+     * Utility class; no public constructor
+     */
     private Mappers() {
     }
 
@@ -59,7 +62,7 @@ public final class Mappers {
         }
 
         @Override
-        public void setValue(SqlParameter param, Number value) throws SQLException {
+        public void setValue(final SqlParameter param, final Number value) throws SQLException {
             param.setBigDecimal(new BigDecimal(value.toString()));
         }
     };
@@ -74,7 +77,7 @@ public final class Mappers {
         }
 
         @Override
-        public void setValue(SqlParameter param, Long value) throws SQLException {
+        public void setValue(final SqlParameter param, final Long value) throws SQLException {
             param.setLong(value);
         }
     };
@@ -89,7 +92,7 @@ public final class Mappers {
         }
 
         @Override
-        public void setValue(SqlParameter param, String value) throws SQLException {
+        public void setValue(final SqlParameter param, final String value) throws SQLException {
             param.setString(value);
         }
     };

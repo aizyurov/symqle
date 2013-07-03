@@ -28,16 +28,22 @@ public abstract class Option {
     public abstract void apply(Statement statement) throws SQLException;
     public abstract void apply(UpdatableConfiguration configuration);
 
+    /**
+     * Subclasses should implement {@link #apply(java.sql.Statement)}
+     */
     private abstract static class StatementOption extends Option {
         @Override
-        public void apply(UpdatableConfiguration configuration) {
+        public void apply(final UpdatableConfiguration configuration) {
             // do nothing
         }
     }
 
+    /**
+     * Subclasses should implement {@link #apply(UpdatableConfiguration)}
+     */
     private abstract static class ConfigurationOption extends Option {
         @Override
-        public void apply(Statement statement) throws SQLException {
+        public void apply(final Statement statement) throws SQLException {
             // do nothing
         }
     }
@@ -132,7 +138,7 @@ public abstract class Option {
     public static ConfigurationOption allowNoTables(final boolean allow) {
         return new ConfigurationOption() {
             @Override
-            public void apply(UpdatableConfiguration configuration) {
+            public void apply(final UpdatableConfiguration configuration) {
                 configuration.setNoFromOk(allow);
             }
         };
@@ -150,7 +156,7 @@ public abstract class Option {
     public static ConfigurationOption allowImplicitCrossJoins(final boolean allow) {
         return new ConfigurationOption() {
             @Override
-            public void apply(UpdatableConfiguration configuration) {
+            public void apply(final UpdatableConfiguration configuration) {
                 configuration.setImplicitCrossJoinsOk(allow);
             }
         };

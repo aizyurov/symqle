@@ -17,7 +17,7 @@
 package org.symqle.querybuilder;
 
 /**
- * Provides a unique string each time when called
+ * Provides a unique string each time when called.
  * @author lvovich
  */
 public interface UniqueNameProvider {

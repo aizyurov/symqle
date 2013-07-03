@@ -1469,14 +1469,14 @@ public enum SqlTerm implements Sql {
         s = super.toString();
     }
 
-    private String s;
+    private final String s;
 
     /**
      * Force string to be used as sql text
      * @param s the text
      */
-    SqlTerm(String s) {
-        this.s=s;
+    SqlTerm(final String s) {
+        this.s = s;
     }
 
     @Override
@@ -1485,7 +1485,7 @@ public enum SqlTerm implements Sql {
     }
 
     @Override
-    public void setParameters(SqlParameters p) {
+    public void setParameters(final SqlParameters p) {
         // do nothing
     }
 

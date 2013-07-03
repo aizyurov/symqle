@@ -20,7 +20,11 @@ import org.symqle.common.Element;
 import org.symqle.common.Row;
 
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 /**
  * A Row, which is a view to a ResultSet.
@@ -28,19 +32,23 @@ import java.sql.*;
 public class ResultSetRow implements Row {
     private final ResultSet resultSet;
 
+    /**
+     * Constructs for a given ResultSet
+     * @param resultSet the result set to view
+     */
     public ResultSetRow(ResultSet resultSet) {
         this.resultSet = resultSet;
     }
 
     @Override
-    public Element getValue(String label) {
+    public final Element getValue(String label) {
         return new LabeledElement(label);
     }
 
     private class LabeledElement implements Element {
         private final String label;
 
-        private LabeledElement(String label) {
+        private LabeledElement(final String label) {
             this.label = label;
         }
 
