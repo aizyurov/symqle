@@ -6,7 +6,7 @@ import org.symqle.querybuilder.ScalarNameProvider;
 /**
  * @author lvovich
  */
-public class ScanarNameProviderTest extends TestCase {
+public class ScalarNameProviderTest extends TestCase {
 
     public void testTwice() throws Exception {
         final ScalarNameProvider scalarNameProvider = new ScalarNameProvider();
