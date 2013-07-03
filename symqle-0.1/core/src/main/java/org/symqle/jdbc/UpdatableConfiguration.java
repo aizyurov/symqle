@@ -1,39 +1,36 @@
 package org.symqle.jdbc;
 
 /**
-* Base implementation of Configuration
-*
-*/
+ * Trivial mutable implementation of {@link Configuration}.
+ * Default settings are {@code false}
+ *
+ */
 public class UpdatableConfiguration implements Configuration {
     boolean noFromOk = false;
     boolean implicitCrossJoinsOk = false;
 
+    /**
+     * Sets allowNoFrom.
+     * @param noFromOk true to allow
+     */
     public void setNoFromOk(final boolean noFromOk) {
         this.noFromOk = noFromOk;
     }
 
+    /**
+     * Sets allowImplicitCrossJoins
+     * @param implicitCrossJoinsOk  true to allow
+     */
     public void setImplicitCrossJoinsOk(final boolean implicitCrossJoinsOk) {
         this.implicitCrossJoinsOk = implicitCrossJoinsOk;
     }
 
-    public static UpdatableConfiguration copyOf(final Configuration configuration) {
-        final UpdatableConfiguration copy = new UpdatableConfiguration();
-        copy.setNoFromOk(configuration.allowNoFrom());
-        copy.setImplicitCrossJoinsOk(configuration.allowImplicitCrossJoins());
-        return copy;
-    }
-
-    /**
-    * Defines whether implicit cross joins are allowed,
-    */
+    @Override
     public boolean allowImplicitCrossJoins() {
         return implicitCrossJoinsOk;
     }
 
-    /**
-    * Defines whether empty FROM is allowed.
-    * @return true of no FROM clause is OK
-    */
+    @Override
     public boolean allowNoFrom() {
         return noFromOk;
     }

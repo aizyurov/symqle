@@ -1,3 +1,19 @@
+/*
+   Copyright 2010-2013 Alexander Izyurov
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.package org.symqle.common;
+*/
+
 package org.symqle.jdbc;
 
 import org.symqle.common.SqlParameter;
@@ -7,17 +23,17 @@ import java.math.BigDecimal;
 import java.sql.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: aizyurov
- * Date: 14.12.2012
- * Time: 23:08:40
- * To change this template use File | Settings | File Templates.
+ * An implementation of SqlParameters, which is a proxy to a PreparedStatement.
  */
 public class StatementParameters implements SqlParameters {
     private final PreparedStatement statement;
     private int position;
 
-    public StatementParameters(PreparedStatement statement) {
+    /**
+     * Constructs from a PreparedStatement
+     * @param statement the statement to proxy
+     */
+    public StatementParameters(final PreparedStatement statement) {
         this.statement = statement;
     }
 
@@ -29,12 +45,12 @@ public class StatementParameters implements SqlParameters {
     private class StatementParameter implements SqlParameter {
         private final int position;
 
-        private StatementParameter(int position) {
+        private StatementParameter(final int position) {
             this.position = position;
         }
 
         @Override
-        public void setBoolean(Boolean x) throws SQLException {
+        public void setBoolean(final Boolean x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.BOOLEAN);
             } else {
@@ -43,7 +59,7 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setByte(Byte x) throws SQLException {
+        public void setByte(final Byte x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.TINYINT);
             } else {
@@ -52,7 +68,7 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setShort(Short x) throws SQLException {
+        public void setShort(final Short x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.SMALLINT);
             } else {
@@ -61,7 +77,7 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setInt(Integer x) throws SQLException {
+        public void setInt(final Integer x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.INTEGER);
             } else {
@@ -70,7 +86,7 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setLong(Long x) throws SQLException {
+        public void setLong(final Long x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.BIGINT);
             } else {
@@ -79,7 +95,7 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setFloat(Float x) throws SQLException {
+        public void setFloat(final Float x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.FLOAT);
             } else {
@@ -88,7 +104,7 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setDouble(Double x) throws SQLException {
+        public void setDouble(final Double x) throws SQLException {
             if (x == null) {
                 statement.setNull(position, Types.DOUBLE);
             } else {
@@ -97,27 +113,27 @@ public class StatementParameters implements SqlParameters {
         }
 
         @Override
-        public void setBigDecimal(BigDecimal x) throws SQLException {
+        public void setBigDecimal(final BigDecimal x) throws SQLException {
             statement.setBigDecimal(position, x);
         }
 
         @Override
-        public void setString(String x) throws SQLException {
+        public void setString(final String x) throws SQLException {
             statement.setString(position, x);
         }
 
         @Override
-        public void setDate(Date x) throws SQLException {
+        public void setDate(final Date x) throws SQLException {
             statement.setDate(position, x);
         }
 
         @Override
-        public void setTime(Time x) throws SQLException {
+        public void setTime(final Time x) throws SQLException {
             statement.setTime(position, x);
         }
 
         @Override
-        public void setTimestamp(Timestamp x) throws SQLException {
+        public void setTimestamp(final Timestamp x) throws SQLException {
             statement.setTimestamp(position, x);
         }
     }
