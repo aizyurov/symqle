@@ -44,6 +44,7 @@ public final class Symqle  {
         innerContext.set(Dialect.class, context.get(Dialect.class));
         // create an empty AbstractFromClause with current FromClause as enclosing
         innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
+        innerContext.set(Configuration.class, context.get(Configuration.class));
         return innerContext;
     }
 

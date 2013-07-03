@@ -1,7 +1,6 @@
 package org.symqle.jdbctest;
 
 import junit.framework.TestCase;
-import org.symqle.jdbc.Configuration;
 import org.symqle.jdbc.UpdatableConfiguration;
 
 /**
@@ -20,16 +19,14 @@ public class ConfigurationTest extends TestCase {
         assertFalse(configuration.allowNoFrom());
     }
 
-    public void testCopy() throws Exception {
+    public void testSet() throws Exception {
         UpdatableConfiguration configuration  = new UpdatableConfiguration();
         assertFalse(configuration.allowImplicitCrossJoins());
         assertFalse(configuration.allowNoFrom());
         configuration.setImplicitCrossJoinsOk(true);
-        final UpdatableConfiguration copy = UpdatableConfiguration.copyOf(configuration);
-        assertTrue(copy.allowImplicitCrossJoins());
-        copy.setImplicitCrossJoinsOk(false);
-        assertFalse(copy.allowImplicitCrossJoins());
         assertTrue(configuration.allowImplicitCrossJoins());
+        configuration.setNoFromOk(true);
+        assertTrue(configuration.allowNoFrom());
 
 
     }

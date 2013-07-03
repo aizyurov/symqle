@@ -36,6 +36,10 @@ public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T
        leftContext.set(Configuration.class, context.get(Configuration.class));
        rightContext.set(Dialect.class, context.get(Dialect.class));
        rightContext.set(Configuration.class, context.get(Configuration.class));
+       leftContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :
+                                                      new ScalarNameProvider());
+       rightContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :
+                                                       new ScalarNameProvider());
        final Query<T> left = qe.z$sqlOfQueryExpressionScalar(leftContext);
        final Query<T> right = qt.z$sqlOfQueryTerm(rightContext);
        return Pair.make(left, right);
@@ -133,6 +137,10 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
    rightContext.set(Dialect.class, context.get(Dialect.class));
    leftContext.set(Configuration.class, context.get(Configuration.class));
    rightContext.set(Configuration.class, context.get(Configuration.class));
+   leftContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :
+                                                  new ScalarNameProvider());
+   rightContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :
+                                                   new ScalarNameProvider());
    final Query<T> left = qt.z$sqlOfQueryTerm(leftContext);
    final Query<T> right = qp.z$sqlOfQueryPrimary(rightContext);
    return Pair.make(left, right);

@@ -47,7 +47,27 @@ SortOrderingSpecification ::=
     key:SortKey :: implicit {}
 |
     key:SortKey ASC
-     :: public AbstractSortOrderingSpecification asc {}
+     :: public AbstractSortOrderingSpecification asc {
+            /**
+            * Creates an Sql representing SortOrderingSpecification
+            * @param context the Sql construction context
+            * @return constructed Sql
+            */
+            public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
+                 // need a separate inner context for sort key because ScalarInnerContext column name may be accessed only once
+                 return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_ASC(key.z$sqlOfSortKey(createScalarInnerContext(context)));
+            }
+     }
 |  key:SortKey DESC
-     :: public AbstractSortOrderingSpecification desc {}
+     :: public AbstractSortOrderingSpecification desc {
+            /**
+            * Creates an Sql representing SortOrderingSpecification
+            * @param context the Sql construction context
+            * @return constructed Sql
+            */
+            public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
+                 // need a separate inner context for sort key because ScalarInnerContext column name may be accessed only once
+                 return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_DESC(key.z$sqlOfSortKey(createScalarInnerContext(context)));
+            }
+     }
 ;
