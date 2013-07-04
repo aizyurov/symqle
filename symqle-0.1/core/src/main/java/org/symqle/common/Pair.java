@@ -35,10 +35,18 @@ public class Pair<First, Second> {
         this.o2 = second;
     }
 
+    /**
+     * First member of pair.
+     * @return the first member
+     */
     public final First first() {
         return o1;
     }
 
+    /**
+     * Second member of pair.
+     * @return the second member
+     */
     public final Second second() {
         return o2;
     }
