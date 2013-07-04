@@ -192,6 +192,10 @@ import org.symqle.common.Mapper;
  */
 public interface Scalar<T> {
 
+    /**
+     * Mapper for this Scalar.
+     * @return the mapper
+     */
     Mapper<T> getMapper();
 
 }
