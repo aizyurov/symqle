@@ -44,6 +44,9 @@ TablePrimary ::= t:TableName AS id:Identifier
 ;
 
 JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable leftJoin {}
+    | l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable rightJoin {}
+    | l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable innerJoin {}
+    | l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable outerJoin {}
 ;
 
 public interface TableName : Sql {
@@ -128,6 +131,26 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
         final JoinedTable joinedTable = Symqle.leftJoin(tableReference, other, condition);
         tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
     }
+
+    public void innerJoin(TableOrView other, BooleanExpression condition) {
+        checkJoin(other);
+        final JoinedTable joinedTable = Symqle.innerJoin(tableReference, other, condition);
+        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
+    }
+
+    public void rightJoin(TableOrView other, BooleanExpression condition) {
+        checkJoin(other);
+        final JoinedTable joinedTable = Symqle.rightJoin(tableReference, other, condition);
+        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
+    }
+
+    public void outerJoin(TableOrView other, BooleanExpression condition) {
+        checkJoin(other);
+        final JoinedTable joinedTable = Symqle.outerJoin(tableReference, other, condition);
+        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
+    }
+
+
             /**
             * Creates an Sql representing <code>this</code>
             * @param context the Sql construction context

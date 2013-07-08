@@ -481,7 +481,7 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT MAX(T0.age) AS C0 FROM person AS T0", sql);
     }
 
-    public void testJoin() throws Exception {
+    public void testLeftJoin() throws Exception {
         final Person person1 = new Person();
         final Person person2 = new Person();
         final Column<Long> id1 = person1.id;
@@ -496,6 +496,55 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C0 FROM person AS T1 LEFT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
 
     }
+
+    public void testRightJoin() throws Exception {
+        final Person person1 = new Person();
+        final Person person2 = new Person();
+        final Column<Long> id1 = person1.id;
+        final Column<Long> id2 = person2.id;
+        final Column<Long> parentId1 = person1.parentId;
+        final Column<Long> age1 = person1.age;
+        final Column<Long> age2 = person2.age;
+        person1.rightJoin(person2, parentId1.eq(id2));
+        // find all people who are older that parent
+        final String sql = id1.where(age1.gt(age2)).show();
+        System.out.println(sql);
+        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 RIGHT JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
+
+    }
+
+    public void testInnerJoin() throws Exception {
+        final Person person1 = new Person();
+        final Person person2 = new Person();
+        final Column<Long> id1 = person1.id;
+        final Column<Long> id2 = person2.id;
+        final Column<Long> parentId1 = person1.parentId;
+        final Column<Long> age1 = person1.age;
+        final Column<Long> age2 = person2.age;
+        person1.innerJoin(person2, parentId1.eq(id2));
+        // find all people who are older that parent
+        final String sql = id1.where(age1.gt(age2)).show();
+        System.out.println(sql);
+        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 INNER JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
+
+    }
+
+    public void testOuterJoin() throws Exception {
+        final Person person1 = new Person();
+        final Person person2 = new Person();
+        final Column<Long> id1 = person1.id;
+        final Column<Long> id2 = person2.id;
+        final Column<Long> parentId1 = person1.parentId;
+        final Column<Long> age1 = person1.age;
+        final Column<Long> age2 = person2.age;
+        person1.outerJoin(person2, parentId1.eq(id2));
+        // find all people who are older that parent
+        final String sql = id1.where(age1.gt(age2)).show();
+        System.out.println(sql);
+        assertSimilar("SELECT T1.id AS C0 FROM person AS T1 OUTER JOIN person AS T2 ON T1.parent_id = T2.id WHERE T1.age > T2.age", sql);
+
+    }
+
 
     public void testNotLike() throws Exception {
         final String sql = person.id.where(person.name.notLike(DynamicParameter.create(Mappers.STRING, "John%"))).show();

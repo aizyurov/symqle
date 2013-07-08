@@ -48,5 +48,5 @@ transactions
 
 insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Subquery. insertFrom(InsertSublist is) ??? Methods for constructing InsertSublist (from InsertSelectList).
 
-inner/right/outer joins
+(done) inner/right/outer joins
 
