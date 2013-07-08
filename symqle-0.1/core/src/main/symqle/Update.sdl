@@ -334,7 +334,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
 }
 ;
 
-:: public <T> T executeReturnKey(final ColumnName<T> keyColumn, final InsertStatement statement, final DatabaseGate gate, final Option... options) throws SQLException {
+:: public <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final DatabaseGate gate, final Option... options) throws SQLException {
          final UpdatableConfiguration configuration = new UpdatableConfiguration();
          final List<Option> defaultOptions = gate.getOptions();
          for (final Option option : defaultOptions) {
@@ -344,11 +344,11 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
             option.apply(configuration);
          }
         final DataChangeStatement dataChange = Symqle.z$DataChangeStatement$from$InsertStatement(statement);
-//        final Sql sql = prepareUpdate(dataChange, gate.getDialect(), configuration);
         final SqlContext context = new SqlContext();
         context.set(Dialect.class, gate.getDialect());
         context.set(Configuration.class, configuration);
         final Sql sql = dataChange.z$sqlOfDataChangeStatement(context);
+        final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).getSqlText();
         final Connection connection = gate.getConnection();
          try {
              final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()), Statement.RETURN_GENERATED_KEYS);
@@ -360,19 +360,15 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
               }
              try {
                  sql.setParameters(new StatementParameters(preparedStatement));
-                 final int affectedRows = preparedStatement.executeUpdate();
-                 if (affectedRows == 0) {
-                     return null;
-                 } else {
-                     final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                     try {
-                         final boolean next = generatedKeys.next();
-                         final ResultSetRow row = new ResultSetRow(generatedKeys);
-                         final Mapper<T> mapper = keyColumn.getMapper();
-                         return mapper.value(row.getValue(keyColumn.z$sqlOfColumnName(context).getSqlText()));
-                     } finally {
-                         generatedKeys.close();
-                     }
+                 preparedStatement.executeUpdate();
+                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                 try {
+                     generatedKeys.next();
+                     final ResultSetRow row = new ResultSetRow(generatedKeys);
+                     final Mapper<T> mapper = keyColumn.getMapper();
+                     return mapper.value(row.getValue(keyColumnLabel));
+                 } finally {
+                     generatedKeys.close();
                  }
              } finally {
                  preparedStatement.close();
