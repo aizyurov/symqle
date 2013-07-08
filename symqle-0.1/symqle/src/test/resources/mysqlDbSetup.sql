@@ -69,6 +69,18 @@ insert into true_value values(true)
 
 create table update_test (id integer default 0, text varchar(50) default 'nothing')
 
+create table join_test_left (id integer, text varchar(50))
+
+create table join_test_right (id integer, text varchar(50))
+
+insert into join_test_left (id, text) values (1, 'one')
+
+insert into join_test_left (id, text) values (2, 'two')
+
+insert into join_test_right (id, text) values (2, 'two')
+
+insert into join_test_right (id, text) values (3, 'three')
+
 
 
 
