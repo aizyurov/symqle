@@ -62,7 +62,7 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
     private final String name;
 
     // initialized by converting from TablePrimary
-    private TableReference tableReference = Symqle.get().tableReferenceFromPrimary(this);
+    private TableReference tableReference = Symqle.tableReferenceFromPrimary(this);
 
     private TableOrView referral = null;
 
@@ -124,10 +124,9 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
         }
 
     public void leftJoin(TableOrView other, BooleanExpression condition) {
-        final Symqle symqle = Symqle.get();
         checkJoin(other);
-        final JoinedTable joinedTable = symqle.leftJoin(tableReference, other, condition);
-        tableReference = symqle.tableReferenceFromJoinedTable(joinedTable);
+        final JoinedTable joinedTable = Symqle.leftJoin(tableReference, other, condition);
+        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
     }
             /**
             * Creates an Sql representing <code>this</code>
@@ -266,8 +265,8 @@ public class SelectTableRegistry implements TableRegistry {
                 } else {
                     // add table to the context and retry: recursion!
                     final TableOrView fallbackTable = new TableOrView(fallbackTableName);
-                    final TableReferenceList tableReferenceList = Symqle.get().createTableReferenceList(fallbackTable);
-                    return Symqle.get().createFrom(tableReferenceList).z$sqlOfFromClause(context);
+                    final TableReferenceList tableReferenceList = Symqle.createTableReferenceList(fallbackTable);
+                    return Symqle.createFrom(tableReferenceList).z$sqlOfFromClause(context);
                 }
             }
         };
@@ -287,14 +286,14 @@ public class SelectTableRegistry implements TableRegistry {
             roots.add(t.joinedTableRoot());
         }
         final Iterator<TableOrView> iterator = roots.iterator();
-        TableReferenceList tableReferenceList = Symqle.get().createTableReferenceList(iterator.next());
+        TableReferenceList tableReferenceList = Symqle.createTableReferenceList(iterator.next());
         while (iterator.hasNext()) {
             if (!allowImplicitCrossJoins) {
                 throw new IllegalStateException("Implicit cross joins are not allowed");
             }
-            tableReferenceList = Symqle.get().appendTableReferenceList(tableReferenceList, iterator.next());
+            tableReferenceList = Symqle.appendTableReferenceList(tableReferenceList, iterator.next());
         }
-        return Symqle.get().createFrom(tableReferenceList);
+        return Symqle.createFrom(tableReferenceList);
     }
 
     public String getCorrelationName(TableOrView table) {

@@ -107,7 +107,7 @@ but members require "this".
         <module name="MemberName"/>
         <module name="MethodName">
            <!-- allow z$ (for implicit conversions and archetype methods) and capitals (for Dialect methods)-->
-           <property name="format" value="^(z\$)?[A-Za-z][A-Za-z0-9]*(_[A-Za-z0-9]+)*$"/>
+           <property name="format" value="^[A-Za-z][A-Za-z0-9$]*(_[A-Za-z0-9]+)*$"/>
         </module>
         <module name="PackageName"/>
         <module name="ParameterName"/>

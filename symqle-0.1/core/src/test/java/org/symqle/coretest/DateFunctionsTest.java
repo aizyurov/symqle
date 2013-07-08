@@ -11,17 +11,17 @@ import org.symqle.sql.TableOrView;
 public class DateFunctionsTest extends SqlTestCase {
 
     public void testCurrentDate() throws Exception {
-        final String sql = Symqle.get().currentDate().pair(new Dual().dummy).show();
+        final String sql = Symqle.currentDate().pair(new Dual().dummy).show();
         assertSimilar("SELECT CURRENT_DATE AS C0, T1.dummy AS C1 FROM dual AS T1", sql);
     }
 
     public void testCurrentTimestamp() throws Exception {
-        final String sql = Symqle.get().currentTimestamp().pair(new Dual().dummy).show();
+        final String sql = Symqle.currentTimestamp().pair(new Dual().dummy).show();
         assertSimilar("SELECT CURRENT_TIMESTAMP AS C0, T1.dummy AS C1 FROM dual AS T1", sql);
     }
 
     public void testCurrentTime() throws Exception {
-        final String sql = Symqle.get().currentTime().pair(new Dual().dummy).show();
+        final String sql = Symqle.currentTime().pair(new Dual().dummy).show();
         assertSimilar("SELECT CURRENT_TIME AS C0, T1.dummy AS C1 FROM dual AS T1", sql);
     }
 
