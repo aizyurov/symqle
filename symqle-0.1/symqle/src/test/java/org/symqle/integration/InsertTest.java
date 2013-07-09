@@ -4,6 +4,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
+import org.symqle.integration.model.GeneratedKeys;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.integration.model.One;
 
@@ -110,6 +111,16 @@ public class InsertTest extends AbstractIntegrationTestBase {
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(3, "Margaret")), rows);
+
+    }
+
+    public void testGeneratedKeys() throws Exception {
+        final GeneratedKeys generatedKeys = new GeneratedKeys();
+        final Integer bimId = generatedKeys.insert(generatedKeys.text().set("Bim")).executeReturnKey(generatedKeys.id(), getDatabaseGate());
+        final Integer bomId = generatedKeys.insert(generatedKeys.text().set("Bom")).executeReturnKey(generatedKeys.id(), getDatabaseGate());
+        assertTrue("actual bomId:"+bomId+", bimId:"+bimId, bomId > bimId);
+        final List<String> bimList = generatedKeys.text().where(generatedKeys.id().eq(bimId)).list(getDatabaseGate());
+        assertEquals(Arrays.asList("Bim"), bimList);
 
     }
 

@@ -81,6 +81,9 @@ insert into join_test_right (id, text) values (2, 'two')
 
 insert into join_test_right (id, text) values (3, 'three')
 
+create table generated_keys (id integer PRIMARY KEY AUTO_INCREMENT, text varchar(50));
+
+
 
 
 

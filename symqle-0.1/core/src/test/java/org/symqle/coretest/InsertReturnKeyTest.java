@@ -15,10 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -40,7 +37,7 @@ public class InsertReturnKeyTest extends TestCase {
         expect(statement.executeUpdate()).andReturn(1);
         expect(statement.getGeneratedKeys()).andReturn(generatedKeys);
         expect(generatedKeys.next()).andReturn(true);
-        expect(generatedKeys.getLong("id")).andReturn(123L);
+        expect(generatedKeys.getLong(1)).andReturn(123L);
         expect(generatedKeys.wasNull()).andReturn(false);
         generatedKeys.close();
         statement.close();
@@ -104,7 +101,7 @@ public class InsertReturnKeyTest extends TestCase {
         expect(statement.executeUpdate()).andReturn(1);
         expect(statement.getGeneratedKeys()).andReturn(generatedKeys);
         expect(generatedKeys.next()).andReturn(true);
-        expect(generatedKeys.getLong("id")).andReturn(123L);
+        expect(generatedKeys.getLong(1)).andReturn(123L);
         expect(generatedKeys.wasNull()).andReturn(false);
         generatedKeys.close();
         statement.close();

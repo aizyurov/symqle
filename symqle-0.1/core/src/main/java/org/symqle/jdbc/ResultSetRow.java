@@ -44,6 +44,10 @@ public class ResultSetRow implements Row {
     public final Element getValue(String label) {
         return new LabeledElement(label);
     }
+    
+    public final Element getValue(int position) {
+        return new PositionedElement(position);
+    }
 
     private class LabeledElement implements Element {
         private final String label;
@@ -117,6 +121,81 @@ public class ResultSetRow implements Row {
         @Override
         public Timestamp getTimestamp() throws SQLException {
             return resultSet.getTimestamp(label);
+        }
+    }
+    
+    private class PositionedElement implements Element {
+        private final int position;
+
+        private PositionedElement(final int position) {
+            this.position = position;
+        }
+        
+        @Override
+        public Boolean getBoolean() throws SQLException {
+            final boolean result = resultSet.getBoolean(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public Byte getByte() throws SQLException {
+            final byte result = resultSet.getByte(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public Short getShort() throws SQLException {
+            final short result = resultSet.getShort(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public Integer getInt() throws SQLException {
+            final int result = resultSet.getInt(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public Long getLong() throws SQLException {
+            final long result = resultSet.getLong(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public Float getFloat() throws SQLException {
+            final float result = resultSet.getFloat(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public Double getDouble() throws SQLException {
+            final double result = resultSet.getDouble(position);
+            return resultSet.wasNull() ? null : result;
+        }
+
+        @Override
+        public BigDecimal getBigDecimal() throws SQLException {
+            return resultSet.getBigDecimal(position);
+        }
+
+        @Override
+        public String getString() throws SQLException {
+            return resultSet.getString(position);
+        }
+
+        @Override
+        public Date getDate() throws SQLException {
+            return resultSet.getDate(position);
+        }
+
+        @Override
+        public Time getTime() throws SQLException {
+            return resultSet.getTime(position);
+        }
+
+        @Override
+        public Timestamp getTimestamp() throws SQLException {
+            return resultSet.getTimestamp(position);
         }
     }
 }

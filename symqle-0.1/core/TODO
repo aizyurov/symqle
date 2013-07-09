@@ -11,7 +11,7 @@ Remove list(DataSource,...) ?
 
 (done) Remove setIgnoreType: methods with Mapper will do
 
-(d0ne) casts
+(done) casts
 
 (done) contains() for subquery
 
@@ -42,7 +42,7 @@ sequences
 
 ALL/ANY/SOME (future release)
 
-(in progress - test against databases) return generated keys
+(done) return generated keys
 
 transactions
 

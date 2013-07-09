@@ -366,7 +366,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
                      generatedKeys.next();
                      final ResultSetRow row = new ResultSetRow(generatedKeys);
                      final Mapper<T> mapper = keyColumn.getMapper();
-                     return mapper.value(row.getValue(keyColumnLabel));
+                     return mapper.value(row.getValue(1));
                  } finally {
                      generatedKeys.close();
                  }
