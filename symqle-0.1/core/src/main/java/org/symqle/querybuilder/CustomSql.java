@@ -16,14 +16,14 @@
 
 package org.symqle.querybuilder;
 
-import org.symqle.common.Sql;
+import org.symqle.common.NiceSql;
 import org.symqle.common.SqlParameters;
 
 /**
  * Text-only Sql, no parameters,
  * The  text is provided in the constructor.
  */
-public class CustomSql implements Sql {
+public class CustomSql extends NiceSql {
     private final String text;
 
     /**

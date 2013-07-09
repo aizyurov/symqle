@@ -47,7 +47,7 @@ import org.symqle.jdbc.Option;
      for (final Option option : options) {
         option.apply(configuration);
      }
-    return beautifySql(prepareUpdate(statement, dialect, configuration).getSqlText());
+    return prepareUpdate(statement, dialect, configuration).toString();
 }
 
 import org.symqle.jdbc.Option;
@@ -64,7 +64,7 @@ import java.sql.SQLException;
      final Sql sql = prepareUpdate(statement, gate.getDialect(), configuration);
      final Connection connection = gate.getConnection();
      try {
-         final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()));
+         final PreparedStatement preparedStatement = connection.prepareStatement(sql.toString());
          for (final Option option : defaultOptions) {
              option.apply(preparedStatement);
          }
@@ -351,7 +351,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
         final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).getSqlText();
         final Connection connection = gate.getConnection();
          try {
-             final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(sql.getSqlText()), Statement.RETURN_GENERATED_KEYS);
+             final PreparedStatement preparedStatement = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
              for (final Option option : defaultOptions) {
                  option.apply(preparedStatement);
              }

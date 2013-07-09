@@ -78,6 +78,7 @@ public interface Dialect  {
 import java.sql.SQLException;
 import org.symqle.common.SqlParameters;
 import org.symqle.common.Sql;
+import org.symqle.common.NiceSql;
 import static org.symqle.querybuilder.SqlTerm.*;
 /**
 * A standard straighforward implementation of Dialect.
@@ -115,7 +116,7 @@ public class GenericDialect implements Dialect {
      * Provides implementation of {@link #getSqlText()} and {@link #setParameters(SqlParameters)}
      * @author Alexander Izyurov
      */
-    public static class CompositeSql implements Sql {
+    public static class CompositeSql extends NiceSql {
 
         private final Sql first;
         private final Sql[] other;

@@ -37,7 +37,7 @@ public <T> int scroll(final SelectStatement<T> statement,
     final Query<T> query = prepareQuery(statement, gate.getDialect(), configuration);
     final Connection connection = gate.getConnection();
     try {
-        final PreparedStatement preparedStatement = connection.prepareStatement(beautifySql(query.getSqlText()));
+        final PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
            for (final Option option : defaultOptions) {
                option.apply(preparedStatement);
            }
@@ -102,8 +102,7 @@ import org.symqle.jdbc.Option;
      for (Option option : options) {
          option.apply(configuration);
      }
-     String sql = prepareQuery(statement, dialect, configuration).getSqlText();
-     return beautifySql(sql);
+     return prepareQuery(statement, dialect, configuration).toString();
     }
 
 :: private <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
@@ -129,16 +128,6 @@ import org.symqle.jdbc.Option;
         }
         return query;
     }
-
-
-:: private String beautifySql(final String source) {
-        return source
-                .replaceAll("([(.])\\s+", "$1")
-                .replaceAll("\\s+([().,])", "$1")
-                .trim();
-    }
-
-
 
 
 # # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification

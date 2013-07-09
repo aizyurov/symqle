@@ -1481,7 +1481,7 @@ public enum SqlTerm implements Sql {
 
     @Override
     public String getSqlText() {
-        return s;
+        return toString();
     }
 
     @Override
@@ -1489,4 +1489,9 @@ public enum SqlTerm implements Sql {
         // do nothing
     }
 
+
+    @Override
+    public String toString() {
+        return s;
+    }
 }
