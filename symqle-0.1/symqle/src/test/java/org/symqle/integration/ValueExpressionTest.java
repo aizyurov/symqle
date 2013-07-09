@@ -378,7 +378,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).booleanValue().negate()).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).asPredicate().negate()).orderBy(employee.lastName).list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 

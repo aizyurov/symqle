@@ -381,7 +381,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final Employee employee = new Employee();
         final List<String> list = department.deptName
-                .where(employee.firstName.eq("Margaret").asValue().where(employee.lastName.eq(department.manager().lastName)).queryValue().booleanValue())
+                .where(employee.firstName.eq("Margaret").asValue().where(employee.lastName.eq(department.manager().lastName)).queryValue().asPredicate())
                 .orderBy(department.deptName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("HR"), list);

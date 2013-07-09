@@ -20,7 +20,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase {
      * @return
      */
     private AbstractBooleanPrimary createBasicCondition(final Employee employee) {
-        return employee.retired.booleanValue();
+        return employee.retired.asPredicate();
     }
 
     public void testAnd() throws Exception {

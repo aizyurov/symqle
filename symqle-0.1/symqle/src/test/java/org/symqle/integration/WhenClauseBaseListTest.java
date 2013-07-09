@@ -778,7 +778,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
     }
 
     private AbstractSearchedWhenClauseBaseList<Double> createNumericWCBL(final Employee employee) {
-        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite()));
+        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.asPredicate().then(employee.salary.opposite()));
     }
 
     public void testAvg() throws Exception {

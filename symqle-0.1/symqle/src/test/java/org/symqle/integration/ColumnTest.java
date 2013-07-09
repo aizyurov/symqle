@@ -144,7 +144,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.retired.booleanValue()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.retired.asPredicate()).list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 

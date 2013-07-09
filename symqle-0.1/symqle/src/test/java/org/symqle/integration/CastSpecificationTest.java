@@ -139,7 +139,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final String castTarget = "MySQL".equals(getDatabaseName()) ? "DECIMAL(1)" : "BOOLEAN";
         final List<String> list = employee.lastName
-                .where(employee.retired.cast(castTarget).booleanValue())
+                .where(employee.retired.cast(castTarget).asPredicate())
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);

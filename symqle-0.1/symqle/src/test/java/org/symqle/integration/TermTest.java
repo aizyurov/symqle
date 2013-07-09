@@ -64,14 +64,14 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).where(employee.retired.booleanValue().negate()).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).where(employee.retired.asPredicate().negate()).list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
     }
 
     public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDatabaseGate());
+        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.asPredicate()).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(-1500, list.get(0).first().intValue());
         assertEquals("Cooper", list.get(0).second());
@@ -200,7 +200,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).in(other.salary.mult(-1).where(other.retired.booleanValue().negate())))
+                .where(createTerm(employee).in(other.salary.mult(-1).where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
@@ -210,7 +210,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createTerm(employee).notIn(other.salary.mult(-1).where(other.retired.booleanValue().negate())))
+                .where(createTerm(employee).notIn(other.salary.mult(-1).where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
@@ -340,7 +340,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.where(createTerm(employee).booleanValue())
+            final List<String> list = employee.lastName.where(createTerm(employee).asPredicate())
                     .orderBy(employee.lastName)
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -605,14 +605,14 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testWhenClause() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().then(createTerm(employee)).orElse(employee.salary.add(0)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(employee.retired.asPredicate().then(createTerm(employee)).orElse(employee.salary.add(0)).list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
     public void testElse() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.add(0)).orElse(createTerm(employee)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(employee.retired.asPredicate().negate().then(employee.salary.add(0)).orElse(createTerm(employee)).list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }

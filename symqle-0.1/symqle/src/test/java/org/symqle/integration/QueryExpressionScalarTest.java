@@ -23,7 +23,7 @@ public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
 
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(singleRowTrue().queryValue().booleanValue())
+        final List<String> list = employee.lastName.where(singleRowTrue().queryValue().asPredicate())
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);

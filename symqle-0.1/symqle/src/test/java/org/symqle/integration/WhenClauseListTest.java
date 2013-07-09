@@ -23,7 +23,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
     }
 
     private AbstractSearchedWhenClauseList<Double> createNumericWCL(final Employee employee) {
-        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.booleanValue().then(employee.salary.opposite())).orElse(employee.department().manager().salary);
+        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.asPredicate().then(employee.salary.opposite())).orElse(employee.department().manager().salary);
     }
 
     public void testPair() throws Exception {

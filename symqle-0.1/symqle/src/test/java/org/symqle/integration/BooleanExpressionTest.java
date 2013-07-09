@@ -21,7 +21,7 @@ public class BooleanExpressionTest extends AbstractIntegrationTestBase {
      * @return
      */
     private AbstractBooleanExpression createBasicCondition(final Employee employee) {
-        return employee.retired.booleanValue().or(employee.hireDate.ge(new Date(108, 9, 1)));
+        return employee.retired.asPredicate().or(employee.hireDate.ge(new Date(108, 9, 1)));
     }
 
     public void testAnd() throws Exception {

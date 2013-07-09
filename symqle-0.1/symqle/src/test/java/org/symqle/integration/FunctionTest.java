@@ -71,7 +71,7 @@ public class FunctionTest extends AbstractIntegrationTestBase {
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.where(abs(employee.salary.opposite()).booleanValue())
+            final List<String> list = employee.lastName.where(abs(employee.salary.opposite()).asPredicate())
                     .orderBy(employee.lastName)
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);

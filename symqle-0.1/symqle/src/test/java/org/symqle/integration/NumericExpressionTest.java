@@ -64,14 +64,14 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = toListOfDouble(createExpression(employee)
-                .where(employee.retired.booleanValue().negate()).list(getDatabaseGate()));
+                .where(employee.retired.asPredicate().negate()).list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(2100.0, 2100.0, 3100.0, 3100.0), list);
     }
 
     public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Number, String>> list = createExpression(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDatabaseGate());
+        final List<Pair<Number, String>> list = createExpression(employee).pair(employee.lastName).where(employee.retired.asPredicate()).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals("Cooper", list.get(0).second());
         assertEquals(1600, list.get(0).first().intValue());
@@ -200,7 +200,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).in(other.salary.add(100).where(other.retired.booleanValue().negate())))
+                .where(createExpression(employee).in(other.salary.add(100).where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
@@ -210,7 +210,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createExpression(employee).notIn(other.salary.add(100).where(other.retired.booleanValue().negate())))
+                .where(createExpression(employee).notIn(other.salary.add(100).where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
@@ -312,7 +312,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.where(createExpression(employee).booleanValue())
+            final List<String> list = employee.lastName.where(createExpression(employee).asPredicate())
                     .orderBy(employee.lastName)
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -567,14 +567,14 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testWhenClause() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(createExpression(employee)).orElse(employee.salary.sub(100)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(employee.retired.asPredicate().negate().then(createExpression(employee)).orElse(employee.salary.sub(100)).list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1400.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }
 
     public void testElse() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.booleanValue().negate().then(employee.salary.add(200)).orElse(createExpression(employee)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(employee.retired.asPredicate().negate().then(employee.salary.add(200)).orElse(createExpression(employee)).list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2200.0, 2200.0, 3200.0, 3200.0), list);
     }

@@ -63,14 +63,14 @@ public class FactorTest extends AbstractIntegrationTestBase {
 
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createFactor(employee).where(employee.retired.booleanValue().negate()).list(getDatabaseGate());
+        final List<Double> list = createFactor(employee).where(employee.retired.asPredicate().negate()).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
     }
 
     public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = createFactor(employee).pair(employee.lastName).where(employee.retired.booleanValue()).list(getDatabaseGate());
+        final List<Pair<Double, String>> list = createFactor(employee).pair(employee.lastName).where(employee.retired.asPredicate()).list(getDatabaseGate());
         assertEquals(Arrays.asList(Pair.make(-1500.0, "Cooper")), list);
     }
 
@@ -197,7 +197,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createFactor(employee).in(other.salary.opposite().where(other.retired.booleanValue().negate())))
+                .where(createFactor(employee).in(other.salary.opposite().where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
@@ -207,7 +207,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Employee other = new Employee();
         final List<String> list = employee.lastName
-                .where(createFactor(employee).notIn(other.salary.opposite().where(other.retired.booleanValue().negate())))
+                .where(createFactor(employee).notIn(other.salary.opposite().where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
                 .list(getDatabaseGate());
         assertEquals(Arrays.asList("Cooper"), list);
@@ -337,7 +337,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.where(createFactor(employee).booleanValue())
+            final List<String> list = employee.lastName.where(createFactor(employee).asPredicate())
                     .orderBy(employee.lastName)
                     .list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
@@ -601,14 +601,14 @@ public class FactorTest extends AbstractIntegrationTestBase {
 
     public void testWhenClause() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = employee.retired.booleanValue().then(createFactor(employee)).orElse(employee.salary).list(getDatabaseGate());
+        final List<Double> list = employee.retired.asPredicate().then(createFactor(employee)).orElse(employee.salary).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
     public void testElse() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = employee.retired.booleanValue().negate().then(employee.salary).orElse(createFactor(employee)).list(getDatabaseGate());
+        final List<Double> list = employee.retired.asPredicate().negate().then(employee.salary).orElse(createFactor(employee)).list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }

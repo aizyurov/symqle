@@ -1,5 +1,6 @@
 package org.symqle.generic;
 
+import org.symqle.common.NiceSql;
 import org.symqle.common.Query;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
@@ -37,22 +38,7 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
             result = result.pair(keys.get(i).selectList);
         }
         final Query<?> query = result.z$sqlOfSelectList(context);
-        return new Query<D>() {
-            @Override
-            public D extract(final Row row) throws SQLException {
-                return create(row);
-            }
-
-            @Override
-            public String getSqlText() {
-                return query.getSqlText();
-            }
-
-            @Override
-            public void setParameters(final SqlParameters sqlParameters) throws SQLException {
-                query.setParameters(sqlParameters);
-            }
-        };
+        return new InnerQuery(query);
     }
 
     public final <E> KeyImpl<E> map(final SelectList<E> selectList) {
@@ -86,5 +72,28 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
             return rowMapper.extract(row);
         }
 
+    }
+
+    private class InnerQuery extends NiceSql implements Query<D> {
+        private final Query<?> query;
+
+        public InnerQuery(final Query<?> query) {
+            this.query = query;
+        }
+
+        @Override
+        public D extract(final Row row) throws SQLException {
+            return create(row);
+        }
+
+        @Override
+        public String sql() {
+            return query.sql();
+        }
+
+        @Override
+        public void setParameters(final SqlParameters sqlParameters) throws SQLException {
+            query.setParameters(sqlParameters);
+        }
     }
 }

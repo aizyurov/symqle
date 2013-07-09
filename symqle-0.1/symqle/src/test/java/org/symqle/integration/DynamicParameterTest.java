@@ -122,7 +122,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.where(Params.p(false).booleanValue()).list(getDatabaseGate());
+            final List<String> list = employee.lastName.where(Params.p(false).asPredicate()).list(getDatabaseGate());
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X19: The WHERE or HAVING clause or CHECK CONSTRAINT definition is an untyped parameter expression.  It must be a BOOLEAN expression.
