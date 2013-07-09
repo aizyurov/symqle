@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A basic class to build custom mappers.
+ * A basic class to build custom selectors.
  * @author lvovich
  * @param <D> data type
  */

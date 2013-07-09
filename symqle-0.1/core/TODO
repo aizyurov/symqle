@@ -17,7 +17,7 @@ Remove list(DataSource,...) ?
 
 (done) refactor Pair - rename all methods and variables
 
-LIMIT/OFFSET
+(postpone: SQL2010) LIMIT/OFFSET
 
 (done) add ORDER BY for union/except/intersect (without parameter, there is only one column accessible via Context)
 
@@ -31,14 +31,14 @@ LIMIT/OFFSET
 
 Symqle methods visibility. Package scope and public methods of Symqle become public in abstract classes. Protected methods make no sense - to be removed. 
 
-rename booleanValue -> asPredicate
+(done) rename booleanValue -> asPredicate
 
 (done) ImplicitFromClause should be provided by the gate. Each subclass can specify what to do when context does not contain any table. For example, add new TableOrView("dual") or new TableOrView("(values (1))") to the context and continue, or just return ImplicitFromClause and wait for call to z$FromClauseFromNothing.
 ImplicitFromClause should provide a hook for adding table (other logic is final!). Also, provide configurable allowNoTables and allowImplicitCrossJoins. If allowNoTables is false and there are no tables, an exception is thrown immediately. 
 
 http://kobyleha.com/en/programming/java/how_to_build_skin_for_maven_2_site_plugin
 
-sequences
+(postpone) sequences
 
 ALL/ANY/SOME (future release)
 
@@ -51,4 +51,11 @@ insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Sub
 (done) inner/right/outer joins
 
 (done) getSqlText() -> sql()
+
+Postgresql
+
+Oracle
+
+Sybase
+
 

@@ -1,3 +1,4 @@
-adaptive DialectDatasource
+(done) adaptive DialectDatasource
+(done) rename DialectDatasource -> DataSourceGate
 common functions
 database-specific functions

@@ -86,4 +86,9 @@ insert into join_test_right (id, text) values (3, 'three')
 
 create table generated_keys (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY, text varchar(50))
 
-insert into generated_keys (text) values ("zero")
+insert into generated_keys (text) values ('zero')
+
+create table arithmetics (leftInt integer, rightInt integer, leftDouble double, rightDouble double)
+
+insert into arithmetics (leftInt, rightInt, leftDouble, rightDouble) values (7, 3, 11.0, 2.0)
+

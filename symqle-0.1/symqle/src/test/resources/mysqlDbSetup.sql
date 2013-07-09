@@ -83,6 +83,12 @@ insert into join_test_right (id, text) values (3, 'three')
 
 create table generated_keys (id integer PRIMARY KEY AUTO_INCREMENT, text varchar(50));
 
+create table arithmetics (leftInt integer, rightInt integer, leftDouble double, rightDouble double);
+
+insert into arithmetics (leftInt, rightInt, leftDouble, rightDouble) values (7, 3, 11.0, 2.0);
+
+
+
 
 
 
