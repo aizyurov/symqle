@@ -1480,7 +1480,7 @@ public enum SqlTerm implements Sql {
     }
 
     @Override
-    public String getSqlText() {
+    public String sql() {
         return toString();
     }
 

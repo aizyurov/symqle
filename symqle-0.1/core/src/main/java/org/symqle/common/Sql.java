@@ -29,7 +29,7 @@ public interface Sql {
      * The text of this Sql, may contain dynamic parameters (?).
       * @return the text
      */
-    String getSqlText();
+    String sql();
 
     /**
      * Provide values for dynamic parameters.

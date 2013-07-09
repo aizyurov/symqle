@@ -42,11 +42,13 @@ sequences
 
 ALL/ANY/SOME (future release)
 
-return generated keys
+(in progress - test against databases) return generated keys
 
 transactions
 
 insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Subquery. insertFrom(InsertSublist is) ??? Methods for constructing InsertSublist (from InsertSelectList).
 
 (done) inner/right/outer joins
+
+(done) getSqlText() -> sql()
 

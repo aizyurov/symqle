@@ -348,7 +348,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
         context.set(Dialect.class, gate.getDialect());
         context.set(Configuration.class, configuration);
         final Sql sql = dataChange.z$sqlOfDataChangeStatement(context);
-        final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).getSqlText();
+        final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).sql();
         final Connection connection = gate.getConnection();
          try {
              final PreparedStatement preparedStatement = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);

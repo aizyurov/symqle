@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 /**
  * Represents an Sql element composed from a list of sub-elements.
- * Provides implementation of {@link #getSqlText()} and {@link #setParameters(SqlParameters)}
+ * Provides implementation of {@link #sql()} and {@link #setParameters(SqlParameters)}
  * @author Alexander Izyurov
  */
 public class CompositeSql extends NiceSql {
@@ -25,16 +25,16 @@ public class CompositeSql extends NiceSql {
      * Constructs Sql text as concatenation of Sql text of elements.
      * @return constructed text
      */
-    public final String getSqlText() {
+    public final String sql() {
         // minor optimization
         if (other.length==0) {
-            return first.getSqlText();
+            return first.sql();
         } else {
             StringBuilder builder = new StringBuilder();
-            builder.append(first.getSqlText());
+            builder.append(first.sql());
             for (Sql element : this.other) {
                 builder.append(' ');
-                builder.append(element.getSqlText());
+                builder.append(element.sql());
             }
             return builder.toString();
         }

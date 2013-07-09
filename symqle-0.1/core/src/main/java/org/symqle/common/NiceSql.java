@@ -9,7 +9,7 @@ public abstract class NiceSql implements Sql {
 
     @Override
     public String toString() {
-        final String s0 = REPEATING_WHITESPACE.matcher(getSqlText()).replaceAll(" ");
+        final String s0 = REPEATING_WHITESPACE.matcher(sql()).replaceAll(" ");
         final String s1 = UNNEEDED_SPACE_AFTER.matcher(s0).replaceAll("");
         final String s2 = UNNEEDED_SPACE_BEFORE.matcher(s1).replaceAll("");
         return s2.trim();

@@ -37,7 +37,7 @@ public class ComplexQuery<T> extends NiceSql implements Query<T> {
     /**
      * Constructs from components.
      * @param rowMapper RowMapper to use for {@link #extract(org.symqle.common.Row)}
-     * @param sql provides {@link #getSqlText()} and {@link #setParameters(org.symqle.common.SqlParameters)}
+     * @param sql provides {@link #sql()} and {@link #setParameters(org.symqle.common.SqlParameters)}
      */
     public ComplexQuery(final RowMapper<T> rowMapper, final Sql sql) {
         this.extractor = rowMapper;
@@ -50,8 +50,8 @@ public class ComplexQuery<T> extends NiceSql implements Query<T> {
     }
 
     @Override
-    public String getSqlText() {
-        return sql.getSqlText();
+    public String sql() {
+        return sql.sql();
     }
 
     @Override

@@ -35,7 +35,7 @@ public class CustomSql extends NiceSql {
     }
 
     @Override
-    public final String getSqlText() {
+    public final String sql() {
         return text;
     }
 

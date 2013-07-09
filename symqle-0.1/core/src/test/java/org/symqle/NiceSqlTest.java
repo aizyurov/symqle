@@ -19,7 +19,7 @@ public class NiceSqlTest extends TestCase {
         }
 
         @Override
-        public String getSqlText() {
+        public String sql() {
             return text;
         }
 
