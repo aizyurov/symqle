@@ -377,7 +377,7 @@ public class CharacterFactorTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(characterFactor.booleanValue()).show();
+        final String sql = person.id.where(characterFactor.asPredicate()).show();
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.name COLLATE latin1_general_ci)", sql);
     }
 

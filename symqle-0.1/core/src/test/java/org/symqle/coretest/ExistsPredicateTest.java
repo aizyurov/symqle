@@ -97,32 +97,32 @@ public class ExistsPredicateTest extends SqlTestCase {
     }
 
     public void testEq() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().eq(person.married.booleanValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().eq(person.married.asPredicate())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) =(T0.married)", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().ne(person.married.booleanValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().ne(person.married.asPredicate())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) <>(T0.married)", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().gt(person.married.booleanValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().gt(person.married.asPredicate())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) >(T0.married)", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().ge(person.married.booleanValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().ge(person.married.asPredicate())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) >=(T0.married)", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().lt(person.married.booleanValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().lt(person.married.asPredicate())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) <(T0.married)", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().le(person.married.booleanValue())).show();
+        final String sql = person.id.where(employee.id.where(employee.name.eq(person.name)).exists().le(person.married.asPredicate())).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.name = T0.name)) <=(T0.married)", sql);
     }
 

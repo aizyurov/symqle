@@ -206,7 +206,7 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(person.id.mult(two).booleanValue()).show();
+        String sql = person.id.where(person.id.mult(two).asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id * ?)", sql);
     }
 

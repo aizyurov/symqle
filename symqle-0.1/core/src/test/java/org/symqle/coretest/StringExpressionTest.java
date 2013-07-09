@@ -192,7 +192,7 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).booleanValue()).show();
+        String sql = person.id.where(numberSign.concat(person.id).asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(? || T0.id)", sql);
     }
 

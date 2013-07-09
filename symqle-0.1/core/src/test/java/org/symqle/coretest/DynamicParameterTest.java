@@ -91,14 +91,14 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsFunctionArgument() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         final Column<Long> id = person.id;
-        final String sql = SqlFunction.create("abs",Mappers.LONG).apply(param).where(id.booleanValue()).show();
+        final String sql = SqlFunction.create("abs",Mappers.LONG).apply(param).where(id.asPredicate()).show();
         assertSimilar("SELECT abs(?) AS C1 FROM person AS T1 WHERE T1.id", sql);
     }
 
     public void testAsCondition() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.booleanValue()).show();
+        final String sql = id.where(param.asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ?", sql);
     }
 
@@ -337,14 +337,14 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testOpposite() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = param.opposite().where(id.booleanValue()).show();
+        String sql = param.opposite().where(id.asPredicate()).show();
         assertSimilar("SELECT - ? AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
     public void testCast() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = param.cast("INTEGER").where(id.booleanValue()).show();
+        String sql = param.cast("INTEGER").where(id.asPredicate()).show();
         assertSimilar("SELECT CAST(? AS INTEGER) AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 

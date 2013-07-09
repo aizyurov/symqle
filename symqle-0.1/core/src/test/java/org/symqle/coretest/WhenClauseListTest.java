@@ -213,7 +213,7 @@ public class WhenClauseListTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(person.age.gt(20L).then(person.id).orElse(person.age).booleanValue()).show();
+        String sql = person.id.where(person.age.gt(20L).then(person.id).orElse(person.age).asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.id ELSE T0.age END", sql);
     }
 

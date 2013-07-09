@@ -32,7 +32,7 @@ public class SelectSublistTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(employee.id.queryValue().booleanValue()).show();
+        final String sql = person.id.where(employee.id.queryValue().asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1)", sql);
     }
 

@@ -108,7 +108,7 @@ public class ColumnTest extends TestCase {
 
     public void testWhereBoolean() throws Exception {
         Person person = new Person();
-        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.alive.booleanValue().negate()).list(gate);
+        final List<Pair<String,Integer>> list = person.name.pair(person.age).where(person.alive.asPredicate().negate()).list(gate);
         assertEquals(1, list.size());
         assertTrue(Pair.make("Leonardo", 546).equals(list.get(0)));
     }
@@ -139,7 +139,7 @@ public class ColumnTest extends TestCase {
 
     public void testCaseExpression() throws Exception {
         Person person = new Person();
-        final List<String> list = person.alive.booleanValue()
+        final List<String> list = person.alive.asPredicate()
                 .then(person.name)
                 .orElse(person.name.concat(" +"))
                 .orderBy(person.name.desc()).list(gate);
@@ -155,7 +155,7 @@ public class ColumnTest extends TestCase {
 
     public void testExcept() throws Exception {
         Person person = new Person();
-        final List<String> list = person.name.except(person.name.where(person.alive.booleanValue().negate())).list(gate);
+        final List<String> list = person.name.except(person.name.where(person.alive.asPredicate().negate())).list(gate);
         assertEquals(Arrays.asList("Alice", "Bob"), list);
     }
 

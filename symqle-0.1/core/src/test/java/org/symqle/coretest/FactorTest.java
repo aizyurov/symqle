@@ -59,7 +59,7 @@ public class FactorTest extends SqlTestCase {
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.id.opposite().where(person.smart.booleanValue()).show();
+        final String sql = person.id.opposite().where(person.smart.asPredicate()).show();
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 WHERE T0.smart", sql);
 
     }
@@ -170,7 +170,7 @@ public class FactorTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(person.id.opposite().booleanValue()).show();
+        String sql = person.id.where(person.id.opposite().asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(- T0.id)", sql);
     }
 

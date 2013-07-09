@@ -48,7 +48,7 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().where(person.married.booleanValue()).show();
+        final String sql = person.name.eq(person.nickName).asValue().where(person.married.asPredicate()).show();
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 WHERE T0.married", sql);
     }
 
@@ -113,7 +113,7 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().booleanValue()).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().asPredicate()).show();
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick)", sql);
     }
 

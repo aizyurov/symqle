@@ -69,7 +69,7 @@ BooleanPrimary ::=
     LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit {}
 |
     e:ValueExpressionPrimary<?>
-        :: public AbstractBooleanPrimary booleanValue {}
+        :: public AbstractBooleanPrimary asPredicate {}
 ;
 
 
