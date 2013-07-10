@@ -79,6 +79,7 @@ import java.sql.SQLException;
 import org.symqle.common.SqlParameters;
 import org.symqle.common.Sql;
 import org.symqle.common.CompositeSql;
+import org.symqle.common.MalformedStatementException;
 import static org.symqle.querybuilder.SqlTerm.*;
 /**
 * A standard straighforward implementation of Dialect.
@@ -104,7 +105,7 @@ public class GenericDialect implements Dialect {
 
     @Override
     public String fallbackTableName() {
-        throw new IllegalStateException("Generic dialect does not support selects with no tables");
+        throw new MalformedStatementException(getName() + " dialect does not support selects with no tables");
     }
 
     protected final Sql concat(final Sql first, final Sql... other) {

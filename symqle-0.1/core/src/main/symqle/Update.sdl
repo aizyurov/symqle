@@ -199,6 +199,7 @@ public class Table extends TableOrView implements TargetTable {
 
 import org.symqle.querybuilder.UniqueNameProvider;
 import org.symqle.querybuilder.TableNameProvider;
+import org.symqle.common.MalformedStatementException;
 class DataChangeTableRegistry implements TableRegistry {
 
     final TargetTable targetTable;
@@ -227,7 +228,7 @@ class DataChangeTableRegistry implements TableRegistry {
         if (table.equals(targetTable)) {
             return targetTable.getName();
         } else {
-            throw new IllegalArgumentException(table + " is not legal in this context");
+            throw new MalformedStatementException(table + " is not legal in this context. Only " + targetTable + " can be used");
         }
     }
 }

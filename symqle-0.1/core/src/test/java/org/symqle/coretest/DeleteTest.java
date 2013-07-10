@@ -1,5 +1,6 @@
 package org.symqle.coretest;
 
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractDeleteStatement;
@@ -49,8 +50,8 @@ public class DeleteTest extends SqlTestCase {
         final Person child = new Person();
         try {
             final String sql = person.delete().where(child.name.eq("John")).show();
-            fail("IllegalArgumentException expected, but was " + sql);
-        } catch (IllegalArgumentException e) {
+            fail("MalformedStatementException expected, but was " + sql);
+        } catch (MalformedStatementException e) {
             // fine
             assertTrue(e.getMessage().contains("is not legal in this context"));
         }

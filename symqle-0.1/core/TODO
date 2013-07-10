@@ -52,6 +52,8 @@ insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Sub
 
 (done) getSqlText() -> sql()
 
+replace IllegalStateException/IllegalArgumentException -> BadStatementException
+
 Postgresql
 
 Oracle

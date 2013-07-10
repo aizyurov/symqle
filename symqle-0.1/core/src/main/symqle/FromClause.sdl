@@ -58,6 +58,7 @@ public interface TableName : Sql {
 # TableOrView implements TableReference by having a TableReference inside
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.common.Mapper;
+import org.symqle.common.MalformedStatementException;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.HashSet;
@@ -85,7 +86,7 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
 
     private void checkJoin(TableOrView other) {
         if (other.referral != null) {
-            throw new IllegalStateException(other + "is already joined to "+ other.referral);
+            throw new MalformedStatementException(other + "is already joined to "+ other.referral);
         }
         other.referral = this;
         referents.add(other);
@@ -97,7 +98,7 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
             maybeCycle.add(t);
             if (other==t) {
                 // cycle!
-                throw new IllegalStateException("Cyclic join: " + maybeCycle);
+                throw new MalformedStatementException("Cyclic join: " + maybeCycle);
             }
         }
         // OK, came to the root
@@ -236,6 +237,7 @@ import org.symqle.querybuilder.UniqueNameProvider;
 import org.symqle.common.Sql;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.common.SqlContext;
+import org.symqle.common.MalformedStatementException;
 public class SelectTableRegistry implements TableRegistry {
     private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
 
@@ -301,7 +303,7 @@ public class SelectTableRegistry implements TableRegistry {
             if (allowNoFrom) {
                 return generateEmptyFromClause();
             } else {
-                throw new IllegalStateException("At least one table is required for FROM clause");
+                throw new MalformedStatementException("At least one table is required for FROM clause");
             }
         }
         final Set<TableOrView> roots = new HashSet<TableOrView>();
@@ -312,7 +314,7 @@ public class SelectTableRegistry implements TableRegistry {
         TableReferenceList tableReferenceList = Symqle.createTableReferenceList(iterator.next());
         while (iterator.hasNext()) {
             if (!allowImplicitCrossJoins) {
-                throw new IllegalStateException("Implicit cross joins are not allowed");
+                throw new MalformedStatementException("Implicit cross joins are not allowed, cross joined: "+ roots);
             }
             tableReferenceList = Symqle.appendTableReferenceList(tableReferenceList, iterator.next());
         }

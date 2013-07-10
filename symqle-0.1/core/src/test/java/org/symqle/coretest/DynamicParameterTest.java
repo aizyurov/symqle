@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Callback;
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.Column;
@@ -29,14 +30,14 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         try {
             param.show(GenericDialect.get(), Option.allowNoTables(true));
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
         }
     }
@@ -196,8 +197,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             String sql = id.where(id.in(param)).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals(e.getMessage(), "At least one table is required for FROM clause");
         }
     }
@@ -266,9 +267,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             final String sql = param.orderAsc().show();
-//            assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY C1 ASC", sql);
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             // expected
         }
     }
@@ -278,9 +278,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             final String sql = param.orderDesc().show();
-//            assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY C1 DESC", sql);
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             // expected
         }
     }
@@ -414,8 +413,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.union(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -424,8 +423,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.unionAll(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -434,8 +433,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.unionDistinct(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -444,8 +443,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.except(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -454,8 +453,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.exceptDistinct(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -464,8 +463,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.exceptAll(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -474,8 +473,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.intersect(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -484,8 +483,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.intersectAll(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -494,8 +493,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.intersectDistinct(person.id).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -504,8 +503,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             person.id.where(param.exists()).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -514,8 +513,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             person.id.where(param.contains(1L)).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -524,8 +523,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             person.id.where(param.queryValue().eq(param)).show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -574,8 +573,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.forUpdate().show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -584,8 +583,8 @@ public class DynamicParameterTest extends SqlTestCase {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
             param.forReadOnly().show();
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
     }
@@ -620,8 +619,8 @@ public class DynamicParameterTest extends SqlTestCase {
         org.easymock.EasyMock.replay(gate);
         try {
             param.list(gate);
-            fail ("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail ("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         org.easymock.EasyMock.verify(gate);
@@ -641,8 +640,8 @@ public class DynamicParameterTest extends SqlTestCase {
                     return true;
                 }
             });
-            fail ("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail ("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         org.easymock.EasyMock.verify(gate);

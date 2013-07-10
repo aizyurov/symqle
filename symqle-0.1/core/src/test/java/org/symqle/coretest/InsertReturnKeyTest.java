@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import junit.framework.TestCase;
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractInsertStatement;
@@ -64,8 +65,8 @@ public class InsertReturnKeyTest extends TestCase {
 
         try {
             assertEquals(123L, update.executeReturnKey(another.id, gate).longValue());
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             // expected
         }
 

@@ -1,5 +1,6 @@
 package org.symqle.coretest;
 
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractInsertStatement;
@@ -64,8 +65,8 @@ public class InsertTest extends SqlTestCase {
     public void testSubqueryFromNoTables() throws Exception {
         try {
             final String sql = person.insert(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show();
-            fail("IllegalStateException expected but was " + sql);
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected but was " + sql);
+        } catch (MalformedStatementException e) {
             assertEquals(e.getMessage(), "At least one table is required for FROM clause");
         }
     }
@@ -74,8 +75,8 @@ public class InsertTest extends SqlTestCase {
         final Person child = new Person();
         try {
             final String sql = person.insert(child.name.set(person.name)).show();
-            fail("IllegalArgumentException expected, but was " + sql);
-        } catch (IllegalArgumentException e) {
+            fail("MalformedStatementException expected, but was " + sql);
+        } catch (MalformedStatementException e) {
             // fine
             assertTrue(e.getMessage().contains("is not legal in this context"));
         }
@@ -85,8 +86,8 @@ public class InsertTest extends SqlTestCase {
         final Person child = new Person();
         try {
             final String sql = person.insert(person.name.set(child.name)).show();
-            fail("IllegalArgumentException expected, but was " + sql);
-        } catch (IllegalArgumentException e) {
+            fail("MalformedStatementException expected, but was " + sql);
+        } catch (MalformedStatementException e) {
             // fine
             assertTrue(e.getMessage().contains("is not legal in this context"));
         }

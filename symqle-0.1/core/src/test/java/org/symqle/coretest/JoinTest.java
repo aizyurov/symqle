@@ -1,5 +1,6 @@
 package org.symqle.coretest;
 
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.TableOrView;
@@ -51,8 +52,8 @@ public class JoinTest extends SqlTestCase {
         person.leftJoin(department, person.departmentId.eq(department.id));
         try {
             manager.leftJoin(department, manager.departmentId.eq(manager.id));
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertTrue((e.getMessage().contains("already joined")));
         }
     }
@@ -64,8 +65,8 @@ public class JoinTest extends SqlTestCase {
         person.leftJoin(department, person.departmentId.eq(department.id));
         try {
             person.leftJoin(department, person.departmentId.eq(department.id));
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertTrue((e.getMessage().contains("already joined")));
         }
     }
@@ -77,8 +78,8 @@ public class JoinTest extends SqlTestCase {
         person.leftJoin(department, person.departmentId.eq(department.id));
         try {
             department.leftJoin(person, person.departmentId.eq(department.id));
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("Cyclic join"));
         }
     }

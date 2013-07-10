@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Callback;
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.jdbc.Option;
@@ -136,7 +137,7 @@ public class PairTest extends SqlTestCase {
         try {
             badSql = person1.name.pair(person2.age).where(person1.id.eq(person2.id)).show();
             fail("expected IllegalStateException but was " + badSql);
-        } catch (IllegalStateException e) {
+        } catch (MalformedStatementException e) {
             // fine
         }
         final String goodSql = person1.name.pair(person2.age).where(person1.id.eq(person2.id)).show(GenericDialect.get(), Option.allowImplicitCrossJoins(true));
