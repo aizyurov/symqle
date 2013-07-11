@@ -75,7 +75,7 @@ public class ColumnTest extends TestCase {
 
         @Override
         public Dialect getDialect() {
-            return GenericDialect.get();
+            return new GenericDialect();
         }
 
         @Override

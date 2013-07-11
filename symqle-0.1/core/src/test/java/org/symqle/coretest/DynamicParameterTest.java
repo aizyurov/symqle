@@ -29,13 +29,13 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testSelectStatementNoFrom() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.show();
+            param.show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
         try {
-            param.show(GenericDialect.get(), Option.allowNoTables(true));
+            param.show(new GenericDialect(), Option.allowNoTables(true));
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("Generic dialect does not support selects with no tables", e.getMessage());
@@ -57,98 +57,98 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testSelectAll() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.all().where(id.eq(param)).show();
+        final String sql = param.all().where(id.eq(param)).show(new GenericDialect());
         assertSimilar("SELECT ALL ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
     public void testMap() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.map(Mappers.INTEGER).all().where(id.eq(param)).show();
+        final String sql = param.map(Mappers.INTEGER).all().where(id.eq(param)).show(new GenericDialect());
         assertSimilar("SELECT ALL ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
     public void testSelectDistinct() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.distinct().where(id.eq(param)).show();
+        final String sql = param.distinct().where(id.eq(param)).show(new GenericDialect());
         assertSimilar("SELECT DISTINCT ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
     public void testPair() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.pair(id).show();
+        final String sql = param.pair(id).show(new GenericDialect());
         assertSimilar("SELECT ? AS C1, T1.id AS C2 FROM person AS T1", sql);
     }
 
     public void testWhere() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.where(id.eq(param)).show();
+        final String sql = param.where(id.eq(param)).show(new GenericDialect());
         assertSimilar("SELECT ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
     public void testAsFunctionArgument() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         final Column<Long> id = person.id;
-        final String sql = SqlFunction.create("abs",Mappers.LONG).apply(param).where(id.asPredicate()).show();
+        final String sql = SqlFunction.create("abs",Mappers.LONG).apply(param).where(id.asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT abs(?) AS C1 FROM person AS T1 WHERE T1.id", sql);
     }
 
     public void testAsCondition() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.asPredicate()).show();
+        final String sql = id.where(param.asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ?", sql);
     }
 
     public void testEq() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.eq(id)).show();
+        final String sql = id.where(param.eq(id)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? = T0.id", sql);
     }
 
     public void testNe() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.ne(id)).show();
+        final String sql = id.where(param.ne(id)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <> T0.id", sql);
     }
 
     public void testGt() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.gt(id)).show();
+        final String sql = id.where(param.gt(id)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? > T0.id", sql);
     }
 
     public void testGe() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.ge(id)).show();
+        final String sql = id.where(param.ge(id)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? >= T0.id", sql);
     }
 
     public void testLt() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.lt(id)).show();
+        final String sql = id.where(param.lt(id)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? < T0.id", sql);
     }
 
     public void testLe() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.le(id)).show();
+        final String sql = id.where(param.le(id)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <= T0.id", sql);
     }
 
     public void testEqValue() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.eq(2L)).show();
+        final String sql = id.where(param.eq(2L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? = ?", sql);
     }
 
@@ -156,7 +156,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testNeValue() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.ne(2L)).show();
+        final String sql = id.where(param.ne(2L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <> ?", sql);
     }
 
@@ -164,7 +164,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testLtValue() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.lt(2L)).show();
+        final String sql = id.where(param.lt(2L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? < ?", sql);
     }
 
@@ -172,7 +172,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testLeValue() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.le(2L)).show();
+        final String sql = id.where(param.le(2L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? <= ?", sql);
     }
 
@@ -180,7 +180,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testGtValue() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.gt(2L)).show();
+        final String sql = id.where(param.gt(2L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? > ?", sql);
     }
 
@@ -188,7 +188,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testGeValue() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.where(param.ge(2L)).show();
+        final String sql = id.where(param.ge(2L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? >= ?", sql);
     }
 
@@ -196,7 +196,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            String sql = id.where(id.in(param)).show();
+            String sql = id.where(id.in(param)).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals(e.getMessage(), "At least one table is required for FROM clause");
@@ -209,7 +209,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         final Column<Long> id2 = employee.id;
-        String sql = id.where(param.in(id2)).show();
+        String sql = id.where(param.in(id2)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
@@ -217,7 +217,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         final Column<Long> id2 = employee.id;
-        String sql = id.where(param.notIn(id2)).show();
+        String sql = id.where(param.notIn(id2)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT IN(SELECT T1.id FROM employee AS T1)", sql);
     }
 
@@ -226,7 +226,7 @@ public class DynamicParameterTest extends SqlTestCase {
         // find all but the most old
 
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = id.where(param.in(1L, 2L, 3L)).show();
+        String sql = id.where(param.in(1L, 2L, 3L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(?, ?, ?)", sql);
    }
 
@@ -237,28 +237,28 @@ public class DynamicParameterTest extends SqlTestCase {
         final ValueExpression<Long> expr = DynamicParameter.create(Mappers.LONG, 1L);
         final ValueExpression<Long> expr2 = DynamicParameter.create(Mappers.LONG, 2L);
         final ValueExpression<Long> expr3 = DynamicParameter.create(Mappers.LONG, 3L);
-        String sql = id.where(param.notIn(1L, 2L, 3L)).show();
+        String sql = id.where(param.notIn(1L, 2L, 3L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT IN(?, ?, ?)", sql);
    }
 
     public void testIsNull() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = id.where(param.isNull()).show();
+        String sql = id.where(param.isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IS NULL", sql);
    }
 
     public void testIsNotNull() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = id.where(param.isNotNull()).show();
+        String sql = id.where(param.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IS NOT NULL", sql);
    }
 
     public void testOrderBy() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.orderBy(id).show();
+        final String sql = param.orderBy(id).show(new GenericDialect());
         assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY T1.id", sql);
     }
 
@@ -266,7 +266,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            final String sql = param.orderAsc().show();
+            final String sql = param.orderAsc().show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             // expected
@@ -277,7 +277,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            final String sql = param.orderDesc().show();
+            final String sql = param.orderDesc().show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             // expected
@@ -287,132 +287,132 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsSortSpecification() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.orderBy(param).show();
+        final String sql = id.orderBy(param).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ?", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.orderBy(param.nullsFirst()).show();
+        final String sql = id.orderBy(param.nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.orderBy(param.nullsLast()).show();
+        final String sql = id.orderBy(param.nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.orderBy(param.desc()).show();
+        final String sql = id.orderBy(param.desc()).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = id.orderBy(param.asc()).show();
+        final String sql = id.orderBy(param.asc()).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 ORDER BY ? ASC", sql);
     }
 
     public void testMult() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.mult(id).show();
+        final String sql = param.mult(id).show(new GenericDialect());
         assertSimilar("SELECT ? * T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.mult(5).add(id).show();
+        final String sql = param.mult(5).add(id).show(new GenericDialect());
         assertSimilar("SELECT ? * ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testOpposite() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = param.opposite().where(id.asPredicate()).show();
+        String sql = param.opposite().where(id.asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT - ? AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
     public void testCast() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        String sql = param.cast("INTEGER").where(id.asPredicate()).show();
+        String sql = param.cast("INTEGER").where(id.asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT CAST(? AS INTEGER) AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
     public void testAdd() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.add(id).show();
+        final String sql = param.add(id).show(new GenericDialect());
         assertSimilar("SELECT ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testAddNumber() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.add(2).add(id).show();
+        final String sql = param.add(2).add(id).show(new GenericDialect());
         assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testSub() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.sub(id).show();
+        final String sql = param.sub(id).show(new GenericDialect());
         assertSimilar("SELECT ? - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testSubNumber() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.sub(1.3).add(id).show();
+        final String sql = param.sub(1.3).add(id).show(new GenericDialect());
         assertSimilar("SELECT ? - ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.div(id).show();
+        final String sql = param.div(id).show(new GenericDialect());
         assertSimilar("SELECT ? / T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.div(4L).add(id).show();
+        final String sql = param.div(4L).add(id).show(new GenericDialect());
         assertSimilar("SELECT ? / ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.concat(id).show();
+        final String sql = param.concat(id).show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testCollate() throws Exception {
         final DynamicParameter<String> param = DynamicParameter.create(Mappers.STRING, "abc ");
-        final String sql = param.collate("latin1_general_ci").concat(person.name).show();
+        final String sql = param.collate("latin1_general_ci").concat(person.name).show(new GenericDialect());
         assertSimilar("SELECT ? COLLATE latin1_general_ci || T0.name AS C0 FROM person AS T0", sql);
     }
 
     public void testString() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.concat(" ").concat(id).show();
+        final String sql = param.concat(" ").concat(id).show(new GenericDialect());
         assertSimilar("SELECT ? || ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testUnion() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.union(person.id).show();
+            param.union(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -422,7 +422,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testUnionAll() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.unionAll(person.id).show();
+            param.unionAll(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -432,7 +432,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testUnionDistinct() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.unionDistinct(person.id).show();
+            param.unionDistinct(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -442,7 +442,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testExcept() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.except(person.id).show();
+            param.except(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -452,7 +452,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testExceptDistinct() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.exceptDistinct(person.id).show();
+            param.exceptDistinct(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -462,7 +462,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testExceptAll() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.exceptAll(person.id).show();
+            param.exceptAll(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -472,7 +472,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testIntersect() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.intersect(person.id).show();
+            param.intersect(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -482,7 +482,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testIntersectAll() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.intersectAll(person.id).show();
+            param.intersectAll(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -492,7 +492,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testIntersectDistinct() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.intersectDistinct(person.id).show();
+            param.intersectDistinct(person.id).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -502,7 +502,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testExists() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            person.id.where(param.exists()).show();
+            person.id.where(param.exists()).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -512,7 +512,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testConains() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            person.id.where(param.contains(1L)).show();
+            person.id.where(param.contains(1L)).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -522,7 +522,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testQueryValue() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            person.id.where(param.queryValue().eq(param)).show();
+            person.id.where(param.queryValue().eq(param)).show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -531,37 +531,37 @@ public class DynamicParameterTest extends SqlTestCase {
 
     public void testCount() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.count().where(person.id.isNotNull()).show();
+        final String sql = param.count().where(person.id.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
     public void testCountDistinct() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.countDistinct().where(person.id.isNotNull()).show();
+        final String sql = param.countDistinct().where(person.id.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(DISTINCT ?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
     public void testAvg() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.avg().where(person.id.isNotNull()).show();
+        final String sql = param.avg().where(person.id.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT AVG(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
     public void testSum() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.sum().where(person.id.isNotNull()).show();
+        final String sql = param.sum().where(person.id.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT SUM(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
     public void testMin() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.min().where(person.id.isNotNull()).show();
+        final String sql = param.min().where(person.id.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT MIN(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
     public void testMax() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.max().where(person.id.isNotNull()).show();
+        final String sql = param.max().where(person.id.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT MAX(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
@@ -572,7 +572,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testForUpdate() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.forUpdate().show();
+            param.forUpdate().show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -582,7 +582,7 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testForReadOnly() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
-            param.forReadOnly().show();
+            param.forReadOnly().show(new GenericDialect());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
@@ -590,22 +590,22 @@ public class DynamicParameterTest extends SqlTestCase {
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").like(person.name)).show();
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").like(person.name)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? LIKE T0.name", sql);
     }
 
     public void testLikeString() throws Exception {
-        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").like("J%")).show();
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").like("J%")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").notLike(person.name)).show();
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").notLike(person.name)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT LIKE T0.name", sql);
     }
 
     public void testNotLikeString() throws Exception {
-        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").notLike("J%")).show();
+        final String sql = person.id.where(DynamicParameter.create(Mappers.STRING, "John").notLike("J%")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? NOT LIKE ?", sql);
     }
 
@@ -615,7 +615,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         org.easymock.EasyMock.replay(gate);
         try {
             param.list(gate);
@@ -630,7 +630,7 @@ public class DynamicParameterTest extends SqlTestCase {
         final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         org.easymock.EasyMock.replay(gate);
         try {
             param.scroll(gate, new Callback<Long>() {

@@ -9,7 +9,7 @@ import org.symqle.sql.GenericDialect;
 public class DialectTest extends TestCase {
 
     public void testGenericName() {
-        assertEquals("Generic", GenericDialect.get().getName());
+        assertEquals("Generic", new GenericDialect().getName());
     }
 
 }

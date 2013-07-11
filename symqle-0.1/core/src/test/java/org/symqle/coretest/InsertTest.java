@@ -26,45 +26,45 @@ public class InsertTest extends SqlTestCase {
 
     public void testOneColumn() throws Exception {
         final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)));
-        final String sql = insert.show();
+        final String sql = insert.show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id) VALUES(?)", sql);
-        assertSimilar(sql, insert.show(GenericDialect.get()));
+        assertSimilar(sql, insert.show(new GenericDialect()));
     }
 
     public void testSetNull() throws Exception {
-        final String sql = person.insert(person.parentId.setNull()).show();
+        final String sql = person.insert(person.parentId.setNull()).show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id) VALUES(NULL)", sql);
     }
 
     public void testSetDefault() throws Exception {
-        final String sql = person.insert(person.parentId.setDefault()).show();
+        final String sql = person.insert(person.parentId.setDefault()).show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id) VALUES(DEFAULT)", sql);
     }
 
     public void testInsertDefault() throws Exception {
-        final String sql = person.insertDefault().show();
+        final String sql = person.insertDefault().show(new GenericDialect());
         assertSimilar("INSERT INTO person DEFAULT VALUES", sql);
     }
 
     public void testSetOverrideType() throws Exception {
-        final String sql = person.insert(person.id.set(DynamicParameter.create(Mappers.STRING, "1").map(Mappers.LONG))).show();
+        final String sql = person.insert(person.id.set(DynamicParameter.create(Mappers.STRING, "1").map(Mappers.LONG))).show(new GenericDialect());
         assertSimilar("INSERT INTO person(id) VALUES(?)", sql);
     }
 
     public void testMultipleColumns() throws Exception {
-        final String sql = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)), person.name.set("John Doe")).show();
+        final String sql = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)), person.name.set("John Doe")).show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id, name) VALUES(?, ?)", sql);
     }
 
     public void testSubqueryAsSource() throws Exception {
         final Person child = new Person();
-        final String sql = person.insert(person.name.set(child.name.where(child.id.eq(1L)).queryValue())).show();
+        final String sql = person.insert(person.name.set(child.name.where(child.id.eq(1L)).queryValue())).show(new GenericDialect());
         assertSimilar("INSERT INTO person(name) VALUES((SELECT T0.name FROM person AS T0 WHERE T0.id = ?))", sql);
     }
 
     public void testSubqueryFromNoTables() throws Exception {
         try {
-            final String sql = person.insert(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show();
+            final String sql = person.insert(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show(new GenericDialect());
             fail("MalformedStatementException expected but was " + sql);
         } catch (MalformedStatementException e) {
             assertEquals(e.getMessage(), "At least one table is required for FROM clause");
@@ -74,7 +74,7 @@ public class InsertTest extends SqlTestCase {
     public void testWrongTarget() throws Exception {
         final Person child = new Person();
         try {
-            final String sql = person.insert(child.name.set(person.name)).show();
+            final String sql = person.insert(child.name.set(person.name)).show(new GenericDialect());
             fail("MalformedStatementException expected, but was " + sql);
         } catch (MalformedStatementException e) {
             // fine
@@ -85,7 +85,7 @@ public class InsertTest extends SqlTestCase {
     public void testWrongSource() throws Exception {
         final Person child = new Person();
         try {
-            final String sql = person.insert(person.name.set(child.name)).show();
+            final String sql = person.insert(person.name.set(child.name)).show(new GenericDialect());
             fail("MalformedStatementException expected, but was " + sql);
         } catch (MalformedStatementException e) {
             // fine
@@ -95,12 +95,12 @@ public class InsertTest extends SqlTestCase {
 
     public void testExecute() throws Exception {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
-        final String statementString = update.show();
+        final String statementString = update.show(new GenericDialect());
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(statementString)).andReturn(statement);
         statement.setString(1, "John");

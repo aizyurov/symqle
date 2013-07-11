@@ -25,13 +25,13 @@ public class InsertReturnKeyTest extends TestCase {
 
     public void testExecute() throws Exception {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
-        final String statementString = update.show();
+        final String statementString = update.show(new GenericDialect());
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet generatedKeys = createMock(ResultSet.class);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS)).andReturn(statement);
         statement.setString(1, "John");
@@ -52,13 +52,13 @@ public class InsertReturnKeyTest extends TestCase {
 
     public void testWrongColumn() throws Exception {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
-        final String statementString = update.show();
+        final String statementString = update.show(new GenericDialect());
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet generatedKeys = createMock(ResultSet.class);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
 
         // no attempt to connect: fast fail
         replay(gate, connection, statement, generatedKeys);
@@ -87,13 +87,13 @@ public class InsertReturnKeyTest extends TestCase {
 
     public void testExecuteWithOptions() throws Exception {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
-        final String statementString = update.show();
+        final String statementString = update.show(new GenericDialect());
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet generatedKeys = createMock(ResultSet.class);
         expect(gate.getOptions()).andReturn(Collections.<Option>singletonList(Option.setQueryTimeout(30)));
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(statementString, Statement.RETURN_GENERATED_KEYS)).andReturn(statement);
         statement.setQueryTimeout(30);

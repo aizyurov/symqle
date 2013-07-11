@@ -2,6 +2,7 @@ package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
+import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
 
@@ -11,158 +12,158 @@ import org.symqle.sql.TableOrView;
 public class NullPredicateTest extends SqlTestCase {
 
     public void testAnd() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().and(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().and(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL AND T0.smart", sql);
     }
 
     public void testOr() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().or(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().or(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL OR T0.smart", sql);
     }
 
     public void testNegate() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().negate()).show();
+        final String sql = person.id.where(person.alive.isNull().negate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.alive IS NULL", sql);
     }
 
     public void testIsTrue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isTrue()).show();
+        final String sql = person.id.where(person.alive.isNull().isTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS TRUE", sql);
     }
 
     public void testIsNotTrue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotTrue()).show();
+        final String sql = person.id.where(person.alive.isNull().isNotTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS NOT TRUE", sql);
     }
 
     public void testIsFalse() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isFalse()).show();
+        final String sql = person.id.where(person.alive.isNull().isFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS FALSE", sql);
     }
 
     public void testIsNotFalse() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotFalse()).show();
+        final String sql = person.id.where(person.alive.isNull().isNotFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS NOT FALSE", sql);
     }
 
     public void testIsUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isUnknown()).show();
+        final String sql = person.id.where(person.alive.isNull().isUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS UNKNOWN", sql);
     }
 
     public void testIsNotUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotUnknown()).show();
+        final String sql = person.id.where(person.alive.isNull().isNotUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS NOT UNKNOWN", sql);
     }
 
     public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNull()).show();
+        final String sql = person.id.where(person.alive.isNull().isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) IS NULL", sql);
     }
 
     public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotNull()).show();
+        final String sql = person.id.where(person.alive.isNull().isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) IS NOT NULL", sql);
     }
 
 
     public void testAndTwoPredicates() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.smart).and(person.friendly.isNull())).show();
+        final String sql = person.id.where(person.alive.eq(person.smart).and(person.friendly.isNull())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.smart AND T0.friendly IS NULL", sql);
     }
 
     public void testOrPredicate() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.smart).or(person.friendly.asPredicate())).show();
+        final String sql = person.id.where(person.alive.eq(person.smart).or(person.friendly.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.smart OR T0.friendly", sql);
     }
 
     public void testEq() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().eq(person.smart.isNull())).show();
+        final String sql = person.id.where(person.alive.isNull().eq(person.smart.isNull())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) =(T0.smart IS NULL)", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().ne(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().ne(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) <>(T0.smart)", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().gt(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().gt(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) >(T0.smart)", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().ge(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().ge(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) >=(T0.smart)", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().lt(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().lt(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) <(T0.smart)", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().le(person.smart.asPredicate())).show();
+        final String sql = person.id.where(person.alive.isNull().le(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) <=(T0.smart)", sql);
     }
 
     public void testEqValue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().eq(true)).show();
+        final String sql = person.id.where(person.alive.isNull().eq(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) = ?", sql);
     }
 
     public void testNeValue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().ne(true)).show();
+        final String sql = person.id.where(person.alive.isNull().ne(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) <> ?", sql);
     }
 
     public void testGtValue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().gt(true)).show();
+        final String sql = person.id.where(person.alive.isNull().gt(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) > ?", sql);
     }
 
     public void testGeValue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().ge(true)).show();
+        final String sql = person.id.where(person.alive.isNull().ge(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) >= ?", sql);
     }
 
     public void testLtValue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().lt(true)).show();
+        final String sql = person.id.where(person.alive.isNull().lt(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) < ?", sql);
     }
 
     public void testLeValue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().le(true)).show();
+        final String sql = person.id.where(person.alive.isNull().le(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS NULL) <= ?", sql);
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.smart.isNull().in(person2.alive.isNull().asValue())).show();
+        String sql = person.id.where(person.smart.isNull().in(person2.alive.isNull().asValue())).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS NULL) IN(SELECT T2.alive IS NULL FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.smart.isNull().notIn(person2.alive.asPredicate().asValue())).show();
+        String sql = person.id.where(person.smart.isNull().notIn(person2.alive.asPredicate().asValue())).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS NULL) NOT IN(SELECT T2.alive FROM person AS T2)", sql);
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.smart.isNull().in(true)).show();
+        String sql = person.id.where(person.smart.isNull().in(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) IN(?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.smart.isNull().notIn(false)).show();
+        String sql = person.id.where(person.smart.isNull().notIn(false)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS NULL) NOT IN(?)", sql);
    }
 
     public void testThen() throws Exception {
-        final String sql = person.smart.isNull().then(person.id).show();
+        final String sql = person.smart.isNull().then(person.id).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.smart IS NULL THEN T0.id END AS C0 FROM person AS T0", sql);
     }
 
     public void testThenNull() throws Exception {
-        final String sql = person.smart.isNull().then(person.id).orWhen(person.alive.isNotNull().thenNull()).show();
+        final String sql = person.smart.isNull().then(person.id).orWhen(person.alive.isNotNull().thenNull()).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.smart IS NULL THEN T0.id WHEN T0.alive IS NOT NULL THEN NULL END AS C0 FROM person AS T0", sql);
     }
 

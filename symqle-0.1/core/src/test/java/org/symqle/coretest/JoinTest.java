@@ -3,6 +3,7 @@ package org.symqle.coretest;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
+import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
 
@@ -21,7 +22,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(manager, person.managerId.eq(manager.id));
         manager.leftJoin(department, manager.departmentId.eq(department.id));
-        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).show();
+        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).show(new GenericDialect());
         assertSimilar("SELECT T0.name || ? || T1.name || ? || T2.name AS C0 FROM person AS T0 LEFT JOIN person AS T1 LEFT JOIN department AS T2 ON T1.department_id = T2.id ON T0.manager_id = T1.id", sql);
     }
 
@@ -31,7 +32,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(manager, person.managerId.eq(manager.id));
         manager.leftJoin(department, manager.departmentId.eq(department.id));
-        final String sql = manager.name.concat(" ").concat(department.name).show();
+        final String sql = manager.name.concat(" ").concat(department.name).show(new GenericDialect());
         assertSimilar("SELECT T1.name || ? || T2.name AS C0 FROM person AS T0 LEFT JOIN person AS T1 LEFT JOIN department AS T2 ON T1.department_id = T2.id ON T0.manager_id = T1.id", sql);
     }
 
@@ -41,7 +42,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(manager, person.managerId.eq(manager.id));
         person.leftJoin(department, person.departmentId.eq(department.id));
-        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).show();
+        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).show(new GenericDialect());
         assertSimilar("SELECT T0.name || ? || T1.name || ? || T2.name AS C0 FROM person AS T0 LEFT JOIN person AS T1 ON T0.manager_id = T1.id LEFT JOIN department AS T2 ON T0.department_id = T2.id", sql);
     }
 

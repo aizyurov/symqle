@@ -43,10 +43,10 @@ public class QueryTest extends SqlTestCase {
     public void testScrollWithEmptyResultSet() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
-        final String queryString = id.show();
+        final String queryString = id.show(new GenericDialect());
         System.out.println("Show: " + queryString);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -68,9 +68,9 @@ public class QueryTest extends SqlTestCase {
     public void testScroll() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
-        final String queryString = id.show();
+        final String queryString = id.show(new GenericDialect());
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -102,9 +102,9 @@ public class QueryTest extends SqlTestCase {
     public void testScrollWithBreak() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
-        final String queryString = id.show();
+        final String queryString = id.show(new GenericDialect());
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -139,9 +139,9 @@ public class QueryTest extends SqlTestCase {
     public void testList() throws Exception {
         final Person person = new Person();
         final Column<Long> id = person.id;
-        final String queryString = id.show();
+        final String queryString = id.show(new GenericDialect());
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -164,9 +164,9 @@ public class QueryTest extends SqlTestCase {
         final Person person = new Person();
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 123L);
-        final String queryString = id.where(id.eq(param)).show();
+        final String queryString = id.where(id.eq(param)).show(new GenericDialect());
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setLong(1, 123L);
@@ -188,9 +188,9 @@ public class QueryTest extends SqlTestCase {
     public void testListWithComplexCondition() throws Exception {
         final Person person = new Person();
         final AbstractQuerySpecification<Long> query = person.id.where(person.age.add(1).gt(33));
-        final String queryString = query.show();
+        final String queryString = query.show(new GenericDialect());
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setBigDecimal(1, new BigDecimal(1));
@@ -213,10 +213,10 @@ public class QueryTest extends SqlTestCase {
     public void testListWithBooleanColumnCondition() throws Exception {
         final Person person = new Person();
         final AbstractQuerySpecification<Long> query = person.id.where(person.alive.eq(true));
-        final String queryString = query.show();
+        final String queryString = query.show(new GenericDialect());
         System.out.println(queryString);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setBoolean(1, true);

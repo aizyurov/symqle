@@ -25,19 +25,19 @@ public class CursorSpecificationTest extends SqlTestCase {
 
 
     public void testShow() throws Exception {
-        final String sql = person.id.orderBy(person.id).show();
+        final String sql = person.id.orderBy(person.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id", sql);
-        final String sql2 = person.id.orderBy(person.id).show(GenericDialect.get());
+        final String sql2 = person.id.orderBy(person.id).show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.orderBy(person.id).forUpdate().show();
+        final String sql = person.id.orderBy(person.id).forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.orderBy(person.id).forReadOnly().show();
+        final String sql = person.id.orderBy(person.id).forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR READ ONLY", sql);
     }
 
@@ -82,9 +82,9 @@ public class CursorSpecificationTest extends SqlTestCase {
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             final AbstractCursorSpecification<Long> cursorSpecification = person.id.orderBy(person.id);
-            final String queryString = cursorSpecification.show();
+            final String queryString = cursorSpecification.show(new GenericDialect());
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);

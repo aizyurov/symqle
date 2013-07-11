@@ -26,377 +26,377 @@ import static org.easymock.EasyMock.*;
 public class ValueExpressionTest extends SqlTestCase {
 
     public void testShow() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0", sql);
-        final String sql2 = person.name.eq(person.nickName).asValue().show(GenericDialect.get());
+        final String sql2 = person.name.eq(person.nickName).asValue().show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
     public void testMap() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().map(Mappers.STRING).show();
+        final String sql = person.name.eq(person.nickName).asValue().map(Mappers.STRING).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0", sql);
     }
 
     public void testAll() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().all().show();
+        final String sql = person.name.eq(person.nickName).asValue().all().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.name = T0.nick AS C0 FROM person AS T0", sql);
     }
 
     public void testDistinct() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().distinct().show();
+        final String sql = person.name.eq(person.nickName).asValue().distinct().show(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.name = T0.nick AS C0 FROM person AS T0", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().where(person.married.asPredicate()).show();
+        final String sql = person.name.eq(person.nickName).asValue().where(person.married.asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 WHERE T0.married", sql);
     }
 
     public void testEq() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().eq(person.married).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().eq(person.married).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) = T0.married AS C0 FROM person AS T0", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().ne(person.married).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().ne(person.married).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) <> T0.married AS C0 FROM person AS T0", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().gt(person.married).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().gt(person.married).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) > T0.married AS C0 FROM person AS T0", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().ge(person.married).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().ge(person.married).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) >= T0.married AS C0 FROM person AS T0", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().lt(person.married).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().lt(person.married).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) < T0.married AS C0 FROM person AS T0", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().le(person.married).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().le(person.married).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) <= T0.married AS C0 FROM person AS T0", sql);
     }
 
     public void testEqValue() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().eq(true).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().eq(true).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) = ? AS C0 FROM person AS T0", sql);
     }
 
     public void testNeValue() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().ne(true).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().ne(true).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) <> ? AS C0 FROM person AS T0", sql);
     }
 
     public void testGtValue() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().gt(true).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().gt(true).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) > ? AS C0 FROM person AS T0", sql);
     }
 
     public void testGeValue() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().ge(true).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().ge(true).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) >= ? AS C0 FROM person AS T0", sql);
     }
 
     public void testLtValue() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().lt(true).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().lt(true).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) < ? AS C0 FROM person AS T0", sql);
     }
 
     public void testLeValue() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().le(true).asValue().show();
+        final String sql = person.name.eq(person.nickName).asValue().le(true).asValue().show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) <= ? AS C0 FROM person AS T0", sql);
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().asPredicate()).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick)", sql);
     }
 
     public void testPair() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().pair(person.name).show();
+        final String sql = person.name.eq(person.nickName).asValue().pair(person.name).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
     public void testOpposite() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().opposite().show();
+        final String sql = person.name.eq(person.nickName).asValue().opposite().show(new GenericDialect());
         assertSimilar("SELECT -(T0.name = T0.nick) AS C0 FROM person AS T0", sql);
     }
 
     public void testCast() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().cast("CHAR(10)").show();
+        final String sql = person.name.eq(person.nickName).asValue().cast("CHAR(10)").show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.name = T0.nick AS CHAR(10)) AS C0 FROM person AS T0", sql);
     }
 
     public void testIn() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(employee.remote)).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(employee.remote)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IN(SELECT T1.remote FROM employee AS T1)", sql);
     }
 
 
     public void testNotIn() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notIn(employee.remote)).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notIn(employee.remote)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) NOT IN(SELECT T1.remote FROM employee AS T1)", sql);
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(true, false)).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().in(true, false)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IN(?, ?)", sql);
     }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notIn(true, false)).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notIn(true, false)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) NOT IN(?, ?)", sql);
     }
 
     public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().isNull()).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IS NULL", sql);
     }
 
     public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().isNotNull()).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick) IS NOT NULL", sql);
     }
 
     public void testAdd() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().add(person.id).show();
+        final String sql = person.name.eq(person.nickName).asValue().add(person.id).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) + T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testSub() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().sub(person.id).show();
+        final String sql = person.name.eq(person.nickName).asValue().sub(person.id).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) - T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().mult(person.id).show();
+        final String sql = person.name.eq(person.nickName).asValue().mult(person.id).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) * T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().div(person.id).show();
+        final String sql = person.name.eq(person.nickName).asValue().div(person.id).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) / T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testAddNumber() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().add(2).show();
+        final String sql = person.name.eq(person.nickName).asValue().add(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSubNumber() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().sub(2).show();
+        final String sql = person.name.eq(person.nickName).asValue().sub(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().mult(2).show();
+        final String sql = person.name.eq(person.nickName).asValue().mult(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().div(2).show();
+        final String sql = person.name.eq(person.nickName).asValue().div(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().concat(person.name).show();
+        final String sql = person.name.eq(person.nickName).asValue().concat(person.name).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) || T0.name AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().concat(" test").show();
+        final String sql = person.name.eq(person.nickName).asValue().concat(" test").show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testCollate() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().collate("latin1_general_ci").show();
+        final String sql = person.name.eq(person.nickName).asValue().collate("latin1_general_ci").show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().forReadOnly().show();
+        final String sql = person.name.eq(person.nickName).asValue().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().forUpdate().show();
+        final String sql = person.name.eq(person.nickName).asValue().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testOrderBy() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().orderBy(person.name).show();
+        final String sql = person.name.eq(person.nickName).asValue().orderBy(person.name).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
     public void testOrderAsc() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().orderAsc().show();
+        final String sql = person.name.eq(person.nickName).asValue().orderAsc().show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().orderDesc().show();
+        final String sql = person.name.eq(person.nickName).asValue().orderDesc().show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
     }
 
     public void testAsSortSpecification() throws Exception {
-        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue()).show();
+        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue()).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.name = T0.nick", sql);
     }
 
     public void testAsc() throws Exception {
-        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().asc()).show();
+        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().asc()).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.name = T0.nick ASC", sql);
     }
 
     public void testDesc() throws Exception {
-        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().desc()).show();
+        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.name = T0.nick DESC", sql);
     }
 
     public void testNullsFirst() throws Exception {
-        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().nullsFirst()).show();
+        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.name = T0.nick NULLS FIRST", sql);
     }
 
     public void testNullsLast() throws Exception {
-        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().nullsLast()).show();
+        final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue().nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.name = T0.nick NULLS LAST", sql);
     }
 
     public void testUnion() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().union(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().union(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 UNION SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().unionAll(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().unionAll(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 UNION ALL SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testUnionDistinct() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().unionDistinct(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().unionDistinct(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
 
     public void testExcept() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().except(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().except(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 EXCEPT SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().exceptAll(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().exceptAll(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testExceptDistinct() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().exceptDistinct(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().exceptDistinct(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testIntersect() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().intersect(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().intersect(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 INTERSECT SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().intersectAll(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().intersectAll(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testIntersectDistinct() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().intersectDistinct(employee.remote).show();
+        final String sql = person.name.eq(person.nickName).asValue().intersectDistinct(employee.remote).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.remote AS C0 FROM employee AS T1", sql);
     }
 
     public void testExists() throws Exception {
-        final String sql = employee.id.where(person.name.eq(employee.name).asValue().exists()).show();
+        final String sql = employee.id.where(person.name.eq(employee.name).asValue().exists()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.name = T0.name FROM person AS T1)", sql);
     }
 
     public void testContains() throws Exception {
-        final String sql = employee.id.where(person.name.eq(employee.name).asValue().contains(true)).show();
+        final String sql = employee.id.where(person.name.eq(employee.name).asValue().contains(true)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.name = T0.name FROM person AS T1)", sql);
     }
 
     public void testAsInArgument() throws Exception {
-        final String sql = employee.id.where(employee.remote.in(person.name.eq(employee.name).asValue())).show();
+        final String sql = employee.id.where(employee.remote.in(person.name.eq(employee.name).asValue())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.remote IN(SELECT T1.name = T0.name FROM person AS T1)", sql);
     }
 
     public void testAsInListArguments() throws Exception {
-        final String sql = person.id.where(person.married.in(true, false)).show();
+        final String sql = person.id.where(person.married.in(true, false)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.married IN(?, ?)", sql);
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = person.name.eq(employee.name).asValue().queryValue().where(person.name.eq("John")).show();
+        final String sql = person.name.eq(employee.name).asValue().queryValue().where(person.name.eq("John")).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T0.name = T1.name FROM employee AS T1) AS C0 FROM person AS T0 WHERE T0.name = ?", sql);
     }
 
     public void testWhenClause() throws Exception {
-        final String sql = person.name.isNotNull().then(person.name.eq("John").asValue()).show();
+        final String sql = person.name.isNotNull().then(person.name.eq("John").asValue()).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.name = ? END AS C0 FROM person AS T0", sql);
     }
 
     public void testElse() throws Exception {
-        final String sql = person.name.isNull().then(DynamicParameter.create(Mappers.BOOLEAN, false)).orElse(person.name.eq("John").asValue()).show();
+        final String sql = person.name.isNull().then(DynamicParameter.create(Mappers.BOOLEAN, false)).orElse(person.name.eq("John").asValue()).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.name IS NULL THEN ? ELSE T0.name = ? END AS C0 FROM person AS T0", sql);
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().like(DynamicParameter.create(Mappers.STRING, "true"))).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().like(DynamicParameter.create(Mappers.STRING, "true"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike(DynamicParameter.create(Mappers.STRING, "true"))).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike(DynamicParameter.create(Mappers.STRING, "true"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick NOT LIKE ?", sql);
     }
 
     public void testLikeString() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().like("true")).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().like("true")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick LIKE ?", sql);
     }
 
     public void testNotLikeString() throws Exception {
-        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike("true")).show();
+        final String sql = person.id.where(person.name.eq(person.nickName).asValue().notLike("true")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick NOT LIKE ?", sql);
     }
     
     public void testCount() throws Exception {
         final AbstractAggregateFunction<Integer> count = person.name.eq(person.nickName).asValue().count();
-        final String sql = count.show();
+        final String sql = count.show(new GenericDialect());
         assertSimilar("SELECT COUNT(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
 
     public void testCountDistinct() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().countDistinct().show();
+        final String sql = person.name.eq(person.nickName).asValue().countDistinct().show(new GenericDialect());
         assertSimilar("SELECT COUNT(DISTINCT T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
     
     public void testSum() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().sum().show();
+        final String sql = person.name.eq(person.nickName).asValue().sum().show(new GenericDialect());
         assertSimilar("SELECT SUM(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
     
     public void testAvg() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().avg().show();
+        final String sql = person.name.eq(person.nickName).asValue().avg().show(new GenericDialect());
         assertSimilar("SELECT AVG(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
     
     public void testMin() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().min().show();
+        final String sql = person.name.eq(person.nickName).asValue().min().show(new GenericDialect());
         assertSimilar("SELECT MIN(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
     
     public void testMax() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().max().show();
+        final String sql = person.name.eq(person.nickName).asValue().max().show(new GenericDialect());
         assertSimilar("SELECT MAX(T0.name = T0.nick) AS C1 FROM person AS T1", sql);
     }
     
@@ -437,13 +437,13 @@ public class ValueExpressionTest extends SqlTestCase {
     private static abstract class Scenario {
         public void play() throws Exception {
             final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
-            final String queryString = valueExpression.show();
+            final String queryString = valueExpression.show(new GenericDialect());
             final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);

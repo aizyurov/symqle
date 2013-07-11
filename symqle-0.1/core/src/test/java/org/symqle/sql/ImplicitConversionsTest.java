@@ -114,90 +114,90 @@ public class ImplicitConversionsTest extends TestCase {
         {
             final Column<Long> column
                     = person.id;
-            final String sql1 = column.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(column), person.id).show();
+            final String sql1 = column.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(column), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final DynamicParameter<Long> parameter
                     = DynamicParameter.create(Mappers.LONG, 1L);
-            final String sql1 = parameter.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(parameter), person.id).show();
+            final String sql1 = parameter.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(parameter), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractCastSpecification<Long> cast = person.id.cast("DECIMAL(6)");
-            final String sql1 = cast.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(cast), person.id).show();
+            final String sql1 = cast.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(cast), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractCharacterFactor<String> characterFactor = person.name.collate("latin1_general_ci");
-            final String sql1 = characterFactor.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(characterFactor), person.id).show();
+            final String sql1 = characterFactor.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(characterFactor), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractNumericExpression<Number> numericExpression = person.id.add(2);
-            final String sql1 = numericExpression.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(numericExpression), person.id).show();
+            final String sql1 = numericExpression.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(numericExpression), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractTerm<Number> term = person.id.mult(2);
-            final String sql1 = term.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(term), person.id).show();
+            final String sql1 = term.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(term), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
 
         }
         {
             final AbstractFactor<Long> factor = person.id.opposite();
-            final String sql1 = factor.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(factor), person.id).show();
+            final String sql1 = factor.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(factor), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
 
         }
         {
             final AbstractRoutineInvocation<Long> routineInvocation = SqlFunction.create("abs", Mappers.LONG).apply(person.id);
-            final String sql1 = routineInvocation.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(routineInvocation), person.id).show();
+            final String sql1 = routineInvocation.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(routineInvocation), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractSearchedWhenClause<String> whenClause = person.id.gt(20L).then(person.name);
-            final String sql1 = whenClause.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(whenClause), person.id).show();
+            final String sql1 = whenClause.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(whenClause), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList = person.id.gt(20L).then(person.name).orWhen(person.id.gt(1L).then(DynamicParameter.create(Mappers.STRING, "noname")));
-            final String sql1 = whenClauseBaseList.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(whenClauseBaseList), person.id).show();
+            final String sql1 = whenClauseBaseList.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(whenClauseBaseList), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractSearchedWhenClauseList<String> whenClauseList = person.id.gt(20L).then(person.name).orWhen(person.id.gt(1L).then(DynamicParameter.create(Mappers.STRING, "noname"))).orElse(person.name);
-            final String sql1 = whenClauseList.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(whenClauseList), person.id).show();
+            final String sql1 = whenClauseList.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(whenClauseList), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractStringExpression<String> stringExpression = person.name.concat("_abc");
-            final String sql1 = stringExpression.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(stringExpression), person.id).show();
+            final String sql1 = stringExpression.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(stringExpression), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final AbstractValueExpression<Boolean> valueExpression = person.id.eq(1L).asValue();
-            final String sql1 = valueExpression.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(valueExpression), person.id).show();
+            final String sql1 = valueExpression.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(valueExpression), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
         {
             final Person sample = new Person();
             final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = sample.id.queryValue();
-            final String sql1 = valueExpressionPrimary.orderBy(person.id).show();
-            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(valueExpressionPrimary), person.id).show();
+            final String sql1 = valueExpressionPrimary.orderBy(person.id).show(new GenericDialect());
+            final String sql2 = Symqle.orderBy(Symqle.z$QueryExpression$from$QueryBase(valueExpressionPrimary), person.id).show(new GenericDialect());
             assertEquals(sql1, sql2);
         }
     }

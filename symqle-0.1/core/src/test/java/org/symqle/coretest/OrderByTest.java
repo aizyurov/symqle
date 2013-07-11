@@ -2,6 +2,7 @@ package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
+import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
 /**
@@ -14,22 +15,22 @@ import org.symqle.sql.TableOrView;
 public class OrderByTest extends SqlTestCase {
 
     public void testOrderByAscNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.age.asc().nullsFirst()).show();
+        String sql = person.id.orderBy(person.age.asc().nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC NULLS FIRST", sql);
     }
 
     public void testOrderByAscNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.age.asc().nullsLast()).show();
+        String sql = person.id.orderBy(person.age.asc().nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC NULLS LAST", sql);
     }
 
     public void testOrderByMultiple() throws Exception {
-        String sql = person.id.orderBy(person.name.nullsFirst(), person.age.desc()).show();
+        String sql = person.id.orderBy(person.name.nullsFirst(), person.age.desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
     }
 
     public void testPairOrderByMultiple() throws Exception {
-        String sql = person.id.pair(person.name).orderBy(person.name.nullsFirst(), person.age.desc()).show();
+        String sql = person.id.pair(person.name).orderBy(person.name.nullsFirst(), person.age.desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
     }
 

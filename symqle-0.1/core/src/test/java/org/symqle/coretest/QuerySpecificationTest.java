@@ -27,95 +27,95 @@ public class QuerySpecificationTest extends SqlTestCase {
 
     public void testShow() throws Exception {
         final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.isNotNull());
-        final String sql = querySpecification.show();
+        final String sql = querySpecification.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
-        assertSimilar(sql, querySpecification.show(GenericDialect.get()));
+        assertSimilar(sql, querySpecification.show(new GenericDialect()));
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).queryValue().orderBy(person.name).show();
+        final String sql = employee.id.where(employee.name.isNotNull()).queryValue().orderBy(person.name).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testOrderAsc() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).orderAsc().show();
+        final String sql = person.id.where(person.name.isNotNull()).orderAsc().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS S0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY S0 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).orderDesc().show();
+        final String sql = person.id.where(person.name.isNotNull()).orderDesc().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS S0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY S0 DESC", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).forUpdate().show();
+        final String sql = person.id.where(person.name.isNotNull()).forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).forReadOnly().show();
+        final String sql = person.id.where(person.name.isNotNull()).forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL FOR READ ONLY", sql);
     }
 
     public void testUnion() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).union(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).union(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL UNION SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).unionAll(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).unionAll(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL UNION ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
     public void testUnionDistinct() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).unionDistinct(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).unionDistinct(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL UNION DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testExcept() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).except(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).except(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).exceptAll(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).exceptAll(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
     public void testExceptDistinct() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).exceptDistinct(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).exceptDistinct(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testIntersect() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).intersect(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).intersect(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL INTERSECT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).intersectAll(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).intersectAll(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL INTERSECT ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
     public void testIntersectDistinct() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).intersectDistinct(employee.id).show();
+        final String sql = person.id.where(person.name.isNotNull()).intersectDistinct(employee.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL INTERSECT DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testExists() throws Exception {
-        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).exists()).show();
+        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).exists()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
 
     }
 
     public void testContains() throws Exception {
-        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).contains(1L)).show();
+        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).contains(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
     }
 
@@ -161,9 +161,9 @@ public class QuerySpecificationTest extends SqlTestCase {
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.isNull());
-            final String queryString = querySpecification.show();
+            final String queryString = querySpecification.show(new GenericDialect());
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);

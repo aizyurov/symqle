@@ -86,10 +86,6 @@ import org.symqle.jdbc.Option;
         return result;
     }
 
-:: public String show(final SelectStatement<?> statement) {
-     return show(statement, GenericDialect.get());
-    }
-
 :: private Configuration getDebugConfiguration() {
     final UpdatableConfiguration configuration = new UpdatableConfiguration();
     configuration.setNoFromOk(true);

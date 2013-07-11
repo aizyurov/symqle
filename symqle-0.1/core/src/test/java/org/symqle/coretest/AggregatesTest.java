@@ -25,79 +25,79 @@ import static org.easymock.EasyMock.*;
 public class AggregatesTest extends SqlTestCase  {
 
     public void testShow() throws Exception {
-        final String show = person.id.count().show();
-        final String show2 = person.id.count().show(GenericDialect.get());
+        final String show = person.id.count().show(new GenericDialect());
+        final String show2 = person.id.count().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1", show);
         assertSimilar(show, show2);
     }
 
     public void testUnion() throws Exception {
-        final String show = person.id.count().union(person.parentId.count()).show();
+        final String show = person.id.count().union(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
 
     public void testUnionAll() throws Exception {
-        final String show = person.id.count().unionAll(person.parentId.count()).show();
+        final String show = person.id.count().unionAll(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION ALL SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
     public void testUnionDistinct() throws Exception {
-        final String show = person.id.count().unionDistinct(person.parentId.count()).show();
+        final String show = person.id.count().unionDistinct(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION DISTINCT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
 
     public void testExcept() throws Exception {
-        final String show = person.id.count().except(person.parentId.count()).show();
+        final String show = person.id.count().except(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 EXCEPT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
 
     public void testExceptAll() throws Exception {
-        final String show = person.id.count().exceptAll(person.parentId.count()).show();
+        final String show = person.id.count().exceptAll(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 EXCEPT ALL SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
 
     public void testExceptDistinct() throws Exception {
-        final String show = person.id.count().exceptDistinct(person.parentId.count()).show();
+        final String show = person.id.count().exceptDistinct(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 EXCEPT DISTINCT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
 
     public void testIntersect() throws Exception {
-        final String show = person.id.count().intersect(person.parentId.count()).show();
+        final String show = person.id.count().intersect(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 INTERSECT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
     }
 
     public void testIntersectAll() throws Exception {
-        final String show = person.id.count().intersectAll(person.parentId.count()).show();
+        final String show = person.id.count().intersectAll(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 INTERSECT ALL SELECT COUNT(T2.parent_id) AS C2 FROM person AS T2", show);
     }
 
     public void testIntersectDistinct() throws Exception {
         final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String show = count.intersectDistinct(person.parentId.count()).show();
+        final String show = count.intersectDistinct(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 INTERSECT DISTINCT SELECT COUNT(T2.parent_id) AS C2 FROM person AS T2", show);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.count().forUpdate().show();
+        final String sql = person.id.count().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.count().forReadOnly().show();
+        final String sql = person.id.count().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 FOR READ ONLY", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.id.count().where(person.name.isNull()).show();
+        final String sql = person.id.count().where(person.name.isNull()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 WHERE T1.name IS NULL", sql);
     }
 
     public void testOrderAsc() throws Exception {
-        final String sql = person.id.count().orderAsc().show();
+        final String sql = person.id.count().orderAsc().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 ORDER BY C1 ASC", sql);
     }
 
     public void testOrderDesc() throws Exception {
-        final String sql = person.id.count().orderDesc().show();
+        final String sql = person.id.count().orderDesc().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 ORDER BY C1 DESC", sql);
     }
 
@@ -105,28 +105,28 @@ public class AggregatesTest extends SqlTestCase  {
         // rather meaningless
         final Person parent = new Person();
         final Person child = new Person();
-        final String sql = parent.name.where(child.age.sum().exists()).show();
+        final String sql = parent.name.where(child.age.sum().exists()).show(new GenericDialect());
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE EXISTS(SELECT SUM(T2.age) FROM person AS T2)", sql);
     }
 
     public void testContains() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();
-        final String sql = parent.name.where(child.age.sum().contains(1)).show();
+        final String sql = parent.name.where(child.age.sum().contains(1)).show(new GenericDialect());
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE ? IN(SELECT SUM(T2.age) FROM person AS T2)", sql);
     }
 
     public void testIn() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();
-        final String sql = parent.name.where(DynamicParameter.create(Mappers.INTEGER, 1).in(child.id.count())).show();
+        final String sql = parent.name.where(DynamicParameter.create(Mappers.INTEGER, 1).in(child.id.count())).show(new GenericDialect());
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE ? IN(SELECT COUNT(T2.id) FROM person AS T2)", sql);
     }
 
     public void testQueryValue() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();
-        final String sql = parent.name.pair(child.id.count().queryValue()).show();
+        final String sql = parent.name.pair(child.id.count().queryValue()).show(new GenericDialect());
         assertSimilar("SELECT T1.name AS C1,(SELECT COUNT(T2.id) FROM person AS T2) AS C2 FROM person AS T1", sql);
     }
 
@@ -167,13 +167,13 @@ public class AggregatesTest extends SqlTestCase  {
     private static abstract class Scenario {
         public void play() throws Exception {
             final AbstractAggregateFunction<Integer> count = person.id.count();
-            final String queryString = count.show();
+            final String queryString = count.show(new GenericDialect());
             final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);

@@ -25,8 +25,8 @@ public class SelectStatementTest extends SqlTestCase {
 
     public void testShow() throws Exception {
         final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
-        final String sql = selectStatement.show();
-        final String sql2 = selectStatement.show(GenericDialect.get());
+        final String sql = selectStatement.show(new GenericDialect());
+        final String sql2 = selectStatement.show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 FOR UPDATE", sql);
         assertSimilar(sql, sql2);
     }
@@ -74,9 +74,9 @@ public class SelectStatementTest extends SqlTestCase {
             final PreparedStatement statement = createMock(PreparedStatement.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
-            final String queryString = selectStatement.show();
+            final String queryString = selectStatement.show(new GenericDialect());
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(queryString)).andReturn(statement);
             expect(statement.executeQuery()).andReturn(resultSet);

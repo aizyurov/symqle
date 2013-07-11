@@ -90,15 +90,6 @@ import static org.symqle.querybuilder.SqlTerm.*;
 */
 public class GenericDialect implements Dialect {
 
-    private static final Dialect instance = new GenericDialect();
-
-    protected GenericDialect() {
-    }
-
-    public static Dialect get() {
-         return instance;
-    }
-
     public String getName() {
         return "Generic";
     }

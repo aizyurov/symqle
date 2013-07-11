@@ -27,29 +27,29 @@ public class DeleteTest extends SqlTestCase {
 
     public void testDeleteAll() throws Exception {
         final AbstractDeleteStatementBase deleteStatementBase = person.delete();
-        final String sql = deleteStatementBase.show();
+        final String sql = deleteStatementBase.show(new GenericDialect());
         assertSimilar("DELETE FROM person", sql);
-        final String sql2 = deleteStatementBase.show(GenericDialect.get());
+        final String sql2 = deleteStatementBase.show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
     public void testWhere() throws Exception {
         final AbstractDeleteStatement deleteStatement = person.delete().where(person.id.eq(1L));
-        final String sql = deleteStatement.show();
+        final String sql = deleteStatement.show(new GenericDialect());
         assertSimilar("DELETE FROM person WHERE person.id = ?", sql);
-        assertSimilar(sql, deleteStatement.show(GenericDialect.get()));
+        assertSimilar(sql, deleteStatement.show(new GenericDialect()));
     }
 
     public void testSubqueryInWhere() throws Exception {
         final Person child = new Person();
-        final String sql = person.delete().where(child.id.where(child.parentId.eq(person.id)).exists()).show();
+        final String sql = person.delete().where(child.id.where(child.parentId.eq(person.id)).exists()).show(new GenericDialect());
         assertSimilar("DELETE FROM person WHERE EXISTS(SELECT T0.id FROM person AS T0 WHERE T0.parent_id = person.id)", sql);
     }
 
     public void testWrongCondition() throws Exception {
         final Person child = new Person();
         try {
-            final String sql = person.delete().where(child.name.eq("John")).show();
+            final String sql = person.delete().where(child.name.eq("John")).show(new GenericDialect());
             fail("MalformedStatementException expected, but was " + sql);
         } catch (MalformedStatementException e) {
             // fine
@@ -71,12 +71,12 @@ public class DeleteTest extends SqlTestCase {
 
         public void play() throws Exception {
             final AbstractDeleteStatementBase update = person.delete();
-            final String statementString = update.show();
+            final String statementString = update.show(new GenericDialect());
             final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(statementString)).andReturn(statement);
             expect(statement.executeUpdate()).andReturn(2);
@@ -105,12 +105,12 @@ public class DeleteTest extends SqlTestCase {
 
         public void play() throws Exception {
             final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
-            final String statementString = update.show();
+            final String statementString = update.show(new GenericDialect());
             final DatabaseGate gate = createMock(DatabaseGate.class);
             final Connection connection = createMock(Connection.class);
             final PreparedStatement statement = createMock(PreparedStatement.class);
             expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(GenericDialect.get());
+            expect(gate.getDialect()).andReturn(new GenericDialect());
             expect(gate.getConnection()).andReturn(connection);
             expect(connection.prepareStatement(statementString)).andReturn(statement);
             statement.setLong(1, 1L);

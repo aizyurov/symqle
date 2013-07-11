@@ -37,10 +37,6 @@ public interface DataChangeStatement : Sql {}
     return statement.z$sqlOfDataChangeStatement(context);
 }
 
-:: public String show(final DataChangeStatement statement) {
-    return show(statement, GenericDialect.get());
-}
-
 import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
      final UpdatableConfiguration configuration = new UpdatableConfiguration();
