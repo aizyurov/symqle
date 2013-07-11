@@ -262,7 +262,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testForceDialect() throws Exception {
         final DataSource datasource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
-        final DataSourceGate dataSourceGate = new DataSourceGate(datasource, GenericDialect.get());
+        final DataSourceGate dataSourceGate = new DataSourceGate(datasource, new GenericDialect());
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         expect(datasource.getConnection()).andReturn(connection);
@@ -309,7 +309,7 @@ public class DialectDataSourceTest extends TestCase {
     public void testForceDialectAndOptions() throws Exception {
             final DataSource datasource = createMock(DataSource.class);
             final Connection connection = createMock(Connection.class);
-            final DataSourceGate dataSourceGate = new DataSourceGate(datasource, GenericDialect.get(), Option.setQueryTimeout(100), Option.setFetchSize(10));
+            final DataSourceGate dataSourceGate = new DataSourceGate(datasource, new GenericDialect(), Option.setQueryTimeout(100), Option.setFetchSize(10));
             final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
             final ResultSet resultSet = createMock(ResultSet.class);
             expect(datasource.getConnection()).andReturn(connection);

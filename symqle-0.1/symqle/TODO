@@ -2,3 +2,4 @@
 (done) rename DialectDatasource -> DataSourceGate
 common functions
 database-specific functions
+decouple dialect mappings and DataSourceGate (via symqle-dialect.properties). Remove singletons -use no-arg constructor for dialects.

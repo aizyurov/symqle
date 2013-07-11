@@ -27,13 +27,13 @@ public class OptionTest extends TestCase {
     public void testOptions() throws Exception {
         Employee employee = new Employee();
         final AbstractCursorSpecification<String> cursorSpecification = employee.firstName.orderBy(employee.firstName);
-        final String queryString = cursorSpecification.show();
+        final String queryString = cursorSpecification.show(new GenericDialect());
         final DatabaseGate datasource = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         expect(datasource.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(datasource.getDialect()).andReturn(GenericDialect.get());
+        expect(datasource.getDialect()).andReturn(new GenericDialect());
         expect(datasource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchDirection(ResultSet.FETCH_FORWARD);

@@ -27,7 +27,7 @@ public class AbstractMapperTest extends TestCase {
     public void testSimpleMapperSql() {
         final Person person = new Person();
         final PersonSelector mapper = new PersonSelector(person);
-        final String queryString = mapper.show();
+        final String queryString = mapper.show(new GenericDialect());
         System.out.println(queryString);
         assertEquals("SELECT T1.id AS C1, T1.name AS C2 FROM person AS T1", queryString);
     }
@@ -35,7 +35,7 @@ public class AbstractMapperTest extends TestCase {
     public void testNoMappers() {
         final EmptyPersonSelector mapper = new EmptyPersonSelector();
         try {
-            final String sql = mapper.show();
+            final String sql = mapper.show(new GenericDialect());
             fail("IllegalStateException expected but returned: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("No mappings defined", e.getMessage());
@@ -45,13 +45,13 @@ public class AbstractMapperTest extends TestCase {
     public void testMapFromCreate() throws Exception {
         final Person person = new Person();
         final MapCallFromCreateSelector mapper = new MapCallFromCreateSelector(person);
-        final String queryString = mapper.show();
+        final String queryString = mapper.show(new GenericDialect());
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -78,13 +78,13 @@ public class AbstractMapperTest extends TestCase {
     public void testSimpleMapper() throws Exception {
         final Person person = new Person();
         final PersonSelector mapper = new PersonSelector(person);
-        final String queryString = mapper.show();
+        final String queryString = mapper.show(new GenericDialect());
         final DatabaseGate gate = createMock(DatabaseGate.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
         expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(GenericDialect.get());
+        expect(gate.getDialect()).andReturn(new GenericDialect());
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);

@@ -26,7 +26,6 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
 
     public void testMod() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
-        System.out.println(mod(arithmetics.leftInt(), arithmetics.rightInt()).show());
         final List<Number> list = mod(arithmetics.leftInt(), arithmetics.rightInt()).list(getDatabaseGate());
         assertEquals(1, list.size());
         assertEquals(1, list.get(0).intValue());

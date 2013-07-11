@@ -69,7 +69,7 @@ public abstract class AbstractAdaptiveDatabaseGate implements DatabaseGate {
                 return dialect;
             }
         }
-        return GenericDialect.get();
+        return new GenericDialect();
     }
 
     private ConnectionCallback findConnectionCallback() throws SQLException {
@@ -85,8 +85,8 @@ public abstract class AbstractAdaptiveDatabaseGate implements DatabaseGate {
     public abstract List<Option> getOptions();
 
     public final Dialect[] knownDialects = {
-            DerbyDialect.get(),
-            MySqlDialect.get()
+            new DerbyDialect(),
+            new MySqlDialect()
     };
 
     private ConnectionCallbackFactory[] knownConnectionCallbackFactories = {

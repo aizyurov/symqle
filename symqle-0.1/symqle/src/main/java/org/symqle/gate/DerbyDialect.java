@@ -2,7 +2,6 @@ package org.symqle.gate;
 
 import org.symqle.common.Sql;
 import org.symqle.querybuilder.SqlTerm;
-import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 
 /**
@@ -10,18 +9,9 @@ import org.symqle.sql.GenericDialect;
  */
 public class DerbyDialect extends GenericDialect {
 
-    private DerbyDialect() {
-    }
-
     @Override
     public String getName() {
         return "Apache Derby";
-    }
-
-    private static Dialect instance = new DerbyDialect();
-
-    public static Dialect get() {
-        return instance;
     }
 
     @Override

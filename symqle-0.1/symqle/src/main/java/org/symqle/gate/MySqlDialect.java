@@ -2,22 +2,12 @@ package org.symqle.gate;
 
 import org.symqle.common.Sql;
 import org.symqle.querybuilder.SqlTerm;
-import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 
 /**
  * @author lvovich
  */
 public class MySqlDialect extends GenericDialect {
-
-    private final static Dialect instance = new MySqlDialect();
-
-    private MySqlDialect() {
-    }
-
-    public static Dialect get() {
-        return instance;
-    }
 
     @Override
     public String getName() {

@@ -441,7 +441,6 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testOrderByArgument() throws Exception {
         try {
             final Employee employee = new Employee();
-            System.out.println(employee.firstName.orderBy(createVE(employee), employee.firstName).show());
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
@@ -458,7 +457,6 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsFirst() throws Exception {
         try {
             final Employee employee = new Employee();
-            System.out.println(employee.firstName.orderBy(createVE(employee).nullsFirst(), employee.firstName).show());
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
@@ -475,7 +473,6 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsLast() throws Exception {
         try {
             final Employee employee = new Employee();
-            System.out.println(employee.firstName.orderBy(createVE(employee).nullsLast(), employee.firstName).show());
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
@@ -739,7 +736,6 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testCount() throws Exception {
         try {
             final Employee employee = new Employee();
-            System.out.println(createVE(employee).count().show());
             final List<Integer> list = createVE(employee).count().list(getDatabaseGate());
             assertEquals(Arrays.asList(5), list);
         } catch (SQLException e) {
