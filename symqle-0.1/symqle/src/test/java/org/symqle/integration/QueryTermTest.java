@@ -4,6 +4,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractQueryTerm;
+import org.symqle.sql.GenericDialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -169,7 +170,8 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testExists() throws Exception {
-        if (notApplicable) {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (notApplicable  || getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
             return;
         }
         final Employee employee = new Employee();
@@ -180,7 +182,8 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testContains() throws Exception {
-        if (notApplicable) {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (notApplicable  || getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
             return;
         }
         final Employee employee = new Employee();
@@ -203,7 +206,8 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryValue() throws Exception {
-        if (notApplicable) {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (notApplicable  || getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
             return;
         }
         final Employee employee = new Employee();

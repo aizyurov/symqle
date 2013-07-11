@@ -7,7 +7,6 @@ import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
 import org.symqle.jdbc.Option;
-import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractValueExpressionPrimary;
 import org.symqle.sql.GenericDialect;
 
@@ -21,7 +20,6 @@ import java.util.List;
  */
 public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
-
     /**
      * Returns the alphabetically first last name of employees of this department
      * @param department
@@ -33,6 +31,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testList() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.list(getDatabaseGate(), Option.allowNoTables(true));
@@ -40,6 +42,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testOrderAsc() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.orderAsc().list(getDatabaseGate(), Option.allowNoTables(true));
@@ -47,6 +53,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testOrderDesc() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.orderDesc().list(getDatabaseGate(), Option.allowNoTables(true));
@@ -54,6 +64,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testCast() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.cast("CHAR(1)").list(getDatabaseGate(), Option.allowNoTables(true));
@@ -61,6 +75,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testMap() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final One one = new One();
         final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();
         final List<String> list = primary.list(getDatabaseGate(), Option.allowNoTables(true));
@@ -68,6 +86,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testAll() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.all().list(getDatabaseGate(), Option.allowNoTables(true));
@@ -75,6 +97,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testDistinct() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.distinct().list(getDatabaseGate(), Option.allowNoTables(true));
@@ -569,6 +595,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testExists() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final Department department = new Department();
         final List<String> list = department.deptName.where(creatPrimary(department).exists())
                 .orderBy(department.deptName)
@@ -577,6 +607,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testContains() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         final Department department = new Department();
         final List<String> list = department.deptName.where(creatPrimary(department).contains("March"))
                 .orderBy(department.deptName)
@@ -585,6 +619,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testForUpdate() throws Exception {
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
+        }
         try {
             final One one = new One();
             final List<Integer> list = one.id.queryValue().forUpdate().list(getDatabaseGate(), Option.allowNoTables(true));
@@ -596,29 +634,23 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testForReadOnly() throws Exception {
-        try {
-            final One one = new One();
-            final List<Integer> list = one.id.queryValue().forReadOnly().list(getDatabaseGate(), Option.allowNoTables(true));
-            assertEquals(Arrays.asList(1), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
         }
+        final One one = new One();
+        final List<Integer> list = one.id.queryValue().forReadOnly().list(getDatabaseGate(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList(1), list);
     }
 
     public void testQueryValue() throws Exception {
-        try {
-            final One one = new One();
-            final List<Integer> list = one.id.queryValue().queryValue().list(getDatabaseGate(), Option.allowNoTables(true));
-            assertEquals(Arrays.asList(1), list);
-        } catch (IllegalStateException e) {
-            expectIllegalStateException(e, GenericDialect.class);
+        // GenericDialect does not support Option.allowNoTables(true)
+        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            return;
         }
+        final One one = new One();
+        final List<Integer> list = one.id.queryValue().queryValue().list(getDatabaseGate(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList(1), list);
     }
 
 

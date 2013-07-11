@@ -50,7 +50,7 @@ public abstract class AbstractAdaptiveDatabaseGate implements DatabaseGate {
         return dialect;
     }
 
-    private String getDatabaseName() throws SQLException {
+    public String getDatabaseName() throws SQLException {
         if (databaseName == null) {
             final Connection connection = connect();
             try {
