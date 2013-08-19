@@ -70,7 +70,7 @@ public class CharacterFactorTest extends SqlTestCase {
     }
 
     public void testAll() throws Exception {
-        final String sql = characterFactor.all().show(new GenericDialect());
+        final String sql = characterFactor.selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
     }
 

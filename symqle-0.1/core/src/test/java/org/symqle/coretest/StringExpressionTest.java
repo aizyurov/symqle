@@ -48,7 +48,7 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testSelectAll() throws Exception {
-        final String sql = numberSign.concat(person.id).all().show(new GenericDialect());
+        final String sql = numberSign.concat(person.id).selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL ? || T0.id AS C0 FROM person AS T0", sql);
     }
 

@@ -53,7 +53,7 @@ public class CastSpecificationTest extends SqlTestCase {
 
     public void testSelectAll() throws Exception {
         final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
-        assertSimilar("SELECT ALL CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.all().show(new GenericDialect()));
+        assertSimilar("SELECT ALL CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.selectAll().show(new GenericDialect()));
 
     }
 

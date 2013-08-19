@@ -13,12 +13,12 @@ import org.symqle.sql.TableOrView;
 public class SelectSublistTest extends SqlTestCase {
 
     public void testAll() throws Exception {
-        String sql = person.id.all().show(new GenericDialect());
+        String sql = person.id.selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testAllOrderAsc() throws Exception {
-        String sql = person.id.all().orderAsc().show(new GenericDialect());
+        String sql = person.id.selectAll().orderAsc().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
@@ -38,12 +38,12 @@ public class SelectSublistTest extends SqlTestCase {
     }
 
     public void testIn() throws Exception {
-        final String sql = person.id.where(employee.id.queryValue().in(manager.id.all())).show(new GenericDialect());
+        final String sql = person.id.where(employee.id.queryValue().in(manager.id.selectAll())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IN(SELECT ALL T2.id FROM manager AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        final String sql = person.id.where(employee.id.queryValue().notIn(manager.id.all())).show(new GenericDialect());
+        final String sql = person.id.where(employee.id.queryValue().notIn(manager.id.selectAll())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) NOT IN(SELECT ALL T2.id FROM manager AS T2)", sql);
     }
 

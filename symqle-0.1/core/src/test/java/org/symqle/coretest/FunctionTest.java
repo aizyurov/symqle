@@ -42,7 +42,7 @@ public class FunctionTest extends SqlTestCase {
 
     public void testSelectAll() throws Exception {
         final Column<Long> col = person.id;
-        assertSimilar("SELECT ALL abs(T0.id) AS C0 FROM person AS T0", abs(col).all().show(new GenericDialect()));
+        assertSimilar("SELECT ALL abs(T0.id) AS C0 FROM person AS T0", abs(col).selectAll().show(new GenericDialect()));
 
     }
 
@@ -150,7 +150,7 @@ public class FunctionTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
         final Column<Long> id2 = employee.id;
-        String sql = id.where(abs(id).in(id2.all())).show(new GenericDialect());
+        String sql = id.where(abs(id).in(id2.selectAll())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) IN(SELECT ALL T1.id FROM employee AS T1)", sql);
     }
 
@@ -174,7 +174,7 @@ public class FunctionTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
         final Column<Long> id2 = employee.id;
-        String sql = id.where(abs(id).notIn(id2.all())).show(new GenericDialect());
+        String sql = id.where(abs(id).notIn(id2.selectAll())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) NOT IN(SELECT ALL T1.id FROM employee AS T1)", sql);
     }
 

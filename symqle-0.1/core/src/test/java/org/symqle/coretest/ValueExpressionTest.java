@@ -38,7 +38,7 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testAll() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().all().show(new GenericDialect());
+        final String sql = person.name.eq(person.nickName).asValue().selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.name = T0.nick AS C0 FROM person AS T0", sql);
     }
 

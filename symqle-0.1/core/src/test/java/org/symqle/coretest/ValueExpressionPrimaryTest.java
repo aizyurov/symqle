@@ -52,7 +52,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
     public void testAll() throws Exception {
-        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().all().orderBy(employee.name).show(new GenericDialect());
+        final String sql = person.id.where(person.name.eq(employee.name)).queryValue().selectAll().orderBy(employee.name).show(new GenericDialect());
         assertSimilar("SELECT ALL(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
     }
 

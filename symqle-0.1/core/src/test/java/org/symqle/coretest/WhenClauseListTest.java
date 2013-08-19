@@ -39,7 +39,7 @@ public class WhenClauseListTest extends SqlTestCase {
     }
 
     public void testSelectAll() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).all().show(new GenericDialect());
+        final String sql = person.age.gt(20L).then(person.name).orElse(person.nick).selectAll().show(new GenericDialect());
 
         assertSimilar("SELECT ALL CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0", sql);
     }

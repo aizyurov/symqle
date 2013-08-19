@@ -50,9 +50,9 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testAll() throws Exception {
-        final String sql = person.id.pair(person.name).all().show(new GenericDialect());
+        final String sql = person.id.pair(person.name).selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
-        final String sql2 = person.id.pair(person.name).all().show(new GenericDialect());
+        final String sql2 = person.id.pair(person.name).selectAll().show(new GenericDialect());
         assertSimilar(sql, sql2);
 
     }

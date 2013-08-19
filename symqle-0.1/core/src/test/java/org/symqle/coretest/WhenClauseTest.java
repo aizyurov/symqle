@@ -64,7 +64,7 @@ public class WhenClauseTest extends SqlTestCase {
 
 
     public void testSelectAll() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).all().show(new GenericDialect());
+        final String sql = person.age.gt(20L).then(person.name).selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0", sql);
     }
 

@@ -57,14 +57,14 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testSelectAll() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.all().where(id.eq(param)).show(new GenericDialect());
+        final String sql = param.selectAll().where(id.eq(param)).show(new GenericDialect());
         assertSimilar("SELECT ALL ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 
     public void testMap() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.map(Mappers.INTEGER).all().where(id.eq(param)).show(new GenericDialect());
+        final String sql = param.map(Mappers.INTEGER).selectAll().where(id.eq(param)).show(new GenericDialect());
         assertSimilar("SELECT ALL ? AS C1 FROM person AS T1 WHERE T1.id = ?", sql);
     }
 

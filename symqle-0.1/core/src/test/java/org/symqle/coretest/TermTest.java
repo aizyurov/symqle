@@ -49,7 +49,7 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testSelectAll() throws Exception {
-        final String sql = person.id.mult(two).all().show(new GenericDialect());
+        final String sql = person.id.mult(two).selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id * ? AS C0 FROM person AS T0", sql);
     }
 

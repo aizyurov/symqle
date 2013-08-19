@@ -12,7 +12,7 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
     SELECT sl:SelectList<T> fc:FromClause :: protected QueryBase<T> from {}
 |
     SELECT ALL sl:SelectList<T> fc:FromClause ::
-         protected AbstractQueryBase<T> all {
+         protected AbstractQueryBase<T> selectAll {
          }
 |
     SELECT DISTINCT sl:SelectList<T> fc:FromClause ::
@@ -27,8 +27,8 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
 }
 
 # public methods for construction of AbstractQueryBase
-:: public <T> AbstractQueryBase<T> all(final SelectList<T> sl) {
-    return all(sl, new ImplicitFromClause());
+:: public <T> AbstractQueryBase<T> selectAll(final SelectList<T> sl) {
+    return selectAll(sl, new ImplicitFromClause());
 }
 
 :: public <T> AbstractQueryBase<T> distinct(final SelectList<T> sl) {
@@ -48,7 +48,7 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     SELECT sl:SelectSublist<T> fc:FromClause :: protected QueryBaseScalar<T> from {}
 |
     SELECT ALL sl:SelectSublist<T> fc:FromClause ::
-         protected AbstractQueryBaseScalar<T> all {}
+         protected AbstractQueryBaseScalar<T> selectAll {}
 |
     SELECT DISTINCT sl:SelectSublist<T> fc:FromClause ::
          protected AbstractQueryBaseScalar<T> distinct {}
@@ -60,8 +60,8 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 }
 
 # public methods for construction of AbstractQueryBaseScalar
-:: public <T> AbstractQueryBaseScalar<T> all(final SelectSublist<T> sl) {
-    return all(sl, new ImplicitFromClause());
+:: public <T> AbstractQueryBaseScalar<T> selectAll(final SelectSublist<T> sl) {
+    return selectAll(sl, new ImplicitFromClause());
 }
 
 :: public <T> AbstractQueryBaseScalar<T> distinct(final SelectSublist<T> sl) {
