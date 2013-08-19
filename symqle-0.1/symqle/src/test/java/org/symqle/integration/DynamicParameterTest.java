@@ -79,7 +79,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testSelectAll() throws Exception {
         try {
-            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).all().list(getDatabaseGate(), Option.allowNoTables(true));
+            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).selectAll().list(getDatabaseGate(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
@@ -92,7 +92,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testSelectDistinct() throws Exception {
         try {
-            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).all().list(getDatabaseGate(), Option.allowNoTables(true));
+            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).selectAll().list(getDatabaseGate(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.

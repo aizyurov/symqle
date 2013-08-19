@@ -1,15 +1,9 @@
 package org.symqle.generic;
 
-import org.symqle.common.CompositeSql;
-import org.symqle.common.Mapper;
 import org.symqle.common.Mappers;
-import org.symqle.common.Sql;
-import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.AbstractRoutineInvocation;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.SqlFunction;
-import org.symqle.sql.StringExpression;
 import org.symqle.sql.ValueExpression;
 
 /**
@@ -70,27 +64,5 @@ public class Functions {
             final ValueExpression<?> base, final Number exponent) {
         return power(base, DynamicParameter.create(Mappers.NUMBER, exponent));
     }
-
-    public static AbstractRoutineInvocation<Integer> position(final StringExpression<?> pattern, final StringExpression<?> string) {
-        return new AbstractRoutineInvocation() {
-            @Override
-            public Mapper getMapper() {
-                return Mappers.INTEGER;
-            }
-
-            @Override
-            public Sql z$sqlOfRoutineInvocation(final SqlContext context) {
-                return new CompositeSql(SqlTerm.POSITION, SqlTerm.LEFT_PAREN, pattern.z$sqlOfStringExpression(context),
-                        SqlTerm.IN, string.z$sqlOfStringExpression(context), SqlTerm.RIGHT_PAREN);
-            }
-        };
-    }
-
-    public static AbstractRoutineInvocation<Integer> position(final String pattern, final StringExpression<?> string) {
-        return position(Params.p(pattern), string);
-    }
-
-
-
 
 }

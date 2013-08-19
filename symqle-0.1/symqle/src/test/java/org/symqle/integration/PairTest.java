@@ -52,7 +52,7 @@ public class PairTest extends AbstractIntegrationTestBase {
 
     public void testSelectAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).all().list(getDatabaseGate());
+        final List<Pair<Double, String>> list = makePair(employee).selectAll().list(getDatabaseGate());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains(Pair.make(1500.0, "James")));
         assertTrue(list.toString(), list.contains(Pair.make(3000.0, "Margaret")));

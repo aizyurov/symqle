@@ -53,6 +53,8 @@ public class FunctionsTest extends TestCase {
     }
 
 
+
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");

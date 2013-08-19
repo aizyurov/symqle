@@ -30,7 +30,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).all().list(getDatabaseGate());
+        final List<Double> list = createCast(employee).selectAll().list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }

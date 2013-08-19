@@ -131,7 +131,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
     public void testAll() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseList(employee)
-                .all()
+                .selectAll()
                 .list(getDatabaseGate());
 
         assertEquals(Arrays.asList("Alex", "Bill", "high", "high", "low"), replaceNullsAndSort(list));

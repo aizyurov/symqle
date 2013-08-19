@@ -110,7 +110,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSelectAll() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.all().list(getDatabaseGate());
+        final List<String> list = employee.lastName.selectAll().list(getDatabaseGate());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains("Cooper"));
         assertTrue(list.toString(), list.contains("Redwood"));

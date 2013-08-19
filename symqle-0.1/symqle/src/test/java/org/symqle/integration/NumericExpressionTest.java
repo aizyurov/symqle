@@ -49,7 +49,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createExpression(employee).all().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createExpression(employee).selectAll().list(getDatabaseGate()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }

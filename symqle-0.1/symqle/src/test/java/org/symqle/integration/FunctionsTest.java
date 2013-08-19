@@ -92,8 +92,4 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testPosition() throws Exception {
-
-    }
-
 }

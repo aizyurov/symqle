@@ -92,7 +92,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.all().list(getDatabaseGate(), Option.allowNoTables(true));
+        final List<String> list = primary.selectAll().list(getDatabaseGate(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("X"), list);
     }
 

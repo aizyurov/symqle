@@ -76,7 +76,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).all().list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).selectAll().list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }

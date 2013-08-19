@@ -59,7 +59,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
     public void testAll() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = stringExpression(employee)
-                .all().orderBy(employee.firstName)
+                .selectAll().orderBy(employee.firstName)
                 .list(getDatabaseGate());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
