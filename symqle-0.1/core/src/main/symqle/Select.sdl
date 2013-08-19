@@ -71,7 +71,17 @@ public <T> int scroll(final SelectStatement<T> statement,
 import java.sql.SQLException;
 import java.util.List;
 import org.symqle.jdbc.Option;
-:: public <T> List<T> list(final SelectStatement<T> statement,
+::
+    /**
+     * Executes a statement and returns the list of objects of type T.
+     * @param statement provides the query and mapper.
+     * @param gate provides connection to DB
+     * @param options will be applied to java.sql.Statement
+     * @param <T> the type of objects to create from result set rows
+     * @return the list of objects
+     * @throws SQLException from the underlying jdbc driver
+     */
+public <T> List<T> list(final SelectStatement<T> statement,
                           final DatabaseGate gate,
                           final Option... options
                         ) throws SQLException {
@@ -93,7 +103,15 @@ import org.symqle.jdbc.Option;
     return configuration;
 }
 
-:: public String show(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
+::
+    /**
+     * Formats a string, which would be passed to prepareStatement method by list() and scroll() methods.
+      * @param statement provides the query source in the form of {@link SelectStatement}
+     * @param dialect the dialect to use
+     * @param options options to use
+     * @return the query string
+     */
+public String show(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
      final UpdatableConfiguration configuration = new UpdatableConfiguration();
      for (Option option : options) {
          option.apply(configuration);
