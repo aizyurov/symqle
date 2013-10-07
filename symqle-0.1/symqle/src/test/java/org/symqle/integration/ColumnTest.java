@@ -3,6 +3,7 @@ package org.symqle.integration;
 import junit.framework.AssertionFailedError;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.generic.Functions;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
@@ -10,7 +11,6 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.jdbc.Option;
-import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.Dialect;
 
@@ -617,6 +617,24 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
         final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
         assertEquals(Arrays.asList("MargaretRedwood"), list);
+    }
+
+    public void testSubstring() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.substring(4).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        assertEquals(Arrays.asList("garet"), list);
+    }
+
+    public void testSubstring2() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.substring(4, 3).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        assertEquals(Arrays.asList("gar"), list);
+    }
+
+    public void testPosition() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.firstName.positionOf("gar").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        assertEquals(Arrays.asList(4), list);
     }
 
     public void testConcatString() throws Exception {
