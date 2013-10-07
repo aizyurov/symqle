@@ -251,6 +251,40 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT(T0.id * ?) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testSubstring() throws Exception {
+        String sql = person.id.mult(two).substring(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.id * ?) FROM T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        String sql = person.id.mult(two).substring(person.id, person.id.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.id * ?) FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        String sql = person.id.mult(two).substring(2).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.id * ?) FROM ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        String sql = person.id.mult(two).substring(2,5).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.id * ?) FROM ? FOR ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPosition() throws Exception {
+        String sql = person.id.mult(two).positionOf(person.id).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T0.id IN(T0.id * ?)) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPositionParam() throws Exception {
+        String sql = person.id.mult(two).positionOf("1").show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN(T0.id * ?)) AS C0 FROM person AS T0", sql);
+    }
+
+
+
+
+
     public void testCollate() throws Exception {
         String sql = person.id.mult(two).collate("latin1_general_ci").show(new GenericDialect());
         assertSimilar("SELECT(T0.id * ?) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);

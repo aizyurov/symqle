@@ -221,6 +221,39 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci || T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
     }
 
+    public void testSubstring() throws Exception {
+        final String sql = characterFactor.substring(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T1.name COLLATE latin1_general_ci FROM T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        final String sql = characterFactor.substring(2).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T1.name COLLATE latin1_general_ci FROM ?) AS C1 FROM person AS T1", sql);
+    }
+
+
+    public void testSubstring2() throws Exception {
+        final String sql = characterFactor.substring(person.id, person.id.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T1.name COLLATE latin1_general_ci FROM T1.id FOR T1.id / ?) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        final String sql = characterFactor.substring(2, 5).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T1.name COLLATE latin1_general_ci FROM ? FOR ?) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testPosition() throws Exception {
+        final String sql = characterFactor.positionOf(person.name).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T1.name IN T1.name COLLATE latin1_general_ci) AS C1 FROM person AS T1", sql);
+
+    }
+
+    public void testPositionParam() throws Exception {
+        final String sql = characterFactor.positionOf("A").show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN T1.name COLLATE latin1_general_ci) AS C1 FROM person AS T1", sql);
+
+    }
+
     public void testConcatString() throws Exception {
         final String sql = characterFactor.concat("abc").show(new GenericDialect());
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci || ? AS C1 FROM person AS T1", sql);

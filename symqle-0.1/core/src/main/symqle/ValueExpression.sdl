@@ -75,6 +75,32 @@ StringExpression<String> ::=
         }
 ;
 
+# SUBSTRING <left paren> <character value expression> FROM <start position> [ FOR <string length> ] [ USING <char length units> ] <right paren>
+
+StringExpression<String> ::=
+    SUBSTRING LEFT_PAREN s:StringExpression<?> FROM start:NumericExpression<?> RIGHT_PAREN
+        :: public AbstractStringExpression<String> substring {
+                public Mapper<String> getMapper() {
+                    return Mappers.STRING;
+                }
+        }
+|
+    SUBSTRING LEFT_PAREN s:StringExpression<?> FROM start:NumericExpression<?> FOR len:NumericExpression<?> RIGHT_PAREN
+        :: public AbstractStringExpression<String> substring {
+                public Mapper<String> getMapper() {
+                    return Mappers.STRING;
+                }
+        }
+;
+
+:: public AbstractStringExpression<String> substring(StringExpression<?> source, int start) {
+    return substring(source, DynamicParameter.create(Mappers.INTEGER, start));
+}
+
+:: public AbstractStringExpression<String> substring(StringExpression<?> source, int start, int len) {
+    return substring(source, DynamicParameter.create(Mappers.INTEGER, start), DynamicParameter.create(Mappers.INTEGER, len));
+}
+
 :: public AbstractStringExpression<String> concat(final StringExpression<?> e, final String s) {
     return concat(e,  DynamicParameter.create(Mappers.STRING, s));
 }
@@ -99,4 +125,23 @@ public interface CollationName : Sql {}
          }
      });
 }
+
+# POSITION <left paren> <string value expression> IN <string value expression> [ USING <char length units> ] <right paren>
+
+NumericExpression<Integer> ::= POSITION  LEFT_PAREN pattern:StringExpression<?> IN source:StringExpression<?> RIGHT_PAREN
+    :: private AbstractNumericExpression<Integer> pos {
+                public Mapper<Integer> getMapper() {
+                    return Mappers.INTEGER;
+                }
+    }
+;
+
+:: public AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, StringExpression<?> pattern) {
+    return pos(pattern, source);
+}
+
+:: public AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, String pattern) {
+    return pos(DynamicParameter.create(Mappers.STRING, pattern), source);
+}
+
 

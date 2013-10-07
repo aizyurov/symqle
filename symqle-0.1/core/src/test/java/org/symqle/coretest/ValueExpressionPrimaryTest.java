@@ -175,6 +175,36 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) || T1.id AS C0 FROM employee AS T1", sql);
     }
 
+    public void testSubstring() throws Exception {
+        final String sql = person.name.where(person.name.eq(employee.name)).queryValue().substring(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((SELECT T0.name FROM person AS T0 WHERE T0.name = T1.name) FROM T1.id) AS C0 FROM employee AS T1", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        final String sql = person.name.where(person.name.eq(employee.name)).queryValue().substring(employee.id, employee.id.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((SELECT T0.name FROM person AS T0 WHERE T0.name = T1.name) FROM T1.id FOR T1.id / ?) AS C0 FROM employee AS T1", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        final String sql = person.name.where(person.name.eq(employee.name)).queryValue().substring(2).pair(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((SELECT T0.name FROM person AS T0 WHERE T0.name = T1.name) FROM ?) AS C0, T1.id AS C1 FROM employee AS T1", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        final String sql = person.name.where(person.name.eq(employee.name)).queryValue().substring(2, 5).pair(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((SELECT T0.name FROM person AS T0 WHERE T0.name = T1.name) FROM ? FOR ?) AS C0, T1.id AS C1 FROM employee AS T1", sql);
+    }
+
+    public void testPosition() throws Exception {
+        final String sql = person.name.where(person.name.eq(employee.name)).queryValue().positionOf(employee.name).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T1.name IN(SELECT T0.name FROM person AS T0 WHERE T0.name = T1.name)) AS C0 FROM employee AS T1", sql);
+    }
+
+    public void testPositionParam() throws Exception {
+        final String sql = person.name.where(person.name.eq(employee.name)).queryValue().positionOf("e").pair(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN(SELECT T0.name FROM person AS T0 WHERE T0.name = T1.name)) AS C0, T1.id AS C1 FROM employee AS T1", sql);
+    }
+
     public void testCast() throws Exception {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().cast("CHAR(10)").orderBy(employee.id).show(new GenericDialect());
         assertSimilar("SELECT CAST((SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS CHAR(10)) AS C0 FROM employee AS T1 ORDER BY T1.id", sql);

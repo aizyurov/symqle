@@ -396,6 +396,36 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testSubstring() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.STRING, "abcd").substring(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(? FROM T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.STRING, "abcd").substring(person.id, person.id.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(? FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.STRING, "abcd").substring(2).pair(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(? FROM ?) AS C0, T0.id AS C1 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.STRING, "abcd").substring(2, 5).pair(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(? FROM ? FOR ?) AS C0, T0.id AS C1 FROM person AS T0", sql);
+    }
+
+    public void testPosition() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.STRING, "abcd").positionOf(person.name).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T0.name IN ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPositionParam() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.STRING, "abcd").positionOf("bc").pair(person.id).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN ?) AS C0, T0.id AS C1 FROM person AS T0", sql);
+    }
+
     public void testCollate() throws Exception {
         final DynamicParameter<String> param = DynamicParameter.create(Mappers.STRING, "abc ");
         final String sql = param.collate("latin1_general_ci").concat(person.name).show(new GenericDialect());

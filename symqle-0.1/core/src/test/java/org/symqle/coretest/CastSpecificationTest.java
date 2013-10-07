@@ -440,6 +440,44 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT CAST(T0.id AS CHAR(12)) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testSubstring() throws Exception {
+        final Column<Long> id  =  person.id;
+        final Column<Long> age = person.age;
+        String sql = id.cast("CHAR(12)").substring(age).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(CAST(T0.id AS CHAR(12)) FROM T0.age) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = id.cast("CHAR(12)").substring(3).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(CAST(T0.id AS CHAR(12)) FROM ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        final Column<Long> id  =  person.id;
+        final Column<Long> age = person.age;
+        String sql = id.cast("CHAR(12)").substring(age, age.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(CAST(T0.id AS CHAR(12)) FROM T0.age FOR T0.age / ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = id.cast("CHAR(12)").substring(2, 5).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(CAST(T0.id AS CHAR(12)) FROM ? FOR ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPosition() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = id.cast("CHAR(12)").positionOf(person.age).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T0.age IN CAST(T0.id AS CHAR(12))) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPositionParam() throws Exception {
+        final Column<Long> id  =  person.id;
+        String sql = id.cast("CHAR(12)").positionOf("12").show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN CAST(T0.id AS CHAR(12))) AS C0 FROM person AS T0", sql);
+    }
+
     public void testCount() throws Exception {
         final String sql = person.id.cast("NUMBER(12,0)").count().show(new GenericDialect());
         assertSimilar("SELECT COUNT(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);

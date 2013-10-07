@@ -339,6 +339,39 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) || T0.age AS C0 FROM person AS T0", sql);
     }
 
+    public void testSubstring() throws Exception {
+        String sql = abs(person.id).substring(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(abs(T0.id) FROM T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        String sql = abs(person.id).substring(person.id, person.id.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(abs(T0.id) FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        String sql = abs(person.id).substring(2).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(abs(T0.id) FROM ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        String sql = abs(person.id).substring(2,5).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(abs(T0.id) FROM ? FOR ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPosition() throws Exception {
+        String sql = abs(person.id).positionOf(person.id).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T0.id IN abs(T0.id)) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPositionParam() throws Exception {
+        String sql = abs(person.id).positionOf("1").show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN abs(T0.id)) AS C0 FROM person AS T0", sql);
+    }
+
+
+
+
     public void testConcatString() throws Exception {
         final Column<Long> id  =  person.id;
         String sql = abs(id).concat(" id").show(new GenericDialect());

@@ -213,6 +213,37 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(T0.name = T0.nick) || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testSubstring() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().substring(person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.name = T0.nick) FROM T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().substring(person.id, person.id.div(2)).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.name = T0.nick) FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().substring(2).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.name = T0.nick) FROM ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().substring(2, 5).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING((T0.name = T0.nick) FROM ? FOR ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPosition() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().positionOf(person.married).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(T0.married IN(T0.name = T0.nick)) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParam() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().positionOf("e").show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN(T0.name = T0.nick)) AS C0 FROM person AS T0", sql);
+    }
+
+
     public void testCollate() throws Exception {
         final String sql = person.name.eq(person.nickName).asValue().collate("latin1_general_ci").show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);

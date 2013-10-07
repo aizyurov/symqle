@@ -451,6 +451,36 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testSubstring() throws Exception {
+        String sql = person.name.substring(person.age).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T0.name FROM T0.age) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstring2() throws Exception {
+        String sql = person.name.substring(person.age, person.id).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T0.name FROM T0.age FOR T0.id) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam() throws Exception {
+        String sql = person.name.substring(2).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T0.name FROM ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testSubstringParam2() throws Exception {
+        String sql = person.name.substring(2, 5).show(new GenericDialect());
+        assertSimilar("SELECT SUBSTRING(T0.name FROM ? FOR ?) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPosition() throws Exception {
+        String sql = person.name.positionOf(person.name.substring(2, 5)).show(new GenericDialect());
+        assertSimilar("SELECT POSITION(SUBSTRING(T0.name FROM ? FOR ?) IN T0.name) AS C0 FROM person AS T0", sql);
+    }
+
+    public void testPositionParam() throws Exception {
+        String sql = person.name.positionOf("a").show(new GenericDialect());
+        assertSimilar("SELECT POSITION(? IN T0.name) AS C0 FROM person AS T0", sql);
+    }
+
     public void testCount() throws Exception {
         final String sql = person.id.count().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T0.id) AS C0 FROM person AS T0", sql);
