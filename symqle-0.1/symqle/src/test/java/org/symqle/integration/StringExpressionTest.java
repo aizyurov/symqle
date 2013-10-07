@@ -635,6 +635,19 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Alex, my friendPedersen", "Bill, my friendMarch", "James, my friendCooper", "James, my friendFirst", "Margaret, my friendRedwood"), list);
     }
 
+    public void testSubstring() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = stringExpression(employee).substring(4, 4).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        Collections.sort(list);
+        assertEquals(Arrays.asList("gare"), list);
+    }
+
+    public void testPosition() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = stringExpression(employee).positionOf("gare").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        assertEquals(Arrays.asList(4), list);
+    }
+
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = stringExpression(employee).concat(".").list(getDatabaseGate());
