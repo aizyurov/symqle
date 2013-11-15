@@ -1,6 +1,5 @@
 package org.symqle.generic;
 
-import org.symqle.common.NiceSql;
 import org.symqle.common.Query;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
@@ -74,7 +73,7 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
 
     }
 
-    private class InnerQuery extends NiceSql implements Query<D> {
+    private class InnerQuery implements Query<D> {
         private final Query<?> query;
 
         public InnerQuery(final Query<?> query) {

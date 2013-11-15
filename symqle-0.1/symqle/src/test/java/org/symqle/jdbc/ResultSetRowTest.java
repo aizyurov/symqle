@@ -1,10 +1,9 @@
-package org.symqle.jdbctest;
+package org.symqle.jdbc;
 
 import junit.framework.TestCase;
 import org.symqle.common.Element;
 import org.symqle.common.Mappers;
 import org.symqle.common.SqlParameter;
-import org.symqle.jdbc.ResultSetRow;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -21,24 +20,24 @@ import static org.easymock.EasyMock.verify;
 /**
  * @author lvovich
  */
-public class PositionedResultSetRowTest extends TestCase {
+public class ResultSetRowTest extends TestCase {
 
     public void testLong() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getLong(1)).andReturn(12L);
+        expect(resultSet.getLong("A")).andReturn(12L);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getLong(2)).andReturn(0L);
+        expect(resultSet.getLong("B")).andReturn(0L);
         expect(resultSet.wasNull()).andReturn(true);
-        expect(resultSet.getLong(3)).andThrow(new SQLException("unknown column: C"));
+        expect(resultSet.getLong("C")).andThrow(new SQLException("unknown column: C"));
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(12L, row.getValue(1).getLong().longValue());
-        assertNull(row.getValue(2).getLong());
+        assertEquals(12L, row.getValue("A").getLong().longValue());
+        assertNull(row.getValue("B").getLong());
 
         try {
-            final Long aLong = row.getValue(3).getLong();
+            final Long aLong = row.getValue("C").getLong();
             fail("SQLException expected but returned "+aLong);
         } catch (SQLException e) {
             // expected
@@ -48,32 +47,32 @@ public class PositionedResultSetRowTest extends TestCase {
     
     public void testInteger() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getInt(1)).andReturn(12);
+        expect(resultSet.getInt("A")).andReturn(12);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getInt(2)).andReturn(0);
+        expect(resultSet.getInt("B")).andReturn(0);
         expect(resultSet.wasNull()).andReturn(true);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(12L, row.getValue(1).getInt().intValue());
-        assertNull(row.getValue(2).getInt());
+        assertEquals(12L, row.getValue("A").getInt().intValue());
+        assertNull(row.getValue("B").getInt());
 
         verify(resultSet);
     }
     
     public void testShort() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getShort(1)).andReturn((short) 12);
+        expect(resultSet.getShort("A")).andReturn((short) 12);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getShort(2)).andReturn((short) 0);
+        expect(resultSet.getShort("B")).andReturn((short) 0);
         expect(resultSet.wasNull()).andReturn(true);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(12L, row.getValue(1).getShort().intValue());
-        assertNull(row.getValue(2).getShort());
+        assertEquals(12L, row.getValue("A").getShort().intValue());
+        assertNull(row.getValue("B").getShort());
 
         verify(resultSet);
         
@@ -81,16 +80,16 @@ public class PositionedResultSetRowTest extends TestCase {
 
     public void testByte() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getByte(1)).andReturn((byte) 12);
+        expect(resultSet.getByte("A")).andReturn((byte) 12);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getByte(2)).andReturn((byte) 0);
+        expect(resultSet.getByte("B")).andReturn((byte) 0);
         expect(resultSet.wasNull()).andReturn(true);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(12L, row.getValue(1).getByte().intValue());
-        assertNull(row.getValue(2).getByte());
+        assertEquals(12L, row.getValue("A").getByte().intValue());
+        assertNull(row.getValue("B").getByte());
 
         verify(resultSet);
 
@@ -98,14 +97,14 @@ public class PositionedResultSetRowTest extends TestCase {
 
     public void testBigDecimal() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getBigDecimal(1)).andReturn(new BigDecimal(123.456));
-        expect(resultSet.getBigDecimal(2)).andReturn(null);
+        expect(resultSet.getBigDecimal("A")).andReturn(new BigDecimal(123.456));
+        expect(resultSet.getBigDecimal("B")).andReturn(null);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(123.456, row.getValue(1).getBigDecimal().doubleValue());
-        assertNull(row.getValue(2).getBigDecimal());
+        assertEquals(123.456, row.getValue("A").getBigDecimal().doubleValue());
+        assertNull(row.getValue("B").getBigDecimal());
 
         verify(resultSet);
 
@@ -113,16 +112,16 @@ public class PositionedResultSetRowTest extends TestCase {
 
     public void testBoolean() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getBoolean(1)).andReturn(true);
+        expect(resultSet.getBoolean("A")).andReturn(true);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getBoolean(2)).andReturn(false);
+        expect(resultSet.getBoolean("B")).andReturn(false);
         expect(resultSet.wasNull()).andReturn(true);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(Boolean.TRUE, row.getValue(1).getBoolean());
-        assertNull(row.getValue(2).getBoolean());
+        assertEquals(Boolean.TRUE, row.getValue("A").getBoolean());
+        assertNull(row.getValue("B").getBoolean());
 
         verify(resultSet);
 
@@ -130,14 +129,14 @@ public class PositionedResultSetRowTest extends TestCase {
 
     public void testString() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getString(1)).andReturn("test");
-        expect(resultSet.getString(2)).andReturn(null);
+        expect(resultSet.getString("A")).andReturn("test");
+        expect(resultSet.getString("B")).andReturn(null);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals("test", row.getValue(1).getString());
-        assertNull(row.getValue(2).getString());
+        assertEquals("test", row.getValue("A").getString());
+        assertNull(row.getValue("B").getString());
 
         verify(resultSet);
 
@@ -146,14 +145,14 @@ public class PositionedResultSetRowTest extends TestCase {
     public void testDate() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
         final Date now = new Date(System.currentTimeMillis());
-        expect(resultSet.getDate(1)).andReturn(now);
-        expect(resultSet.getDate(2)).andReturn(null);
+        expect(resultSet.getDate("A")).andReturn(now);
+        expect(resultSet.getDate("B")).andReturn(null);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(now, row.getValue(1).getDate());
-        assertNull(row.getValue(2).getDate());
+        assertEquals(now, row.getValue("A").getDate());
+        assertNull(row.getValue("B").getDate());
 
         verify(resultSet);
 
@@ -213,14 +212,14 @@ public class PositionedResultSetRowTest extends TestCase {
     public void testTimestamp() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
         final Timestamp now = new Timestamp(System.currentTimeMillis());
-        expect(resultSet.getTimestamp(1)).andReturn(now);
-        expect(resultSet.getTimestamp(2)).andReturn(null);
+        expect(resultSet.getTimestamp("A")).andReturn(now);
+        expect(resultSet.getTimestamp("B")).andReturn(null);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(now, row.getValue(1).getTimestamp());
-        assertNull(row.getValue(2).getTimestamp());
+        assertEquals(now, row.getValue("A").getTimestamp());
+        assertNull(row.getValue("B").getTimestamp());
 
         verify(resultSet);
 
@@ -229,14 +228,14 @@ public class PositionedResultSetRowTest extends TestCase {
     public void testTime() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
         final Time now = new Time(36000000L);
-        expect(resultSet.getTime(1)).andReturn(now);
-        expect(resultSet.getTime(2)).andReturn(null);
+        expect(resultSet.getTime("A")).andReturn(now);
+        expect(resultSet.getTime("B")).andReturn(null);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(now, row.getValue(1).getTime());
-        assertNull(row.getValue(2).getTime
+        assertEquals(now, row.getValue("A").getTime());
+        assertNull(row.getValue("B").getTime
                 ());
 
         verify(resultSet);
@@ -244,16 +243,16 @@ public class PositionedResultSetRowTest extends TestCase {
 
     public void testDouble() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getDouble(1)).andReturn(123.456);
+        expect(resultSet.getDouble("A")).andReturn(123.456);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getDouble(2)).andReturn(0.0);
+        expect(resultSet.getDouble("B")).andReturn(0.0);
         expect(resultSet.wasNull()).andReturn(true);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals(123.456, row.getValue(1).getDouble());
-        assertNull(row.getValue(2).getDouble());
+        assertEquals(123.456, row.getValue("A").getDouble());
+        assertNull(row.getValue("B").getDouble());
 
         verify(resultSet);
 
@@ -275,16 +274,16 @@ public class PositionedResultSetRowTest extends TestCase {
 
     public void testFloat() throws Exception {
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(resultSet.getFloat(1)).andReturn((float) 123.456);
+        expect(resultSet.getFloat("A")).andReturn((float) 123.456);
         expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getFloat(2)).andReturn((float) 0.0);
+        expect(resultSet.getFloat("B")).andReturn((float) 0.0);
         expect(resultSet.wasNull()).andReturn(true);
 
         final ResultSetRow row = new ResultSetRow(resultSet);
         replay(resultSet);
 
-        assertEquals((float) 123.456, row.getValue(1).getFloat());
-        assertNull(row.getValue(2).getFloat());
+        assertEquals((float) 123.456, row.getValue("A").getFloat());
+        assertNull(row.getValue("B").getFloat());
 
         verify(resultSet);
 

@@ -6,7 +6,8 @@ import org.symqle.gate.AbstractAdaptiveDatabaseGate;
 import org.symqle.integration.model.DerbyEnvironment;
 import org.symqle.integration.model.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
-import org.symqle.sql.DatabaseGate;
+import org.symqle.jdbc.Engine;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     private static TestEnvironment environment = createTestEnvironment();
 
 
-    public DatabaseGate getDatabaseGate() {
-        return environment.getGate();
+    public Engine getDatabaseGate() {
+        throw new RuntimeException("Not implemented");
     }
 
     private static TestEnvironment createTestEnvironment() {
@@ -57,7 +58,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     protected final void expectMalformedStatementException(MalformedStatementException e, Class... dialects) {
-        if (Arrays.asList(dialects).contains(getDatabaseGate().getDialect().getClass())) {
+        if (Arrays.asList(dialects).contains(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
             return;
         }
         throw e;

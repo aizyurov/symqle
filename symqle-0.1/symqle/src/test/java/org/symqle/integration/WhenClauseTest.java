@@ -6,6 +6,7 @@ import org.symqle.common.Pair;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractSearchedWhenClause;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -352,7 +353,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
     public void testNotInList() throws Exception {
         final Employee employee = new Employee();
         System.out.println(employee.lastName.where(createWhenClause(employee).notIn("nobody", "somebody"))
-                .orderBy(employee.lastName).show(getDatabaseGate().getDialect()));
+                .orderBy(employee.lastName).show(getDatabaseGate().initialContext().get(Dialect.class)));
         try {
             final List<String> list = employee.lastName.where(createWhenClause(employee).notIn("nobody", "somebody"))
                     .orderBy(employee.lastName)

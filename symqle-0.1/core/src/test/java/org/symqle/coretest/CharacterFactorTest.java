@@ -1,6 +1,5 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractCharacterFactor;
@@ -13,9 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -415,32 +412,32 @@ public class CharacterFactorTest extends SqlTestCase {
     }
 
 
-    public void testList() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException {
-                final List<String> list = characterFactor.list(gate);
-                assertEquals(Arrays.asList("abc"), list);
-            }
-        }.play();
-    }
-
-    public void testScroll() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException {
-                characterFactor.scroll(gate, new Callback<String>() {
-                    private int callCount = 0;
-                    @Override
-                    public boolean iterate(final String s) {
-                        assertEquals(0, callCount++);
-                        assertEquals("abc", s);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-    }
+//    public void testList() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException {
+//                final List<String> list = characterFactor.list(gate);
+//                assertEquals(Arrays.asList("abc"), list);
+//            }
+//        }.play();
+//    }
+//
+//    public void testScroll() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException {
+//                characterFactor.scroll(gate, new Callback<String>() {
+//                    private int callCount = 0;
+//                    @Override
+//                    public boolean iterate(final String s) {
+//                        assertEquals(0, callCount++);
+//                        assertEquals("abc", s);
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//    }
 
 
 

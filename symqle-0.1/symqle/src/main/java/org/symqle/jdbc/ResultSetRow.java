@@ -29,15 +29,26 @@ import java.sql.Timestamp;
 /**
  * A Row, which is a view to a ResultSet.
  */
-public class ResultSetRow implements Row {
+class ResultSetRow implements Row {
     private final ResultSet resultSet;
+    private final QueryEngine innerEngine;
 
     /**
-     * Constructs for a given ResultSet
+     * Constructs for a given ResultSet and inner engine
+     * @param resultSet the result set to view
+     */
+    public ResultSetRow(ResultSet resultSet, QueryEngine engine) {
+        this.resultSet = resultSet;
+        this.innerEngine = engine;
+    }
+
+    /**
+     * Constructs for a given ResultSet.
      * @param resultSet the result set to view
      */
     public ResultSetRow(ResultSet resultSet) {
         this.resultSet = resultSet;
+        this.innerEngine = null;
     }
 
     @Override
@@ -47,6 +58,14 @@ public class ResultSetRow implements Row {
     
     public final Element getValue(int position) {
         return new PositionedElement(position);
+    }
+
+    @Override
+    public QueryEngine getQueryEngine() {
+        if (innerEngine == null) {
+            throw new IllegalStateException("getQueryEngine must not be called: this row created without engine");
+        }
+        return innerEngine;
     }
 
     private class LabeledElement implements Element {
@@ -198,4 +217,5 @@ public class ResultSetRow implements Row {
             return resultSet.getTimestamp(position);
         }
     }
+
 }

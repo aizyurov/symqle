@@ -109,15 +109,15 @@ public class UpdateTest extends SqlTestCase {
         }
     }
 
-    public void testExecute() throws Exception {
-        new ExecuteScenario() {
-            @Override
-            protected void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException {
-                assertEquals(2, update.execute(gate));
-            }
-        }.play();
-
-    }
+//    public void testExecute() throws Exception {
+//        new ExecuteScenario() {
+//            @Override
+//            protected void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException {
+//                assertEquals(2, update.execute(gate));
+//            }
+//        }.play();
+//
+//    }
 
     private abstract static class ExecuteScenario {
         public void play() throws Exception {
@@ -144,15 +144,15 @@ public class UpdateTest extends SqlTestCase {
         protected abstract void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException;
     }
 
-    public void testExecuteSearched() throws Exception {
-        new ExecuteSearchedScenario() {
-            @Override
-            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
-                assertEquals(1, update.execute(gate));
-            }
-        }.play();
-
-    }
+//    public void testExecuteSearched() throws Exception {
+//        new ExecuteSearchedScenario() {
+//            @Override
+//            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
+//                assertEquals(1, update.execute(gate));
+//            }
+//        }.play();
+//
+//    }
 
     private abstract static class ExecuteSearchedScenario {
         public void play() throws Exception {
@@ -180,15 +180,15 @@ public class UpdateTest extends SqlTestCase {
         protected abstract void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException;
     }
 
-    public void testExecuteWithOptions() throws Exception {
-        new ExecuteWithOptionsScenario() {
-            @Override
-            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
-                assertEquals(1, update.execute(gate, Option.setQueryTimeout(20)));
-            }
-        }.play();
-
-    }
+//    public void testExecuteWithOptions() throws Exception {
+//        new ExecuteWithOptionsScenario() {
+//            @Override
+//            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
+//                assertEquals(1, update.execute(gate, Option.setQueryTimeout(20)));
+//            }
+//        }.play();
+//
+//    }
 
     private abstract static class ExecuteWithOptionsScenario {
         public void play() throws Exception {

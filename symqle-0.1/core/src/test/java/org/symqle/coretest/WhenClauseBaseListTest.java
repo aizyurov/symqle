@@ -1,6 +1,5 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractSearchedWhenClauseBaseList;
@@ -15,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -441,36 +439,36 @@ public class WhenClauseBaseListTest extends SqlTestCase {
 
 
 
-    public void testList() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException {
-                final List<String> list = whenClause.list(gate);
-                assertEquals(1, list.size());
-                assertEquals("John", list.get(0));
-            }
-        }.play();
-    }
-
-    public void testScroll() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException {
-                whenClause.scroll(gate, new Callback<String>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final String aString) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals("John", aString);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-    }
+//    public void testList() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException {
+//                final List<String> list = whenClause.list(gate);
+//                assertEquals(1, list.size());
+//                assertEquals("John", list.get(0));
+//            }
+//        }.play();
+//    }
+//
+//    public void testScroll() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final AbstractSearchedWhenClauseBaseList<String> whenClause, final DatabaseGate gate) throws SQLException {
+//                whenClause.scroll(gate, new Callback<String>() {
+//                    int callCount = 0;
+//
+//                    @Override
+//                    public boolean iterate(final String aString) {
+//                        if (callCount++ != 0) {
+//                            fail("One call expected, actually " + callCount);
+//                        }
+//                        assertEquals("John", aString);
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//    }
 
     private static abstract class Scenario {
         public void play() throws Exception {

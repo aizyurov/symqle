@@ -4,20 +4,11 @@ import junit.framework.TestCase;
 import org.symqle.common.Mappers;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
-import org.symqle.jdbc.Option;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
-import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -43,67 +34,69 @@ public class AbstractMapperTest extends TestCase {
     }
 
     public void testMapFromCreate() throws Exception {
-        final Person person = new Person();
-        final MapCallFromCreateSelector mapper = new MapCallFromCreateSelector(person);
-        final String queryString = mapper.show(new GenericDialect());
-        final DatabaseGate gate = createMock(DatabaseGate.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(new GenericDialect());
-        expect(gate.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        // next 4 lines are not called because create() throws an exception
+        fail("Not implemented");
+//        final Person person = new Person();
+//        final MapCallFromCreateSelector mapper = new MapCallFromCreateSelector(person);
+//        final String queryString = mapper.show(new GenericDialect());
+//        final DatabaseGate gate = createMock(DatabaseGate.class);
+//        final Connection connection = createMock(Connection.class);
+//        final PreparedStatement statement = createMock(PreparedStatement.class);
+//        final ResultSet resultSet = createMock(ResultSet.class);
+//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+//        expect(gate.initialContext().get(Dialect.class)).andReturn(new GenericDialect());
+//        expect(gate.getConnection()).andReturn(connection);
+//        expect(connection.prepareStatement(queryString)).andReturn(statement);
+//        expect(statement.executeQuery()).andReturn(resultSet);
+//        expect(resultSet.next()).andReturn(true);
+//        // next 4 lines are not called because create() throws an exception
+////        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
+////        expect(resultSet.wasNull()).andReturn(false);
+////        expect(resultSet.getString(matches("C[0-9]"))).andReturn("Alex");
+////        expect(resultSet.next()).andReturn(false);
+//        resultSet.close();
+//        statement.close();
+//        connection.close();
+//        replay(gate, connection,  statement, resultSet);
+//
+//        try {
+//            final List<PersonDTO> list = mapper.list(gate);
+//            fail("IllegalStateException expected");
+//        } catch (IllegalStateException e) {
+//            // Ok
+//        }
+//        verify(gate, connection, statement, resultSet);
+    }
+
+    public void testSimpleMapper() throws Exception {
+        fail("Not implemented");
+//        final Person person = new Person();
+//        final PersonSelector mapper = new PersonSelector(person);
+//        final String queryString = mapper.show(new GenericDialect());
+//        final DatabaseGate gate = createMock(DatabaseGate.class);
+//        final Connection connection = createMock(Connection.class);
+//        final PreparedStatement statement = createMock(PreparedStatement.class);
+//        final ResultSet resultSet = createMock(ResultSet.class);
+//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
+//        expect(gate.initialContext().get(Dialect.class)).andReturn(new GenericDialect());
+//        expect(gate.getConnection()).andReturn(connection);
+//        expect(connection.prepareStatement(queryString)).andReturn(statement);
+//        expect(statement.executeQuery()).andReturn(resultSet);
+//        expect(resultSet.next()).andReturn(true);
 //        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
 //        expect(resultSet.wasNull()).andReturn(false);
 //        expect(resultSet.getString(matches("C[0-9]"))).andReturn("Alex");
 //        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(gate, connection,  statement, resultSet);
-
-        try {
-            final List<PersonDTO> list = mapper.list(gate);
-            fail("IllegalStateException expected");
-        } catch (IllegalStateException e) {
-            // Ok
-        }
-        verify(gate, connection, statement, resultSet);
-    }
-
-    public void testSimpleMapper() throws Exception {
-        final Person person = new Person();
-        final PersonSelector mapper = new PersonSelector(person);
-        final String queryString = mapper.show(new GenericDialect());
-        final DatabaseGate gate = createMock(DatabaseGate.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(new GenericDialect());
-        expect(gate.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.getString(matches("C[0-9]"))).andReturn("Alex");
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(gate, connection,  statement, resultSet);
-
-        final List<PersonDTO> list = mapper.list(gate);
-        assertEquals(1, list.size());
-        assertEquals(123L, list.get(0).id.longValue());
-        assertEquals("Alex", list.get(0).name);
-        verify(gate, connection, statement, resultSet);
-
+//        resultSet.close();
+//        statement.close();
+//        connection.close();
+//        replay(gate, connection,  statement, resultSet);
+//
+//        final List<PersonDTO> list = mapper.list(gate);
+//        assertEquals(1, list.size());
+//        assertEquals(123L, list.get(0).id.longValue());
+//        assertEquals("Alex", list.get(0).name);
+//        verify(gate, connection, statement, resultSet);
+//
     }
 
     private static class PersonDTO {

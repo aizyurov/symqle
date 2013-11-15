@@ -34,7 +34,17 @@ public interface DataChangeStatement : Sql {}
     final SqlContext context = new SqlContext();
     context.set(Dialect.class, dialect);
     context.set(Configuration.class, configuration);
-    return statement.z$sqlOfDataChangeStatement(context);
+     final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
+     return new Sql() {
+         @Override
+         public String sql() {
+             return dialect.formatSql(rawSql.sql());
+         }
+         @Override
+         public void setParameters(final SqlParameters p) throws SQLException {
+             rawSql.setParameters(p);
+         }
+     };
 }
 
 import org.symqle.jdbc.Option;
@@ -43,39 +53,21 @@ import org.symqle.jdbc.Option;
      for (final Option option : options) {
         option.apply(configuration);
      }
-    return prepareUpdate(statement, dialect, configuration).toString();
+    return prepareUpdate(statement, dialect, configuration).sql();
 }
 
 import org.symqle.jdbc.Option;
+import org.symqle.jdbc.Engine;
 import java.sql.SQLException;
-:: public int execute(final DataChangeStatement statement, final DatabaseGate gate, final Option... options) throws SQLException {
-     final UpdatableConfiguration configuration = new UpdatableConfiguration();
-     final List<Option> defaultOptions = gate.getOptions();
-     for (final Option option : defaultOptions) {
-        option.apply(configuration);
+:: public int execute(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
+     final SqlContext initialContext = engine.initialContext();
+     final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
+    for (final Option option : options) {
+       option.apply(configuration);
     }
-     for (final Option option : options) {
-        option.apply(configuration);
-     }
-     final Sql sql = prepareUpdate(statement, gate.getDialect(), configuration);
-     final Connection connection = gate.getConnection();
-     try {
-         final PreparedStatement preparedStatement = connection.prepareStatement(sql.toString());
-         for (final Option option : defaultOptions) {
-             option.apply(preparedStatement);
-         }
-          for (final Option option : options) {
-             option.apply(preparedStatement);
-          }
-         try {
-             sql.setParameters(new StatementParameters(preparedStatement));
-             return preparedStatement.executeUpdate();
-         } finally {
-             preparedStatement.close();
-         }
-     } finally {
-         connection.close();
-     }
+    final Dialect bestDialect = initialContext.get(Dialect.class);
+     final Sql sql = prepareUpdate(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+     return engine.execute(sql, options);
 }
 
 DataChangeStatement ::=
@@ -331,48 +323,16 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
 }
 ;
 
-:: public <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final DatabaseGate gate, final Option... options) throws SQLException {
-         final UpdatableConfiguration configuration = new UpdatableConfiguration();
-         final List<Option> defaultOptions = gate.getOptions();
-         for (final Option option : defaultOptions) {
-            option.apply(configuration);
-        }
-         for (final Option option : options) {
-            option.apply(configuration);
-         }
-        final DataChangeStatement dataChange = Symqle.z$DataChangeStatement$from$InsertStatement(statement);
-        final SqlContext context = new SqlContext();
-        context.set(Dialect.class, gate.getDialect());
-        context.set(Configuration.class, configuration);
-        final Sql sql = dataChange.z$sqlOfDataChangeStatement(context);
-        final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).sql();
-        final Connection connection = gate.getConnection();
-         try {
-             final PreparedStatement preparedStatement = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-             for (final Option option : defaultOptions) {
-                 option.apply(preparedStatement);
-             }
-              for (final Option option : options) {
-                 option.apply(preparedStatement);
-              }
-             try {
-                 sql.setParameters(new StatementParameters(preparedStatement));
-                 preparedStatement.executeUpdate();
-                 final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                 try {
-                     generatedKeys.next();
-                     final ResultSetRow row = new ResultSetRow(generatedKeys);
-                     final Mapper<T> mapper = keyColumn.getMapper();
-                     return mapper.value(row.getValue(1));
-                 } finally {
-                     generatedKeys.close();
-                 }
-             } finally {
-                 preparedStatement.close();
-             }
-         } finally {
-             connection.close();
-         }
+:: public <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {
+     final SqlContext initialContext = engine.initialContext();
+     final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
+    for (final Option option : options) {
+       option.apply(configuration);
+    }
+    final Dialect bestDialect = initialContext.get(Dialect.class);
+     final DataChangeStatement dataChange = Symqle.z$DataChangeStatement$from$InsertStatement(statement);
+     final Sql sql = prepareUpdate(dataChange, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+     return engine.executeReturnKey(sql, keyColumn, options);
     }
 
 

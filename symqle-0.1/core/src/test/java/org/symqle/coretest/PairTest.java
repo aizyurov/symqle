@@ -1,6 +1,5 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
@@ -18,7 +17,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -147,39 +145,39 @@ public class PairTest extends SqlTestCase {
 
 
 
-    public void testList() throws Exception {
-        new PairScenario() {
-            @Override
-            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DatabaseGate gate) throws SQLException {
-                final List<Pair<Long, String>> list = selectList.list(gate);
-                assertEquals(1, list.size());
-                assertEquals(Pair.make(123L, "John"), list.get(0));
-            }
-        }.play();
-
-    }
-
-
-    public void testScroll() throws Exception {
-        new PairScenario() {
-            @Override
-            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DatabaseGate gate) throws SQLException {
-                selectList.scroll(gate, new Callback<Pair<Long, String>>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final Pair<Long, String> pair) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals(Pair.make(123L, "John"), pair);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-    }
+//    public void testList() throws Exception {
+//        new PairScenario() {
+//            @Override
+//            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DatabaseGate gate) throws SQLException {
+//                final List<Pair<Long, String>> list = selectList.list(gate);
+//                assertEquals(1, list.size());
+//                assertEquals(Pair.make(123L, "John"), list.get(0));
+//            }
+//        }.play();
+//
+//    }
+//
+//
+//    public void testScroll() throws Exception {
+//        new PairScenario() {
+//            @Override
+//            protected void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DatabaseGate gate) throws SQLException {
+//                selectList.scroll(gate, new Callback<Pair<Long, String>>() {
+//                    int callCount = 0;
+//
+//                    @Override
+//                    public boolean iterate(final Pair<Long, String> pair) {
+//                        if (callCount++ != 0) {
+//                            fail("One call expected, actually " + callCount);
+//                        }
+//                        assertEquals(Pair.make(123L, "John"), pair);
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//
+//    }
 
     private static abstract class PairScenario {
         public void play() throws Exception {
@@ -211,39 +209,39 @@ public class PairTest extends SqlTestCase {
         protected abstract void runQuery(final AbstractSelectList<Pair<Long, String>> selectList, final DatabaseGate gate) throws SQLException;
     }
 
-    public void testDistinctList() throws Exception {
-        new DistinctScenario() {
-            @Override
-            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DatabaseGate gate) throws SQLException {
-                final List<Pair<Long, String>> list = queryBase.list(gate);
-                assertEquals(1, list.size());
-                assertEquals(Pair.make(123L, "John"), list.get(0));
-            }
-        }.play();
-
-    }
-
-    public void testDistinctScroll() throws Exception {
-
-        new DistinctScenario() {
-            @Override
-            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DatabaseGate gate) throws SQLException {
-                queryBase.scroll(gate, new Callback<Pair<Long, String>>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final Pair<Long, String> pair) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals(Pair.make(123L, "John"), pair);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-    }
+//    public void testDistinctList() throws Exception {
+//        new DistinctScenario() {
+//            @Override
+//            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DatabaseGate gate) throws SQLException {
+//                final List<Pair<Long, String>> list = queryBase.list(gate);
+//                assertEquals(1, list.size());
+//                assertEquals(Pair.make(123L, "John"), list.get(0));
+//            }
+//        }.play();
+//
+//    }
+//
+//    public void testDistinctScroll() throws Exception {
+//
+//        new DistinctScenario() {
+//            @Override
+//            protected void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DatabaseGate gate) throws SQLException {
+//                queryBase.scroll(gate, new Callback<Pair<Long, String>>() {
+//                    int callCount = 0;
+//
+//                    @Override
+//                    public boolean iterate(final Pair<Long, String> pair) {
+//                        if (callCount++ != 0) {
+//                            fail("One call expected, actually " + callCount);
+//                        }
+//                        assertEquals(Pair.make(123L, "John"), pair);
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//
+//    }
 
     private static abstract class DistinctScenario {
         public void play() throws Exception {
@@ -276,39 +274,39 @@ public class PairTest extends SqlTestCase {
         protected abstract void runQuery(final AbstractQueryBase<Pair<Long, String>> queryBase, final DatabaseGate gate) throws SQLException;
     }
 
-    public void testWhereList() throws Exception {
-        new WhereScenario() {
-            @Override
-            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DatabaseGate gate) throws SQLException {
-                final List<Pair<Long, String>> list = queryExpression.list(gate);
-                assertEquals(1, list.size());
-                assertEquals(Pair.make(123L, "John"), list.get(0));
-            }
-        }.play();
-
-    }
-
-
-    public void testWhereScroll() throws Exception {
-        new WhereScenario() {
-            @Override
-            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DatabaseGate gate) throws SQLException {
-                queryExpression.scroll(gate, new Callback<Pair<Long, String>>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final Pair<Long, String> pair) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals(Pair.make(123L, "John"), pair);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-    }
+//    public void testWhereList() throws Exception {
+//        new WhereScenario() {
+//            @Override
+//            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DatabaseGate gate) throws SQLException {
+//                final List<Pair<Long, String>> list = queryExpression.list(gate);
+//                assertEquals(1, list.size());
+//                assertEquals(Pair.make(123L, "John"), list.get(0));
+//            }
+//        }.play();
+//
+//    }
+//
+//
+//    public void testWhereScroll() throws Exception {
+//        new WhereScenario() {
+//            @Override
+//            protected void runQuery(final AbstractQueryExpression<Pair<Long, String>> queryExpression, final DatabaseGate gate) throws SQLException {
+//                queryExpression.scroll(gate, new Callback<Pair<Long, String>>() {
+//                    int callCount = 0;
+//
+//                    @Override
+//                    public boolean iterate(final Pair<Long, String> pair) {
+//                        if (callCount++ != 0) {
+//                            fail("One call expected, actually " + callCount);
+//                        }
+//                        assertEquals(Pair.make(123L, "John"), pair);
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//
+//    }
 
     private static abstract class WhereScenario {
         public void play() throws Exception {

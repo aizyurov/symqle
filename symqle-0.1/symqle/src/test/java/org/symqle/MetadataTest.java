@@ -1,5 +1,6 @@
 package org.symqle;
 
+import com.mysql.jdbc.Driver;
 import junit.framework.TestCase;
 
 import java.sql.Connection;
@@ -12,20 +13,22 @@ import java.sql.ResultSet;
  */
 public class MetadataTest extends TestCase {
 
-    private final String url = "jdbc:derby:memory:symqle";
+//    private final String url = "jdbc:derby:memory:symqle";
+    private final String url = "jdbc:mysql://localhost:3306/simqle";
 
     public void testFunctions() throws Exception {
-        final Connection connection = DriverManager.getConnection(url + ";create=true");
+        DriverManager.registerDriver(new Driver());
+        final Connection connection = DriverManager.getConnection(url, "simqle", "simqle");
         final DatabaseMetaData metaData = connection.getMetaData();
-        final ResultSet functions = metaData.getColumns("%", "%", "%", "%");
-        while (functions.next()) {
-            System.out.println("TABLE_CAT: " + functions.getString("TABLE_CAT"));
-            System.out.println("TABLE_SCHEM: " + functions.getString("TABLE_SCHEM"));
-            System.out.println("TABLE_NAME: " + functions.getString("TABLE_NAME"));
-            System.out.println("COLUMN_NAME: " + functions.getString("COLUMN_NAME"));
+        final ResultSet columns = metaData.getColumns(null, null, null, null);
+        while (columns.next()) {
+            System.out.println("TABLE_CAT: " + columns.getString("TABLE_CAT"));
+            System.out.println("TABLE_SCHEM: " + columns.getString("TABLE_SCHEM"));
+            System.out.println("TABLE_NAME: " + columns.getString("TABLE_NAME"));
+            System.out.println("COLUMN_NAME: " + columns.getString("COLUMN_NAME"));
             System.out.println("===");
         }
-        functions.close();
+        columns.close();
     }
 
 }

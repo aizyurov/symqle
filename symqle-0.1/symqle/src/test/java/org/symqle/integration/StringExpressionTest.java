@@ -3,12 +3,13 @@ package org.symqle.integration;
 import junit.framework.AssertionFailedError;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
-import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractStringExpression;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -94,7 +95,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {

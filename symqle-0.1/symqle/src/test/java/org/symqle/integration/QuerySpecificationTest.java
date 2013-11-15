@@ -4,6 +4,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractQuerySpecification;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {

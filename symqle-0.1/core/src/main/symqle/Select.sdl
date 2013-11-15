@@ -10,6 +10,7 @@ public class AbstractSelectStatement<T> implements SelectStatement<T>
 import java.sql.SQLException;
 import org.symqle.common.Callback;
 import org.symqle.jdbc.Option;
+import org.symqle.jdbc.QueryEngine;
 ::
     /**
      * Executes a statement and calls callback for each returned row.
@@ -22,50 +23,18 @@ import org.symqle.jdbc.Option;
      * @throws SQLException from the underlying jdbc driver
      */
 public <T> int scroll(final SelectStatement<T> statement,
-                          final DatabaseGate gate,
+                          final QueryEngine engine,
                           final Callback<T> callback,
                           final Option... options
                           ) throws SQLException {
-    final UpdatableConfiguration configuration = new UpdatableConfiguration();
-    final List<Option> defaultOptions = gate.getOptions();
-    for (final Option option : defaultOptions) {
-       option.apply(configuration);
-   }
+    final SqlContext initialContext = engine.initialContext();
+    final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
     for (final Option option : options) {
        option.apply(configuration);
     }
-    final Query<T> query = prepareQuery(statement, gate.getDialect(), configuration);
-    final Connection connection = gate.getConnection();
-    try {
-        final PreparedStatement preparedStatement = connection.prepareStatement(query.toString());
-           for (final Option option : defaultOptions) {
-               option.apply(preparedStatement);
-           }
-        for (final Option option : options) {
-           option.apply(preparedStatement);
-        }
-        try {
-            query.setParameters(new StatementParameters(preparedStatement));
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            final Row row = new ResultSetRow(resultSet);
-            try {
-               int count = 0;
-                while (resultSet.next()) {
-                    count++;
-                    if (!callback.iterate(query.extract(row))) {
-                       break;
-                    }
-                }
-                return count;
-            } finally {
-                resultSet.close();
-            }
-        } finally {
-            preparedStatement.close();
-        }
-    } finally {
-        connection.close();
-    }
+    final Dialect bestDialect = initialContext.get(Dialect.class);
+    final Query<T> query = prepareQuery(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+    return engine.scroll(query, callback, options);
 }
 
 import java.sql.SQLException;
@@ -82,11 +51,11 @@ import org.symqle.jdbc.Option;
      * @throws SQLException from the underlying jdbc driver
      */
 public <T> List<T> list(final SelectStatement<T> statement,
-                          final DatabaseGate gate,
+                          final QueryEngine engine,
                           final Option... options
                         ) throws SQLException {
         final List<T> result = new LinkedList<T>();
-        scroll(statement,  gate,
+        scroll(statement,  engine,
             new Callback<T>() {
                 public boolean iterate(T arg) {
                     result.add(arg);
@@ -116,10 +85,10 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
      for (Option option : options) {
          option.apply(configuration);
      }
-     return prepareQuery(statement, dialect, configuration).toString();
+     return prepareQuery(statement, dialect, configuration).sql();
     }
 
-:: private <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
+:: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
         final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
         // training: learn all tables participating in query
         {
@@ -140,7 +109,22 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
             context.set(Configuration.class, configuration);
             query = statement.z$sqlOfSelectStatement(context);
         }
-        return query;
+        return new Query<T>() {
+            @Override
+            public T extract(final Row row) throws SQLException {
+                return query.extract(row);
+            }
+
+            @Override
+            public String sql() {
+                return dialect.formatSql(query.sql());
+            }
+
+            @Override
+            public void setParameters(final SqlParameters p) throws SQLException {
+                query.setParameters(p);
+            }
+        };
     }
 
 

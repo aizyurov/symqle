@@ -2,12 +2,13 @@ package org.symqle.integration;
 
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
+import org.symqle.gate.MySqlDialect;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.One;
-import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractRoutineInvocation;
+import org.symqle.sql.Dialect;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.ValueExpression;
 
@@ -537,7 +538,7 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {

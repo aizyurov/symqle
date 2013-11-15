@@ -5,7 +5,6 @@ import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.gate.MySqlDialect;
 import org.symqle.generic.Functions;
-import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
@@ -14,8 +13,6 @@ import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.Dialect;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -344,7 +341,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains("First"));
             assertTrue(list.toString(), list.contains("Pedersen"));
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {
@@ -462,7 +459,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.orderBy(employee.deptId.nullsLast()).list(getDatabaseGate());
             assertEquals("Cooper", list.get(list.size()-1));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
+            final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
             // mysql does not support NULLS LAST
             expectSQLException(e, "MySQL");
         }
@@ -614,7 +611,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
+        final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
         final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
         assertEquals(Arrays.asList("MargaretRedwood"), list);
     }
@@ -639,14 +636,14 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
+        final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
         final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
         assertEquals(Arrays.asList("Margaret expected"), list);
     }
 
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getDatabaseGate().getDialect().getClass();
+        final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
         try {
             final List<String> list = employee.firstName.collate("utf8_unicode_ci").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
             assertEquals(Arrays.asList("Margaret"), list);
@@ -771,33 +768,34 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryTimeout() throws Exception {
+        fail("Not implemented");
         // derby: does not honor queryTimeout
         // skip this test
-        if ("Apache Derby".equals(getDatabaseName())) {
-            return;
-        }
-        final Connection connection = getDatabaseGate().getConnection();
-        try {
-            final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
-            deleteStatement.executeUpdate();
-            final PreparedStatement insertStatement = connection.prepareStatement("insert into big_table (num) values(?)");
-            for (int i=0; i<2000000; i++) {
-                insertStatement.setInt(1, i);
-                assertEquals(1, insertStatement.executeUpdate());
-            }
-        } finally {
-            connection.close();
-        }
-        final BigTable bigTable = new BigTable();
-        final long start = System.currentTimeMillis();
-
-        try {
-            final List<Integer> list = bigTable.num.list(getDatabaseGate(), Option.setQueryTimeout(1));
-            fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
-        } catch (SQLException e) {
-            System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
-            // fine: timeout
-        }
+//        if ("Apache Derby".equals(getDatabaseName())) {
+//            return;
+//        }
+//        final Connection connection = getDatabaseGate().getConnection();
+//        try {
+//            final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
+//            deleteStatement.executeUpdate();
+//            final PreparedStatement insertStatement = connection.prepareStatement("insert into big_table (num) values(?)");
+//            for (int i=0; i<2000000; i++) {
+//                insertStatement.setInt(1, i);
+//                assertEquals(1, insertStatement.executeUpdate());
+//            }
+//        } finally {
+//            connection.close();
+//        }
+//        final BigTable bigTable = new BigTable();
+//        final long start = System.currentTimeMillis();
+//
+//        try {
+//            final List<Integer> list = bigTable.num.list(getDatabaseGate(), Option.setQueryTimeout(1));
+//            fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
+//        } catch (SQLException e) {
+//            System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
+//            // fine: timeout
+//        }
     }
 
 }

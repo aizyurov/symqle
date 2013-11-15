@@ -1,9 +1,10 @@
 package org.symqle.integration;
 
 import org.symqle.common.Callback;
-import org.symqle.integration.model.Employee;
 import org.symqle.gate.MySqlDialect;
+import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractCursorSpecification;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class CursorSpecificationTest extends AbstractIntegrationTestBase {
             final List<String> list = createCursorSpecificaton(employee).forReadOnly().list(getDatabaseGate());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {

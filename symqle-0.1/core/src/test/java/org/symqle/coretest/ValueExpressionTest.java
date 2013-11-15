@@ -1,6 +1,5 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractAggregateFunction;
@@ -16,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -433,37 +431,37 @@ public class ValueExpressionTest extends SqlTestCase {
     
     
 
-    public void testList() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
-                final List<Boolean> list = valueExpression.list(gate);
-                assertEquals(1, list.size());
-                assertEquals(Boolean.TRUE, list.get(0));
-            }
-        }.play();
-    }
-
-
-
-    public void testScroll() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
-                valueExpression.scroll(gate, new Callback<Boolean>() {
-                    private int callCount;
-
-                    @Override
-                    public boolean iterate(final Boolean aBoolean) {
-                        assertEquals(0, callCount++);
-                        assertEquals(Boolean.TRUE, aBoolean);
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-    }
+//    public void testList() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
+//                final List<Boolean> list = valueExpression.list(gate);
+//                assertEquals(1, list.size());
+//                assertEquals(Boolean.TRUE, list.get(0));
+//            }
+//        }.play();
+//    }
+//
+//
+//
+//    public void testScroll() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
+//                valueExpression.scroll(gate, new Callback<Boolean>() {
+//                    private int callCount;
+//
+//                    @Override
+//                    public boolean iterate(final Boolean aBoolean) {
+//                        assertEquals(0, callCount++);
+//                        assertEquals(Boolean.TRUE, aBoolean);
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//
+//    }
 
     private static abstract class Scenario {
         public void play() throws Exception {

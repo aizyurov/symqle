@@ -15,7 +15,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 import org.symqle.common.*;
 import org.symqle.querybuilder.*;
-import org.symqle.jdbc.ResultSetRow;
 import org.symqle.jdbc.StatementParameters;
 import org.symqle.jdbc.Configuration;
 import org.symqle.jdbc.UpdatableConfiguration;
@@ -72,10 +71,18 @@ public interface Dialect  {
      * @return table/view name, null if no such table is available.
      */
     String fallbackTableName();
+    /**
+    * Formats an SQL statement as appropriate for this dialect.
+    * For example, removes extra whitespace
+    * @param source the raw SQL statement
+    * @return formatted statement
+    */
+    String formatSql(String source);
 }
 
 
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 import org.symqle.common.SqlParameters;
 import org.symqle.common.Sql;
 import org.symqle.common.CompositeSql;
@@ -103,6 +110,21 @@ public class GenericDialect implements Dialect {
         return new CompositeSql(first, other);
     }
 
+    /**
+    * Removes extra whitespace.
+    * Whitespace is removed before [,.()] and after [.(]
+    * Descendants may use different formatting
+    */
+    public String formatSql(String source) {
+        String s = REPEATING_WHITESPACE.matcher(source).replaceAll(" ");
+        s = UNNEEDED_SPACE_AFTER.matcher(s).replaceAll("");
+        s = UNNEEDED_SPACE_BEFORE.matcher(s).replaceAll("");
+        return s.trim();
+    }
+
+    private final static Pattern REPEATING_WHITESPACE = Pattern.compile("\\s+");
+    private final static Pattern UNNEEDED_SPACE_AFTER = Pattern.compile("(?<=[(.]) ");
+    private final static Pattern UNNEEDED_SPACE_BEFORE = Pattern.compile(" (?=[().,])");
 }
 
 import org.symqle.common.Sql;

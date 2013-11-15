@@ -1,9 +1,10 @@
 package org.symqle.integration;
 
+import org.symqle.gate.MySqlDialect;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.TrueValue;
-import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractQueryBaseScalar;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -201,7 +202,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {

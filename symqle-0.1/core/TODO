@@ -44,20 +44,15 @@ ALL/ANY/SOME (future release)
 
 (done) return generated keys
 
-transactions
-
 insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Subquery. insertFrom(InsertSublist is) ??? Methods for constructing InsertSublist (from InsertSelectList).
 
 (done) inner/right/outer joins
 
 (done) getSqlText() -> sql()
 
-replace IllegalStateException/IllegalArgumentException -> BadStatementException
+(done) replace IllegalStateException/IllegalArgumentException -> BadStatementException
 
-Postgresql
+databaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + BatchingGate: submitUpdate, flush.
+move normalization of SQL to Dialect (may be different for different dialects). Remove NiceSql. 
 
-Oracle
-
-Sybase
-
-
+make SqlDialect immutable. copy constructor, add() and remove() methods.

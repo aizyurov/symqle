@@ -1,6 +1,5 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractNumericExpression;
@@ -16,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -419,39 +417,39 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT MAX(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
-    public void testList() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
-                final List<Number> list = numericExpression.list(gate);
-                assertEquals(1, list.size());
-                assertEquals(123L, list.get(0).longValue());
-            }
-        }.play();
-
-    }
-
-
-    public void testScroll() throws Exception {
-        new Scenario() {
-            @Override
-            protected void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
-                numericExpression.scroll(gate, new Callback<Number>() {
-                    int callCount = 0;
-
-                    @Override
-                    public boolean iterate(final Number aNumber) {
-                        if (callCount++ != 0) {
-                            fail("One call expected, actually " + callCount);
-                        }
-                        assertEquals(123L, aNumber.longValue());
-                        return true;
-                    }
-                });
-            }
-        }.play();
-
-    }
+//    public void testList() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
+//                final List<Number> list = numericExpression.list(gate);
+//                assertEquals(1, list.size());
+//                assertEquals(123L, list.get(0).longValue());
+//            }
+//        }.play();
+//
+//    }
+//
+//
+//    public void testScroll() throws Exception {
+//        new Scenario() {
+//            @Override
+//            protected void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
+//                numericExpression.scroll(gate, new Callback<Number>() {
+//                    int callCount = 0;
+//
+//                    @Override
+//                    public boolean iterate(final Number aNumber) {
+//                        if (callCount++ != 0) {
+//                            fail("One call expected, actually " + callCount);
+//                        }
+//                        assertEquals(123L, aNumber.longValue());
+//                        return true;
+//                    }
+//                });
+//            }
+//        }.play();
+//
+//    }
 
     private static abstract class Scenario {
         public void play() throws Exception {

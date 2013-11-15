@@ -15,6 +15,8 @@
 */
 package org.symqle.common;
 
+import org.symqle.jdbc.QueryEngine;
+
 /**
  * An abstraction of a single row of a result set.
  * It does not contain methods for scrolling, closing result set etc.,
@@ -28,5 +30,13 @@ public interface Row {
      * @return the value slot
      */
     Element getValue(String label);
+
+    /**
+     * An engine to execute queries on the same connection.
+     * May be used to make query for each row, which depends on row values.
+     * Although it is not a good practice, it may be useful.
+     * @return proper QueryEngine
+     */
+    QueryEngine getQueryEngine();
 
 }

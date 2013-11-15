@@ -1,9 +1,10 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
-import org.symqle.integration.model.Employee;
 import org.symqle.gate.MySqlDialect;
+import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractSelectList;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -94,7 +95,7 @@ public class PairTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains(Pair.make(3000.0, "James")));
             assertTrue(list.toString(), list.contains(Pair.make(2000.0, "Alex")));
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {

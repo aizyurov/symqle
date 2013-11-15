@@ -149,4 +149,9 @@
         <scope>test</scope>
     </dependency>
   </dependencies>
+
+    <modules>
+        <module>core</module>
+        <module>symqle</module>
+    </modules>
 </project>

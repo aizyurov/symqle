@@ -8,6 +8,7 @@ import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractValueExpressionPrimary;
+import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 
 import java.sql.SQLException;
@@ -32,7 +33,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final MyDual myDual = new MyDual();
@@ -43,7 +44,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testOrderAsc() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final MyDual myDual = new MyDual();
@@ -54,7 +55,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testOrderDesc() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final MyDual myDual = new MyDual();
@@ -65,7 +66,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testCast() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final MyDual myDual = new MyDual();
@@ -76,7 +77,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final One one = new One();
@@ -87,7 +88,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testAll() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final MyDual myDual = new MyDual();
@@ -98,7 +99,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testDistinct() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final MyDual myDual = new MyDual();
@@ -596,7 +597,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testExists() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final Department department = new Department();
@@ -608,7 +609,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testContains() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final Department department = new Department();
@@ -620,7 +621,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testForUpdate() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         try {
@@ -635,7 +636,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final One one = new One();
@@ -645,7 +646,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testQueryValue() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+        if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final One one = new One();

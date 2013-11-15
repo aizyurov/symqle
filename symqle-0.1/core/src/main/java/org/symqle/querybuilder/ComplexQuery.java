@@ -16,7 +16,6 @@
 
 package org.symqle.querybuilder;
 
-import org.symqle.common.NiceSql;
 import org.symqle.common.Query;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
@@ -30,7 +29,7 @@ import java.sql.SQLException;
  * It delegates its methods to the constructor arguments.
  * @param <T> type of objects created by row mapper.
  */
-public class ComplexQuery<T> extends NiceSql implements Query<T> {
+public class ComplexQuery<T> implements Query<T> {
     private final RowMapper<T> extractor;
     private final Sql sql;
 

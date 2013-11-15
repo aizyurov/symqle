@@ -8,6 +8,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.sql.AbstractValueExpression;
+import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 
 import java.sql.SQLException;
@@ -53,7 +54,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     Arrays.asList("false", "true ", "true ", "true ", "true ");
             assertEquals(expected, list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -444,7 +445,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -460,7 +461,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -476,7 +477,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -492,7 +493,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.firstName.orderBy(createVE(employee).asc(), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -507,7 +508,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.firstName.orderBy(createVE(employee).desc(), employee.firstName).list(getDatabaseGate());
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret", "James"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -656,7 +657,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     Pair.make((Boolean) null, "Pedersen"),
                     Pair.make((Boolean) null, "Redwood")), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -678,7 +679,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     Pair.make(false, "Pedersen"),
                     Pair.make(false, "Redwood")), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -739,7 +740,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Integer> list = createVE(employee).count().list(getDatabaseGate());
             assertEquals(Arrays.asList(5), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect causes Derby exception: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -754,7 +755,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Integer> list = createVE(employee).countDistinct().list(getDatabaseGate());
             assertEquals(Arrays.asList(2), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -769,7 +770,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Boolean> list = createVE(employee).min().list(getDatabaseGate());
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -784,7 +785,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Boolean> list = createVE(employee).max().list(getDatabaseGate());
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().getDialect().getClass().equals(GenericDialect.class)) {
+            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {

@@ -1,5 +1,15 @@
 (done) adaptive DialectDatasource
 (done) rename DialectDatasource -> DataSourceGate
-common functions
+(done) common functions
 database-specific functions
-decouple dialect mappings and DataSourceGate (via symqle-dialect.properties). Remove singletons -use no-arg constructor for dialects.
+decouple dialect mappings and DataSourceGate (via symqle-dialect.properties). 
+(done) Remove singletons -use no-arg constructor for dialects.
+
+Postgresql dialect
+Oracle dialect
+Sybase dialect
+
+test transactions
+SpringDatabaseGate (transactions)
+refactor DatabaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + BatchingGate: submitUpdate, flush.
+move normalization of SQL to Dialect (may be different for different dialects)

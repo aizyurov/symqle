@@ -26,6 +26,27 @@ public class UpdatableConfiguration implements Configuration {
     private boolean implicitCrossJoinsOk = false;
 
     /**
+     * Default constructor.
+     * noFromOk = false
+     * implicitCrossJoinsOk = false
+     */
+    public UpdatableConfiguration() {
+
+    }
+
+    /**
+     * Copy constructor.
+     * Initial settings are taken from the argument.
+     * @param source the Configuration to take settings from. May be null, in this case default values are used.
+     */
+    public UpdatableConfiguration(final Configuration source) {
+        if (source != null) {
+            setNoFromOk(source.allowNoFrom());
+            setImplicitCrossJoinsOk(source.allowImplicitCrossJoins());
+        }
+    }
+
+    /**
      * Sets allowNoFrom.
      * @param noFromOk true to allow
      */

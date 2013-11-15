@@ -10,6 +10,7 @@ import org.symqle.integration.model.One;
 import org.symqle.gate.MySqlDialect;
 import org.symqle.sql.AbstractFactor;
 import org.symqle.sql.AbstractTerm;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -576,7 +577,7 @@ public class TermTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().getDialect().getClass())) {
+            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {
