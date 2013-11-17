@@ -1,7 +1,7 @@
 package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import org.symqle.jdbc.CommonEngineFactory;
+import org.symqle.jdbc.ConnectorEngine;
 import org.symqle.jdbc.Engine;
 import org.symqle.sql.Dialect;
 
@@ -55,9 +55,9 @@ public class ExternalDbEnvironment implements TestEnvironment {
                 final Class<?> dialectClazz = Class.forName(dialectClass);
                 final Method getMethod = dialectClazz.getMethod("get");
                 final Dialect dialect = (Dialect) getMethod.invoke(null);
-                return new CommonEngineFactory().create(dataSource, dialect);
+                return new ConnectorEngine(dataSource, dialect);
             } else {
-                return new CommonEngineFactory().create(dataSource);
+                return new ConnectorEngine(dataSource);
             }
         } catch (RuntimeException e) {
             throw e;

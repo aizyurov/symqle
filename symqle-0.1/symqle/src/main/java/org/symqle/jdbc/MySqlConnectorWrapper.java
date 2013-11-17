@@ -3,7 +3,7 @@ package org.symqle.jdbc;
 /**
  * @author lvovich
  */
-class MySqlConnectorWrapperFactory implements ConnectorWrapperFactory {
+class MySqlConnectorWrapper implements ConnectorWrapper {
 
     @Override
     public String getName() {

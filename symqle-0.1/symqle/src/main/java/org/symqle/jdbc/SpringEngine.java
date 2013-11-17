@@ -9,26 +9,26 @@ import java.sql.SQLException;
 /**
  * @author lvovich
  */
-public class ConnectorEngine extends AbstractEngine {
+public class SpringEngine extends AbstractEngine {
 
     private final Connector connector;
 
-//    protected ConnectorEngine(final Connector connector, final Dialect dialect, final String databaseName, final Option[] options) {
-//        super(dialect, databaseName, options);
-//        this.connector = connector;
-//    }
+    protected SpringEngine(final Connector connector, final Dialect dialect, final String databaseName, final Option[] options) {
+        super(dialect, databaseName, options);
+        this.connector = connector;
+    }
 
-    public ConnectorEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
+    protected SpringEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
         super(dialect, DatabaseUtils.getDatabaseName(dataSource), options);
         final ConnectorWrapper connectorWrapper = DatabaseUtils.getConnectorWrapperFactory(getDatabaseName());
-        final Connector connector = new DataSourceConnector(dataSource);
+        final Connector connector = new SpringConnector(dataSource);
         this.connector = connectorWrapper == null ? connector : connectorWrapper.wrap(connector);
     }
 
-    public ConnectorEngine(final DataSource dataSource, final Option... options) throws SQLException {
+    protected SpringEngine(final DataSource dataSource, final Option... options) throws SQLException {
         super(DatabaseUtils.getDatabaseName(dataSource), options);
         final ConnectorWrapper connectorWrapper = DatabaseUtils.getConnectorWrapperFactory(getDatabaseName());
-        final Connector connector = new DataSourceConnector(dataSource);
+        final Connector connector = new SpringConnector(dataSource);
         this.connector = connectorWrapper == null ? connector : connectorWrapper.wrap(connector);
     }
 

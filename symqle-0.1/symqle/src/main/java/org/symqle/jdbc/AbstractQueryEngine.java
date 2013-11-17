@@ -23,10 +23,20 @@ abstract class AbstractQueryEngine implements QueryEngine {
     private final Option[] options;
     private final String databaseName;
 
+    /**
+     * Constructs the engine
+     * @param dialect if null, auto-detect
+     * @param databaseName used for dialect detection
+     * @param options options to apply for query building and execution
+     */
     protected AbstractQueryEngine(final Dialect dialect, final String databaseName, final Option[] options) {
         this.dialect = dialect;
         this.options = Arrays.copyOf(options, options.length);
         this.databaseName = databaseName;
+    }
+
+    protected AbstractQueryEngine(final String databaseName, final Option[] options) {
+        this(DatabaseUtils.getDialect(databaseName), databaseName, options);
     }
 
     protected AbstractQueryEngine(final AbstractQueryEngine other) {
@@ -98,6 +108,5 @@ abstract class AbstractQueryEngine implements QueryEngine {
         SqlParameters parameters = new StatementParameters(preparedStatement);
         sql.setParameters(parameters);
     }
-
 
 }

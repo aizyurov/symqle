@@ -3,7 +3,7 @@ package org.symqle.jdbc;
 /**
  * @author lvovich
  */
-interface ConnectorWrapperFactory {
+interface ConnectorWrapper {
 
     String getName();
 

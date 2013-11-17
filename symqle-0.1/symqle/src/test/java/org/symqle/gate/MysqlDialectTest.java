@@ -37,4 +37,8 @@ public class MysqlDialectTest extends TestCase {
         assertEquals("SELECT T1.last_name AS C1 FROM employee AS T1 WHERE((T1.dept_id IS NOT NULL)) = ?", sql);
     }
 
+    public void testName() {
+        assertEquals("MySQL", new MySqlDialect().getName());
+    }
+
 }

@@ -5,7 +5,9 @@ import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractCursorSpecification;
 import org.symqle.sql.GenericDialect;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
@@ -22,11 +24,15 @@ public class OptionTest extends TestCase {
         Employee employee = new Employee();
         final AbstractCursorSpecification<String> cursorSpecification = employee.firstName.orderBy(employee.firstName);
         final String queryString = cursorSpecification.show(new GenericDialect());
-        final Connector connector = createMock(Connector.class);
-        final Engine engine = new ConnectorEngine(connector, new GenericDialect(), "mock", new Option[0]);
+        final DataSource connector = createMock(DataSource.class);
+        final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        expect(connector.getConnection()).andReturn(connection);
+        expect(connection.getMetaData()).andReturn(metaData);
+        expect(metaData.getDatabaseProductName()).andReturn("mock");
+        connection.close();
         expect(connector.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchDirection(ResultSet.FETCH_FORWARD);
@@ -41,7 +47,8 @@ public class OptionTest extends TestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(connector, connection,  statement, resultSet);
+        replay(connector, connection,  statement, resultSet, metaData);
+        final Engine engine = new ConnectorEngine(connector);
         final List<String> list = cursorSpecification.list(engine,
                 Option.setFetchDirection(ResultSet.FETCH_FORWARD),
                 Option.setFetchSize(2),
@@ -49,23 +56,22 @@ public class OptionTest extends TestCase {
                 Option.setMaxRows(10),
                 Option.setQueryTimeout(7));
         assertEquals(Arrays.asList("Alex"), list);
-        verify(connector, connection, statement, resultSet);
+        verify(connector, connection, statement, resultSet, metaData);
     }
 
     public void testEngineOptions() throws Exception {
         Employee employee = new Employee();
         final AbstractCursorSpecification<String> cursorSpecification = employee.firstName.orderBy(employee.firstName);
         final String queryString = cursorSpecification.show(new GenericDialect());
-        final Connector connector = createMock(Connector.class);
-        final Engine engine = new ConnectorEngine(connector, new GenericDialect(), "mock",
-                new Option[] {Option.setFetchDirection(ResultSet.FETCH_FORWARD),
-                        Option.setFetchSize(2),
-                        Option.setMaxFieldSize(5),
-                        Option.setMaxRows(10),
-                        Option.setQueryTimeout(7)});
+        final DataSource connector = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
+        expect(connector.getConnection()).andReturn(connection);
+        expect(connection.getMetaData()).andReturn(metaData);
+        expect(metaData.getDatabaseProductName()).andReturn("mock");
+        connection.close();
         expect(connector.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         statement.setFetchDirection(ResultSet.FETCH_FORWARD);
@@ -80,10 +86,16 @@ public class OptionTest extends TestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(connector, connection,  statement, resultSet);
+        replay(connector, connection,  statement, resultSet, metaData);
+        final Engine engine = new ConnectorEngine(connector,
+                Option.setFetchDirection(ResultSet.FETCH_FORWARD),
+                        Option.setFetchSize(2),
+                        Option.setMaxFieldSize(5),
+                        Option.setMaxRows(10),
+                        Option.setQueryTimeout(7));
         final List<String> list = cursorSpecification.list(engine
                 );
         assertEquals(Arrays.asList("Alex"), list);
-        verify(connector, connection, statement, resultSet);
+        verify(connector, connection, statement, resultSet, metaData);
     }
 }

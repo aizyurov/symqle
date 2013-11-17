@@ -9,7 +9,9 @@ import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,12 +46,16 @@ public class AbstractSelectorTest extends TestCase {
         final Person person = new Person();
         final MapCallFromCreateSelector mapper = new MapCallFromCreateSelector(person);
         final String queryString = mapper.show(new GenericDialect());
-        final Connector connector = createMock(Connector.class);
-        final Engine engine = new ConnectorEngine(connector, new GenericDialect(), "mock", new Option[0]);
+        final DataSource dataSource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
+        final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
-        expect(connector.getConnection()).andReturn(connection);
+        expect(dataSource.getConnection()).andReturn(connection);
+        expect(connection.getMetaData()).andReturn(metaData);
+        expect(metaData.getDatabaseProductName()).andReturn("mock");
+        connection.close();
+        expect(dataSource.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
         expect(resultSet.next()).andReturn(true);
@@ -61,26 +67,31 @@ public class AbstractSelectorTest extends TestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(connector, connection,  statement, resultSet);
+        replay(dataSource, connection,  statement, resultSet, metaData);
 
+        final Engine engine = new ConnectorEngine(dataSource, new GenericDialect());
         try {
             final List<PersonDTO> list = mapper.list(engine);
             fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             // Ok
         }
-        verify(connector, connection, statement, resultSet);
+        verify(dataSource, connection, statement, resultSet, metaData);
     }
 
     public void testSimpleMapper() throws Exception {
         final Person person = new Person();
         final PersonSelector mapper = new PersonSelector(person);
         final String queryString = mapper.show(new GenericDialect());
-        final Connector gate = createMock(Connector.class);
-        final Engine engine = new ConnectorEngine(gate, new GenericDialect(), "mock", new Option[0]);
+        final DataSource gate = createMock(DataSource.class);
+        final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
         final ResultSet resultSet = createMock(ResultSet.class);
+        expect(gate.getConnection()).andReturn(connection);
+        expect(connection.getMetaData()).andReturn(metaData);
+        expect(metaData.getDatabaseProductName()).andReturn("mock");
+        connection.close();
         expect(gate.getConnection()).andReturn(connection);
         expect(connection.prepareStatement(queryString)).andReturn(statement);
         expect(statement.executeQuery()).andReturn(resultSet);
@@ -92,13 +103,14 @@ public class AbstractSelectorTest extends TestCase {
         resultSet.close();
         statement.close();
         connection.close();
-        replay(gate, connection,  statement, resultSet);
+        replay(gate, connection,  statement, resultSet, metaData);
 
+        final Engine engine = new ConnectorEngine(gate);
         final List<PersonDTO> list = mapper.list(engine);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).id.longValue());
         assertEquals("Alex", list.get(0).name);
-        verify(gate, connection, statement, resultSet);
+        verify(gate, connection, statement, resultSet, metaData);
 
     }
 
@@ -125,7 +137,8 @@ public class AbstractSelectorTest extends TestCase {
 
         @Override
         protected PersonDTO create(final Row row) throws SQLException {
-            return new PersonDTO(idKey.extract(row), nameKey.extract(row));
+            final PersonDTO personDTO = new PersonDTO(idKey.extract(row), nameKey.extract(row));
+            return personDTO;
         }
     }
 

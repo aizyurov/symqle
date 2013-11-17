@@ -53,6 +53,5 @@ insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Sub
 (done) replace IllegalStateException/IllegalArgumentException -> BadStatementException
 
 databaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + BatchingGate: submitUpdate, flush.
-move normalization of SQL to Dialect (may be different for different dialects). Remove NiceSql. 
+(done) move normalization of SQL to Dialect (may be different for different dialects). Remove NiceSql.
 
-make SqlDialect immutable. copy constructor, add() and remove() methods.
