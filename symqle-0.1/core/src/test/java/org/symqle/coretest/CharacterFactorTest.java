@@ -1,6 +1,8 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractCharacterFactor;
 import org.symqle.sql.Column;
@@ -12,7 +14,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -455,6 +459,29 @@ public class CharacterFactorTest extends SqlTestCase {
     private static final Person person = new Person();
     private static final AbstractCharacterFactor<String> characterFactor = person.name.collate("latin1_general_ci");
 
+    public void testList() throws Exception {
+        final String queryString = characterFactor.show(new GenericDialect());
+        final List<String> expected = Arrays.asList("abc");
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<String> list = characterFactor.list(
+            new MockQueryEngine<String>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters);
+    }
+
+    public void testScroll() throws Exception {
+        final String queryString = characterFactor.show(new GenericDialect());
+        final List<String> expected = Arrays.asList("abc");
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        int rows = characterFactor.scroll(
+            new MockQueryEngine<String>(new SqlContext(),
+                    expected, queryString, parameters),
+                new TestCallback<String>("abc"));
+        assertEquals(1, rows);
+        verify(parameters);
+    }
 
     private static abstract class Scenario {
         public void play() throws Exception {

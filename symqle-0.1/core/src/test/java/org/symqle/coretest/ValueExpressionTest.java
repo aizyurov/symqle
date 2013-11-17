@@ -1,22 +1,21 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
-import org.symqle.jdbc.Option;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractAggregateFunction;
 import org.symqle.sql.AbstractValueExpression;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -431,65 +430,30 @@ public class ValueExpressionTest extends SqlTestCase {
     
     
 
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
-//                final List<Boolean> list = valueExpression.list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals(Boolean.TRUE, list.get(0));
-//            }
-//        }.play();
-//    }
-//
-//
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException {
-//                valueExpression.scroll(gate, new Callback<Boolean>() {
-//                    private int callCount;
-//
-//                    @Override
-//                    public boolean iterate(final Boolean aBoolean) {
-//                        assertEquals(0, callCount++);
-//                        assertEquals(Boolean.TRUE, aBoolean);
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//
-//    }
+    public void testList() throws Exception {
+        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
+        final String queryString = valueExpression.show(new GenericDialect());
+        final List<Boolean> expected = Arrays.asList(true);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<Boolean> list = valueExpression.list(
+            new MockQueryEngine<Boolean>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters);
+    }
 
-    private static abstract class Scenario {
-        public void play() throws Exception {
-            final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
-            final String queryString = valueExpression.show(new GenericDialect());
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            final ResultSet resultSet = createMock(ResultSet.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(queryString)).andReturn(statement);
-            expect(statement.executeQuery()).andReturn(resultSet);
-            expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getBoolean(matches("C[0-9]"))).andReturn(true);
-            expect(resultSet.wasNull()).andReturn(false);
-            expect(resultSet.next()).andReturn(false);
-            resultSet.close();
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement, resultSet);
-
-            runQuery(valueExpression, gate);
-            verify(gate, connection, statement, resultSet);
-        }
-
-        protected abstract void runQuery(final AbstractValueExpression<Boolean> valueExpression, final DatabaseGate gate) throws SQLException;
+    public void testScroll() throws Exception {
+        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
+        final String queryString = valueExpression.show(new GenericDialect());
+        final List<Boolean> expected = Arrays.asList(true);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        int rows = valueExpression.scroll(
+            new MockQueryEngine<Boolean>(new SqlContext(),
+                    expected, queryString, parameters),
+                new TestCallback<Boolean>(true));
+        assertEquals(1, rows);
+        verify(parameters);
     }
 
 

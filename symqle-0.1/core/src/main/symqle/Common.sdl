@@ -15,7 +15,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 import org.symqle.common.*;
 import org.symqle.querybuilder.*;
-import org.symqle.jdbc.StatementParameters;
 import org.symqle.jdbc.Configuration;
 import org.symqle.jdbc.UpdatableConfiguration;
 public final class Symqle  {

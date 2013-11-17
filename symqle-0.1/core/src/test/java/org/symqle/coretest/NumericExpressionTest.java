@@ -1,22 +1,23 @@
 package org.symqle.coretest;
 
+import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
-import org.symqle.jdbc.Option;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractNumericExpression;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -417,71 +418,48 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT MAX(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
-//                final List<Number> list = numericExpression.list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals(123L, list.get(0).longValue());
-//            }
-//        }.play();
-//
-//    }
-//
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException {
-//                numericExpression.scroll(gate, new Callback<Number>() {
-//                    int callCount = 0;
-//
-//                    @Override
-//                    public boolean iterate(final Number aNumber) {
-//                        if (callCount++ != 0) {
-//                            fail("One call expected, actually " + callCount);
-//                        }
-//                        assertEquals(123L, aNumber.longValue());
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//
-//    }
-
-    private static abstract class Scenario {
-        public void play() throws Exception {
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            final ResultSet resultSet = createMock(ResultSet.class);
-            final AbstractNumericExpression<Number> numericExpression = person.id.add(two);
-            final String queryString = numericExpression.show(new GenericDialect());
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(queryString)).andReturn(statement);
-            statement.setLong(1, 2L);
-            expect(statement.executeQuery()).andReturn(resultSet);
-            expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-            expect(resultSet.next()).andReturn(false);
-            resultSet.close();
-            statement.close();
-            connection.close();
-            replay(gate, connection, statement, resultSet);
-
-            runQuery(gate, numericExpression);
-            verify(gate, connection, statement, resultSet);
-
-        }
-
-        protected abstract void runQuery(final DatabaseGate gate, final AbstractNumericExpression<Number> numericExpression) throws SQLException;
+    public void testList() throws Exception {
+        final AbstractNumericExpression<Number> numericExpression = person.id.add(two);
+        final String queryString = numericExpression.show(new GenericDialect());
+        final List<Number> expected = Arrays.asList((Number)123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(2L);
+        replay(parameters, param);
+        final List<Number> list = numericExpression.list(
+            new MockQueryEngine<Number>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(expected.size(), list.size());
+        assertEquals(expected.get(0).longValue(), list.get(0).longValue());
+        verify(parameters, param);
     }
 
-
+    public void testScroll() throws Exception {
+        final AbstractNumericExpression<Number> numericExpression = person.id.add(two);
+        final String queryString = numericExpression.show(new GenericDialect());
+        final List<Number> expected = Arrays.asList((Number)123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(2L);
+        replay(parameters, param);
+        int rows = numericExpression.scroll(
+            new MockQueryEngine<Number>(new SqlContext(),
+                    expected, queryString, parameters),
+                new Callback<Number>() {
+                    int callCount = 0;
+                    @Override
+                    public boolean iterate(final Number value) {
+                        if (callCount++ > 0) {
+                            fail("One row expected, actually " + callCount);
+                        }
+                        assertEquals(123, value.intValue());
+                        return true;
+                    }
+                });
+        assertEquals(1, rows);
+        verify(parameters, param);
+    }
 
     private static class Person extends TableOrView {
         private Person() {

@@ -1,20 +1,24 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.TableOrView;
 import org.symqle.sql.ValueExpression;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * Created by IntelliJ IDEA.
@@ -641,41 +645,37 @@ public class DynamicParameterTest extends SqlTestCase {
 
 
 
-//    public void testList() throws Exception {
-//        final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
-//        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//        expect(gate.getDialect()).andReturn(new GenericDialect());
-//        org.easymock.EasyMock.replay(gate);
-//        try {
-//            param.list(gate);
-//            fail ("MalformedStatementException expected");
-//        } catch (MalformedStatementException e) {
-//            assertEquals("At least one table is required for FROM clause", e.getMessage());
-//        }
-//        org.easymock.EasyMock.verify(gate);
-//    }
-//
-//    public void testScroll() throws Exception {
-//        final DatabaseGate gate = org.easymock.EasyMock.createMock(DatabaseGate.class);
-//        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//        expect(gate.getDialect()).andReturn(new GenericDialect());
-//        org.easymock.EasyMock.replay(gate);
-//        try {
-//            param.scroll(gate, new Callback<Long>() {
-//                @Override
-//                public boolean iterate(final Long aLong) {
-//                    fail("Must not get here");
-//                    return true;
-//                }
-//            });
-//            fail ("MalformedStatementException expected");
-//        } catch (MalformedStatementException e) {
-//            assertEquals("At least one table is required for FROM clause", e.getMessage());
-//        }
-//        org.easymock.EasyMock.verify(gate);
-//    }
+    public void testList() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String queryString = param.show(new OracleLikeDialect(), Option.allowNoTables(true));
+        final List<Long> expected = Arrays.asList(1L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter parameter = createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(parameter);
+        parameter.setLong(1L);
+        replay(parameters, parameter);
+        final List<Long> list = param.list(
+                new MockQueryEngine<Long>(SqlContextUtil.allowNoTablesContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters, parameter);
+    }
+
+
+    public void testScroll() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String queryString = param.show(new OracleLikeDialect(), Option.allowNoTables(true));
+        final List<Long> expected = Arrays.asList(1L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter parameter = createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(parameter);
+        parameter.setLong(1L);
+        replay(parameters, parameter);
+        final int callCount = param.scroll(new MockQueryEngine<Long>(
+                SqlContextUtil.allowNoTablesContext(), expected, queryString, parameters),
+                new TestCallback<Long>(1L));
+        assertEquals(1, callCount);
+        verify(parameters, parameter);
+    }
 
 
     private static class Person extends TableOrView {

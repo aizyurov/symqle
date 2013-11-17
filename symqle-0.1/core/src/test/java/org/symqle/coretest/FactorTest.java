@@ -1,21 +1,20 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
-import org.symqle.jdbc.Option;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractFactor;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 
 /**
@@ -414,75 +413,31 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT MAX(- T1.id) AS C1 FROM person AS T1", sql);
     }
 
-
-
-
-
-
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractFactor<Long> factor) throws SQLException {
-//                final List<Long> list = factor.list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals(Long.valueOf(123), list.get(0));
-//            }
-//        }.play();
-//
-//    }
-//
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractFactor<Long> factor) throws SQLException {
-//                factor.scroll(gate, new Callback<Long>() {
-//                            int callCount = 0;
-//
-//                            @Override
-//                            public boolean iterate(final Long aLong) {
-//                                if (callCount++ != 0) {
-//                                    fail("One call expected, actually " + callCount);
-//                                }
-//                                assertEquals(Long.valueOf(123), aLong);
-//                                return true;
-//                            }
-//                        });
-//            }
-//        }.play();
-//
-//    }
-
-    private static abstract class Scenario {
-        public void play() throws Exception {
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            final ResultSet resultSet = createMock(ResultSet.class);
-            final AbstractFactor<Long> factor = person.id.opposite();
-            final String queryString = factor.show(new GenericDialect());
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(queryString)).andReturn(statement);
-            expect(statement.executeQuery()).andReturn(resultSet);
-            expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-            expect(resultSet.wasNull()).andReturn(false);
-            expect(resultSet.next()).andReturn(false);
-            resultSet.close();
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement, resultSet);
-
-            runQuery(gate, factor);
-            verify(gate, connection,  statement, resultSet);
-        }
-
-        protected abstract void runQuery(final DatabaseGate gate, final AbstractFactor<Long> factor) throws SQLException;
+    public void testList() throws Exception {
+        final AbstractFactor<Long> factor = person.id.opposite();
+        final String queryString = factor.show(new GenericDialect());
+        final List<Long> expected = Arrays.asList(-123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<Long> list = factor.list(
+            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters);
     }
 
-
+    public void testScroll() throws Exception {
+        final AbstractFactor<Long> factor = person.id.opposite();
+        final String queryString = factor.show(new GenericDialect());
+        final List<Long> expected = Arrays.asList(-123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        int rows = factor.scroll(
+            new MockQueryEngine<Long>(new SqlContext(),
+                    expected, queryString, parameters),
+                new TestCallback<Long>(-123L));
+        assertEquals(1, rows);
+        verify(parameters);
+    }
 
     private static class Person extends TableOrView {
         private Person() {

@@ -1,22 +1,23 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
-import org.symqle.jdbc.Option;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractSearchedWhenClause;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.TableOrView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -447,67 +448,35 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT MAX(CASE WHEN T0.age > ? THEN T0.age END) AS C0 FROM person AS T0", sql);
     }
 
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final AbstractSearchedWhenClause<String> whenClause, final DatabaseGate gate) throws SQLException {
-//                final List<String> list = whenClause.list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals("John", list.get(0));
-//            }
-//        }.play();
-//
-//    }
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final AbstractSearchedWhenClause<String> whenClause, final DatabaseGate gate) throws SQLException {
-//                whenClause.scroll(gate, new Callback<String>() {
-//                    int callCount = 0;
-//
-//                    @Override
-//                    public boolean iterate(final String aString) {
-//                        if (callCount++ != 0) {
-//                            fail("One call expected, actually " + callCount);
-//                        }
-//                        assertEquals("John", aString);
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//
-//    }
+    public void testList() throws Exception {
+        final AbstractSearchedWhenClause<String> whenClause = person.age.gt(20L).then(person.name);
+        final String queryString = whenClause.show(new GenericDialect());
+        final List<String> expected = Arrays.asList("John");
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param1 =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param1);
+        param1.setLong(20L);
+        replay(parameters, param1);
+        final List<String> list = whenClause.list(new MockQueryEngine<String>(new SqlContext(),
+                expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters, param1);
+    }
 
-    private static abstract class Scenario {
-        public void play() throws Exception {
-            final AbstractSearchedWhenClause<String> whenClause = person.age.gt(20L).then(person.name);
-            final String queryString = whenClause.show(new GenericDialect());
-
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            final ResultSet resultSet = createMock(ResultSet.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(queryString)).andReturn(statement);
-            statement.setLong(1, 20L);
-            expect(statement.executeQuery()).andReturn(resultSet);
-            expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getString(matches("C[0-9]"))).andReturn("John");
-            expect(resultSet.next()).andReturn(false);
-            resultSet.close();
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement, resultSet);
-
-            runQuery(whenClause, gate);
-            verify(gate, connection,  statement, resultSet);
-        }
-
-        protected abstract void runQuery(final AbstractSearchedWhenClause<String> whenClause, final DatabaseGate gate) throws SQLException;
+    public void testScroll() throws Exception {
+        final AbstractSearchedWhenClause<String> whenClause = person.age.gt(20L).then(person.name);
+        final String queryString = whenClause.show(new GenericDialect());
+        final List<String> expected = Arrays.asList("John");
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param1 =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param1);
+        param1.setLong(20L);
+        replay(parameters, param1);
+        final int callCount = whenClause.scroll(new MockQueryEngine<String>(new SqlContext(),
+                expected, queryString, parameters),
+                new TestCallback<String>("John"));
+        assertEquals(1, callCount);
+        verify(parameters, param1);
     }
 
     private static class Person extends TableOrView {
@@ -534,7 +503,6 @@ public class WhenClauseTest extends SqlTestCase {
     }
 
     private static Employee employee = new Employee();
-    
 
 
 }

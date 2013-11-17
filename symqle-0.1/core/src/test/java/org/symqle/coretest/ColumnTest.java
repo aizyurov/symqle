@@ -2,23 +2,21 @@ package org.symqle.coretest;
 
 import org.easymock.Capture;
 import org.symqle.common.Callback;
+import org.symqle.common.Element;
 import org.symqle.common.Mappers;
 import org.symqle.common.Query;
+import org.symqle.common.Row;
 import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.TableOrView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -610,88 +608,46 @@ public class ColumnTest extends SqlTestCase {
         final Column<Long> column = person.id;
         final String queryString = column.show(new GenericDialect());
         final List<Long> result = Arrays.asList(123L);
-        final List<Long> list = column.list(new MockQueryEngine<Long>(new SqlContext(), result, queryString, new Option[0]));
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<Long> list = column.list(
+                new MockQueryEngine<Long>(new SqlContext(), result, queryString, parameters));
         assertEquals(result,  list);
+        verify(parameters);
+    }
+
+    public void testScroll() throws Exception {
+        final Column<Long> column = person.id;
+        final String queryString = column.show(new OracleLikeDialect());
+        final List<Long> result = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final int callCount = column.scroll(
+                new MockQueryEngine<Long>(SqlContextUtil.allowNoTablesContext(), result, queryString, parameters, Option.allowNoTables(false)),
+                new TestCallback<Long>(123L), Option.allowNoTables(false));
+        assertEquals(1, callCount);
+        verify(parameters);
+    }
+
+    public void testExtractFromRow() throws Exception {
+        final Column<Long> column = person.id;
+        final String queryString = column.show(new GenericDialect());
+        final Row row = createMock(Row.class);
+        final Element element = createMock(Element.class);
+        final List<Row> rows = Arrays.asList(row);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        expect(row.getValue(matches("C[0-9]"))).andReturn(element);
+        expect(element.getLong()).andReturn(123L);
+        replay(parameters, row, element);
+        final List<Long> list = column.list(
+                new MockRowsQueryEngine(queryString, parameters, new SqlContext(), rows));
+        assertEquals(Arrays.asList(123L),  list);
+        verify(parameters, row, element);
     }
 
 
     public void testOptions() throws Exception {
-        final Column<Long> column = person.id;
-        final String queryString = column.show(new GenericDialect());
-        final DatabaseGate gate = createMock(DatabaseGate.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-        expect(gate.getDialect()).andReturn(new GenericDialect());
-        expect(gate.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setFetchSize(10);
-        statement.setFetchDirection(ResultSet.FETCH_FORWARD);
-        statement.setMaxFieldSize(15);
-        statement.setMaxRows(5);
-        statement.setQueryTimeout(100);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(gate, connection,  statement, resultSet);
-
-//        final List<Long> list = column.list(gate, Option.setFetchSize(10),
-//                Option.setFetchDirection(ResultSet.FETCH_FORWARD),
-//                Option.setMaxFieldSize(15),
-//                Option.setMaxRows(5),
-//                Option.setQueryTimeout(100),
-//                Option.allowNoTables(false));
-//        assertEquals(1, list.size());
-//        assertEquals(123L, list.get(0).longValue());
-//        verify(gate, connection, statement, resultSet);
-//
     }
-
-    public void testGateOptions() throws Exception {
-        final Column<Long> column = person.id;
-        final String queryString = column.show(new GenericDialect());
-        final DatabaseGate gate = createMock(DatabaseGate.class);
-        final Connection connection = createMock(Connection.class);
-        final PreparedStatement statement = createMock(PreparedStatement.class);
-        final ResultSet resultSet = createMock(ResultSet.class);
-        expect(gate.getOptions()).andReturn(Arrays.<Option>asList(Option.setFetchSize(10),
-                Option.setFetchDirection(ResultSet.FETCH_FORWARD),
-                Option.setQueryTimeout(100)));
-        expect(gate.getDialect()).andReturn(new GenericDialect());
-        expect(gate.getConnection()).andReturn(connection);
-        expect(connection.prepareStatement(queryString)).andReturn(statement);
-        statement.setFetchSize(10);
-        statement.setFetchDirection(ResultSet.FETCH_FORWARD);
-        statement.setQueryTimeout(100);
-        statement.setMaxFieldSize(15);
-        statement.setMaxRows(5);
-        statement.setQueryTimeout(50);
-        expect(statement.executeQuery()).andReturn(resultSet);
-        expect(resultSet.next()).andReturn(true);
-        expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-        expect(resultSet.wasNull()).andReturn(false);
-        expect(resultSet.next()).andReturn(false);
-        resultSet.close();
-        statement.close();
-        connection.close();
-        replay(gate, connection,  statement, resultSet);
-
-//        final List<Long> list = column.list(gate,
-//                Option.setMaxFieldSize(15),
-//                Option.setMaxRows(5),
-//                Option.setQueryTimeout(50));
-//        assertEquals(1, list.size());
-//        assertEquals(123L, list.get(0).longValue());
-//        verify(gate, connection, statement, resultSet);
-
-    }
-
 
 
     private static class Person extends TableOrView {

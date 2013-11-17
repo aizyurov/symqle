@@ -1,6 +1,8 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.*;
 
@@ -8,7 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -498,39 +502,31 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT MAX(abs(T1.id)) AS C1 FROM person AS T1", sql);
     }
 
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
-//                final List<Long> list = abs(person.id).list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals(123L, list.get(0).longValue());
-//            }
-//        }.play();
-//
-//    }
-//
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractRoutineInvocation<Long> routineInvocation) throws SQLException {
-//                routineInvocation.scroll(gate, new Callback<Long>() {
-//                    int callCount = 0;
-//
-//                    @Override
-//                    public boolean iterate(final Long aLong) {
-//                        if (callCount++ != 0) {
-//                            fail("One call expected, actually " + callCount);
-//                        }
-//                        assertEquals(123L, aLong.longValue());
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//
-//    }
+    public void testList() throws Exception {
+        final AbstractRoutineInvocation<Long> routineInvocation = abs(person.id);
+        final String queryString = routineInvocation.show(new GenericDialect());
+        final List<Long> expected = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<Long> list = routineInvocation.list(
+            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters);
+    }
+
+    public void testScroll() throws Exception {
+        final AbstractRoutineInvocation<Long> routineInvocation = abs(person.id);
+        final String queryString = routineInvocation.show(new GenericDialect());
+        final List<Long> expected = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        int rows = routineInvocation.scroll(
+            new MockQueryEngine<Long>(new SqlContext(),
+                    expected, queryString, parameters),
+                new TestCallback<Long>(123L));
+        assertEquals(1, rows);
+        verify(parameters);
+    }
 
     private static abstract class Scenario {
         public void play() throws Exception {

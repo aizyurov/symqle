@@ -2,23 +2,16 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
-import org.symqle.jdbc.Option;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractDeleteStatement;
 import org.symqle.sql.AbstractDeleteStatementBase;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -57,77 +50,31 @@ public class DeleteTest extends SqlTestCase {
         }
     }
 
-//    public void testExecute() throws Exception {
-//        new ExecuteScenario() {
-//            @Override
-//            protected void runExecute(final AbstractDeleteStatementBase update, final DatabaseGate gate) throws SQLException {
-//                assertEquals(2, update.execute(gate));
-//            }
-//        }.play();
-//
-//    }
-
-    private static abstract class ExecuteScenario {
-
-        public void play() throws Exception {
-            final AbstractDeleteStatementBase update = person.delete();
-            final String statementString = update.show(new GenericDialect());
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(statementString)).andReturn(statement);
-            expect(statement.executeUpdate()).andReturn(2);
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement);
-
-            runExecute(update, gate);
-            verify(gate, connection, statement);
-        }
-
-        protected abstract void runExecute(final AbstractDeleteStatementBase update, final DatabaseGate gate) throws SQLException;
-    }
-
-//    public void testExecuteSearched() throws Exception {
-//        new ExecuteSearchedScenario() {
-//            @Override
-//            protected void runExecute(final AbstractDeleteStatement update, final DatabaseGate gate) throws SQLException {
-//                assertEquals(1, update.execute(gate));
-//            }
-//        }.play();
-//
-//    }
-
-    private static abstract class ExecuteSearchedScenario {
-
-        public void play() throws Exception {
-            final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
-            final String statementString = update.show(new GenericDialect());
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(statementString)).andReturn(statement);
-            statement.setLong(1, 1L);
-            expect(statement.executeUpdate()).andReturn(1);
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement);
-
-            runExecute(update, gate);
-
-            verify(gate, connection, statement);
-        }
-
-        protected abstract void runExecute(final AbstractDeleteStatement update, final DatabaseGate gate) throws SQLException;
+    public void testExecute() throws Exception {
+        final AbstractDeleteStatementBase update = person.delete();
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final int affectedRows = update.execute(
+                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+        assertEquals(2, affectedRows);
+        verify(parameters);
 
     }
 
+    public void testExecuteSearched() throws Exception {
+        final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param = createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(1L);
+        replay(parameters, param);
+        final int affectedRows = update.execute(
+                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+        assertEquals(2, affectedRows);
+        verify(parameters, param);
+    }
 
     private static class Person extends Table {
         private Person() {

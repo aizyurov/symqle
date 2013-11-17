@@ -2,18 +2,15 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractUpdateStatement;
 import org.symqle.sql.AbstractUpdateStatementBase;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -109,113 +106,67 @@ public class UpdateTest extends SqlTestCase {
         }
     }
 
-//    public void testExecute() throws Exception {
-//        new ExecuteScenario() {
-//            @Override
-//            protected void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException {
-//                assertEquals(2, update.execute(gate));
-//            }
-//        }.play();
-//
-//    }
-
-    private abstract static class ExecuteScenario {
-        public void play() throws Exception {
-            final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
-            final String statementString = update.show(new GenericDialect());
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(statementString)).andReturn(statement);
-            statement.setString(1, "John");
-            expect(statement.executeUpdate()).andReturn(2);
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement);
-
-            runExecute(update, gate);
-
-            verify(gate, connection, statement);
-        }
-
-        protected abstract void runExecute(final AbstractUpdateStatementBase update, final DatabaseGate gate) throws SQLException;
+    public void testExecute() throws Exception {
+        final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
     }
 
-//    public void testExecuteSearched() throws Exception {
-//        new ExecuteSearchedScenario() {
-//            @Override
-//            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
-//                assertEquals(1, update.execute(gate));
-//            }
-//        }.play();
-//
-//    }
-
-    private abstract static class ExecuteSearchedScenario {
-        public void play() throws Exception {
-            final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
-            final String statementString = update.show(new GenericDialect());
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(statementString)).andReturn(statement);
-            statement.setString(1, "John");
-            statement.setLong(2, 1L);
-            expect(statement.executeUpdate()).andReturn(1);
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement);
-
-            runExecute(update, gate);
-
-            verify(gate, connection, statement);
-        }
-
-        protected abstract void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException;
+    public void testExecuteWithOtherDialect() throws Exception {
+        final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, SqlContextUtil.allowNoTablesContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
     }
 
-//    public void testExecuteWithOptions() throws Exception {
-//        new ExecuteWithOptionsScenario() {
-//            @Override
-//            protected void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException {
-//                assertEquals(1, update.execute(gate, Option.setQueryTimeout(20)));
-//            }
-//        }.play();
-//
-//    }
+    public void testExecuteSearched() throws Exception {
+        final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        final SqlParameter param2 =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        expect(parameters.next()).andReturn(param2);
+        param2.setLong(1L);
+        replay(parameters, param, param2);
+        int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param, param2);
+    }
 
-    private abstract static class ExecuteWithOptionsScenario {
-        public void play() throws Exception {
-            final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
-            final String statementString = update.show(new GenericDialect());
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            expect(gate.getOptions()).andReturn(Collections.<Option>singletonList(Option.setQueryTimeout(10)));
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(statementString)).andReturn(statement);
-            statement.setQueryTimeout(10);
-            statement.setQueryTimeout(20);
-            statement.setString(1, "John");
-            statement.setLong(2, 1L);
-            expect(statement.executeUpdate()).andReturn(1);
-            statement.close();
-            connection.close();
-            replay(gate, connection,  statement);
-
-            runExecute(update, gate);
-
-            verify(gate, connection, statement);
-        }
-
-        protected abstract void runExecute(final AbstractUpdateStatement update, final DatabaseGate gate) throws SQLException;
+    public void testExecuteWithOptions() throws Exception {
+        final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        final SqlParameter param2 =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        expect(parameters.next()).andReturn(param2);
+        param2.setLong(1L);
+        replay(parameters, param, param2);
+        int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, new SqlContext(), Option.setQueryTimeout(20)),
+                Option.setQueryTimeout(20));
+        assertEquals(3, rows);
+        verify(parameters, param, param2);
     }
 
     private static class Person extends Table {

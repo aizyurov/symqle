@@ -1,6 +1,10 @@
 package org.symqle.coretest;
 
+import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractTerm;
 import org.symqle.sql.Column;
@@ -14,7 +18,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.easymock.EasyMock.*;
 
@@ -420,38 +426,47 @@ public class TermTest extends SqlTestCase {
     }
     
 
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractTerm<Number> term) throws SQLException {
-//                final List<Number> list = term.list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals(123L, list.get(0).longValue());
-//            }
-//        }.play();
-//
-//    }
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractTerm<Number> term) throws SQLException {
-//                term.scroll(gate, new Callback<Number>() {
-//                    int callCount = 0;
-//
-//                    @Override
-//                    public boolean iterate(final Number aNumber) {
-//                        if (callCount++ != 0) {
-//                            fail("One call expected, actually " + callCount);
-//                        }
-//                        assertEquals(123L, aNumber.longValue());
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//
-//    }
+    public void testList() throws Exception {
+        final AbstractTerm<Number> term = person.id.mult(two);
+        final String queryString = term.show(new GenericDialect());
+        final List<Number> expected = Arrays.asList((Number) 12L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(2L);
+        replay(parameters, param);
+        final List<Number> list = term.list(
+            new MockQueryEngine<Number>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(1, list.size());
+        assertEquals(expected.get(0).longValue(), list.get(0).longValue());
+    }
+
+    public void testScroll() throws Exception {
+        final AbstractTerm<Number> term = person.id.mult(two);
+        final String queryString = term.show(new GenericDialect());
+        final List<Number> expected = Arrays.asList((Number) 12L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(2L);
+        replay(parameters, param);
+        int rows = term.scroll(
+            new MockQueryEngine<Number>(new SqlContext(),
+                    expected, queryString, parameters),
+                new Callback<Number>() {
+                    int callCount = 0;
+                    @Override
+                    public boolean iterate(final Number value) {
+                        if (callCount++ > 0) {
+                            fail("One row expected, actually " + callCount);
+                        }
+                        assertEquals(12, value.intValue());
+                        return true;
+                    }
+                });
+        assertEquals(1, rows);
+        verify(parameters, param);
+    }
 
     private static abstract class Scenario {
         public void play() throws Exception {

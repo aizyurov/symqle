@@ -56,12 +56,7 @@ public abstract class Option {
      * @return new option
      */
     public static StatementOption setFetchDirection(final int direction) {
-        return new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setFetchDirection(direction);
-            }
-        };
+        return new FetchDirectionOption(direction);
     }
 
     /**
@@ -71,12 +66,7 @@ public abstract class Option {
      * @return new option
      */
     public static StatementOption setFetchSize(final int rows) {
-        return new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setFetchSize(rows);
-            }
-        };
+        return new FetchSizeOption(rows);
     }
 
     /**
@@ -86,12 +76,7 @@ public abstract class Option {
      * @return new option
      */
     public static StatementOption setMaxFieldSize(final int max) {
-        return new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setMaxFieldSize(max);
-            }
-        };
+        return new MaxFieldSizeOption(max);
     }
 
 
@@ -102,12 +87,7 @@ public abstract class Option {
      * @return new option
      */
     public static StatementOption setMaxRows(final int max) {
-        return new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setMaxRows(max);
-            }
-        };
+        return new MaxRowsOption(max);
     }
 
     /**
@@ -117,12 +97,7 @@ public abstract class Option {
      * @return new option
      */
     public static StatementOption setQueryTimeout(final int seconds) {
-        return new StatementOption() {
-            @Override
-            public void apply(final Statement statement) throws SQLException {
-                statement.setQueryTimeout(seconds);
-            }
-        };
+        return new QueryTimeoutOption(seconds);
     }
 
     /**
@@ -136,12 +111,7 @@ public abstract class Option {
      * @return new option
      */
     public static ConfigurationOption allowNoTables(final boolean allow) {
-        return new ConfigurationOption() {
-            @Override
-            public void apply(final UpdatableConfiguration configuration) {
-                configuration.setNoFromOk(allow);
-            }
-        };
+        return new NoTablesOption(allow);
     }
 
     /**
@@ -154,11 +124,216 @@ public abstract class Option {
      * @return new options
      */
     public static ConfigurationOption allowImplicitCrossJoins(final boolean allow) {
-        return new ConfigurationOption() {
-            @Override
-            public void apply(final UpdatableConfiguration configuration) {
-                configuration.setImplicitCrossJoinsOk(allow);
-            }
-        };
+        return new ImplicitCrossJoinsOption(allow);
+    }
+
+    private static class FetchDirectionOption extends StatementOption {
+        private final int direction;
+
+        public FetchDirectionOption(final int direction) {
+            this.direction = direction;
+        }
+
+        @Override
+        public void apply(final Statement statement) throws SQLException {
+            statement.setFetchDirection(direction);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final FetchDirectionOption that = (FetchDirectionOption) o;
+
+            if (direction != that.direction) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return direction;
+        }
+    }
+
+    private static class FetchSizeOption extends StatementOption {
+        private final int rows;
+
+        public FetchSizeOption(final int rows) {
+            this.rows = rows;
+        }
+
+        @Override
+        public void apply(final Statement statement) throws SQLException {
+            statement.setFetchSize(rows);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final FetchSizeOption that = (FetchSizeOption) o;
+
+            if (rows != that.rows) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return rows;
+        }
+    }
+
+    private static class MaxFieldSizeOption extends StatementOption {
+        private final int max;
+
+        public MaxFieldSizeOption(final int max) {
+            this.max = max;
+        }
+
+        @Override
+        public void apply(final Statement statement) throws SQLException {
+            statement.setMaxFieldSize(max);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final MaxFieldSizeOption that = (MaxFieldSizeOption) o;
+
+            if (max != that.max) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return max;
+        }
+    }
+
+    private static class MaxRowsOption extends StatementOption {
+        private final int max;
+
+        public MaxRowsOption(final int max) {
+            this.max = max;
+        }
+
+        @Override
+        public void apply(final Statement statement) throws SQLException {
+            statement.setMaxRows(max);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final MaxRowsOption that = (MaxRowsOption) o;
+
+            if (max != that.max) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return max;
+        }
+    }
+
+    private static class QueryTimeoutOption extends StatementOption {
+        private final int seconds;
+
+        public QueryTimeoutOption(final int seconds) {
+            this.seconds = seconds;
+        }
+
+        @Override
+        public void apply(final Statement statement) throws SQLException {
+            statement.setQueryTimeout(seconds);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final QueryTimeoutOption that = (QueryTimeoutOption) o;
+
+            if (seconds != that.seconds) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return seconds;
+        }
+    }
+
+    private static class NoTablesOption extends ConfigurationOption {
+        private final boolean allow;
+
+        public NoTablesOption(final boolean allow) {
+            this.allow = allow;
+        }
+
+        @Override
+        public void apply(final UpdatableConfiguration configuration) {
+            configuration.setNoFromOk(allow);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final NoTablesOption that = (NoTablesOption) o;
+
+            if (allow != that.allow) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return (allow ? 1 : 0);
+        }
+    }
+
+    private static class ImplicitCrossJoinsOption extends ConfigurationOption {
+        private final boolean allow;
+
+        public ImplicitCrossJoinsOption(final boolean allow) {
+            this.allow = allow;
+        }
+
+        @Override
+        public void apply(final UpdatableConfiguration configuration) {
+            configuration.setImplicitCrossJoinsOk(allow);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            final ImplicitCrossJoinsOption that = (ImplicitCrossJoinsOption) o;
+
+            if (allow != that.allow) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return (allow ? 1 : 0);
+        }
     }
 }

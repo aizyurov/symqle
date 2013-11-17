@@ -1,12 +1,21 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractCastSpecification;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.TableOrView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * Created by IntelliJ IDEA.
@@ -536,65 +545,31 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id ELSE CAST(T0.id AS NUMBER) END AS C0 FROM person AS T0", sql);
     }
 
+    public void testList() throws Exception {
+        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final String queryString = column.show(new GenericDialect());
+        final List<Long> expected = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<Long> list = column.list(
+            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters);
+    }
 
-
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final AbstractCastSpecification<Long> column, final DatabaseGate gate) throws SQLException {
-//                final List<Long> list = column.list(gate);
-//                assertEquals(1, list.size());
-//                assertEquals(123L, list.get(0).longValue());
-//            }
-//        }.play();
-//    }
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final AbstractCastSpecification<Long> column, final DatabaseGate gate) throws SQLException {
-//                column.scroll(gate, new Callback<Long>() {
-//                    int rowNum = 0;
-//                    @Override
-//                    public boolean iterate(final Long value) {
-//                        assertEquals(1, ++rowNum);
-//                        assertEquals(123L, value.longValue());
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//    }
-//
-//    public static abstract class Scenario {
-//        public void play() throws Exception {
-//            final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
-//            final String queryString = column.show(new GenericDialect());
-//            final DatabaseGate gate = createMock(DatabaseGate.class);
-//            final Connection connection = createMock(Connection.class);
-//            final PreparedStatement statement = createMock(PreparedStatement.class);
-//            final ResultSet resultSet = createMock(ResultSet.class);
-//            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//            expect(gate.getDialect()).andReturn(new GenericDialect());
-//            expect(gate.getConnection()).andReturn(connection);
-//            expect(connection.prepareStatement(queryString)).andReturn(statement);
-//            expect(statement.executeQuery()).andReturn(resultSet);
-//            expect(resultSet.next()).andReturn(true);
-//            expect(resultSet.getLong(matches("C[0-9]"))).andReturn(123L);
-//            expect(resultSet.wasNull()).andReturn(false);
-//            expect(resultSet.next()).andReturn(false);
-//            resultSet.close();
-//            statement.close();
-//            connection.close();
-//            replay(gate, connection,  statement, resultSet);
-//
-//            runQuery(column, gate);
-//            verify(gate, connection, statement, resultSet);
-//
-//        }
-//
-//        protected abstract void runQuery(final AbstractCastSpecification<Long> column, final DatabaseGate gate) throws SQLException;
-//    }
+    public void testScroll() throws Exception {
+        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final String queryString = column.show(new GenericDialect());
+        final List<Long> expected = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        int rows = column.scroll(
+            new MockQueryEngine<Long>(new SqlContext(),
+                    expected, queryString, parameters),
+                new TestCallback<Long>(123L));
+        assertEquals(1, rows);
+        verify(parameters);
+    }
 
     private static class Person extends TableOrView {
         private Person() {

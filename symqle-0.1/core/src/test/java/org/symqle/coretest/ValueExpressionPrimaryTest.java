@@ -2,12 +2,20 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractValueExpressionPrimary;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -426,20 +434,31 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
 
-//    public void testList() throws Exception {
-//        final DatabaseGate gate = createMock(DatabaseGate.class);
-//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//        expect(gate.getDialect()).andReturn(new GenericDialect());
-//        replay(gate);
-//        try {
-//            final List<Long> list = person.id.where(person.name.eq(employee.name)).queryValue().list(gate, Option.allowImplicitCrossJoins(true));
-//            fail ("MalformedStatementException expected but produced: "+list);
-//        } catch (MalformedStatementException e) {
-//            assertEquals("At least one table is required for FROM clause", e.getMessage());
-//        }
-//        verify(gate);
-//
-//    }
+    public void testList() throws Exception {
+        final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = person.id.queryValue();
+        final String queryString = valueExpressionPrimary.show(new OracleLikeDialect(), Option.allowNoTables(true));
+        final List<Long> expected = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final List<Long> list = valueExpressionPrimary.list(
+                new MockQueryEngine<Long>(SqlContextUtil.allowNoTablesContext(), expected, queryString, parameters));
+        assertEquals(expected, list);
+        verify(parameters);
+    }
+
+    public void testScroll() throws Exception {
+        final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = person.id.queryValue();
+        final String queryString = valueExpressionPrimary.show(new OracleLikeDialect(),
+                Option.allowNoTables(true));
+        final List<Long> expected = Arrays.asList(123L);
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final int callCount = valueExpressionPrimary.scroll(
+                new MockQueryEngine<Long>(SqlContextUtil.allowNoTablesContext(), expected, queryString, parameters),
+                new TestCallback<Long>(123L));
+        assertEquals(1, callCount);
+        verify(parameters);
+    }
 
     public void testCount() throws Exception {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().count().where(employee.name.isNotNull()).show(new GenericDialect());
@@ -472,51 +491,6 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
 
-
-//    public void testQuery() throws Exception {
-//        final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.eq(employee.name)).queryValue().where(employee.name.isNotNull());
-//        final DatabaseGate gate = createMock(DatabaseGate.class);
-//        final Connection connection = createMock(Connection.class);
-//        final PreparedStatement statement = createMock(PreparedStatement.class);
-//        final ResultSet resultSet = createMock(ResultSet.class);
-//        final String queryString = querySpecification.show(new GenericDialect());
-//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//        expect(gate.getDialect()).andReturn(new GenericDialect());
-//        expect(gate.getConnection()).andReturn(connection);
-//        expect(connection.prepareStatement(queryString)).andReturn(statement);
-//        expect(statement.executeQuery()).andReturn(resultSet);
-//        expect(resultSet.next()).andReturn(true);
-//        expect(resultSet.getLong(matches("[CS][0-9]"))).andReturn(123L);
-//        expect(resultSet.wasNull()).andReturn(false);
-//        expect(resultSet.next()).andReturn(false);
-//        resultSet.close();
-//        statement.close();
-//        connection.close();
-//        replay(gate, connection,  statement, resultSet);
-//        final List<Long> list = querySpecification.list(gate);
-//        assertEquals(1, list.size());
-//        assertEquals(123L, list.get(0).longValue());
-//    }
-
-//    public void testScroll() throws Exception {
-//        final DatabaseGate gate = createMock(DatabaseGate.class);
-//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//        expect(gate.getDialect()).andReturn(new GenericDialect());
-//        replay(gate);
-//        try {
-//            person.id.where(person.name.eq(employee.name)).queryValue().scroll(gate, new Callback<Long>() {
-//                @Override
-//                public boolean iterate(final Long aLong) {
-//                    fail("must not get here");
-//                    return true;
-//                }
-//            }, Option.allowImplicitCrossJoins(true));
-//        } catch (MalformedStatementException e) {
-//            assertEquals("At least one table is required for FROM clause", e.getMessage());
-//        }
-//        verify(gate);
-//
-//    }
 
     private static class Person extends TableOrView {
         private Person() {

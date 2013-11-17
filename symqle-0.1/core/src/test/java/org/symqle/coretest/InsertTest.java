@@ -2,11 +2,20 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractInsertStatement;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Symqle;
 import org.symqle.sql.Table;
+
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -82,27 +91,31 @@ public class InsertTest extends SqlTestCase {
         }
     }
 
-//    public void testExecute() throws Exception {
-//        final AbstractInsertStatement update = person.insert(person.name.set("John"));
-//        final String statementString = update.show(new GenericDialect());
-//        final DatabaseGate gate = createMock(DatabaseGate.class);
-//        final Connection connection = createMock(Connection.class);
-//        final PreparedStatement statement = createMock(PreparedStatement.class);
-//        expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-//        expect(gate.getDialect()).andReturn(new GenericDialect());
-//        expect(gate.getConnection()).andReturn(connection);
-//        expect(connection.prepareStatement(statementString)).andReturn(statement);
-//        statement.setString(1, "John");
-//        expect(statement.executeUpdate()).andReturn(2);
-//        statement.close();
-//        connection.close();
-//        replay(gate, connection, statement);
-//
-//        assertEquals(2, update.execute(gate));
-//
-//        verify(gate, connection,  statement);
-//
-//    }
+    public void testExecute() throws Exception {
+        final AbstractInsertStatement update = person.insert(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
+    }
+
+    public void testExecuteWithNoTables() throws Exception {
+        final AbstractInsertStatement update = person.insert(person.name.set(Symqle.currentDate().map(Mappers.STRING)));
+        final String statementString = update.show(new OracleLikeDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        replay(parameters, param);
+        int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, SqlContextUtil.allowNoTablesContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
+    }
 
     private static class Person extends Table {
         private Person() {
