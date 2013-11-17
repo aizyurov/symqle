@@ -3,22 +3,17 @@ package org.symqle.coretest;
 import org.symqle.common.Mappers;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
-import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractCharacterFactor;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -416,49 +411,6 @@ public class CharacterFactorTest extends SqlTestCase {
     }
 
 
-//    public void testList() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException {
-//                final List<String> list = characterFactor.list(gate);
-//                assertEquals(Arrays.asList("abc"), list);
-//            }
-//        }.play();
-//    }
-//
-//    public void testScroll() throws Exception {
-//        new Scenario() {
-//            @Override
-//            protected void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException {
-//                characterFactor.scroll(gate, new Callback<String>() {
-//                    private int callCount = 0;
-//                    @Override
-//                    public boolean iterate(final String s) {
-//                        assertEquals(0, callCount++);
-//                        assertEquals("abc", s);
-//                        return true;
-//                    }
-//                });
-//            }
-//        }.play();
-//    }
-
-
-
-
-
-
-    private static class Person extends TableOrView {
-        private Person() {
-            super("person");
-        }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-    }
-
-    private static final Person person = new Person();
-    private static final AbstractCharacterFactor<String> characterFactor = person.name.collate("latin1_general_ci");
-
     public void testList() throws Exception {
         final String queryString = characterFactor.show(new GenericDialect());
         final List<String> expected = Arrays.asList("abc");
@@ -483,31 +435,15 @@ public class CharacterFactorTest extends SqlTestCase {
         verify(parameters);
     }
 
-    private static abstract class Scenario {
-        public void play() throws Exception {
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            final ResultSet resultSet = createMock(ResultSet.class);
-            final String queryString = characterFactor.show(new GenericDialect());
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(queryString)).andReturn(statement);
-            expect(statement.executeQuery()).andReturn(resultSet);
-            expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getString(matches("C[0-9]"))).andReturn("abc");
-            expect(resultSet.next()).andReturn(false);
-            resultSet.close();
-            statement.close();
-            connection.close();
-            replay(gate, connection, statement, resultSet);
-
-            runQuery(gate, characterFactor);
-            verify(gate, connection, statement, resultSet);
+    private static class Person extends TableOrView {
+        private Person() {
+            super("person");
         }
-
-        protected abstract void runQuery(final DatabaseGate gate, final AbstractCharacterFactor<String> characterFactor) throws SQLException;
+        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
+
+    private static final Person person = new Person();
+    private static final AbstractCharacterFactor<String> characterFactor = person.name.collate("latin1_general_ci");
 
 }

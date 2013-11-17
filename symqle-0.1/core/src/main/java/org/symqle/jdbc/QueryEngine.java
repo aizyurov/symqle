@@ -18,4 +18,5 @@ public interface QueryEngine  {
 
     <T> int scroll(Query<T> query, Callback<T> callback, Option... options) throws SQLException;
 
+    String getDatabaseName();
 }

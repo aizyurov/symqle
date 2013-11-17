@@ -27,34 +27,34 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }
 
     public void testOrderAsc() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).orderAsc().list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).orderAsc().list(getEngine());
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }
 
     public void testOrderDesc() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).orderDesc().list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).orderDesc().list(getEngine());
         assertEquals(Arrays.asList(true, true, true, true, false), list);
     }
 
     public void testCast() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getDatabaseGate());
+            final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getEngine());
             Collections.sort(list);
             final List<String> expected = "MySQL".equals(getDatabaseName()) ?
                     Arrays.asList("0", "1", "1", "1", "1") :
                     Arrays.asList("false", "true ", "true ", "true ", "true ");
             assertEquals(expected, list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -65,7 +65,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createVE(employee).map(Mappers.STRING).list(getDatabaseGate());
+        final List<String> list = createVE(employee).map(Mappers.STRING).list(getEngine());
         Collections.sort(list);
         try {
             assertEquals(Arrays.asList("false", "true", "true", "true", "true"), list);
@@ -77,119 +77,119 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).selectAll().list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).selectAll().list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }
 
     public void testDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).distinct().list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).distinct().list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true), list);
     }
 
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).where(employee.lastName.eq("Cooper")).list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).where(employee.lastName.eq("Cooper")).list(getEngine());
         assertEquals(Arrays.asList(false), list);
     }
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).orderBy(employee.lastName.desc()).list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).orderBy(employee.lastName.desc()).list(getEngine());
         assertEquals(Arrays.asList(true, true, true, true, false), list);
     }
 
     public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Boolean,String>> list = createVE(employee).pair(employee.lastName).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<Pair<Boolean,String>> list = createVE(employee).pair(employee.lastName).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First"), Pair.make(true, "March"), Pair.make(true, "Pedersen"), Pair.make(true, "Redwood")), list);
 
     }
 
     public void testIsNull() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).isNull()).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).isNull()).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(), list);
 
     }
 
     public void testIsNotNull() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).isNotNull()).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).isNotNull()).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testEq() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).eq(employee.retired)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).eq(employee.retired)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(), list);
     }
 
     public void testNe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).ne(employee.retired)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).ne(employee.retired)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testGt() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).gt(employee.retired)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).gt(employee.retired)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testGe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).ge(employee.retired)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).ge(employee.retired)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testLt() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).lt(employee.retired)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).lt(employee.retired)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testLe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).le(employee.retired)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).le(employee.retired)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testEqValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).eq(false)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).eq(false)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testNeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).ne(true)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).ne(true)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testGtValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).gt(true)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).gt(true)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(), list);
     }
 
     public void testGeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).ge(true)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).ge(true)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testLtValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).lt(true)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).lt(true)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testLeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).le(true)).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).le(true)).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -199,7 +199,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createVE(employee).in(other.retired.where(other.lastName.eq("Cooper"))))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -209,7 +209,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createVE(employee).notIn(other.retired.where(other.lastName.eq("Cooper"))))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -219,7 +219,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createVE(employee).in(true, false))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -229,7 +229,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createVE(employee).notIn(false))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -243,7 +243,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Pair<Boolean, String>> list = createVE(employee).opposite().pair(employee.lastName)
                     .where(employee.firstName.eq("James"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First")), list);
         } catch (SQLException e) {
             // ERROR 42X37: The unary '-' operator is not allowed on the 'BOOLEAN' type.
@@ -258,7 +258,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).add(employee.salary)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(3001.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -275,7 +275,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).sub(employee.salary)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(-2999.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -291,7 +291,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).mult(employee.salary)
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -307,7 +307,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).div(employee.salary)
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -323,7 +323,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).add(2.0)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(3.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -340,7 +340,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).sub(0.5)
                     .where(employee.lastName.eq("First"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(0.5, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -356,7 +356,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).mult(3.0)
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -372,7 +372,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<Number> list = createVE(employee).div(3.0)
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(1, list.size());
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -383,7 +383,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testBooleanValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createVE(employee).asPredicate().negate()).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createVE(employee).asPredicate().negate()).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -392,7 +392,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = createVE(employee).concat(employee.lastName)
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
         try {
             assertEquals(Arrays.asList("falseCooper"), list);
         } catch (AssertionFailedError e) {
@@ -407,7 +407,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<String> list = createVE(employee).concat("-")
                 .where(employee.lastName.eq("Cooper"))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         try {
             assertEquals(Arrays.asList("false-"), list);
         } catch (AssertionFailedError e) {
@@ -425,7 +425,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     .concat("-")
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             try {
                 assertEquals(Arrays.asList("false-"), list);
             } catch (AssertionFailedError e) {
@@ -442,10 +442,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testOrderByArgument() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
+            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -458,10 +458,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsFirst() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
+            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -474,10 +474,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsLast() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getDatabaseGate());
+            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -490,10 +490,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testAsc() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee).asc(), employee.firstName).list(getDatabaseGate());
+            final List<String> list = employee.firstName.orderBy(createVE(employee).asc(), employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -505,10 +505,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testDesc() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee).desc(), employee.firstName).list(getDatabaseGate());
+            final List<String> list = employee.firstName.orderBy(createVE(employee).desc(), employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret", "James"), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -519,21 +519,21 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).unionAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).unionAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true, true, true, true, true), list);
     }
 
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).unionDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).unionDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true), list);
     }
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).union(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+        final List<Boolean> list = createVE(employee).union(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(false, true), list);
     }
@@ -541,7 +541,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testExceptAll() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).exceptAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).exceptAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(false, true, true, true), list);
         } catch (SQLException e) {
@@ -553,7 +553,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testExceptDistinct() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).exceptDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).exceptDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
@@ -565,7 +565,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testExcept() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).except(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).except(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
@@ -577,7 +577,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testIntersectAll() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).intersectAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).intersectAll(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
@@ -589,7 +589,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testIntersectDistinct() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).intersectDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).intersectDistinct(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
@@ -601,7 +601,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testIntersect() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).intersect(employee.retired.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).intersect(employee.retired.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
@@ -613,14 +613,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testExists() throws Exception {
         final Employee employee = new Employee();
         final MyDual myDual = new MyDual();
-        final List<String> list = myDual.dummy.where(createVE(employee).exists()).list(getDatabaseGate());
+        final List<String> list = myDual.dummy.where(createVE(employee).exists()).list(getEngine());
         assertEquals(Arrays.asList("X"), list);
     }
 
     public void testContains() throws Exception {
         final Employee employee = new Employee();
         final MyDual myDual = new MyDual();
-        final List<String> list = myDual.dummy.where(createVE(employee).contains(false)).list(getDatabaseGate());
+        final List<String> list = myDual.dummy.where(createVE(employee).contains(false)).list(getEngine());
         assertEquals(Arrays.asList("X"), list);
     }
 
@@ -630,7 +630,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(department.manager().retired.in(createVE(employee)))
                 .orderBy(department.deptName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -639,7 +639,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final AbstractValueExpression<Boolean> ve = myDual.dummy.eq("X").asValue();
         final List<Pair<Boolean, String>> list = ve.queryValue().pair(department.deptName)
-                .orderBy(department.deptName).list(getDatabaseGate());
+                .orderBy(department.deptName).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(true, "DEV"), Pair.make(true, "HR")), list);
 
     }
@@ -649,7 +649,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final Employee employee = new Employee();
             final List<Pair<Boolean, String>> list = employee.firstName.eq("James").then(createVE(employee)).pair(employee.lastName)
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList(
                     Pair.make(false, "Cooper"),
                     Pair.make(true, "First"),
@@ -657,7 +657,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     Pair.make((Boolean) null, "Pedersen"),
                     Pair.make((Boolean) null, "Redwood")), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -671,7 +671,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final Employee employee = new Employee();
             final List<Pair<Boolean, String>> list = employee.firstName.ne("James").then(Params.p(false)).orElse(createVE(employee)).pair(employee.lastName)
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList(
                     Pair.make(false, "Cooper"),
                     Pair.make(true, "First"),
@@ -679,7 +679,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     Pair.make(false, "Pedersen"),
                     Pair.make(false, "Redwood")), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -694,7 +694,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName
                     .where(createVE(employee).like("fa%"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             try {
                 assertEquals(Arrays.asList("Cooper"), list);
             } catch (AssertionFailedError e) {
@@ -702,7 +702,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     final List<String> mySqlList = employee.lastName
                             .where(createVE(employee).like("0%"))
                             .orderBy(employee.lastName)
-                            .list(getDatabaseGate());
+                            .list(getEngine());
                     assertEquals(Arrays.asList("Cooper"), mySqlList);
                 }
             }
@@ -718,14 +718,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName
                     .where(createVE(employee).notLike("tr%"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             try {
                 assertEquals(Arrays.asList("Cooper"), list);
             } catch (AssertionFailedError e) {
                 final List<String> mySqlList = employee.lastName
                         .where(createVE(employee).notLike("1%"))
                         .orderBy(employee.lastName)
-                        .list(getDatabaseGate());
+                        .list(getEngine());
                 assertEquals(Arrays.asList("Cooper"), mySqlList);
             }
         } catch (SQLException e) {
@@ -737,10 +737,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testCount() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Integer> list = createVE(employee).count().list(getDatabaseGate());
+            final List<Integer> list = createVE(employee).count().list(getEngine());
             assertEquals(Arrays.asList(5), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect causes Derby exception: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -752,10 +752,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testCountDistinct() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Integer> list = createVE(employee).countDistinct().list(getDatabaseGate());
+            final List<Integer> list = createVE(employee).countDistinct().list(getEngine());
             assertEquals(Arrays.asList(2), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -767,10 +767,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testMin() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).min().list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).min().list(getEngine());
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -782,10 +782,10 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testMax() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).max().list(getDatabaseGate());
+            final List<Boolean> list = createVE(employee).max().list(getEngine());
             assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
-            if (getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
                 // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
                 expectSQLException(e, "Apache Derby");
             } else {
@@ -797,7 +797,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testSum() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Number> list = createVE(employee).sum().list(getDatabaseGate());
+            final List<Number> list = createVE(employee).sum().list(getEngine());
             assertEquals(1, list.size());
             assertEquals(4.0, list.get(0).doubleValue());
         } catch (SQLException e) {
@@ -810,7 +810,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     public void testAvg() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Number> list = createVE(employee).avg().list(getDatabaseGate());
+            final List<Number> list = createVE(employee).avg().list(getEngine());
             assertEquals(1, list.size());
             assertEquals(0.8, list.get(0).doubleValue());
         } catch (SQLException e) {

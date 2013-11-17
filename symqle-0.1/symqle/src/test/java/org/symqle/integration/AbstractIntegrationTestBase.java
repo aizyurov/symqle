@@ -2,7 +2,6 @@ package org.symqle.integration;
 
 import junit.framework.TestCase;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.gate.AbstractAdaptiveDatabaseGate;
 import org.symqle.integration.model.DerbyEnvironment;
 import org.symqle.integration.model.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
@@ -32,8 +31,8 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     private static TestEnvironment environment = createTestEnvironment();
 
 
-    public Engine getDatabaseGate() {
-        throw new RuntimeException("Not implemented");
+    public Engine getEngine() {
+        return environment.getEngine();
     }
 
     private static TestEnvironment createTestEnvironment() {
@@ -58,19 +57,14 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     protected final void expectMalformedStatementException(MalformedStatementException e, Class... dialects) {
-        if (Arrays.asList(dialects).contains(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
+        if (Arrays.asList(dialects).contains(getEngine().initialContext().get(Dialect.class).getClass())) {
             return;
         }
         throw e;
     }
 
     protected final String getDatabaseName() {
-        try {
-            final AbstractAdaptiveDatabaseGate gate = (AbstractAdaptiveDatabaseGate) environment.getGate();
-            return gate.getDatabaseName();
-        } catch (SQLException e) {
-            throw new RuntimeException("Internal error", e);
-        }
+        return getEngine().getDatabaseName();
     }
 
     public static List<Double> toListOfDouble(final List<Number> list, Double nullReplacement) {

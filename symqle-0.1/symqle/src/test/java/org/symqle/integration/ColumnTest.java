@@ -3,16 +3,20 @@ package org.symqle.integration;
 import junit.framework.AssertionFailedError;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
-import org.symqle.gate.MySqlDialect;
+import org.symqle.dialect.MySqlDialect;
 import org.symqle.generic.Functions;
+import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
+import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.Dialect;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,14 +40,14 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     @Override
     public void onSetUp() throws Exception {
         final Country country = new Country();
-        usaCountryId = country.countryId.where(country.code.eq("USA")).list(getDatabaseGate()).get(0);
+        usaCountryId = country.countryId.where(country.code.eq("USA")).list(getEngine()).get(0);
         final Department dept = new Department();
-        devDeptId = dept.deptId.where(dept.deptName.eq("DEV")).list(getDatabaseGate()).get(0);
+        devDeptId = dept.deptId.where(dept.deptName.eq("DEV")).list(getEngine()).get(0);
     }
 
     public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<String,String>> developers = employee.firstName.pair(employee.lastName).where(employee.department().deptName.eq("DEV")).list(getDatabaseGate());
+        final List<Pair<String,String>> developers = employee.firstName.pair(employee.lastName).where(employee.department().deptName.eq("DEV")).list(getEngine());
         System.out.println(developers);
     }
 
@@ -55,7 +59,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
                         manager.lastName.where(employee.department().deptId.eq(manager.department().deptId)
                                 .and(manager.title.like("%manager"))).queryValue()
                 )
-                .where(employee.title.eq("guru")).list(getDatabaseGate());
+                .where(employee.title.eq("guru")).list(getEngine());
         assertEquals(1, pairs.size());
         assertEquals(Pair.make("Pedersen", "First"), pairs.get(0));
     }
@@ -64,7 +68,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         System.out.println(getName());
         final Employee employee = new Employee();
         final AbstractSelectList<Pair<String,String>> select = employee.department().country().code.pair(employee.department().manager().department().country().code);
-        final List<Pair<String, String>> countryCodes = select.list(getDatabaseGate());
+        final List<Pair<String, String>> countryCodes = select.list(getEngine());
         assertEquals(5, countryCodes.size());
         System.out.println(countryCodes);
         for (Pair<String, String> pair : countryCodes) {
@@ -74,7 +78,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSelect() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.list(getDatabaseGate());
+        final List<String> list = employee.lastName.list(getEngine());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains("Cooper"));
         assertTrue(list.toString(), list.contains("Redwood"));
@@ -85,7 +89,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testCast() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.cast("CHAR(8)").list(getDatabaseGate());
+        final List<String> list = employee.lastName.cast("CHAR(8)").list(getEngine());
         Collections.sort(list);
         try {
             assertEquals(Arrays.asList("Cooper  ", "First   ", "March   ", "Pedersen", "Redwood "), list);
@@ -101,13 +105,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.salary.map(Mappers.INTEGER).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<Integer> list = employee.salary.map(Mappers.INTEGER).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(1500, 3000, 2000, 2000, 3000), list);
     }
 
     public void testSelectAll() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.selectAll().list(getDatabaseGate());
+        final List<String> list = employee.lastName.selectAll().list(getEngine());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains("Cooper"));
         assertTrue(list.toString(), list.contains("Redwood"));
@@ -118,7 +122,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSelectDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.firstName.distinct().list(getDatabaseGate());
+        final List<String> list = employee.firstName.distinct().list(getEngine());
         assertEquals(4, list.size());
         assertTrue(list.toString(), list.contains("Margaret"));
         assertTrue(list.toString(), list.contains("Bill"));
@@ -128,7 +132,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testAsFunctionArgument() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = Functions.floor(employee.salary).list(getDatabaseGate());
+        final List<Double> list = Functions.floor(employee.salary).list(getEngine());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains(3000.0));
         assertTrue(list.toString(), list.contains(2000.0));
@@ -137,79 +141,79 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.retired.asPredicate()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.retired.asPredicate()).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testEq() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq(employee.department().manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.eq(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
     }
 
     public void testNe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ne(employee.department().manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.ne(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
     }
 
     public void testGt() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.gt(employee.department().manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.gt(employee.department().manager().firstName)).list(getEngine());
         assertEquals(Collections.emptyList(), list);
     }
 
     public void testGe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
     }
 
     public void testLt() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.lt(employee.department().manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.lt(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
     }
 
     public void testLe() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Redwood")), new HashSet<String>(list));
     }
 
     public void testEqValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper")), new HashSet<String>(list));
     }
 
     public void testNeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ne("James")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.ne("James")).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood")), new HashSet<String>(list));
     }
 
     public void testGtValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.gt("James")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.gt("James")).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
     }
 
     public void testGeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.ge("James")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.ge("James")).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("First", "Cooper", "Redwood")), new HashSet<String>(list));
     }
 
     public void testLtValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.lt("James")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.lt("James")).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
     }
 
     public void testLeValue() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.le("James")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.le("James")).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Cooper")), new HashSet<String>(list));
     }
 
@@ -217,7 +221,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.exceptAll(department.manager().lastName).list(getDatabaseGate());
+            final List<String> list = employee.lastName.exceptAll(department.manager().lastName).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -229,7 +233,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.except(department.manager().lastName).list(getDatabaseGate());
+            final List<String> list = employee.lastName.except(department.manager().lastName).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -241,7 +245,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.firstName.exceptDistinct(department.manager().firstName.where(department.deptId.eq(1))).list(getDatabaseGate());
+            final List<String> list = employee.firstName.exceptDistinct(department.manager().firstName.where(department.deptId.eq(1))).list(getEngine());
             assertEquals(3, list.size());
             assertTrue(list.toString(), list.contains("Bill"));
             assertTrue(list.toString(), list.contains("James"));
@@ -255,7 +259,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.unionAll(department.manager().lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.unionAll(department.manager().lastName).list(getEngine());
         assertEquals(7, list.size());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood", "First", "Redwood"));
         Collections.sort(expected);
@@ -266,7 +270,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.unionDistinct(department.manager().lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.unionDistinct(department.manager().lastName).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -276,7 +280,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.union(department.manager().lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.union(department.manager().lastName).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "First", "Cooper", "Redwood"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -287,7 +291,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.intersectAll(department.manager().lastName).list(getDatabaseGate());
+            final List<String> list = employee.lastName.intersectAll(department.manager().lastName).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
@@ -299,7 +303,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.intersect(department.manager().lastName).list(getDatabaseGate());
+            final List<String> list = employee.lastName.intersect(department.manager().lastName).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
@@ -311,7 +315,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = employee.lastName.intersectDistinct(department.manager().lastName).list(getDatabaseGate());
+            final List<String> list = employee.lastName.intersectDistinct(department.manager().lastName).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
@@ -321,7 +325,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSelectForUpdate() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.forUpdate().list(getDatabaseGate());
+        final List<String> list = employee.lastName.forUpdate().list(getEngine());
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains("Cooper"));
         assertTrue(list.toString(), list.contains("Redwood"));
@@ -333,7 +337,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testSelectForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.forReadOnly().list(getDatabaseGate());
+            final List<String> list = employee.lastName.forReadOnly().list(getEngine());
             assertEquals(5, list.size());
             assertTrue(list.toString(), list.contains("Cooper"));
             assertTrue(list.toString(), list.contains("Redwood"));
@@ -341,7 +345,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             assertTrue(list.toString(), list.contains("First"));
             assertTrue(list.toString(), list.contains("Pedersen"));
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
+            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {
@@ -354,21 +358,21 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testExists() throws Exception {
         final Country country = new Country();
         final Department department = new Department();
-        final List<String> list = country.code.where(department.deptId.exists()).list(getDatabaseGate());
+        final List<String> list = country.code.where(department.deptId.exists()).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA", "FRA")), new HashSet<String>(list));
     }
 
     public void testContains() throws Exception {
         final Country country = new Country();
         final Department department = new Department();
-        final List<String> list = country.code.where(department.deptId.contains(-1)).list(getDatabaseGate());
+        final List<String> list = country.code.where(department.deptId.contains(-1)).list(getEngine());
         assertEquals(0, list.size());
     }
 
     public void testExistsWithCondition() throws Exception {
         final Country country = new Country();
         final Department department = new Department();
-        final List<String> list = country.code.where(department.deptId.where(department.countryId.eq(country.countryId)).exists()).list(getDatabaseGate());
+        final List<String> list = country.code.where(department.deptId.where(department.countryId.eq(country.countryId)).exists()).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
 
     }
@@ -376,7 +380,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testIn() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.where(employee.firstName.in(department.manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.in(department.manager().firstName)).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("First", "Cooper", "Redwood"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -387,7 +391,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testNotIn() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final List<String> list = employee.lastName.where(employee.firstName.notIn(department.manager().firstName)).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.notIn(department.manager().firstName)).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -396,7 +400,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testInList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.in("James", "Bill")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.in("James", "Bill")).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Cooper"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -405,7 +409,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testNotInList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.notIn("James", "Bill")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.notIn("James", "Bill")).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "Pedersen"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -414,13 +418,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testIsNull() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.deptId.isNull()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.deptId.isNull()).list(getEngine());
         assertEquals(Collections.singletonList("Cooper"), list);
     }
 
     public void testIsNotNull() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.deptId.isNotNull()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.deptId.isNotNull()).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -429,7 +433,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(expected);
         assertEquals(expected, list);
@@ -437,7 +441,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testOrderByTwoColumns() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.firstName, employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.orderBy(employee.firstName, employee.lastName).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Pedersen", "March", "Cooper", "First", "Redwood"));
         assertEquals(expected, list);
     }
@@ -445,7 +449,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsFirst() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.orderBy(employee.deptId.nullsFirst()).list(getDatabaseGate());
+            final List<String> list = employee.lastName.orderBy(employee.deptId.nullsFirst()).list(getEngine());
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
@@ -456,10 +460,10 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsLast() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.lastName.orderBy(employee.deptId.nullsLast()).list(getDatabaseGate());
+            final List<String> list = employee.lastName.orderBy(employee.deptId.nullsLast()).list(getEngine());
             assertEquals("Cooper", list.get(list.size()-1));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
+            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // mysql does not support NULLS LAST
             expectSQLException(e, "MySQL");
         }
@@ -467,7 +471,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testOrderByAsc() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName.asc()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.orderBy(employee.lastName.asc()).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(expected);
         assertEquals(expected, list);
@@ -475,7 +479,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testOrderByDesc() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName.desc()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.orderBy(employee.lastName.desc()).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(expected);
         Collections.reverse(expected);
@@ -484,14 +488,14 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testOpposite() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.opposite().where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        final List<Double> list = employee.salary.opposite().where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList(-3000.0), list);
     }
 
     public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.empId.add(employee.deptId).list(getDatabaseGate());
-        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDatabaseGate());
+        final List<Number> list = employee.empId.add(employee.deptId).list(getEngine());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
             actual.add(n == null ? null : n.intValue());
@@ -505,8 +509,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.empId.sub(employee.deptId).list(getDatabaseGate());
-        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDatabaseGate());
+        final List<Number> list = employee.empId.sub(employee.deptId).list(getEngine());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
             actual.add(n == null ? null : n.intValue());
@@ -520,8 +524,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMult() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.empId.mult(employee.deptId).list(getDatabaseGate());
-        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDatabaseGate());
+        final List<Number> list = employee.empId.mult(employee.deptId).list(getEngine());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
             actual.add(n == null ? null : n.intValue());
@@ -535,8 +539,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testDiv() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.empId.div(employee.deptId).list(getDatabaseGate());
-        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getDatabaseGate());
+        final List<Number> list = employee.empId.div(employee.deptId).list(getEngine());
+        final List<Pair<Integer, Integer>> pairs = employee.empId.pair(employee.deptId).list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n: list) {
             actual.add(n == null ? null : n.intValue());
@@ -550,8 +554,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> sums = employee.empId.add(1).list(getDatabaseGate());
-        final List<Integer> list = employee.empId.list(getDatabaseGate());
+        final List<Number> sums = employee.empId.add(1).list(getEngine());
+        final List<Integer> list = employee.empId.list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n : sums) {
             actual.add(n.intValue());
@@ -565,8 +569,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> sums = employee.empId.sub(1).list(getDatabaseGate());
-        final List<Integer> list = employee.empId.list(getDatabaseGate());
+        final List<Number> sums = employee.empId.sub(1).list(getEngine());
+        final List<Integer> list = employee.empId.list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n : sums) {
             actual.add(n.intValue());
@@ -580,8 +584,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMultNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> sums = employee.empId.mult(2).list(getDatabaseGate());
-        final List<Integer> list = employee.empId.list(getDatabaseGate());
+        final List<Number> sums = employee.empId.mult(2).list(getEngine());
+        final List<Integer> list = employee.empId.list(getEngine());
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n : sums) {
             actual.add(n.intValue());
@@ -595,8 +599,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testDivNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> sums = employee.empId.div(2).list(getDatabaseGate());
-        final List<Integer> list = employee.empId.list(getDatabaseGate());
+        final List<Number> sums = employee.empId.div(2).list(getEngine());
+        final List<Integer> list = employee.empId.list(getEngine());
         System.out.println(list);
         final Set<Integer> actual = new HashSet<Integer>();
         for (Number n : sums) {
@@ -611,41 +615,41 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
-        final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
+        final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList("MargaretRedwood"), list);
     }
 
     public void testSubstring() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.firstName.substring(4).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        final List<String> list = employee.firstName.substring(4).where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList("garet"), list);
     }
 
     public void testSubstring2() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.firstName.substring(4, 3).where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        final List<String> list = employee.firstName.substring(4, 3).where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList("gar"), list);
     }
 
     public void testPosition() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.firstName.positionOf("gar").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        final List<Integer> list = employee.firstName.positionOf("gar").where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList(4), list);
     }
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
-        final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+        final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
+        final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList("Margaret expected"), list);
     }
 
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getDatabaseGate().initialContext().get(Dialect.class).getClass();
+        final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
         try {
-            final List<String> list = employee.firstName.collate("utf8_unicode_ci").where(employee.lastName.eq("Redwood")).list(getDatabaseGate());
+            final List<String> list = employee.firstName.collate("utf8_unicode_ci").where(employee.lastName.eq("Redwood")).list(getEngine());
             assertEquals(Arrays.asList("Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 63
@@ -655,42 +659,42 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testCount() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.lastName.count().list(getDatabaseGate());
+        final List<Integer> list = employee.lastName.count().list(getEngine());
         assertEquals(Arrays.asList(5), list);
 
     }
 
     public void testCountDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.firstName.countDistinct().list(getDatabaseGate());
+        final List<Integer> list = employee.firstName.countDistinct().list(getEngine());
         assertEquals(Arrays.asList(4), list);
 
     }
 
     public void testAvg() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.salary.avg().list(getDatabaseGate());
+        final List<Number> list = employee.salary.avg().list(getEngine());
         assertEquals(1, list.size());
         assertEquals(2300, list.get(0).intValue());
     }
 
     public void testSum() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = employee.salary.sum().list(getDatabaseGate());
+        final List<Number> list = employee.salary.sum().list(getEngine());
         assertEquals(1, list.size());
         assertEquals(11500, list.get(0).intValue());
     }
 
     public void testMin() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.min().list(getDatabaseGate());
+        final List<Double> list = employee.salary.min().list(getEngine());
         assertEquals(1, list.size());
         assertEquals(1500, list.get(0).intValue());
     }
 
     public void testMax() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = employee.salary.max().list(getDatabaseGate());
+        final List<Double> list = employee.salary.max().list(getEngine());
         assertEquals(1, list.size());
         assertEquals(3000, list.get(0).intValue());
     }
@@ -699,13 +703,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         MyDual dual = new MyDual();
         final Employee employee = new Employee();
         final List<Pair<String, String>> list = dual.dummy.queryValue().pair(employee.lastName)
-                .orderBy(employee.lastName).list(getDatabaseGate());
+                .orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(Pair.make("X", "Cooper"), Pair.make("X", "First"), Pair.make("X", "March"), Pair.make("X", "Pedersen"), Pair.make("X", "Redwood")), list);
     }
 
     public void testLike() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.like("%es")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.like("%es")).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("First", "Cooper"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -715,7 +719,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testNotLike() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.notLike("%es")).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(employee.firstName.notLike("%es")).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "Redwood"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -724,7 +728,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMaxRows() throws Exception {
             final Employee employee = new Employee();
-            final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), Option.setMaxRows(2));
+            final List<String> list = employee.lastName.orderBy(employee.lastName).list(getEngine(), Option.setMaxRows(2));
             assertEquals(2, list.size());
             assertTrue(list.toString(), list.contains("First"));
             assertTrue(list.toString(), list.contains("Cooper"));
@@ -732,7 +736,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testFetchSize() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.list(getDatabaseGate(), Option.setFetchSize(2));
+        final List<String> list = employee.lastName.list(getEngine(), Option.setFetchSize(2));
         assertEquals(5, list.size());
         assertTrue(list.toString(), list.contains("Cooper"));
         assertTrue(list.toString(), list.contains("Redwood"));
@@ -743,7 +747,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testFetchDirection() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), Option.setFetchDirection(ResultSet.FETCH_REVERSE));
+        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getEngine(), Option.setFetchDirection(ResultSet.FETCH_REVERSE));
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(expected);
         Collections.sort(list);
@@ -752,7 +756,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMaxFieldSize() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getDatabaseGate(), Option.setMaxFieldSize(5));
+        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getEngine(), Option.setMaxFieldSize(5));
         final ArrayList<String> truncatedNames = new ArrayList<String>(Arrays.asList("March", "First", "Peder", "Redwo", "Coope"));
         final ArrayList<String> fullNames = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
         Collections.sort(truncatedNames);
@@ -768,34 +772,33 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testQueryTimeout() throws Exception {
-        fail("Not implemented");
         // derby: does not honor queryTimeout
         // skip this test
-//        if ("Apache Derby".equals(getDatabaseName())) {
-//            return;
-//        }
-//        final Connection connection = getDatabaseGate().getConnection();
-//        try {
-//            final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
-//            deleteStatement.executeUpdate();
-//            final PreparedStatement insertStatement = connection.prepareStatement("insert into big_table (num) values(?)");
-//            for (int i=0; i<2000000; i++) {
-//                insertStatement.setInt(1, i);
-//                assertEquals(1, insertStatement.executeUpdate());
-//            }
-//        } finally {
-//            connection.close();
-//        }
-//        final BigTable bigTable = new BigTable();
-//        final long start = System.currentTimeMillis();
-//
-//        try {
-//            final List<Integer> list = bigTable.num.list(getDatabaseGate(), Option.setQueryTimeout(1));
-//            fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
-//        } catch (SQLException e) {
-//            System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
-//            // fine: timeout
-//        }
+        if ("Apache Derby".equals(getDatabaseName())) {
+            return;
+        }
+        getEngine().execute(new Engine.ConnectionCallback() {
+            @Override
+            public void call(final Connection connection) throws SQLException {
+                final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
+                deleteStatement.executeUpdate();
+                final PreparedStatement insertStatement = connection.prepareStatement("insert into big_table (num) values(?)");
+                for (int i=0; i<2000000; i++) {
+                    insertStatement.setInt(1, i);
+                    assertEquals(1, insertStatement.executeUpdate());
+                }
+            }
+        });
+        final BigTable bigTable = new BigTable();
+        final long start = System.currentTimeMillis();
+
+        try {
+            final List<Integer> list = bigTable.num.list(getEngine(), Option.setQueryTimeout(1));
+            fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
+        } catch (SQLException e) {
+            System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
+            // fine: timeout
+        }
     }
 
 }

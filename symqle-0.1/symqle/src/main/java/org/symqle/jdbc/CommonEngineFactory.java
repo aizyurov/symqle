@@ -12,12 +12,12 @@ public class CommonEngineFactory extends AbstractEngineFactory {
 
     public Engine create(DataSource dataSource, Option... options) throws SQLException {
         final String databaseName = getDatabaseName(dataSource);
-        return new ConnectorEngine(getConnector(databaseName, dataSource), getDialect(databaseName), options);
+        return new ConnectorEngine(getConnector(databaseName, dataSource), getDialect(databaseName), databaseName, options);
     }
 
     public Engine create(DataSource dataSource, Dialect dialect, Option... options) throws SQLException {
         final String databaseName = getDatabaseName(dataSource);
-        return new ConnectorEngine(getConnector(databaseName, dataSource), dialect, options);
+        return new ConnectorEngine(getConnector(databaseName, dataSource), dialect, databaseName, options);
     }
 
 

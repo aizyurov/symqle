@@ -219,15 +219,3 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
               }
           };
       }
-
-
-import org.symqle.jdbc.Option;
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.util.List;
-public interface DatabaseGate {
-    public Connection getConnection() throws SQLException;
-    public Dialect getDialect();
-    List<Option> getOptions();
-}
-

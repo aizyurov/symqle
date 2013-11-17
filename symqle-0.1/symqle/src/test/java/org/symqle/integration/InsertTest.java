@@ -21,24 +21,24 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(2), insertTable.text.set("wow"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
     }
 
     private InsertTable clean() throws SQLException {
         final InsertTable insertTable = new InsertTable();
-        insertTable.delete().execute(getDatabaseGate());
+        insertTable.delete().execute(getEngine());
         return insertTable;
     }
 
     public void testDefaults() throws Exception {
         final InsertTable insertTable = clean();
         try {
-            final int affectedRows = insertTable.insertDefault().execute(getDatabaseGate());
+            final int affectedRows = insertTable.insertDefault().execute(getEngine());
             assertEquals(1, affectedRows);
-            final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+            final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
             assertEquals(Arrays.asList(Pair.make(1, "nothing")), rows);
         } catch (SQLException e) {
             // mysql: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'DEFAULT VALUES'
@@ -51,9 +51,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(2))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "nothing")), rows);
     }
 
@@ -61,9 +61,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(2), insertTable.text.setNull())
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, (String) null)), rows);
     }
 
@@ -71,9 +71,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(3), insertTable.text.setDefault())
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "nothing")), rows);
     }
 
@@ -81,9 +81,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
                 .insert(insertTable.id.set(Params.p(3)), insertTable.text.set("three"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "three")), rows);
     }
 
@@ -94,9 +94,9 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final int affectedRows = insertTable.insert(
                 insertTable.id.set(one.id.queryValue()),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "Margaret")), rows);
     }
 
@@ -107,19 +107,19 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final int affectedRows = insertTable.insert(
                 insertTable.id.set(one.id.queryValue().add(2).map(Mappers.INTEGER)),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "Margaret")), rows);
 
     }
 
     public void testGeneratedKeys() throws Exception {
         final GeneratedKeys generatedKeys = new GeneratedKeys();
-        final Integer bimId = generatedKeys.insert(generatedKeys.text().set("Bim")).executeReturnKey(generatedKeys.id(), getDatabaseGate());
-        final Integer bomId = generatedKeys.insert(generatedKeys.text().set("Bom")).executeReturnKey(generatedKeys.id(), getDatabaseGate());
+        final Integer bimId = generatedKeys.insert(generatedKeys.text().set("Bim")).executeReturnKey(generatedKeys.id(), getEngine());
+        final Integer bomId = generatedKeys.insert(generatedKeys.text().set("Bom")).executeReturnKey(generatedKeys.id(), getEngine());
         assertTrue("actual bomId:"+bomId+", bimId:"+bimId, bomId > bimId);
-        final List<String> bimList = generatedKeys.text().where(generatedKeys.id().eq(bimId)).list(getDatabaseGate());
+        final List<String> bimList = generatedKeys.text().where(generatedKeys.id().eq(bimId)).list(getEngine());
         assertEquals(Arrays.asList("Bim"), bimList);
 
     }

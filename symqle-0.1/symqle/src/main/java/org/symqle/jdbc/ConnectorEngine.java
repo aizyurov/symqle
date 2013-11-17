@@ -29,8 +29,8 @@ class ConnectorEngine extends AbstractQueryEngine implements Engine {
 
     private final Connector connector;
 
-    protected ConnectorEngine(final Connector connector, final Dialect dialect, final Option[] options) {
-        super(dialect, options);
+    protected ConnectorEngine(final Connector connector, final Dialect dialect, final String databaseName, final Option[] options) {
+        super(dialect, databaseName, options);
         this.connector = connector;
     }
 
@@ -168,6 +168,17 @@ class ConnectorEngine extends AbstractQueryEngine implements Engine {
         queue.add(statement);
         currentKey = newKey;
         return rowsAffected;
+    }
+
+    @Override
+    public void execute(final ConnectionCallback callback)  throws SQLException {
+        final Connection connection = connector.getConnection();
+        try {
+            flushInConnection(connection);
+            callback.call(connection);
+        } finally {
+            connection.close();
+        }
     }
 
     private static class StatementKey {

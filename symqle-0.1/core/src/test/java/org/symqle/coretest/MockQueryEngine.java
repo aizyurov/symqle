@@ -37,4 +37,5 @@ public class MockQueryEngine<T> extends AbstractMockEngine implements QueryEngin
     protected List<T> getExpected() {
         return resultSet;
     }
+
 }

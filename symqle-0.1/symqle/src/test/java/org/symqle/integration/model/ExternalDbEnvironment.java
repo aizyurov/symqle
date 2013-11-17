@@ -1,9 +1,8 @@
 package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import org.symqle.gate.DataSourceGate;
-import org.symqle.gate.DataSourceGate;
-import org.symqle.sql.DatabaseGate;
+import org.symqle.jdbc.CommonEngineFactory;
+import org.symqle.jdbc.Engine;
 import org.symqle.sql.Dialect;
 
 import java.io.File;
@@ -18,10 +17,10 @@ import java.util.Properties;
  */
 public class ExternalDbEnvironment implements TestEnvironment {
 
-    private final DatabaseGate databaseGate;
+    private final Engine engine;
 
     private ExternalDbEnvironment(final String configFile) {
-        this.databaseGate = createDialectDataSource(configFile);
+        this.engine = createDialectDataSource(configFile);
     }
 
     private final static Map<String, ExternalDbEnvironment> instances = new HashMap<String, ExternalDbEnvironment>();
@@ -37,28 +36,28 @@ public class ExternalDbEnvironment implements TestEnvironment {
         }
     }
 
-    public DatabaseGate getGate() {
-        return databaseGate;
+    public Engine getEngine() {
+        return engine;
     }
 
-    public DatabaseGate createDialectDataSource(final String configFile) {
+    public Engine createDialectDataSource(final String configFile) {
         try {
             final Properties properties = new Properties();
             final File propertiesFile = new File(configFile);
             properties.load(new FileInputStream(propertiesFile));
-            final ComboPooledDataSource pool = new ComboPooledDataSource();
-            pool.setJdbcUrl(properties.getProperty("symqle.jdbc.url"));
-            pool.setDriverClass(properties.getProperty("symqle.jdbc.driverClass"));
-            pool.setUser(properties.getProperty("symqle.jdbc.user"));
-            pool.setPassword(properties.getProperty("symqle.jdbc.password"));
+            final ComboPooledDataSource dataSource = new ComboPooledDataSource();
+            dataSource.setJdbcUrl(properties.getProperty("symqle.jdbc.url"));
+            dataSource.setDriverClass(properties.getProperty("symqle.jdbc.driverClass"));
+            dataSource.setUser(properties.getProperty("symqle.jdbc.user"));
+            dataSource.setPassword(properties.getProperty("symqle.jdbc.password"));
             final String dialectClass = System.getProperty("org.symqle.integration.dialect");
             if (dialectClass != null) {
                 final Class<?> dialectClazz = Class.forName(dialectClass);
                 final Method getMethod = dialectClazz.getMethod("get");
                 final Dialect dialect = (Dialect) getMethod.invoke(null);
-                return new DataSourceGate(pool, dialect);
+                return new CommonEngineFactory().create(dataSource, dialect);
             } else {
-                return new DataSourceGate(pool);
+                return new CommonEngineFactory().create(dataSource);
             }
         } catch (RuntimeException e) {
             throw e;

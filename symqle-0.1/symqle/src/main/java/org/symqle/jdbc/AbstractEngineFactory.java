@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
-import org.symqle.gate.DerbyDialect;
-import org.symqle.gate.MySqlDialect;
+import org.symqle.dialect.DerbyDialect;
+import org.symqle.dialect.MySqlDialect;
 import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 

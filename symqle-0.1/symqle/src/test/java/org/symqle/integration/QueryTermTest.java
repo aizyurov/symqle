@@ -35,7 +35,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).list(getEngine());
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -45,7 +45,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         }
         final Employee employee = new Employee();
         try {
-            final List<String> list = queryTerm(employee).forUpdate().list(getDatabaseGate());
+            final List<String> list = queryTerm(employee).forUpdate().list(getEngine());
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
@@ -58,7 +58,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).forReadOnly().list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).forReadOnly().list(getEngine());
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -67,7 +67,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).orderAsc().list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).orderAsc().list(getEngine());
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -76,7 +76,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).orderDesc().list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).orderDesc().list(getEngine());
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -85,7 +85,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).unionAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).unionAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First", "First"), list);
     }
@@ -95,7 +95,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).unionDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).unionDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
@@ -105,7 +105,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).union(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).union(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First"), list);
     }
@@ -115,7 +115,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).exceptAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).exceptAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(), list);
     }
@@ -125,7 +125,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).exceptDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).exceptDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(), list);
     }
@@ -135,7 +135,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).except(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).except(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(), list);
     }
@@ -145,7 +145,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("First"), list);
     }
@@ -155,7 +155,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).intersectDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).intersectDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("First"), list);
     }
@@ -165,32 +165,32 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
             return;
         }
         final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).intersect(employee.lastName.where(employee.firstName.eq("James"))).list(getDatabaseGate());
+        final List<String> list = queryTerm(employee).intersect(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("First"), list);
     }
 
     public void testExists() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (notApplicable  || getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+        if (notApplicable  || getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
-        final List<Integer> list = department.deptId.where(subquery.exists()).list(getDatabaseGate(), Option.allowNoTables(true));
+        final List<Integer> list = department.deptId.where(subquery.exists()).list(getEngine(), Option.allowNoTables(true));
         assertEquals(1, list.size());
     }
 
     public void testContains() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (notApplicable  || getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+        if (notApplicable  || getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
-        final List<Integer> list = department.deptId.where(subquery.contains("First")).list(getDatabaseGate(), Option.allowNoTables(true));
+        final List<Integer> list = department.deptId.where(subquery.contains("First")).list(getEngine(), Option.allowNoTables(true));
         assertEquals(1, list.size());
     }
 
@@ -202,19 +202,19 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         final Employee manager = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(manager.lastName.where(manager.empId.eq(department.manager().empId).and(department.deptName.eq("HR"))));
-        final List<Integer> list2 = department.deptId.where(subquery2.exists()).list(getDatabaseGate());
+        final List<Integer> list2 = department.deptId.where(subquery2.exists()).list(getEngine());
         assertEquals(0, list2.size());
     }
 
     public void testQueryValue() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (notApplicable  || getDatabaseGate().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
+        if (notApplicable  || getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
             return;
         }
         final Employee employee = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery = employee.lastName.where(employee.firstName.eq("James")).intersect(department.manager().lastName.where(department.deptName.eq("DEV")));
-        final List<String> list = subquery.queryValue().list(getDatabaseGate(), Option.allowNoTables(true));
+        final List<String> list = subquery.queryValue().list(getEngine(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("First"), list);
     }
 
@@ -224,7 +224,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         }
         final Employee employee = new Employee();
         final Employee another = new Employee();
-        final List<Double> list = employee.salary.where(employee.lastName.in(queryTerm(another))).list(getDatabaseGate());
+        final List<Double> list = employee.salary.where(employee.lastName.in(queryTerm(another))).list(getEngine());
         assertEquals(Arrays.asList(3000.0), list);
     }
 

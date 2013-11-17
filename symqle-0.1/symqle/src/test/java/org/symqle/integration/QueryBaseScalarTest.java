@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.gate.MySqlDialect;
+import org.symqle.dialect.MySqlDialect;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.TrueValue;
 import org.symqle.sql.AbstractQueryBaseScalar;
@@ -25,7 +25,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(singleRowTrue().queryValue().asPredicate())
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -34,7 +34,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(trueValue.value.distinct().exists())
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -43,7 +43,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(trueValue.value.distinct().contains(true))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -53,21 +53,21 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
 
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).unionAll(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).unionAll(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex", "Bill", "James", "James", "Margaret"), list);
     }
 
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).unionDistinct(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).unionDistinct(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).union(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).union(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }
@@ -75,7 +75,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testExceptAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).exceptAll(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).exceptAll(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
@@ -87,7 +87,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testExceptDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).exceptDistinct(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).exceptDistinct(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
@@ -99,7 +99,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testExcept() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).except(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).except(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
@@ -111,7 +111,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testIntersectAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).intersectAll(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).intersectAll(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
@@ -123,7 +123,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testIntersectDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).intersectDistinct(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).intersectDistinct(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
@@ -135,7 +135,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testIntersect() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).intersect(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).intersect(employee.firstName.where(employee.lastName.eq("Cooper"))).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
@@ -148,7 +148,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = distinctFirstNames(employee).where(employee.department().deptName.eq("DEV"))
                 .orderBy(employee.firstName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Alex", "James"), list);
     }
 
@@ -157,7 +157,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         // which James should we keep - Cooper (1st) of First(2nd)?
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).orderBy(employee.lastName).list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).orderBy(employee.lastName).list(getEngine());
             assertEquals(Arrays.asList("James", "Bill", "Alex", "Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42879: The ORDER BY clause may not contain column 'LAST_NAME', since the query specifies DISTINCT and that column does not appear in the query result
@@ -167,26 +167,26 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).orderBy(employee.firstName).list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).orderBy(employee.firstName).list(getEngine());
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }
 
     public void testOrderAsc() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).orderAsc().list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).orderAsc().list(getEngine());
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }
 
     public void testOrderDesc() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).orderDesc().list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).orderDesc().list(getEngine());
         assertEquals(Arrays.asList("Margaret", "James", "Bill", "Alex"), list);
     }
 
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).forUpdate().list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).forUpdate().list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
@@ -198,11 +198,11 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = distinctFirstNames(employee).forReadOnly().list(getDatabaseGate());
+            final List<String> list = distinctFirstNames(employee).forReadOnly().list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
+            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {
@@ -214,7 +214,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).list(getDatabaseGate());
+        final List<String> list = distinctFirstNames(employee).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }

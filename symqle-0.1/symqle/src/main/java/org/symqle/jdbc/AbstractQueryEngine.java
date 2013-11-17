@@ -21,15 +21,21 @@ abstract class AbstractQueryEngine implements QueryEngine {
 
     private final Dialect dialect;
     private final Option[] options;
+    private final String databaseName;
 
-    protected AbstractQueryEngine(final Dialect dialect, final Option[] options) {
+    protected AbstractQueryEngine(final Dialect dialect, final String databaseName, final Option[] options) {
         this.dialect = dialect;
         this.options = Arrays.copyOf(options, options.length);
+        this.databaseName = databaseName;
     }
 
     protected AbstractQueryEngine(final AbstractQueryEngine other) {
-        this.dialect = other.dialect;
-        this.options = Arrays.copyOf(other.options, other.options.length);
+        this(other.dialect, other.databaseName, Arrays.copyOf(other.options, other.options.length));
+    }
+
+    @Override
+    public final String getDatabaseName() {
+        return databaseName;
     }
 
     protected abstract Connection getConnection() throws SQLException;
@@ -63,16 +69,20 @@ abstract class AbstractQueryEngine implements QueryEngine {
         try {
             setupStatement(preparedStatement, query, options);
             final ResultSet resultSet = preparedStatement.executeQuery();
-            final InnerQueryEngine innerEngine = new InnerQueryEngine(this, connection);
-            int count = 0;
-            while (resultSet.next()) {
-                count += 1;
-                final Row row = new ResultSetRow(resultSet, innerEngine);
-                if (!callback.iterate(query.extract(row))) {
-                    break;
+            try {
+                final InnerQueryEngine innerEngine = new InnerQueryEngine(this, connection);
+                int count = 0;
+                while (resultSet.next()) {
+                    count += 1;
+                    final Row row = new ResultSetRow(resultSet, innerEngine);
+                    if (!callback.iterate(query.extract(row))) {
+                        break;
+                    }
                 }
+                return count;
+            } finally {
+                resultSet.close();
             }
-            return count;
         } finally {
             preparedStatement.close();
         }

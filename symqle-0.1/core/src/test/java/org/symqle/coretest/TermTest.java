@@ -5,24 +5,19 @@ import org.symqle.common.Mappers;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
-import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractTerm;
 import org.symqle.sql.Column;
-import org.symqle.sql.DatabaseGate;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -467,36 +462,6 @@ public class TermTest extends SqlTestCase {
         assertEquals(1, rows);
         verify(parameters, param);
     }
-
-    private static abstract class Scenario {
-        public void play() throws Exception {
-            final DatabaseGate gate = createMock(DatabaseGate.class);
-            final Connection connection = createMock(Connection.class);
-            final PreparedStatement statement = createMock(PreparedStatement.class);
-            final ResultSet resultSet = createMock(ResultSet.class);
-            final AbstractTerm<Number> term = person.id.mult(two);
-            final String queryString = term.show(new GenericDialect());
-            expect(gate.getOptions()).andReturn(Collections.<Option>emptyList());
-            expect(gate.getDialect()).andReturn(new GenericDialect());
-            expect(gate.getConnection()).andReturn(connection);
-            expect(connection.prepareStatement(queryString)).andReturn(statement);
-            statement.setLong(1, 2L);
-            expect(statement.executeQuery()).andReturn(resultSet);
-            expect(resultSet.next()).andReturn(true);
-            expect(resultSet.getBigDecimal(matches("C[0-9]"))).andReturn(new BigDecimal(123));
-            expect(resultSet.next()).andReturn(false);
-            resultSet.close();
-            statement.close();
-            connection.close();
-            replay(gate, connection, statement, resultSet);
-
-            runQuery(gate, term);
-            verify(gate, connection, statement, resultSet);
-        }
-
-        protected abstract void runQuery(final DatabaseGate gate, final AbstractTerm<Number> term) throws SQLException;
-    }
-
 
     private static class Person extends TableOrView {
         private Person() {

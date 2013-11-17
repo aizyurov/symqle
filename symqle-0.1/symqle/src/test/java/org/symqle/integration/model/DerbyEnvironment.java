@@ -2,9 +2,8 @@ package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
-import org.symqle.gate.DataSourceGate;
-import org.symqle.gate.DataSourceGate;
-import org.symqle.sql.DatabaseGate;
+import org.symqle.jdbc.CommonEngineFactory;
+import org.symqle.jdbc.Engine;
 import org.symqle.sql.Dialect;
 
 import java.io.BufferedReader;
@@ -19,7 +18,7 @@ import java.sql.PreparedStatement;
  */
 public class DerbyEnvironment implements TestEnvironment {
     private final String url = "jdbc:derby:memory:symqle";
-    private final DatabaseGate gate = createDatabaseGate();
+    private final Engine engine = createEngine();
 
     private DerbyEnvironment() {
     }
@@ -30,7 +29,7 @@ public class DerbyEnvironment implements TestEnvironment {
         return instance;
     }
 
-    public DatabaseGate createDatabaseGate() {
+    public Engine createEngine() {
         try {
             final Connection connection = DriverManager.getConnection(url + ";create=true");
             initDatabase(connection);
@@ -42,9 +41,9 @@ public class DerbyEnvironment implements TestEnvironment {
                 final Class<?> dialectClazz = Class.forName(dialectClass);
                 final Method getMethod = dialectClazz.getMethod("get");
                 final Dialect dialect = (Dialect) getMethod.invoke(null);
-                return new DataSourceGate(dataSource, dialect);
+                return new CommonEngineFactory().create(dataSource, dialect);
             } else {
-                return new DataSourceGate(dataSource);
+                return new CommonEngineFactory().create(dataSource);
             }
         } catch (RuntimeException e) {
             throw e;
@@ -54,8 +53,8 @@ public class DerbyEnvironment implements TestEnvironment {
     }
 
     @Override
-    public DatabaseGate getGate() {
-        return gate;
+    public Engine getEngine() {
+        return engine;
     }
 
     private void initDatabase(final Connection connection) throws Exception {

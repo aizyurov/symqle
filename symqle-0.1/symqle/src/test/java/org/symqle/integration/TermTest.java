@@ -7,7 +7,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
-import org.symqle.gate.MySqlDialect;
+import org.symqle.dialect.MySqlDialect;
 import org.symqle.sql.AbstractFactor;
 import org.symqle.sql.AbstractTerm;
 import org.symqle.sql.Dialect;
@@ -30,49 +30,49 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testCast() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).cast("DECIMAL(7,2)").list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).cast("DECIMAL(7,2)").list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createTerm(employee).map(Mappers.DOUBLE).list(getDatabaseGate());
+        final List<Double> list = createTerm(employee).map(Mappers.DOUBLE).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).selectAll().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).selectAll().list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).distinct().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).distinct().list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -2000.0, -1500.0), list);
     }
 
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).where(employee.retired.asPredicate().negate()).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).where(employee.retired.asPredicate().negate()).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
     }
 
     public void testPair() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.asPredicate()).list(getDatabaseGate());
+        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.asPredicate()).list(getEngine());
         assertEquals(1, list.size());
         assertEquals(-1500, list.get(0).first().intValue());
         assertEquals("Cooper", list.get(0).second());
@@ -81,20 +81,20 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testIsNull() throws Exception {
         final Employee employee = new Employee();
         final AbstractFactor<Integer> factor = employee.deptId.opposite();
-        final List<String> list = employee.lastName.where(factor.isNull()).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(factor.isNull()).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     public void testIsNotNull() throws Exception {
         final Employee employee = new Employee();
         final AbstractFactor<Integer> factor = employee.deptId.opposite();
-        final List<String> list = employee.lastName.where(factor.isNotNull()).orderBy(employee.lastName).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(factor.isNotNull()).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testEq() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createTerm(employee).eq(employee.salary.add(0))).list(getDatabaseGate());
+        final List<String> list = employee.lastName.where(createTerm(employee).eq(employee.salary.add(0))).list(getEngine());
         assertEquals(0, list.size());
     }
 
@@ -103,7 +103,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).ne(employee.salary.add(0)))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -112,7 +112,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).le(employee.salary.add(0)))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -121,7 +121,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).lt(employee.salary.add(0)))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -130,7 +130,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).ge(employee.salary.add(0)))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList(), list);
     }
 
@@ -139,7 +139,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).gt(employee.salary.add(0)))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList(), list);
     }
 
@@ -148,7 +148,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).eq(-1500.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -157,7 +157,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).ne(-1500.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -166,7 +166,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).ge(-2000.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
     }
 
@@ -175,7 +175,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).gt(-2000.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -184,7 +184,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).le(-2000.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -193,7 +193,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).lt(-2000.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
@@ -203,7 +203,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).in(other.salary.mult(-1).where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
     }
 
@@ -213,7 +213,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).notIn(other.salary.mult(-1).where(other.retired.asPredicate().negate())))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -222,7 +222,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).in(-2000.0, -1500.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
     }
 
@@ -231,20 +231,20 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = employee.lastName
                 .where(createTerm(employee).notIn(-2000.0, -1500.0))
                 .orderBy(employee.lastName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
     public void testOpposite() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).opposite().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).opposite().list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
     public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).add(employee.salary.mult(2)).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).add(employee.salary.mult(2)).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -256,7 +256,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).sub(employee.salary.mult(2).opposite()).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).sub(employee.salary.mult(2).opposite()).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -268,7 +268,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testMult() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).mult(employee.salary.div(createTerm(employee))).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).mult(employee.salary.div(createTerm(employee))).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -280,7 +280,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testDiv() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).div(createTerm(employee).div(employee.salary)).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).div(createTerm(employee).div(employee.salary)).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -292,7 +292,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testAddNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).add(3000.0).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).add(3000.0).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -304,7 +304,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testSubNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).sub(500.0).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).sub(500.0).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -316,7 +316,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testMultNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).mult(2).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).mult(2).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -328,7 +328,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testDivNumber() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).div(0.5).list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).div(0.5).list(getEngine());
         final List<Double> actual = new ArrayList<Double>();
         for (Number number : list) {
             actual.add(number.doubleValue());
@@ -343,7 +343,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(createTerm(employee).asPredicate())
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby:GenericDialect ERROR 42X19: The WHERE or HAVING clause or CHECK CONSTRAINT definition is a 'DOUBLE' expression.  It must be a BOOLEAN expression.
@@ -357,7 +357,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = createTerm(employee).concat(employee.lastName)
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("-1500Cooper", "-3000First", "-2000March", "-2000Pedersen", "-3000Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
@@ -370,7 +370,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = createTerm(employee).concat(" marsian $")
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
@@ -385,7 +385,7 @@ public class TermTest extends AbstractIntegrationTestBase {
                     .collate("latin1_general_ci")
                     .concat(" marsian $")
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 23.
@@ -395,26 +395,26 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testOrderBy() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee)).list(getEngine()));
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testOrderAsc() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderAsc().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).orderAsc().list(getEngine()));
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testOrderDesc() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderDesc().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).orderDesc().list(getEngine()));
         assertEquals(Arrays.asList(-1500.0, -2000.0, -2000.0, -3000.0, -3000.0), list);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).nullsFirst()).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).nullsFirst()).list(getEngine()));
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
@@ -425,7 +425,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testOrderByNullsLast() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).nullsLast()).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).nullsLast()).list(getEngine()));
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
@@ -435,19 +435,19 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testOrderByAsc() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).asc()).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).asc()).list(getEngine()));
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testOrderByDesc() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).desc()).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).orderBy(createTerm(employee).desc()).list(getEngine()));
         assertEquals(Arrays.asList(-1500.0, -2000.0, -2000.0, -3000.0, -3000.0), list);
     }
 
     public void testUnionAll() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).unionAll(employee.salary.mult(1).where(employee.lastName.eq("Cooper"))).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).unionAll(employee.salary.mult(1).where(employee.lastName.eq("Cooper"))).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0, 1500.0), list);
 
@@ -455,7 +455,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testUnionDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).unionDistinct(employee.salary.mult(-1).where(employee.lastName.eq("Cooper"))).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).unionDistinct(employee.salary.mult(-1).where(employee.lastName.eq("Cooper"))).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -2000.0, -1500.0), list);
 
@@ -463,7 +463,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).union(employee.salary.mult(-1).where(employee.lastName.eq("Cooper"))).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).union(employee.salary.mult(-1).where(employee.lastName.eq("Cooper"))).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -2000.0, -1500.0), list);
 
@@ -472,7 +472,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testExceptAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).exceptAll(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).exceptAll(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
         } catch (SQLException e) {
@@ -485,7 +485,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testExceptDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).exceptDistinct(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).exceptDistinct(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -2000.0), list);
         } catch (SQLException e) {
@@ -498,7 +498,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testExcept() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).except(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).except(createTerm(employee).where(employee.lastName.eq("Cooper"))).list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -2000.0), list);
         } catch (SQLException e) {
@@ -510,7 +510,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testIntersectAll() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).intersectAll(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).intersectAll(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0), list);
         } catch (SQLException e) {
@@ -522,7 +522,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testIntersectDistinct() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).intersectDistinct(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).intersectDistinct(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -2000.0), list);
         } catch (SQLException e) {
@@ -534,7 +534,7 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testIntersect() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).intersect(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).intersect(createTerm(employee).where(employee.lastName.ne("Cooper"))).list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -2000.0), list);
         } catch (SQLException e) {
@@ -549,7 +549,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(createTerm(employee).exists())
                 .orderBy(department.deptName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
@@ -559,13 +559,13 @@ public class TermTest extends AbstractIntegrationTestBase {
         final List<String> list = department.deptName
                 .where(createTerm(employee).contains(-3000.0))
                 .orderBy(department.deptName)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
 
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).forUpdate().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).forUpdate().list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
@@ -573,11 +573,11 @@ public class TermTest extends AbstractIntegrationTestBase {
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<Double> list = toListOfDouble(createTerm(employee).forReadOnly().list(getDatabaseGate()));
+            final List<Double> list = toListOfDouble(createTerm(employee).forReadOnly().list(getEngine()));
             Collections.sort(list);
             assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getDatabaseGate().initialContext().get(Dialect.class).getClass())) {
+            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
                 // should work with MySqlDialect
                 throw e;
             } else {
@@ -591,7 +591,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final Employee employee = new Employee();
         try {
-            createTerm(employee).queryValue().pair(department.deptName).list(getDatabaseGate());
+            createTerm(employee).queryValue().pair(department.deptName).list(getEngine());
             fail("Scalar subquery is only allowed to return a single row");
         } catch (SQLException e) {
             // fine
@@ -600,20 +600,20 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testQueryValue() throws Exception {
         final List<Pair<Integer, String>> list = new One().id.opposite().queryValue().pair(new MyDual().dummy)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(-1, "X")), list);
     }
 
     public void testWhenClause() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.asPredicate().then(createTerm(employee)).orElse(employee.salary.add(0)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(employee.retired.asPredicate().then(createTerm(employee)).orElse(employee.salary.add(0)).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
     public void testElse() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(employee.retired.asPredicate().negate().then(employee.salary.add(0)).orElse(createTerm(employee)).list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(employee.retired.asPredicate().negate().then(employee.salary.add(0)).orElse(createTerm(employee)).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
@@ -623,7 +623,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(createTerm(employee).like(Params.p("-2%")))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
@@ -636,7 +636,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(createTerm(employee).like("-2%"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
@@ -649,7 +649,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(createTerm(employee).notLike(Params.p("-2%")))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
@@ -662,7 +662,7 @@ public class TermTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = employee.lastName.where(createTerm(employee).notLike("-2%"))
                     .orderBy(employee.lastName)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
@@ -672,32 +672,32 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testCount() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = createTerm(employee).count().list(getDatabaseGate());
+        final List<Integer> list = createTerm(employee).count().list(getEngine());
         assertEquals(Arrays.asList(5), list);
     }
 
     public void testCountDistinct() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = createTerm(employee).countDistinct().list(getDatabaseGate());
+        final List<Integer> list = createTerm(employee).countDistinct().list(getEngine());
         assertEquals(Arrays.asList(3), list);
     }
 
     public void testAverage() throws Exception {
         final Employee employee = new Employee();
-        final List<Number> list = createTerm(employee).avg().list(getDatabaseGate());
+        final List<Number> list = createTerm(employee).avg().list(getEngine());
         assertEquals(1, list.size());
         assertEquals(-2300.0, list.get(0).doubleValue());
     }
 
     public void testMin() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).min().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).min().list(getEngine()));
         assertEquals(Arrays.asList(-3000.0), list);
     }
 
     public void testMax() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).max().list(getDatabaseGate()));
+        final List<Double> list = toListOfDouble(createTerm(employee).max().list(getEngine()));
         assertEquals(Arrays.asList(-1500.0), list);
     }
 }

@@ -35,4 +35,9 @@ public class AbstractMockEngine extends Assert {
         assertEquals(Arrays.asList(this.options), Arrays.asList(options));
         query.setParameters(parameters);
     }
+
+    public String getDatabaseName() {
+        return "mock";
+    }
+
 }

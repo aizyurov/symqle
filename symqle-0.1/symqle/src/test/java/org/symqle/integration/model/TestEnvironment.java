@@ -1,10 +1,10 @@
 package org.symqle.integration.model;
 
-import org.symqle.sql.DatabaseGate;
+import org.symqle.jdbc.Engine;
 
 /**
  * @author lvovich
  */
 public interface TestEnvironment {
-    DatabaseGate getGate();
+    Engine getEngine();
 }

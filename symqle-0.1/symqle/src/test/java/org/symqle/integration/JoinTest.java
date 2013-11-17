@@ -16,7 +16,7 @@ public class JoinTest extends AbstractIntegrationTestBase {
         final JoinTestTable left = new JoinTestTable("join_test_left");
         final JoinTestTable right = new JoinTestTable("join_test_right");
         left.leftJoin(right, left.id().eq(right.id()));
-        final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(left.text()).list(getDatabaseGate());
+        final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(left.text()).list(getEngine());
         assertEquals(Arrays.asList(Pair.make("one", (String) null), Pair.make("two", "two")), list);
     }
 
@@ -25,7 +25,7 @@ public class JoinTest extends AbstractIntegrationTestBase {
         final JoinTestTable left = new JoinTestTable("join_test_left");
         final JoinTestTable right = new JoinTestTable("join_test_right");
         left.rightJoin(right, left.id().eq(right.id()));
-        final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(right.text()).list(getDatabaseGate());
+        final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(right.text()).list(getEngine());
         assertEquals(Arrays.asList(Pair.make((String) null, "three"), Pair.make("two", "two")), list);
     }
 
@@ -33,7 +33,7 @@ public class JoinTest extends AbstractIntegrationTestBase {
         final JoinTestTable left = new JoinTestTable("join_test_left");
         final JoinTestTable right = new JoinTestTable("join_test_right");
         left.innerJoin(right, left.id().eq(right.id()));
-        final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(right.text()).list(getDatabaseGate());
+        final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(right.text()).list(getEngine());
         assertEquals(Arrays.asList(Pair.make("two", "two")), list);
     }
 
@@ -42,7 +42,7 @@ public class JoinTest extends AbstractIntegrationTestBase {
         final JoinTestTable right = new JoinTestTable("join_test_right");
         left.outerJoin(right, left.id().eq(right.id()));
         try {
-            final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(right.text().nullsLast()).list(getDatabaseGate());
+            final List<Pair<String,String>> list = left.text().pair(right.text()).orderBy(right.text().nullsLast()).list(getEngine());
             assertEquals(Arrays.asList(Pair.make((String) null, "three"), Pair.make("two", "two"), Pair.make("one", (String)null)), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "OUTER" at line 1, column 63.

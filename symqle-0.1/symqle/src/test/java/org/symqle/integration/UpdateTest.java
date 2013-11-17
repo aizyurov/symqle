@@ -19,19 +19,19 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
                 .insert(updateTable.id.set(2), updateTable.text.set("wow"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.id.set(3), updateTable.text.set("changed")).execute(getDatabaseGate());
-        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        updateTable.update(updateTable.id.set(3), updateTable.text.set("changed")).execute(getEngine());
+        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "changed")), newRows);
     }
 
     private UpdateTable clean() throws SQLException {
         final UpdateTable updateTable = new UpdateTable();
-        updateTable.delete().execute(getDatabaseGate());
+        updateTable.delete().execute(getEngine());
         return updateTable;
     }
 
@@ -39,13 +39,13 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
                 .insert(updateTable.id.set(2))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "nothing")), rows);
 
-        updateTable.update(updateTable.text.set("changed")).execute(getDatabaseGate());
-        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        updateTable.update(updateTable.text.set("changed")).execute(getEngine());
+        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "changed")), newRows);
     }
 
@@ -53,13 +53,13 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
                 .insert(updateTable.id.set(2), updateTable.text.set("wow"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.text.setNull()).execute(getDatabaseGate());
-        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        updateTable.update(updateTable.text.setNull()).execute(getEngine());
+        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, (String) null)), newRows);
 
     }
@@ -68,13 +68,13 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
                 .insert(updateTable.id.set(2), updateTable.text.set("wow"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.text.setDefault()).execute(getDatabaseGate());
-        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        updateTable.update(updateTable.text.setDefault()).execute(getEngine());
+        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "nothing")), newRows);
     }
 
@@ -82,13 +82,13 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
                 .insert(updateTable.id.set(2), updateTable.text.set("wow"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.id.set(updateTable.id.add(1).map(Mappers.INTEGER))).execute(getDatabaseGate());
-        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        updateTable.update(updateTable.id.set(updateTable.id.add(1).map(Mappers.INTEGER))).execute(getEngine());
+        final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "wow")), newRows);
     }
 
@@ -96,9 +96,9 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
                 .insert(updateTable.id.set(2), updateTable.text.set("wow"))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         final One one = new One();
@@ -106,9 +106,9 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final int updatedRowsCount = updateTable.update(
                 updateTable.id.set(one.id.queryValue()),
                 updateTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
-                .execute(getDatabaseGate());
+                .execute(getEngine());
         assertEquals(1, updatedRowsCount);
-        final List<Pair<Integer,String>> updatedRows = updateTable.id.pair(updateTable.text).list(getDatabaseGate());
+        final List<Pair<Integer,String>> updatedRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "Margaret")), updatedRows);
     }
 

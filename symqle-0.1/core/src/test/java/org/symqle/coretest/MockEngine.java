@@ -83,4 +83,10 @@ public class MockEngine extends AbstractMockEngine implements Engine {
         // TODO implement
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public void execute(final ConnectionCallback callback) {
+        // TODO implement
+        throw new RuntimeException("Not implemented");
+    }
 }

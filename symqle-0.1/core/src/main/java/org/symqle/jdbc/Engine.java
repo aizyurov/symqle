@@ -6,11 +6,11 @@ package org.symqle.jdbc;
 import org.symqle.common.Sql;
 import org.symqle.sql.ColumnName;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 
 public interface Engine extends QueryEngine {
-
 
     /**
      * Executes a sql.
@@ -40,6 +40,8 @@ public interface Engine extends QueryEngine {
      * @throws SQLException from jdbc driver
      */
     int flush() throws SQLException;
+
+    void execute(ConnectionCallback callback) throws SQLException;
 
 
     /**
@@ -71,5 +73,9 @@ public interface Engine extends QueryEngine {
     int setBatchSize(int batchSize) throws SQLException;
 
     int NOTHING_FLUSHED = -100;
+
+    public interface ConnectionCallback {
+        void call(Connection connection) throws SQLException;
+    }
 
 }

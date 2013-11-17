@@ -1,4 +1,4 @@
-package org.symqle.gate;
+package org.symqle.dialect;
 
 import org.symqle.common.Sql;
 import org.symqle.querybuilder.SqlTerm;

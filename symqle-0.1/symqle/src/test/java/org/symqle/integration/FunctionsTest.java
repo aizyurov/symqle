@@ -20,32 +20,32 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         final List<Double> list = abs(employee.salary.opposite())
                 .map(Mappers.DOUBLE)
                 .where(employee.lastName.eq("Redwood"))
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList(3000.0), list);
     }
 
     public void testMod() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
-        final List<Number> list = mod(arithmetics.leftInt(), arithmetics.rightInt()).list(getDatabaseGate());
+        final List<Number> list = mod(arithmetics.leftInt(), arithmetics.rightInt()).list(getEngine());
         assertEquals(1, list.size());
         assertEquals(1, list.get(0).intValue());
     }
 
     public void testLn() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
-        final List<Number> list = ln(arithmetics.leftDouble()).list(getDatabaseGate());
+        final List<Number> list = ln(arithmetics.leftDouble()).list(getEngine());
         assertTrue(Math.abs(Math.log(11.0) - list.get(0).doubleValue()) < 1e-10);
     }
 
     public void testExp() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
-        final List<Number> list = exp(arithmetics.rightDouble()).list(getDatabaseGate());
+        final List<Number> list = exp(arithmetics.rightDouble()).list(getEngine());
         assertTrue(Math.abs(Math.exp(2.0) - list.get(0).doubleValue()) < 1e-10);
     }
 
     public void testSqrt() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
-        final List<Number> list = sqrt(arithmetics.leftDouble()).list(getDatabaseGate());
+        final List<Number> list = sqrt(arithmetics.leftDouble()).list(getEngine());
         assertTrue(Math.abs(Math.sqrt(11.0) - list.get(0).doubleValue()) < 1e-10);
     }
 
@@ -53,7 +53,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         final Arithmetics arithmetics = new Arithmetics();
         final List<Integer> list = floor(arithmetics.leftDouble().div(arithmetics.rightDouble()))
                 .map(Mappers.INTEGER)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList(5), list);
 
     }
@@ -62,7 +62,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         final Arithmetics arithmetics = new Arithmetics();
         final List<Integer> list = ceil(arithmetics.leftDouble().div(arithmetics.rightDouble()))
                 .map(Mappers.INTEGER)
-                .list(getDatabaseGate());
+                .list(getEngine());
         assertEquals(Arrays.asList(6), list);
     }
 
@@ -71,7 +71,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         try {
             final List<Double> list = power(arithmetics.leftDouble(), arithmetics.rightDouble())
                     .map(Mappers.DOUBLE)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList(121.0), list);
         } catch (SQLException e) {
             // Derby: ERROR 42Y03: 'POWER' is not recognized as a function or procedure.
@@ -84,7 +84,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         try {
             final List<Double> list = power(arithmetics.leftDouble(), 3)
                     .map(Mappers.DOUBLE)
-                    .list(getDatabaseGate());
+                    .list(getEngine());
             assertEquals(Arrays.asList(1331.0), list);
         } catch (SQLException e) {
             // Derby: ERROR 42Y03: 'POWER' is not recognized as a function or procedure.
