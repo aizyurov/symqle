@@ -55,3 +55,5 @@ insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Sub
 databaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + BatchingGate: submitUpdate, flush.
 (done) move normalization of SQL to Dialect (may be different for different dialects). Remove NiceSql.
 
+make SqlContext immutable. Separate logic  of TableRegistry and FROM clause generation. SingelTableRegistry and
+NoTablesRegistry (check that a.insert(set(a.name=a.nick)).execute() is invalid).

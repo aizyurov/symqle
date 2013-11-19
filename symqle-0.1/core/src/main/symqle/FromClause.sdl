@@ -152,32 +152,35 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
     }
 
 
-            /**
-            * Creates an Sql representing <code>this</code>
-            * @param context the Sql construction context
-            * @return sql conforming to <code>this</code> syntax
-            */
-            public Sql z$sqlOfTableName(SqlContext context) {
-                return new CustomSql(name);
-            }
-            /**
-            * Creates an Sql representing <code>this</code>
-            * @param context the Sql construction context
-            * @return sql conforming to <code>this</code> syntax
-            */
-            public Sql z$sqlOfTablePrimary(SqlContext context) {
-                return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
-                        new CustomSql(context.get(TableRegistry.class).getCorrelationName(this)));
-            }
-            /**
-            * Creates an Sql representing <code>this</code>
-            * @param context the Sql construction context
-            * @return sql conforming to <code>this</code> syntax
-            */
-            public Sql z$sqlOfTableReference(SqlContext context) {
-                return tableReference.z$sqlOfTableReference(context);
-            }
+    /**
+    * Creates an Sql representing <code>this</code>
+    * @param context the Sql construction context
+    * @return sql conforming to <code>this</code> syntax
+    */
+    public Sql z$sqlOfTableName(SqlContext context) {
+        return new CustomSql(name);
+    }
+    /**
+    * Creates an Sql representing <code>this</code>
+    * @param context the Sql construction context
+    * @return sql conforming to <code>this</code> syntax
+    */
+    public Sql z$sqlOfTablePrimary(SqlContext context) {
+        return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
+                new CustomSql(getCorrelationName(context)));
+    }
+    /**
+    * Creates an Sql representing <code>this</code>
+    * @param context the Sql construction context
+    * @return sql conforming to <code>this</code> syntax
+    */
+    public Sql z$sqlOfTableReference(SqlContext context) {
+        return tableReference.z$sqlOfTableReference(context);
+    }
 
+    public String getCorrelationName(SqlContext context) {
+        return context.get(TableRegistry.class).getCorrelationName(this);
+    }
 }
 
 # <joined table> ::=

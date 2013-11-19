@@ -100,7 +100,7 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
      }
 
     public Sql z$sqlOfColumnReference(SqlContext context) {
-        final String correlationName = context.get(TableRegistry.class).getCorrelationName(owner);
+        final String correlationName = owner.getCorrelationName(context);
         return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new CustomSql(correlationName),
                 z$sqlOfColumnName(context));
     }
@@ -108,7 +108,7 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
     public Sql z$sqlOfColumnName(final SqlContext context) {
         // make sure that owner is valid in the context
         // by getting correlation name; the result is not used
-        context.get(TableRegistry.class).getCorrelationName(owner);
+        owner.getCorrelationName(context);
         return new CustomSql(columnName);
     }
 
