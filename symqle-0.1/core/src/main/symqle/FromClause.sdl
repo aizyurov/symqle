@@ -248,17 +248,24 @@ public class SelectTableRegistry implements TableRegistry {
 
     private final UniqueNameProvider nameProvider;
 
+    private final int capacity;
 
     public SelectTableRegistry(UniqueNameProvider nameProvider) {
         parent = null;
         this.nameProvider = nameProvider;
+        this.capacity = Integer.MAX_VALUE;
     }
 
-
+    public SelectTableRegistry(UniqueNameProvider nameProvider, int capacity) {
+        parent = null;
+        this.nameProvider = nameProvider;
+        this.capacity = capacity;
+    }
 
     public SelectTableRegistry(final TableRegistry parent) {
         this.parent = parent;
         this.nameProvider = null;
+        this.capacity = Integer.MAX_VALUE;
     }
 
     @Override
@@ -266,12 +273,10 @@ public class SelectTableRegistry implements TableRegistry {
         return parent != null ? parent.generateUniqueName() : nameProvider.getUniqueName();
     }
 
-
     private void addToLocalTables(TableOrView table) {
             final String newName = generateUniqueName();
             localTables.put(table, newName);
     }
-
 
     @Override
     public String findCorrelationName(TableOrView table) {
