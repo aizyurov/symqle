@@ -36,6 +36,10 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         return batchSize;
     }
 
+    protected abstract Connection getConnection() throws SQLException;
+
+    protected abstract void releaseConnection(Connection connection) throws SQLException;
+
     public int setBatchSize(final int batchSize) throws SQLException {
         if (batchSize <=0) {
             throw new IllegalArgumentException("batchSize should be positive, actual "+batchSize);
@@ -52,7 +56,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public int execute(final Sql statement, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            flushInConnection(connection);
+            flush(connection);
             final PreparedStatement preparedStatement = connection.prepareStatement(statement.sql());
             try {
                 setupStatement(preparedStatement, statement, options);
@@ -70,7 +74,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public <T> T executeReturnKey(final Sql statement, final ColumnName<T> keyColumn, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            flushInConnection(connection);
+            flush(connection);
             final PreparedStatement preparedStatement = connection.prepareStatement(statement.sql(), Statement.RETURN_GENERATED_KEYS);
             try {
                 setupStatement(preparedStatement, statement, options);
@@ -98,8 +102,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public <T> int scroll(final Query<T> query, final Callback<T> callback, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            flushInConnection(connection);
-            return scrollInConnection(connection, query, callback, options);
+            flush(connection);
+            return scroll(connection, query, callback, options);
         } finally {
             releaseConnection(connection);
         }
@@ -109,13 +113,13 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public int flush() throws SQLException {
         final Connection connection = getConnection();
         try {
-            return flushInConnection(connection);
+            return flush(connection);
         } finally {
             releaseConnection(connection);
         }
     }
 
-    private int flushInConnection(final Connection connection) throws SQLException {
+    private int flush(final Connection connection) throws SQLException {
         if (queue.size() == 0) {
             return Engine.NOTHING_FLUSHED;
         }
@@ -162,7 +166,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public void execute(final ConnectionCallback callback)  throws SQLException {
         final Connection connection = getConnection();
         try {
-            flushInConnection(connection);
+            flush(connection);
             callback.call(connection);
         } finally {
             releaseConnection(connection);

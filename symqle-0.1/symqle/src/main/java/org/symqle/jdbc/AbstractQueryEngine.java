@@ -48,10 +48,6 @@ abstract class AbstractQueryEngine implements QueryEngine {
         return databaseName;
     }
 
-    protected abstract Connection getConnection() throws SQLException;
-
-    protected abstract void releaseConnection(Connection connection) throws SQLException;
-
     @Override
     public final SqlContext initialContext() {
         final SqlContext context = new SqlContext();
@@ -64,17 +60,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
         return context;
     }
 
-    @Override
-    public <T> int scroll(final Query<T> query, final Callback<T> callback, final Option... options) throws SQLException {
-        final Connection connection = getConnection();
-        try {
-            return scrollInConnection(connection, query, callback, options);
-        } finally {
-            releaseConnection(connection);
-        }
-    }
-
-    protected final <T> int scrollInConnection(final Connection connection, final Query<T> query, final Callback<T> callback, final Option[] options) throws SQLException {
+    protected final <T> int scroll(final Connection connection, final Query<T> query, final Callback<T> callback, final Option[] options) throws SQLException {
         final PreparedStatement preparedStatement = connection.prepareStatement(query.sql());
         try {
             setupStatement(preparedStatement, query, options);

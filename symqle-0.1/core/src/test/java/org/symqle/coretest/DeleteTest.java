@@ -46,7 +46,7 @@ public class DeleteTest extends SqlTestCase {
             fail("MalformedStatementException expected, but was " + sql);
         } catch (MalformedStatementException e) {
             // fine
-            assertTrue(e.getMessage().contains("is not legal in this context"));
+            assertTrue(e.getMessage().contains("Not legal in this context"));
         }
     }
 

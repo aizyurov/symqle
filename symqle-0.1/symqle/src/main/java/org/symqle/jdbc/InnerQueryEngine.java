@@ -1,5 +1,8 @@
 package org.symqle.jdbc;
 
+import org.symqle.common.Callback;
+import org.symqle.common.Query;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -16,12 +19,7 @@ class InnerQueryEngine extends AbstractQueryEngine {
     }
 
     @Override
-    protected Connection getConnection() throws SQLException {
-        return connection;
-    }
-
-    @Override
-    protected void releaseConnection(final Connection connection) throws SQLException {
-        // do nothing
+    public <T> int scroll(final Query<T> query, final Callback<T> callback, final Option... options) throws SQLException {
+        return scroll(connection, query, callback, options);
     }
 }

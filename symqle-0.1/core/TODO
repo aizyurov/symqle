@@ -44,8 +44,6 @@ ALL/ANY/SOME (future release)
 
 (done) return generated keys
 
-insertFrom: implements SelectSublist<?>  where applicable; all applicable -> Subquery. insertFrom(InsertSublist is) ??? Methods for constructing InsertSublist (from InsertSelectList).
-
 (done) inner/right/outer joins
 
 (done) getSqlText() -> sql()
@@ -56,4 +54,13 @@ databaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + Batchin
 (done) move normalization of SQL to Dialect (may be different for different dialects). Remove NiceSql.
 
 make SqlContext immutable. Separate logic  of TableRegistry and FROM clause generation. SingelTableRegistry and
-NoTablesRegistry (check that a.insert(set(a.name=a.nick)).execute() is invalid).
+NoTablesRegistry (check that a.insert(set(a.name=a.nick)).execute() is invalid). The last is optional, some DBs support insert into a (a,b) values (1, a) -add to Configuration
+
+insertFrom: t.insert(t.rows(t.x.set(s.x), t.y.set(s.z).where(s.w.eq(0)))).execute()
+
+Labels, LabelRegistry (for union/except/intersect and subqueries)
+
+
+
+
+

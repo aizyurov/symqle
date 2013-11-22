@@ -179,7 +179,13 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
     }
 
     public String getCorrelationName(SqlContext context) {
-        return context.get(TableRegistry.class).getCorrelationName(this);
+        String name;
+        for (name = context.get(TableRegistry.class).getCorrelationName(this);
+                name == null;
+                name = context.get(TableRegistry.class).getCorrelationName(this)) {
+            context.get(TableRegistry.class).addAll(joinedTableParticipants());
+        }
+        return name;
     }
 }
 
@@ -218,6 +224,7 @@ public class ImplicitFromClause implements FromClause {
 }
 
 
+import java.util.Collection;
 public interface TableRegistry {
 
     String getCorrelationName(TableOrView table);
@@ -226,7 +233,7 @@ public interface TableRegistry {
 
     String findCorrelationName(TableOrView table);
 
-
+    void addAll(Collection<TableOrView> tables);
 }
 
 
@@ -330,17 +337,29 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
     public String getCorrelationName(TableOrView table) {
-        final String found = findCorrelationName(table);
-        if (found != null) {
-            return found;
-        } else {
-            for (TableOrView t : table.joinedTableParticipants()) {
-                addToLocalTables(t);
-            }
-            return localTables.get(table);
-        }
+        return findCorrelationName(table);
     }
 
+    public void addAll(Collection<TableOrView> tables) {
+        for (TableOrView table : tables) {
+            if (parent != null && parent.getCorrelationName(table) != null) {
+                // these table belong to upper context
+                Set<TableOrView> intersection = new HashSet<TableOrView>(tables);
+                intersection.retainAll(localTables.keySet());
+                if (intersection.isEmpty()) {
+                    parent.addAll(tables);
+                    return;
+                } else {
+                    throw new IllegalStateException("cannot add "+tables+": " +
+                            table + " belongs to parent context but "
+                            + intersection + " belong to current level");
+                }
+            }
+        }
+        for (TableOrView table : tables) {
+            addToLocalTables(table);
+        }
+    }
 }
 
 

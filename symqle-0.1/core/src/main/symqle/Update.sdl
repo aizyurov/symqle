@@ -216,8 +216,18 @@ class DataChangeTableRegistry implements TableRegistry {
         if (table.equals(targetTable)) {
             return targetTable.getName();
         } else {
-            throw new MalformedStatementException(table + " is not legal in this context. Only " + targetTable + " can be used");
+            return null;
         }
+    }
+
+    @Override
+    public void addAll(final Collection<TableOrView> tables) {
+        if (tables.size() > 1) {
+            throw new IllegalStateException("Not valid in this context: " + tables);
+        } else if (tables.size() == 1 && !tables.iterator().next().equals(targetTable)) {
+            throw new MalformedStatementException("Not valid in this context: " + tables);
+        }
+        // else OK
     }
 }
 
