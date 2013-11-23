@@ -34,7 +34,8 @@ public interface DataChangeStatement : Sql {}
     final SqlContext context = new SqlContext();
     context.set(Dialect.class, dialect);
     context.set(Configuration.class, configuration);
-     final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
+   context.set(TableRegistry.class, new DataChangeTableRegistry());
+      final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
      return new Sql() {
          @Override
          public String sql() {
@@ -102,15 +103,7 @@ public interface UpdateStatementBase : Sql {}
 public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 
 UpdateStatementBase ::=
-    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {
-        public Sql z$sqlOfUpdateStatementBase(final SqlContext context) {
-            // Modifies outer context by setting TableRegistry!
-            TableRegistry registry = new DataChangeTableRegistry(t);
-            context.set(TableRegistry.class, registry);
-            // no name provider
-            return context.get(Dialect.class).UpdateStatementBase_is_UPDATE_TargetTable_SET_SetClauseList(t.z$sqlOfTargetTable(context), l.z$sqlOfSetClauseList(context));
-        }
-    }
+    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {}
 ;
 
 public interface TargetTable : Sql {
@@ -190,13 +183,24 @@ import org.symqle.querybuilder.TableNameProvider;
 import org.symqle.common.MalformedStatementException;
 class DataChangeTableRegistry implements TableRegistry {
 
-    final TargetTable targetTable;
+    TableOrView targetTable;
     final UniqueNameProvider nameProvider = new TableNameProvider();
 
-
-    public DataChangeTableRegistry(final TargetTable targetTable) {
-        this.targetTable = targetTable;
+    public void addAll(final Collection<TableOrView> tables) {
+        if (tables.size() > 1) {
+            throw new IllegalStateException("Not valid in this context: " + tables);
+        } else if (tables.size() == 1) {
+            final TableOrView table = tables.iterator().next();
+            if (targetTable == null) {
+                targetTable = table;
+            } else if (!table.equals(targetTable)) {
+                throw new MalformedStatementException("Illegal in this context: " + tables);
+            }
+            // else empty operation
+        }
+        // else empty operation
     }
+
 
     public String findCorrelationName(TableOrView table) {
         if (table.equals(targetTable)) {
@@ -207,9 +211,11 @@ class DataChangeTableRegistry implements TableRegistry {
     }
 
 
+
     public String generateUniqueName() {
         return nameProvider.getUniqueName();
     }
+
 
 
     public String getCorrelationName(TableOrView table) {
@@ -220,15 +226,14 @@ class DataChangeTableRegistry implements TableRegistry {
         }
     }
 
-    @Override
-    public void addAll(final Collection<TableOrView> tables) {
-        if (tables.size() > 1) {
-            throw new IllegalStateException("Not valid in this context: " + tables);
-        } else if (tables.size() == 1 && !tables.iterator().next().equals(targetTable)) {
-            throw new MalformedStatementException("Not valid in this context: " + tables);
-        }
-        // else OK
-    }
+     @Override
+     public List<TableOrView> getLocal() {
+         if (targetTable != null) {
+            return Collections.singletonList(targetTable);
+         } else {
+             return Collections.emptyList();
+         }
+     }
 }
 
 public interface InsertStatement : Sql {}
@@ -242,16 +247,7 @@ InsertStatement ::=
 #        :: protected AbstractInsertStatement fromSubquery {}
 #|
     INSERT INTO t:TargetTable s:FromConstructor
-        :: protected AbstractInsertStatement fromConstructor {
-            public Sql z$sqlOfInsertStatement(final SqlContext context) {
-                // Modifies outer context by setting TableRegistry!
-                TableRegistry registry = new DataChangeTableRegistry(t);
-                context.set(TableRegistry.class, registry);
-                // no name provider
-                return context.get(Dialect.class).InsertStatement_is_INSERT_INTO_TargetTable_FromConstructor(
-                        t.z$sqlOfTargetTable(context), s.z$sqlOfFromConstructor(context));
-            }
-        }
+        :: protected AbstractInsertStatement fromConstructor {}
 |
     INSERT INTO t:TargetTable DEFAULT VALUES
         :: public AbstractInsertStatement insertDefault {}
@@ -322,14 +318,7 @@ public interface DeleteStatementBase : Sql {}
 
 public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 
-DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {
-            public Sql z$sqlOfDeleteStatementBase(final SqlContext context) {
-                // Modifies outer context by setting TableRegistry!
-                TableRegistry registry = new DataChangeTableRegistry(t);
-                context.set(TableRegistry.class, registry);
-                // no name provider
-                return context.get(Dialect.class).DeleteStatementBase_is_DELETE_FROM_TargetTable(t.z$sqlOfTargetTable(context));
-            }
+DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {}
 }
 ;
 
@@ -349,7 +338,8 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
     final SqlContext context = new SqlContext();
     context.set(Dialect.class, dialect);
     context.set(Configuration.class, configuration);
-     final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
+   context.set(TableRegistry.class, new DataChangeTableRegistry());
+      final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
      // this label is unused; it is just a check that keyColumn is valid in this context
      final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).sql();
      return new Sql() {

@@ -91,7 +91,8 @@ public class UpdateTest extends SqlTestCase {
             fail("MalformedStatementException expected, but was " + sql);
         } catch (MalformedStatementException e) {
             // fine
-            assertTrue(e.getMessage().contains("is not legal in this context"));
+            e.printStackTrace();
+            assertTrue("Unexpected message: " + e.getMessage(), e.getMessage().contains("Illegal in this context"));
         }
     }
 
@@ -102,7 +103,7 @@ public class UpdateTest extends SqlTestCase {
             fail("MalformedStatementException expected, but was " + sql);
         } catch (MalformedStatementException e) {
             // fine
-            assertTrue(e.getMessage().contains("is not legal in this context"));
+            assertTrue(e.getMessage().contains("Illegal in this context"));
         }
     }
 
