@@ -87,15 +87,7 @@ UpdateStatement ::=
     b:UpdateStatementBase :: implicit {}
 |
     b:UpdateStatementBase wc:WhereClause ::
-        public AbstractUpdateStatement where {
-            public Sql z$sqlOfUpdateStatement(final SqlContext context) {
-                // a trick here: z$sqlOfUpdateStatementBase modifies uts argument
-                final Sql base = b.z$sqlOfUpdateStatementBase(context);
-                final SqlContext inner = createInnerContext(context);
-                final Sql where = wc.z$sqlOfWhereClause(inner);
-                return context.get(Dialect.class).UpdateStatement_is_UpdateStatementBase_WhereClause(base, where);
-            }
-        }
+        public AbstractUpdateStatement where {}
 ;
 
 public interface UpdateStatementBase : Sql {}
@@ -168,16 +160,20 @@ SetClause ::=
 public interface ColumnName<T> extends Scalar<T> : Sql {}
 
 
+import java.util.Collections;
 public class Table extends TableOrView implements TargetTable {
     public Table(String name) {
         super(name);
     }
 
     public Sql z$sqlOfTargetTable(final SqlContext context) {
+        context.get(TableRegistry.class).addAll(Collections.<TableOrView>singleton(this));
         return new CustomSql(getName());
     }
 }
 
+import java.util.Collections;
+import java.util.List;
 import org.symqle.querybuilder.UniqueNameProvider;
 import org.symqle.querybuilder.TableNameProvider;
 import org.symqle.common.MalformedStatementException;
@@ -319,7 +315,6 @@ public interface DeleteStatementBase : Sql {}
 public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 
 DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {}
-}
 ;
 
 :: public <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {

@@ -225,23 +225,22 @@ public class ImplicitFromClause implements FromClause {
 
 
 import java.util.Collection;
+import java.util.List;
 public interface TableRegistry {
 
-    String getCorrelationName(TableOrView table);
-
-    String generateUniqueName();
+    void addAll(Collection<TableOrView> tables);
 
     String findCorrelationName(TableOrView table);
 
-    void addAll(Collection<TableOrView> tables);
+    String generateUniqueName();
+
+    String getCorrelationName(TableOrView table);
+
+    List<TableOrView> getLocal();
 }
 
 
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import org.symqle.querybuilder.TableNameProvider;
 import org.symqle.querybuilder.UniqueNameProvider;
 import org.symqle.common.Sql;
@@ -359,6 +358,11 @@ public class SelectTableRegistry implements TableRegistry {
         for (TableOrView table : tables) {
             addToLocalTables(table);
         }
+    }
+
+    @Override
+    public List<TableOrView> getLocal() {
+        return new ArrayList<TableOrView>(localTables.keySet());
     }
 }
 
