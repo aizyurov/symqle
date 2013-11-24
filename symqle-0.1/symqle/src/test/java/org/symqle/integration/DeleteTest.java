@@ -1,8 +1,11 @@
 package org.symqle.integration;
 
+import org.symqle.common.Sql;
+import org.symqle.common.SqlParameters;
 import org.symqle.integration.model.DeleteDetail;
 import org.symqle.integration.model.DeleteMaster;
 import org.symqle.jdbc.Engine;
+import org.symqle.querybuilder.CustomSql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,43 +20,46 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     @Override
     protected void onSetUp() throws Exception {
-        getEngine().execute(new Engine.ConnectionCallback() {
+        getEngine().execute(new CustomSql("DELETE FROM delete_detail"));
+        getEngine().execute(new CustomSql("DELETE FROM delete_master"));
+    }
+
+    private final Sql createInsertIntoDeleteMaster(final int id, final String description) {
+        return new Sql() {
             @Override
-            public void call(final Connection connection) throws SQLException {
-            {
-                final PreparedStatement stmt = connection.prepareStatement("DELETE FROM delete_detail");
-                stmt.executeUpdate();
-                stmt.close();
+            public String sql() {
+                return "INSERT INTO delete_master (master_id, description) values (?, ?)";
             }
-            {
-                final PreparedStatement stmt = connection.prepareStatement("DELETE FROM delete_master");
-                stmt.executeUpdate();
-                stmt.close();
+
+            @Override
+            public void setParameters(SqlParameters p) throws SQLException {
+                p.next().setInt(id);
+                p.next().setString(description);
             }
+        };
+    }
+
+    private final Sql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
+        return new Sql() {
+            @Override
+            public String sql() {
+                return "INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)";
             }
-        });
+
+            @Override
+            public void setParameters(SqlParameters p) throws SQLException {
+                p.next().setInt(id);
+                p.next().setInt(masterId);
+                p.next().setString(description);
+            }
+        };
     }
 
     public void testDeleteAll() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         assertEquals(0, master.delete().execute(getEngine()));
-        getEngine().execute(new Engine.ConnectionCallback() {
-            @Override
-            public void call(final Connection connection) throws SQLException {
-                final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
-                try {
-                    stmt.setInt(1, 1);
-                    stmt.setString(2, "one");
-                    stmt.executeUpdate();
-                    stmt.setInt(1, 2);
-                    stmt.setString(2, "two");
-                    stmt.executeUpdate();
-                    stmt.close();
-                } finally {
-                    stmt.close();
-                }
-            }
-        });
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"));
+        getEngine().execute(createInsertIntoDeleteMaster(2, "two"));
         assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
         assertEquals(2, master.delete().execute(getEngine()));
         assertEquals(Collections.<Integer>emptyList(), master.masterId.list(getEngine()));
@@ -62,26 +68,9 @@ public class DeleteTest extends AbstractIntegrationTestBase {
     public void testDeleteSome() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         assertEquals(0, master.delete().execute(getEngine()));
-        getEngine().execute(new Engine.ConnectionCallback() {
-            @Override
-            public void call(final Connection connection) throws SQLException {
-                final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
-                try {
-                    stmt.setInt(1, 1);
-                    stmt.setString(2, "one");
-                    stmt.executeUpdate();
-                    stmt.setInt(1, 2);
-                    stmt.setString(2, "two");
-                    stmt.executeUpdate();
-                    stmt.setInt(1, 3);
-                    stmt.setString(2, "three");
-                    stmt.executeUpdate();
-                    stmt.close();
-                } finally {
-                    stmt.close();
-                }
-            }
-        });
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"));
+        getEngine().execute(createInsertIntoDeleteMaster(2, "two"));
+        getEngine().execute(createInsertIntoDeleteMaster(3, "three"));
         assertEquals(Arrays.asList(1, 2, 3), master.masterId.list(getEngine()));
         assertEquals(2, master.delete().where(master.masterId.lt(3)).execute(getEngine()));
         assertEquals(Arrays.asList(3), master.masterId.list(getEngine()));
@@ -90,33 +79,11 @@ public class DeleteTest extends AbstractIntegrationTestBase {
     public void testDeleteBySubquery() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         assertEquals(0, master.delete().execute(getEngine()));
-        getEngine().execute(new Engine.ConnectionCallback() {
-            @Override
-            public void call(final Connection connection) throws SQLException {
-                {
-                    final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_master (master_id, description) values (?, ?)");
-                    stmt.setInt(1, 1);
-                    stmt.setString(2, "one");
-                    stmt.executeUpdate();
-                    stmt.setInt(1, 2);
-                    stmt.setString(2, "two");
-                    stmt.executeUpdate();
-                    stmt.close();
-                }
-                {
-                    final PreparedStatement stmt = connection.prepareStatement("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)");
-                    stmt.setInt(1, 1);
-                    stmt.setInt(2, 1);
-                    stmt.setString(3, "detail 1/1");
-                    stmt.executeUpdate();
-                    stmt.setInt(1, 2);
-                    stmt.setInt(2, 1);
-                    stmt.setString(3, "detail 2/1");
-                    stmt.executeUpdate();
-                    stmt.close();
-                }
-            }
-        });
+
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"));
+        getEngine().execute(createInsertIntoDeleteMaster(2, "two"));
+        getEngine().execute(createInsertIntoDeleteDetail(1, 1, "Detail 1/1"));
+        getEngine().execute(createInsertIntoDeleteDetail(2, 1, "Detail 2/1"));
         final DeleteDetail detail = new DeleteDetail();
         assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
         try {

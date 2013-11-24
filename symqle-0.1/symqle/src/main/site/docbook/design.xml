@@ -1,0 +1,1118 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book>
+    <bookinfo>
+        <title>Yur Developer Guide</title>
+          <author>
+            <firstname>Alexander</firstname>
+            <surname>Izyurov</surname>
+          </author>
+          <copyright>
+            <year>2009</year><holder>Alexander Izyurov</holder>
+          </copyright>
+    </bookinfo>
+    <preface><title>Introduction</title>
+    <para>
+        This Yur Framework Design document is intended for people who are developing, supporting
+        and extending Yur Framework. The basic principle of Yur is Java presentation of SQL. The concept
+        of object-oriented presentation of context-free languages is explained in the first chapter.
+        Following the concept is absolutely a must for Yur Framework support. Keeping correspondence of
+        interface/class hierarchy to SQL language ensures correct constuction of SQL and correct execution of
+        SQL statements. 
+        Next chapters describe design of specific Your Framework interfaces and classes based in these principles.
+    </para>
+    </preface>
+    <chapter><title>Object-oriented presentation of Contex-Free Grammars</title>
+        <sect1>
+            <title>The basic principles</title>
+    <para>Our goal is to construct a hierarchy of classes and interfaces, which would allow the user
+    of this library to construct any valid string of a
+        given grammar and only valid strings of this grammar.
+    </para>
+        <para>
+            We are associating each non-terminal symbol of the languare with an interface. The interfaces
+            provide a method, which returns a string derived from the non-terminal and containing only terminals of the
+            grammar. The start symbol of the grammar is a similar interface and it produces only strings belonging to the language.
+            Each interface is implemented by a number of classes; each class corresponds to a production rule
+            with its interface nt the left part, so each class is responsible for derivation of proper string according
+            to the rule. The class constructor has parameters associated with terminals and non-terminals of
+            the right part, so the instance has its constituting elements and can use their string generation methods
+            to obtain the fragments, which it concatenates ot produce its output.
+        </para>
+        <para>
+            This structure basically solves the problem, but it would bee too inconvenient and innatural for
+            the user of the classes to use constructors. Consider the following simple grammar (names of terminals
+            are lower-case, terminals are upper-case):
+            <programlisting>
+expression ::= number
+expression ::= expression PLUS number
+number ::= INTEGER
+INTEGER ::= int
+    it has associated semantic invormation; String.valueOf(int)
+    returns different strings depending on this infomation
+PLUS = ::= "+"
+    it is a "constant" non-terminal; String.valueOf(PLUS) is always the same
+            </programlisting>
+            According to the rules of the previous paragraph, we are defining two interfaces:
+            <programlisting>
+public interface Expression {
+    String expressionText();
+}
+public interface Number {
+    String numberText();
+}
+            </programlisting>
+            and implementing classes with their constructors:
+            <programlisting>
+/**
+* expression ::= number
+*/
+public class SimpleExpression implements Expression {
+    private final Number number;
+    public SimpleExpression(Number number) {
+        this.number = number;
+    }
+    /**
+    * implements derivation
+    */
+    public String expressionText() {
+        return number.numberText();
+    }
+}
+/**
+* expression ::= expression PLUS number
+*/
+public class ComplexExpression implements Expression {
+    private final Expression expression;
+    private final Number number;
+    public SimpleExpression(Expression expression, Number number) {
+        this.expression = expression;
+        this.number = number;
+    }
+    /**
+    * implements derivation
+    */
+    public String expressionText() {
+        return expression.expressionText() + String.valuOf(PLUS)+number.numberText();
+    }
+}
+/**
+* number = INTEGER
+*/
+public class IntNumber implements Number {
+    private final int integer;
+    public IntNumber(int integer) {
+        this.integer = integer;
+    }
+    /**
+    * implements derivation
+    */
+    public String numberText() {
+        return String.valueOf(PLUS);
+    }
+}
+            </programlisting>
+            Having this system of classes, the user can constract any valid expression, and it is guaranteed
+            that any Expression, which he constructs, will produce the phrase belonging to the language.
+            The user code would look like:
+            <programlisting>
+IntNumber a = new IntNumber(1);
+IntNumber b = new IntNumber(2);
+Expression target = new ComplexExpression(new SimpleExpression(a), b);
+String validString = target.expressionString();
+            </programlisting>
+        </para>
+        <para>
+            The next step is to provide to the user more convenient rules for construction of complex elements
+            from parts. We are going to achieve it by defining factory methods on non-terminals. Namely, for rules,
+            which contain non-terminals in the right part, we are defining factory methods on the leftmost non-terminal.
+            Other non-terminals and terminals are arguments of the method. Terminals, which alwas have the same string presentation,
+            like PLUS, can be omitted. We are adding a method to Expression and its implementations:
+            <programlisting>
+Expression add(Number) {
+   return new ComplexExpression(this, PLUS, number);
+}
+            </programlisting>
+            Now the programming becomes more simple from the user point of view: his code would be
+            <programlisting>
+ Expression target = new SimpleExpression(a).add(b);
+            </programlisting>
+            The API is still not perfect: the rule <emphasis>expression ::= number</emphasis> still requires explicit constructor usage.
+            Our goal is to provide the API, which would allow to write just
+            <programlisting>
+Expression target = a.add(b);
+            </programlisting>
+            and we can achive it by inheritance: if IntNumber implemented Expression, this
+            code would work. The next section illustrates the final design with a more complex
+            grammar example.
+        </para>
+    </sect1>
+        <sect1>
+            <title>Sample API</title>
+            <para>
+                We are now constructing the full example of API for more complex grammar
+                to demonstrate all patterns of class to grammar mapping. The grammar is:
+            <programlisting>
+Expression ::= Term
+                | Expression PLUS Term
+                | Expression MINUS Term
+Term ::= Primary
+         | Term ASTERISK Primary
+         | Term SOLIDUS Primary
+Primary ::= INTEGER
+         | LEFT_PARENTHESIS Expression RIGHT_PARENTHESIS
+            </programlisting>
+            </para>
+            <para>
+                According to basic prinsiples, we are defining Expression interface with factory methods,
+                which represent <emphasis>Expression PLUS Term</emphasis> and <emphasis>Expression MINUS Term</emphasis>.
+                The rule with Expression in the right part
+                <emphasis>Primary ::= LEFT_PARENTHESIS Expression RIGHT_PARENTHESIS</emphasis> will be addressed later.
+                So, we have the following definition of the interface:
+                <programlisting>
+public interface Expression {
+    String expressionText();
+    Expression add(Term t);
+    Expression subtract(Term t);
+}
+                </programlisting>
+                Each class derived from Expression will have its own implementation of expressionText(), depending
+                on the rule, which this class implements, but we want all classes to have the same behaviour of
+                add() and subtract() methods, so we are creating an abstract class, which implements these methods,
+                and will innherit all implementations of Expression from this abstract class.
+                <programlisting>
+public class AbstractExpression implements Expression {
+    public Expression add(Term t) {
+        // TODO implement
+        throw new RuntimeException("Not implemented");
+    }
+    public Expression subtract(Term t) {
+        // TODO implement
+        throw new RuntimeException("Not implemented");
+    }
+}
+                </programlisting>
+            </para>
+            <para>
+                The next step is to implement rules <emphasis>Expression ::= Expression PLUS Term</emphasis> and
+                <emphasis>Expression ::= Expression MINUS Term</emphasis>. We are creating one class for both,
+                making non-terminal an argument of the constructor:
+                <programlisting>
+public class ComplexExpression extends AbstractExpression {
+    private final Expression leftOperand;
+    private final ConstantTerminal operation;
+    private final Term rightOperand;
+
+    public ComplexExpression(Expression leftOperand, ConstantTerminal operation, Term rightOperand) {
+        this.leftOperand = leftOperand;
+        this.operation = operation;
+        this.rightOperand = rightOperand;
+    }
+
+    public String expressionText() {
+        return leftOperand.expressionText()+operation+rightOperand.termText();
+    }
+}
+                </programlisting>
+                Now we can get back to AbstractExpression and implement factory methods:
+                <programlisting>
+public Expression add(Term t) {
+    return new ComplexExpression(this, PLUS, t);
+}                    
+                </programlisting>
+                Now we are defining Term interface. It will have a method, which produce the language
+                string and a factory method for each rule having Term as leftmost element of the rule.
+                We have 3 such rules: <emphasis>Expression ::= Term</emphasis>, <emphasis>Term ::= Term ASTERISK Primary</emphasis>
+                and <emphasis>Term ::= Term SOLIDUS Primary</emphasis>.
+                We are creating factory methods for the last two rules.
+                Instead of having factory method, which
+                produces Expression according to <emphasis>Expression ::= Term</emphasis>, we are using inheritance:
+                <emphasis>Term extends Expression</emphasis>. It is exactly what the rules says: Term may appear wherever
+                Expression is needed.
+                We want all our classes to implement these factory methods and inheritance in the same way,
+                We are creating an AbstractTerm abstract class, which will implement these factory methods.
+                All concrete implementations of Term will extend AbstractTerm. Additionally, this abstract
+                class will also implement the first rule <emphasis>Expression ::= Term</emphasis> by inheritance from AbstractExpression.
+                We are implementing expressionText() from
+                AbstractExpression here, but leaving termText() abstract; it will be defined by derived classes, e.g. ComplexTerm
+                (versy similar to ComplexExpression, we are not putting its listing here)
+                <programlisting>
+public abstract class AbstractTerm
+                    extends AbstractExpression implements Term {
+    /**
+     * Implements inherited method with rule:
+     * Expression ::= Term
+     */
+    public String expressionText() {
+        return termText();
+    }
+    public AbstractTerm mult(Primary p) {
+       return new ComplexTerm(this, ASTERISK, p);
+    }
+    public AbstractTerm div(Primary p) {
+        return new ComplexTerm(this, SOLIDUS, p);
+    }
+}
+                </programlisting>
+            </para>
+            <para>
+                We are going to Primary, define AbstractPrimary class as extending AbstractTerm to
+                implement <emphasis>Term ::= Primary</emphasis> rule and define 2 classes to implement
+                <emphasis>Primary ::= INTEGER </emphasis> and <emphasis>Primary ::= LEFT_PAREN Expression RIGHT_PAREN</emphasis>
+
+            <programlisting>
+public class IntPrimary extends AbstractPrimary {
+    final int payload;
+
+    public IntPrimary(int payload) {
+        this.payload = payload;
+    }
+    /**
+     * Primary ::= INTEGER
+     * @return
+     */
+    public String primaryText() {
+        return String.valueOf(payload);
+    }
+}
+
+public class ParenthesisedExpressionPrimary extends AbstractPrimary {
+    private final Expression expression;
+
+    public ParenthesisedExpressionPrimary(Expression expression) {
+        this.expression = expression;
+    }
+
+    public String primaryText() {
+        return LEFT_PAREN+expression.expressionText()+RIGHT_PAREN;
+    }
+}
+            </programlisting>
+            </para>
+            <para>
+                The user will use IntPrimary constructor to construct language elements from primitive
+                integers. But do we need to force him to use ParenthesisedExpressionPrimary to convert
+                his Expression to Primary? We could add a factory method to Expression, it would look like
+<programlisting>
+Primary asPrimary();
+</programlisting>
+                But even it is not necessary: the method has no parameters and there are no other factory methods
+                without parameters on Expression. So, for user convenience, we can do it by inheritance: we are declaring that AbstractExpression
+                implements Primary and implement all methods by delegation to a ParenthesisedExpressionPrimary (which is constructed on demand).
+                This is different from interface inheritance: we cannot say that any Expression is Primary. Expression cannot
+                appear anywhere where PRimary is needed; we have no rule <emphasis>Primary ::= Expression</emphasis>.
+                But we can say
+                that any AbstractExpression can be considered as a particular implementation of Primary, which implements
+                the rule <emphasis>Primary ::= LEFT_PAREN Expression RIGHT_PAREN</emphasis>. The final version
+                of AbstractExpression is:
+<programlisting>
+public abstract class AbstractExpression implements Expression, Primary {
+    private AbstractPrimary getDelegate() {
+        return new ParenthesisedExpressionPrimary(this);
+    }
+    public String primaryText() {
+        return getDelegate().primaryText();
+    }
+    public String termText() {
+        return getDelegate().termText();
+    }
+    public Term mult(Primary p) {
+        return getDelegate().mult(p);
+    }
+    public Term div(Primary p) {
+        return getDelegate().div(p);
+    }
+
+    public AbstractExpression add(Term t) {
+        return new ComplexExpression(this, PLUS, t);
+    }
+    public AbstractExpression subtract(Term t) {
+        return new ComplexExpression(this, MINUS, t);
+    }
+}
+</programlisting>
+            </para>
+            <para>
+                The end user will not ever use constructors of ComplexExpression, ComplexTerm and ParenthesisedExpressionPrimary
+                and we are restricting access to these classes by package scope (or we could even make them private
+                inner classes). The final API is strict - any object constructed with it will produce valid string belonging to
+                the language. We also have reached our another goal - is is simple to use for the end user.
+                The usage would look like the following:
+                <programlisting>
+IntPrimary a = new IntPrimary(2);
+IntPrimary b = new IntPrimary(3);
+IntPrimary c = new IntPrimary(4);
+System.out.println(a.add(b).mult(c).expressionText());
+
+(2+3)*4
+                </programlisting>
+            </para>
+        </sect1>
+        <sect1>
+            <title>Summary of the syntax to API rules</title>
+            <orderedlist>
+                <listitem>
+                    <para>
+                        Each non-terminal corresponds to interface. The interface has a method
+                        for derivation of string; different interfaces have different methods.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Each rule of type <emphasis>NonTerminal1 ::= NonTerminal2</emphasis> corresponds
+                        to inheritance <emphasis>NonTerminal2 extends NonTerminal1</emphasis>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Each rule of type <emphasis>NonTerminal1 ::= NonTerminal2 ...</emphasis> corresponds
+                        to a factory method on NonTerminal2: <emphasis>NonTerminal1 methodName(...)</emphasis>.
+                        Other terminals/non-terminals in the rule are method parameters. Enumerable non-terminal values
+                        may be represented by different method names rather then explicit parameter.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        For each non-terminal an abstract class is created, which implements all factory methods but does not
+                        implement string derivation. If the interface corresponding to the non-terminal extends another interface,
+                        the inheritance is implemented at abstract class level:
+<programlisting width="100">
+public abstract class AbstractNonTerminal2
+    extends AbstractNonTerminal1 implements NonTerminal2
+</programlisting>
+                        The string derivation method of parent class is implemented by delegation to string derivation method of
+                        NonTerminal2.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Each rule of type <emphasis>NonTerminal1 ::= NonTerminal2 ...</emphasis> is implemented
+                        by a class which extends AbstractNonTerminal1. The class implements string derivation
+                        method of its interface by concatenation of strings derived by its members. AbstractNonTerminal1
+                        factory methods are implemented by calling appropriate constructors of classes implementing the rule
+                        represented by the factory method. Abstract classes narrow factory method return values
+                        to abstract classes, e.g. if NonTerminal2 has a factory method <emphasis>NonTerminal1 methodName(...)</emphasis>
+                        then AbstractNonTerminal2 would have a method <emphasis>AbstractNonTerminal1 methodName(...)</emphasis>.
+                        This is a common principle: accept as wide parameters as you can, return as narrow as you can.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Each rule of type <emphasis>NonTerminal1 ::= Terminal ...</emphasis> having no terminal
+                        is implemented by a class extending AbstractNonTerminal1. Terminals may be parameters of constructor;
+                        alternatively we can have different classes for different constant terminal values - it is a matter of
+                        user convenience.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        A  rule of type <emphasis>NonTerminal1 ::= ... NonTerminal2 ...</emphasis> which has no non-terminals
+                        other then NonTerminal2 and constant terminals in the right part, <emphasis>may</emphasis> be represented by
+                        inheritance: <emphasis>AbstractNonTerminal2 implements NonTerminal1</emphasis> instead of factory method on NonTerminal2. AbstractNonTerminal2 implements methods of
+                        NonTerminal1 by delegation to an instance of a class, which implements this rule.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        If an interface has no factory methods and no rule with it in the right part is implemented
+                        by inheritance (like in the previuos paragraph), creation of abstract class may be skipped
+                        because there is no generic functionality to implement.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Terminals are represented by classes and should override Object#toString() method, so we have
+                        no special interfaces and methods to derive a string from non-terminal. It allows simple concatenation
+                        as in examples above:
+                        <programlisting>
+leftOperand.expressionText()+<emphasis>operation</emphasis>+rightOperand.termText()
+                        </programlisting>
+                    </para>
+                </listitem>
+            </orderedlist>
+            <para>
+                Rules for string derivation are absolute. Rules for factory methods and constructors are a matter of
+                convenience. In some cases it makes sense to create specialized factories or just provide constructors, if it is more natural presentation
+                of language. For example, in <emphasis>QueryQpecification> ::=
+              SELECT [ SET_QUALIFIER ] SelectList TableExpression
+</emphasis> neither SelectList nor TableExpression are good candidates to have factory methods for creating QuerySpecification:
+                if is much more complex construction than its elements. Yur framework provides SubQueryFactory for some of implementations
+                of QuerySpecification; other implementations are available via constructors (e.g BasicLoader).
+            </para>
+        </sect1>
+        <sect1>
+            <title>
+                Adding semantics
+            </title>
+            <para>
+                We usually need some semantical information associated with non-terminals. For this purpose,
+                interfaces representing non-terminals may provide access methods to the semantics (cf. attributed
+                grammars).
+                We may also need to propagate some of the semantic information to the consumer of the derived Strings.
+                For this purpose we are attaching the semantic information to the String. Yur defines Sql interface,
+                which contains both String and semantic informarion in it; all interface methods return Sql rather then
+                plain String and
+                are responsible for proper augmenting of SQL text with additional information.
+                Since semantics is language-specific, we have no general rules. Details are explained in the description
+                of
+                org.yur.yurbricks and org.yur.model interfaces and classes
+            </para>
+        </sect1>
+    </chapter>
+    <chapter>
+        <title>Supported subgrammar of SQL92</title>
+        <para>
+            The grammar supported by Yur is a subgrammar of SQL92 as defined by <ulink url="http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt">SQL92 specification</ulink>
+            The following changes were made:
+        </para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Some syntax elements, which are defined as optional in SQL92, were re-defined as mandatory or omitted.
+                        Each variant produces correct phrase and since the APi is production-oriented, we can choose only one.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Some rules were changed to a from more suitable for production, even if it led to
+                        a nondeterministic grammar (provided that it produces the sama language)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Some language constructions of SQL92 are not supported by current implementation of
+                        Yur Framework.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        <para>
+            Each section cites the original rules and converted rules with explanations what has changed and
+            mapping of non-terminals to interfaces and abstract classes and rules to classes.
+        </para>
+        <sect1>
+            <title>
+                Lexical elements
+            </title>
+            <para>
+                A subset of Chapter 5 Lexical elements of the SQL92 specification. There are basically 2 classes
+                of lexical elements supported by Yur: constants and variable lexical elements. From the Sql92 specification
+                they are also divided to tokens and separators, the tokens in turn divided into nondelimiter tokens and delimiter
+                tokens. This classification is only essential from the point of view of lexical analysis; it is not needed
+                for string derivation, so is not supported in Yur. Variable lexical elements include identifier,
+                delimited identifier, literals and comments. Literals and comments are not supported by Yur Framework - it never
+                generates it (may be supported in future versions).
+            </para>
+            <para>
+            <programlisting>
+            <![CDATA[
+5.1 <SQL terminal character>
+<SQL terminal character> ::=
+                <SQL language character>
+              | <SQL embedded language character>
+
+         <SQL embedded language character> ::=
+                <left bracket>
+              | <right bracket>
+
+         <SQL language character> ::=
+                <simple Latin letter>
+              | <digit>
+              | <SQL special character>
+
+         <simple Latin letter> ::=
+                <simple Latin upper case letter>
+              | <simple Latin lower case letter>
+
+         <simple Latin upper case letter> ::=
+                    A | B | C | D | E | F | G | H | I | J | K | L | M | N | O
+              | P | Q | R | S | T | U | V | W | X | Y | Z
+
+         <simple Latin lower case letter> ::=
+                    a | b | c | d | e | f | g | h | i | j | k | l | m | n | o
+              | p | q | r | s | t | u | v | w | x | y | z
+
+         <digit> ::=
+              0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<SQL special character> ::=
+                <space>
+              | <double quote>
+              | <percent>
+              | <ampersand>
+              | <quote>
+              | <left paren>
+              | <right paren>
+              | <asterisk>
+              | <plus sign>
+              | <comma>
+              | <minus sign>
+              | <period>
+              | <solidus>
+              | <colon>
+              | <semicolon>
+              | <less than operator>
+              | <equals operator>
+              | <greater than operator>
+              | <question mark>
+              | <underscore>
+              | <vertical bar>
+
+         <space> ::= !! space character in character set in use
+
+         <double quote> ::= "
+
+         <percent> ::= %
+
+         <ampersand> ::= &
+
+         <quote> ::= '
+
+         <left paren> ::= (
+
+         <right paren> ::= )
+
+         <asterisk> ::= *
+
+         <plus sign> ::= +
+
+         <comma> ::= ,
+
+         <minus sign> ::= -
+
+         <period> ::= .
+
+         <solidus> ::= /
+
+         <colon> ::= :
+
+         <semicolon> ::= ;
+
+         <less than operator> ::= <
+
+         <equals operator> ::= =
+
+         <greater than operator> ::= >
+
+         <question mark> ::= ?
+
+         <left bracket> ::= [
+
+         <right bracket> ::= ]
+
+         <underscore> ::= _
+
+         <vertical bar> ::= |
+            ]]>
+            </programlisting>
+                &lt;SQL special character&gt; are constant terminals. They are represented as
+                constants of ConstantTerminal enumeration, e.g.
+            <programlisting>
+/**
+ * &lt;space&gt; ::= !! space character in character set in use
+ */
+SPACE(" "),
+            </programlisting>
+            </para>
+            <para>
+            &lt;SQL embedded language character&gt; is not supported. &lt;simple Latin letter&gt; and
+            &lt;digit&gt; are used in identifiers, see below.
+            <programlisting>
+            <![CDATA[
+<token> ::=
+                <nondelimiter token>
+              | <delimiter token>
+
+         <nondelimiter token> ::=
+                <regular identifier>
+              | <key word>
+              | <unsigned numeric literal>
+              | <national character string literal>
+              | <bit string literal>
+              | <hex string literal>
+
+         <regular identifier> ::= <identifier body>
+
+         <identifier body> ::=
+              <identifier start> [ { <underscore> | <identifier part> }... ]
+
+
+         <identifier start> ::= !! See the Syntax Rules
+
+         <identifier part> ::=
+                <identifier start>
+              | <digit>
+
+         <delimited identifier> ::=
+              <double quote> <delimited identifier body> <double quote>
+
+         <delimited identifier body> ::= <delimited identifier part>...
+
+         <delimited identifier part> ::=
+                <nondoublequote character>
+              | <doublequote symbol>
+
+         <nondoublequote character> ::= !! See the Syntax Rules
+
+         <doublequote symbol> ::= <double quote><double quote>
+            ]]>
+            </programlisting>
+                There is no distinction of &lt;nondelimiter token&gt; and &lt;delimiter token&gt; in Yur framework,
+                because it is not needed. Literals are not supported. &lt;key word&gt; are enumerated in
+                KeyWord enumeration, they are used in implementation of Identifier class. &lt;delimited identifier&gt;
+                and &lt;regular identifier&gt;s  are supported by <xref linkend="identifierSpec"/>.
+            <programlisting>
+            <![CDATA[
+<delimiter token> ::=
+                <character string literal>
+              | <date string>
+              | <time string>
+              | <timestamp string>
+              | <interval string>
+              | <delimited identifier>
+              | <SQL special character>
+              | <not equals operator>
+              | <greater than or equals operator>
+              | <less than or equals operator>
+              | <concatenation operator>
+              | <double period>
+              | <left bracket>
+              | <right bracket>
+
+         <not equals operator> ::= <>
+
+         <greater than or equals operator> ::= >=
+
+         <less than or equals operator> ::= <=
+
+         <concatenation operator> ::= ||
+
+         <double period> ::= ..
+
+         <separator> ::= { <comment> | <space> | <newline> }...
+
+         <comment> ::=
+              <comment introducer> [ <comment character>... ] <newline>
+
+         <comment character> ::=
+                <nonquote character>
+              | <quote>
+
+         <comment introducer> ::= <minus sign><minus sign>[<minus sign>...]
+
+         <newline> ::= !! implementation-defined end-of-line indicator
+            ]]>
+            </programlisting>
+                &lt;character string literal&gt;, &lt;date string&gt;, &lt;time string&gt;, &lt;timestamp string&gt;,
+                &lt;time interval&gt; &lt;comment&gt; and &lt;newline&gt; are not supported - they are never produced by Yur Framework
+                classes. Other &lt;delimiter token&gt;s are enumerated in ConstantTerminal.
+            </para>
+            <para id="identifierSpec" xreflabel="Identifier">
+                Identifiers are presented by Identifier class. It can be constructed from java.lang.STring.
+                Its method toString() returns the source String if it is a &lt;regular identifier&gt;, otherwise
+                it converts the source string to &lt;delimited identifier&gt;
+                <programlisting>
+public class Identifier {
+    /**
+     * Constructs an identifier from a String
+     * @param source
+     * @throws IllegalArgumentException the source string contains character illegal
+     * for &lt;regular identifier&gt; and &lt;delimited identifier&gt;, e.g "\n", "\r", "\t"
+     */
+    public Identifier(String source) throws IllegalArgumentException {
+        this.source = source;
+    }
+
+    /**
+     * If the source is &lt;identifier body&gt;, returns source
+     * else converts the source to equivalent &lt;delimited identifier&gt;
+     * @return source if it is &lt;identifier body&gt;, quoted source otherwise
+     */
+    public static String toString() {
+        // body skipped
+    }
+}
+                </programlisting>
+            </para>
+        </sect1>
+        <sect1>
+            <title>Sql interface: text plus parameters</title>
+            <para>
+                All interfaces and classes, whci correspoond to non-terminals, produce SQL text with additional semantic information.
+                Classes, corresponding to terminals, produce Strings. There are 2 interfaces describing text with additional
+                information: Sql and SelectSql.
+            </para>
+            <para>
+                The statements, which Yur Framework constructs, can contain parameters. The derivation methods
+                of all interfaces produce objects of Sql interface, which contains SQL text and additional information about
+                how parameters should be set - see javadoc for Sql and ParameterProvider interfaces.
+                Sql can be constructed using SqlFactory and has a method concat(), whcih accepts another Sql or String
+                as a parameter, so concatenation of non-terminal output and terminal output is handled in the same manner.
+            </para>
+            <para>
+                The SQL language elements of &lt;query specification&gt; return SelectSql - an extension of Sql, which
+                additionally contains an ObjectFactory, which can construct java objects from the results set.
+                SelectSql has a method construct() with parameters Sql and ObjectFactory, so ObjectFactory should be
+                always provided explicitly - there is no method, whcih would construct SelectSql from another SelectSql
+                and propagate original ObjectFactory to the newly constructed SelectSql. The intention of this design is to prevent mistakes:
+                more conplex Sql probably is intended for construction of other, more complex Java object then original one; it makes little sense
+                to create more complex Sql and then extract the same Java object from more rich results set.
+            </para>
+        </sect1>
+        <sect1>
+            <title>
+                Start symbol for the grammar: direct SQL statement
+            </title>
+            <para>
+                The Yur language is oriented to DML, so it's current version does not support
+                DDL statements, connection and session management etc.
+                The start symbol of the supported SQL sub-language is &lt;direct SQL Data statement&gt; with
+                some restrictions:
+<programlisting>
+&lt;direct SQL data statement&gt; ::=
+        &lt;delete statement: searched&gt;
+      | &lt;direct select statement: multiple rows&gt;
+      | &lt;insert statement&gt;
+      | &lt;update statement: searched&gt;
+      | &lt;temporary table declaration&gt;
+</programlisting>
+            </para>
+            <para>
+                &lt;temporary table declaration&gt; is not supported, all other variants of &lt;direct SQL data statement&gt;
+                are supported.
+            </para>
+            <para>
+                Yur does not define any generic interface for &lt;direct SQL data statement&gt;. Engine has separate methos
+                for execution of DeleteStatement, SelectStatement, InsertStatement, UpdateStatement, which correspond to
+                non-terminals in the right part of this rule.
+            </para>
+        </sect1>
+        <sect1>
+            <title>
+                Direct select statement: multiple rows
+            </title>
+            <para>
+
+                <programlisting>
+<![CDATA[
+<direct select statement: multiple rows>    ::=   <cursor specification>
+<cursor specification>    ::=   <query expression> [ <order by clause> ] [ <updatability clause> ]
+<updatability clause>    ::=   FOR { READ ONLY | UPDATE [ OF <column name list> ] }
+<order by clause>    ::=   ORDER BY <sort specification list>
+]]>
+                </programlisting>
+                &lt;updatability clause&gt;
+                is not supported in this version.
+                &lt;order by clause&gt; is optional and we are re-formulating this rule as
+                <programlisting>
+<![CDATA[
+<cursor specification> ::= <query expression>
+                         | <query expression>  <order by clause>
+]]>
+                </programlisting>
+Inheritance, method declaration and implementation are standard.
+<programlisting>
+            <![CDATA[
+<query expression>    ::=   [ <with clause> ] <query expression body>
+]]>
+</programlisting>
+                                with clause is not supported by this version
+                <programlisting>
+<![CDATA[
+<query expression body> ::= <non-join query expression> | <joined table>
+<non-join query expression> ::= <non-join query term>
+     | <query expression body> UNION [ ALL | DISTINCT ] [ <corresponding spec> ] <query term>
+     | <query expression body> EXCEPT [ ALL | DISTINCT ] [ <corresponding spec> ] <query term>
+<query term> ::= <non-join query term> | <joined table>
+<non-join query term> ::= <non-join query primary>
+     | <query term> INTERSECT [ ALL | DISTINCT ] [ <corresponding spec> ] <query primary>
+<query primary> ::= <non-join query primary> | <joined table>
+<non-join query primary> ::= <simple table>
+     | <left paren> <non-join query expression> <right paren>
+<simple table>    ::=
+         <query specification>
+     |     <table value constructor>
+     |     <explicit table>
+]]>
+                </programlisting>
+                Yur framework does; not support UNION, EXCEPT and INTERSECT. Nevertheless, we are keeping the hierarchy of
+                interfaces NonJoinQueryExpression, NonJoinQueryTerm, NonJoinQueryPrimary for future extensions.
+                </para>
+                <para>
+                Yur does not support the rule &lt;query primary&gt; ::= &lt;joined table&gt;. It is semantically equivalent to
+                SELECT * from &lt;joined table&gt;. Yur always supplies column list explicitly. for the same reason
+                we do not use &lt;explicit table&gt;. &lt;simple table&gt; ::= &lt;table value constructor&gt; are not supported by this version; it may
+                    be supported in future.
+            </para>
+        </sect1>
+        <sect1>
+            <title>Query specification</title>
+            <para>This section describes mapping of rules
+                specified by chapter 7 Query Expressions of SQL92 specification to Yur Framework interfaces and classes</para>
+            <para>
+                <programlisting>
+<![CDATA[
+<query specification> ::=
+              SELECT [ <set quantifier> ] <select list> <table expression>
+<select list> ::= <asterisk> | <select sublist> [ { <comma> <select sublist> }... ]
+<select list> ::=
+        <asterisk>
+      | <select sublist> [ { <comma> <select sublist> }... ]
+
+
+]]>
+                </programlisting>
+                This rule is re-formulated in the supported grammar as
+                <programlisting>
+<![CDATA[
+<select list> ::=
+        <asterisk>
+      | <select sublist> |
+      | <select list> { <comma> <select sublist> }...
+]]>
+                </programlisting>
+                The re-formulated grammar produces the same language. The grammar in indeterministic,
+                but Yur is for construction of SQL phrases, so it does not cause any problems. On the other hand,
+                the reformulated rule is more suitable for construction: it allows to create combine already created
+                select lists to bigger lists, not only append new new elementary sublists.
+                There is no standard implementation of the third rule: the implementation is very
+                individual; it is implemented by Loaders. &lt;asterisk&gt; is not used by Yur, it always
+                provides explicit column list in SELECT statements.
+            </para>                                                            
+            <para>
+                <programlisting>
+<![CDATA[
+<select sublist> ::= <derived column> | <qualified asterisk>
+<qualified asterisk> ::=
+		<asterisked identifier chain> <period> <asterisk>
+	|	<all fields reference>
+
+<asterisked identifier chain> ::= <asterisked identifier> [ { <period> <asterisked identifier> }... ]
+
+<asterisked identifier> ::= <identifier>]]>
+                </programlisting>
+            &lt;qualified asterisk&gt; is not needed for Yur and thus not supported.                
+                <programlisting>
+<![CDATA[
+         <derived column> ::= <value expression> [ <as clause> ]
+
+         <as clause> ::= [ AS ] <column name>
+]]>
+                </programlisting>
+                &lt;as clause&gt; is generated by Yur, so it is not a parameter of construction method.
+                Yur generates &lt;as clause&gt; at top level and does not for sub-queries.
+                The class implementing the last rule is an inner class of DerivedColumnAbstract class.
+            </para>
+        </sect1>
+        <sect1>
+            <title>
+                Value Expression
+            </title>
+            <para>
+                <programlisting>
+                <![CDATA[
+<value expression> ::=
+		<common value expression>
+	|	<boolean value expression>
+	|	<row value expression>
+                ]]>
+                </programlisting>
+                Only &lt;common value expression&gt; is supported in current version; others will be implemented later
+            </para>
+            <para>
+                <programlisting>
+                <![CDATA[
+<common value expression> ::=
+		<numeric value expression>
+	|	<string value expression>
+	|	<datetime value expression>
+	|	<interval value expression>
+	|	<user-defined type value expression>
+	|	<reference value expression>
+	|	<collection value expression>
+	]]>
+                </programlisting>
+                We support only &lt;numeric value expression&gt;, &lt;string value expression&gt; and &lt;user-defined type value expression&gt; at the time being
+                <programlisting>
+                <![CDATA[
+<common value expression> ::=
+		<numeric value expression>
+	|	<string value expression>
+	|	<user-defined type value expression>
+<user-defined type value expression> ::= <value expression primary>
+	]]>
+                </programlisting>
+            </para>
+        </sect1>
+        <sect1>
+            <title>
+                String Value Expression
+            </title>
+            <para>
+                <programlisting>
+                <![CDATA[
+<string value expression> ::= <character value expression> | <blob value expression>
+
+<character value expression> ::= <concatenation> | <character factor>
+]]>
+                </programlisting>
+
+            </para>
+        </sect1>
+        <sect1>
+            <title>
+                Table expression and From clause
+            </title>
+            <para>               
+                <programlisting>
+&lt;table expression&gt; ::=
+              &lt;from clause&gt;
+              [ &lt;where clause&gt; ]
+              [ &lt;group by clause&gt; ]
+              [ &lt;having clause&gt; ]
+                </programlisting>
+            &lt;group by clause&gt; and &lt;having clause&gt; are not supported by current version of Yur Framework.
+            </para>
+            <para>&lt;where clause&gt; is described <link linkend="WhereClause">later</link>
+            </para>
+            <para>
+        &lt;table expression&gt; is represented by TableExpression interface and its implementation TableExpressionImpl. Theree is only one implentation
+                and it will be used internally by Your Framework, so we do not provied any convenience factory methods
+                and creating abstract class. The TableExpressionImpl can be constructed from FromClause and WhereClause;
+                the constructor accepts null for WhereClause and it means missing oprional &lt;where clause&gt; in the rule.
+                <programlisting>
+/**
+ * Constructs TableExpression from components:
+ * &lt;table expression&gt; ::=
+          &lt;from clause&gt;
+          [ &lt;where clause&gt; ]
+ * @param fromClause cannot be null
+ * @param whereClause can be null (optional in the production rule)
+ */
+public TableExpressionImpl(FromClause fromClause, WhereClause whereClause) {...}
+                </programlisting>
+            </para>
+            <para>
+            &lt;from clause&gt; is represented by FromClause interface. It has only one implemtation FromClauseImpl, which
+                implements the rule:
+<programlisting>
+    &lt;from clause&gt; ::= FROM &lt;table reference&gt;
+</programlisting>
+                The original rule from SQL92 specification is
+                <programlisting>
+&lt;from clause&gt; ::= FROM &lt;table reference&gt; [ { &lt;comma&gt; &lt;table reference&gt; }... ]
+                </programlisting>
+                but Yur Framework does not support implicit cartesian products,
+                because it is a common source of mistakes.
+                Current version of Yur does not support cartesian products at all; future versions may support them
+                using explicit CROSS JOIN.
+            </para>
+            <para>
+                The implementation of FromClause is rather complicated, because it needs to collect semantic information
+                from its environment - &lt;select list&gt; and &lt;where clause&gt; of the same &lt;query specification&gt;.
+                According to the rules of the following paragraphs, each table participating in from clause,
+                can provide (alwasy provides in Yur) its &lt;correlation name&gt; this correlation name is
+                used by primitive elements of *lt;select list&gt; and &lt;where clause&gt; - &lt;column reference&gt;s.
+                The value of &lt;correlation name&gt; in &lt;from clause&gt; should match &lt;qualifier&gt; in &lt;column reference&gt;
+            </para>
+            <para>
+               The informational exchanges goes via SqlContext, which is the parameter of all methods producing Sql.
+               SqlContext keeps track of &lt;table reference&gt;s and corresponding, &lt;correlation name&gt;s,
+                creating correlation names on demand. &lt;table reference&gt; is represended by Yur Entity interface
+                (intentional violation of naming convention for user convenience). It provides a method
+                <programlisting>
+/**
+ * returns a corre;ation name indentifying this instance of Entity
+ * @param entity an Entity instance
+ * @return new unique name at the first call for given Entity instance; the same name for subsequent calls
+ */
+public String getCorrelationName(Entity entity);
+                </programlisting>
+            </para>
+            <para>
+                FromClause implentation uses the SqlContext to determine tables participating in join. The joins
+                are defined by EntitiesL each Entity instance may have a reference to joined table; it has a method
+                Attribute referral(), which returns a foreign key from another Entity referencing this entity.
+                The join condition is this.referral().eq(primaryKey()) in terms of Yur API and the joined tables
+                are this.referral().owner() and this.
+            </para>
+            <para>
+                The entities participating in a query form a tree. The root of the tree can be reached from eny participating entity
+                by subsequent calling of referral().owner(). If a query contains subqueries, Yur requires that the trees for the main query and each
+                subquery should be different. For this purpose each query/subquery registers itself with SqlCOntext, providing
+                any tree node as the reference to the whole tree. SqlContext throws an exception if getCorrelationName() is
+                called with an argument, which does not belong to any registered tree.
+            </para>
+            <para>
+                All public methods for construction of Queries require an entity parameter, which is considered as
+                a locator of the join tree of this query. In BasicLoader it is a constructor argument. In SubqueryFactory methods
+                it is ether the first argument of the factory method or provided implisitly: if the factory method has
+                <emphasis>Attribute attr</emphasis> as its first argument, then <emphasis>attr.owner()</emphasis> is considered being the locator.
+            </para>
+            <para>
+                During its Sql construction, the topmost &lt;query specification&gt;
+                creates empty SqlContext,
+                registers its join tree locator and then calls
+                methods for SQL construction for its &lt;select list&gt;
+                Each &lt;column reference&gt; calls SqlContext.getCorrelationName() when it needs to provide a qualifier
+                for its qualified name. If the select list contains any subqueries, they register their join trees when
+                constructing their Sql. Then the &lt;query specification&gt; calls Sql production method of its
+                &lt;table specification&gt;, which first calls Sql production method of its &lt;where clause&gt;
+                Elements of &lt;where clause&gt; get required correlation names from SqlContext.
+                Finally, From clause is involved. It gets from SqlContext the list of all entities belonging to its join tree,
+                for which getCorrelationName was ever called. The list contains all node of the tree, which must be in the
+                join being constructed. To miminize the join, FromCluase implementation finds the least covering subtree for
+                the nodes, topologically sorts the subtree from root to leaves and produces the proper SQL.
+                All joins are logically LEFT in Yur. The framework may produce INNER joins for better performance
+                if the result would be the same as for LEFT join (it requires all foreign keys to mandatory
+                on the way from subtree root to the given Entity).
+            </para>
+        </sect1>
+        <sect1 id="WhereClause">
+            <title>
+                Where clause
+            </title>
+            <para>
+<programlisting>
+    &lt;where clause&gt; ::= WHERE &lt;search condition&gt;
+    &lt;search condition&gt; ::=
+                    &lt;boolean term&gt;
+                  | &lt;search condition&gt; OR &lt;boolean term&gt;
+
+             &lt;boolean term&gt; ::=
+                    &lt;boolean factor&gt;
+                  | &lt;boolean term&gt; AND &lt;boolean factor&gt;
+
+             &lt;boolean factor&gt; ::=
+                  [ NOT ] &lt;boolean test&gt;
+
+             &lt;boolean test&gt; ::=
+                  &lt;boolean primary&gt; [ IS [ NOT ] &lt;truth value&gt; ]
+
+             &lt;truth value&gt; ::=
+                    TRUE
+                  | FALSE
+                  | UNKNOWN
+
+             &lt;boolean primary&gt; ::=
+                    &lt;predicate&gt;
+                  | &lt;left paren&gt; &lt;search condition&gt; &lt;right paren&gt;
+</programlisting>
+            &lt;truth value&gt; is not supported by current Yur Framework. The last  4 rules are reduced to
+<programlisting>
+    &lt;boolean factor&gt; ::=
+         [ NOT ] &lt;boolean primary&gt;
+
+    &lt;boolean primary&gt; ::=
+           &lt;predicate&gt;
+         | &lt;left paren&gt; &lt;search condition&gt; &lt;right paren&gt;
+</programlisting>
+                The structure of classes and interfaces follows basic principles. See interfaces
+                SearchCondition, BooleanTerm, BooleanFactor, BooleanPrimary, corresponding abstract classes
+                and implementing classes. SearchCondition implements the rule &lt;boolean primary&gt; ::=
+                   &lt;left paren&gt; &lt;search condition&gt; &lt;right paren&gt; by delegation providing transparent
+                cast of AbstractSearchCondition to BooleanPrimary.
+            </para>
+        </sect1>
+    </chapter>
+</book>
+

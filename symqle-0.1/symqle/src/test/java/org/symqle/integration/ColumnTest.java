@@ -3,6 +3,8 @@ package org.symqle.integration;
 import junit.framework.AssertionFailedError;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlParameters;
 import org.symqle.dialect.MySqlDialect;
 import org.symqle.generic.Functions;
 import org.symqle.integration.model.BigTable;
@@ -12,6 +14,7 @@ import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
+import org.symqle.querybuilder.CustomSql;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.Dialect;
 
@@ -777,18 +780,22 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         if ("Apache Derby".equals(getDatabaseName())) {
             return;
         }
-        getEngine().execute(new Engine.ConnectionCallback() {
-            @Override
-            public void call(final Connection connection) throws SQLException {
-                final PreparedStatement deleteStatement = connection.prepareStatement("delete from big_table");
-                deleteStatement.executeUpdate();
-                final PreparedStatement insertStatement = connection.prepareStatement("insert into big_table (num) values(?)");
-                for (int i=0; i<2000000; i++) {
-                    insertStatement.setInt(1, i);
-                    assertEquals(1, insertStatement.executeUpdate());
+        getEngine().execute(new CustomSql("delete from big_table"));
+
+        for (int i=0; i<2000000; i++) {
+            final int value = i;
+            getEngine().execute(new Sql() {
+                @Override
+                public String sql() {
+                    return "insert into big_table (num) values(?)";
                 }
-            }
-        });
+
+                @Override
+                public void setParameters(SqlParameters p) throws SQLException {
+                    p.next().setInt(value);
+                }
+            });
+        }
         final BigTable bigTable = new BigTable();
         final long start = System.currentTimeMillis();
 

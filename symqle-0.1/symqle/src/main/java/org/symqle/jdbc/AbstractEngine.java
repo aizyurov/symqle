@@ -1,9 +1,6 @@
 package org.symqle.jdbc;
 
-import org.symqle.common.Callback;
-import org.symqle.common.Mapper;
-import org.symqle.common.Query;
-import org.symqle.common.Sql;
+import org.symqle.common.*;
 import org.symqle.sql.ColumnName;
 import org.symqle.sql.Dialect;
 
@@ -99,7 +96,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public <T> int scroll(final Query<T> query, final Callback<T> callback, final Option... options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
             flush(connection);
@@ -160,17 +157,6 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         queue.add(statement);
         currentKey = newKey;
         return rowsAffected;
-    }
-
-    @Override
-    public void execute(final ConnectionCallback callback)  throws SQLException {
-        final Connection connection = getConnection();
-        try {
-            flush(connection);
-            callback.call(connection);
-        } finally {
-            releaseConnection(connection);
-        }
     }
 
     private static class StatementKey {

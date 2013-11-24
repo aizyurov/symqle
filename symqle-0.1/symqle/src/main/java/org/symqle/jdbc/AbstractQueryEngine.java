@@ -60,7 +60,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
         return context;
     }
 
-    protected final <T> int scroll(final Connection connection, final Query<T> query, final Callback<T> callback, final Option[] options) throws SQLException {
+    protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final Option[] options) throws SQLException {
         final PreparedStatement preparedStatement = connection.prepareStatement(query.sql());
         try {
             setupStatement(preparedStatement, query, options);
@@ -71,7 +71,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
                 while (resultSet.next()) {
                     count += 1;
                     final Row row = new ResultSetRow(resultSet, innerEngine);
-                    if (!callback.iterate(query.extract(row))) {
+                    if (!callback.iterate(row)) {
                         break;
                     }
                 }
