@@ -1,8 +1,7 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractAggregateFunction;
 import org.symqle.sql.AbstractValueExpression;
 import org.symqle.sql.Column;
@@ -10,12 +9,14 @@ import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author lvovich
@@ -431,52 +432,47 @@ public class ValueExpressionTest extends SqlTestCase {
     
 
     public void testList() throws Exception {
-        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
-        final String queryString = valueExpression.show(new GenericDialect());
-        final List<Boolean> expected = Arrays.asList(true);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Boolean> list = valueExpression.list(
-            new MockQueryEngine<Boolean>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario(person.name.eq(person.nickName).asValue()) {
+            @Override
+            void use(AbstractValueExpression<Boolean> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(true), query.list(engine));
+            }
+        }.play();
+//        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
+//        final String queryString = valueExpression.show(new GenericDialect());
+//        final List<Boolean> expected = Arrays.asList(true);
+//        final SqlParameters parameters = createMock(SqlParameters.class);
+//        replay(parameters);
+//        final List<Boolean> list = valueExpression.list(
+//            new MockQueryEngine<Boolean>(new SqlContext(), expected, queryString, parameters));
+//        assertEquals(expected, list);
+//        verify(parameters);
     }
 
     public void testScroll() throws Exception {
-        final AbstractValueExpression<Boolean> valueExpression = person.name.eq(person.nickName).asValue();
-        final String queryString = valueExpression.show(new GenericDialect());
-        final List<Boolean> expected = Arrays.asList(true);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = valueExpression.scroll(
-            new MockQueryEngine<Boolean>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Boolean>(true));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario(person.name.eq(person.nickName).asValue()) {
+            @Override
+            void use(AbstractValueExpression<Boolean> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Boolean>(true)));
+            }
+        }.play();
     }
 
+    private static abstract class Scenario extends AbstractQueryScenario<Boolean, AbstractValueExpression<Boolean>> {
+        protected Scenario(AbstractValueExpression<Boolean> query) {
+            super(query);
+        }
 
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            return Collections.emptyList();
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getBoolean()).andReturn(true);
+        }
+    }
 
     private static class Person extends TableOrView {
         private Person() {

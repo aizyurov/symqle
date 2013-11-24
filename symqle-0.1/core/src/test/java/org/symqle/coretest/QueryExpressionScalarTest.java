@@ -1,18 +1,19 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractQueryExpressionScalar;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
@@ -124,29 +125,37 @@ public class QueryExpressionScalarTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractQueryExpressionScalar<Long> queryExpressionScalar = employee.id.union(manager.id);
-        final String queryString = queryExpressionScalar.show(new GenericDialect());
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Long> expected = Arrays.asList(123L);
-        final List<Long> list = queryExpressionScalar.list(
-            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario(employee.id.union(manager.id)) {
+            @Override
+            void use(AbstractQueryExpressionScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(123L), query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractQueryExpressionScalar<Long> queryExpressionScalar = employee.id.union(manager.id);
-        final String queryString = queryExpressionScalar.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = queryExpressionScalar.scroll(
-            new MockQueryEngine<Long>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Long>(123L));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario(employee.id.union(manager.id)) {
+            @Override
+            void use(AbstractQueryExpressionScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Long>(123L)));
+           }
+        }.play();
+    }
+
+    private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryExpressionScalar<Long>> {
+        protected Scenario(AbstractQueryExpressionScalar<Long> query) {
+            super(query, "S0");
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            return Collections.emptyList();
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getLong()).andReturn(123L);
+        }
     }
 
     private static class Person extends TableOrView {

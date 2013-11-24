@@ -1,17 +1,16 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
-import org.symqle.common.Mappers;
-import org.symqle.common.Row;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractAggregateFunction;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
@@ -131,46 +130,40 @@ public class AggregatesTest extends SqlTestCase  {
     }
 
     public void testList() throws Exception {
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String queryString = count.show(new GenericDialect());
-        final List<Integer> expected = Arrays.asList(2);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Integer> list = count.list(
-            new MockQueryEngine<Integer>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
-    }
-
-    public void testExtract() throws Exception {
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String queryString = count.show(new GenericDialect());
-        final Row row = createMock(Row.class);
-        final Element element = createMock(Element.class);
-        final List<Row> rows = Arrays.asList(row);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        expect(row.getValue("S0")).andReturn(element);
-        expect(element.getInt()).andReturn(123);
-        replay(parameters, row, element);
-        final List<Integer> list = count.list(
-                new MockRowsQueryEngine(queryString, parameters, new SqlContext(), rows));
-        assertEquals(Arrays.asList(123),  list);
-        verify(parameters, row, element);
-
+        new Scenario(person.id.count()) {
+            @Override
+            void use(AbstractAggregateFunction<Integer> query, QueryEngine engine) throws SQLException {
+                final List<Integer> expected = Arrays.asList(123);
+                assertEquals(expected, query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String queryString = count.show(new GenericDialect());
-        final List<Integer> expected = Arrays.asList(2);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = count.scroll(
-            new MockQueryEngine<Integer>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Integer>(2));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario(person.id.count()) {
+            @Override
+            void use(AbstractAggregateFunction<Integer> query, QueryEngine engine) throws SQLException {
+                int rows = query.scroll(engine, new TestCallback<Integer>(123));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
+    public static abstract class Scenario extends AbstractQueryScenario<Integer,AbstractAggregateFunction<Integer>> {
+
+        protected Scenario(AbstractAggregateFunction<Integer> query) {
+            super(query, "S0");
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            return Collections.emptyList();
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getInt()).andReturn(123);
+        }
     }
 
     private static class Person extends TableOrView {

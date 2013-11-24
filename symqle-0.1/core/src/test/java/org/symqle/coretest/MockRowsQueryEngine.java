@@ -1,10 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
-import org.symqle.common.Query;
-import org.symqle.common.Row;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 
@@ -24,12 +20,12 @@ public class MockRowsQueryEngine extends AbstractMockEngine implements QueryEngi
     }
 
     @Override
-    public <T> int scroll(final Query<T> query, final Callback<T> callback, final Option... options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {
         verify(query, options);
         int count = 0;
         for (Row row: expectedRows) {
             count += 1;
-            if (!callback.iterate(query.extract(row))) {
+            if (!callback.iterate(row)) {
                 break;
             }
         }

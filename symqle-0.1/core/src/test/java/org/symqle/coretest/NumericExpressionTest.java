@@ -1,23 +1,16 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
-import org.symqle.common.SqlParameters;
-import org.symqle.sql.AbstractNumericExpression;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.*;
 
-import java.util.Arrays;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -419,46 +412,44 @@ public class NumericExpressionTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        final AbstractNumericExpression<Number> numericExpression = person.id.add(two);
-        final String queryString = numericExpression.show(new GenericDialect());
-        final List<Number> expected = Arrays.asList((Number)123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param);
-        param.setLong(2L);
-        replay(parameters, param);
-        final List<Number> list = numericExpression.list(
-            new MockQueryEngine<Number>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected.size(), list.size());
-        assertEquals(expected.get(0).longValue(), list.get(0).longValue());
-        verify(parameters, param);
+        new Scenario(person.id.add(2)) {
+            @Override
+            void use(AbstractNumericExpression<Number> query, QueryEngine engine) throws SQLException {
+                final List<Number> list = query.list(engine);
+                assertEquals(1, list.size());
+                assertEquals(123, list.get(0).intValue());
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractNumericExpression<Number> numericExpression = person.id.add(two);
-        final String queryString = numericExpression.show(new GenericDialect());
-        final List<Number> expected = Arrays.asList((Number)123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param);
-        param.setLong(2L);
-        replay(parameters, param);
-        int rows = numericExpression.scroll(
-            new MockQueryEngine<Number>(new SqlContext(),
-                    expected, queryString, parameters),
-                new Callback<Number>() {
-                    int callCount = 0;
-                    @Override
-                    public boolean iterate(final Number value) {
-                        if (callCount++ > 0) {
-                            fail("One row expected, actually " + callCount);
-                        }
-                        assertEquals(123, value.intValue());
-                        return true;
-                    }
-                });
-        assertEquals(1, rows);
-        verify(parameters, param);
+        new Scenario(person.id.add(2)) {
+            @Override
+            void use(AbstractNumericExpression<Number> query, QueryEngine engine) throws SQLException {
+                final int rows = query.scroll(engine, new NumberTestCallback());
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
+    private static abstract class Scenario extends AbstractQueryScenario<Number, AbstractNumericExpression<Number>> {
+
+        private Scenario(AbstractNumericExpression<Number> query) {
+            super(query);
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final SqlParameter param =createMock(SqlParameter.class);
+            expect(parameters.next()).andReturn(param);
+            param.setBigDecimal(new BigDecimal("2"));
+            return Collections.singletonList(param);
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getBigDecimal()).andReturn(new BigDecimal("123"));
+        }
     }
 
     private static class Person extends TableOrView {

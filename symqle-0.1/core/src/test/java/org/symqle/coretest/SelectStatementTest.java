@@ -3,11 +3,13 @@ package org.symqle.coretest;
 import org.symqle.common.Mappers;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractSelectStatement;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,29 +33,21 @@ public class SelectStatementTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
-        final String queryString = selectStatement.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Long> list = selectStatement.list(
-            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario123<AbstractSelectStatement<Long>>(person.id.forUpdate()) {
+            @Override
+            void use(AbstractSelectStatement<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(getExpected(), query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
-        final String queryString = selectStatement.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = selectStatement.scroll(
-            new MockQueryEngine<Long>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Long>(123L));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario123<AbstractSelectStatement<Long>>(person.id.forUpdate()) {
+            @Override
+            void use(AbstractSelectStatement<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, getCallback()));
+            }
+        }.play();
     }
 
     private static class Person extends TableOrView {

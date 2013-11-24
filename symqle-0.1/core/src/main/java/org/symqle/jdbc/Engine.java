@@ -41,9 +41,6 @@ public interface Engine extends QueryEngine {
      */
     int flush() throws SQLException;
 
-    void execute(ConnectionCallback callback) throws SQLException;
-
-
     /**
      * Submits an sql statement for execution.
      * May cause flush of pending updates at its discretion,
@@ -73,9 +70,5 @@ public interface Engine extends QueryEngine {
     int setBatchSize(int batchSize) throws SQLException;
 
     int NOTHING_FLUSHED = -100;
-
-    public interface ConnectionCallback {
-        void call(Connection connection) throws SQLException;
-    }
 
 }

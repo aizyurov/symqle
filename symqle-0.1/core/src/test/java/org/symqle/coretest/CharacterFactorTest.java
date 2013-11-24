@@ -1,19 +1,18 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractCharacterFactor;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -412,27 +411,40 @@ public class CharacterFactorTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final String queryString = characterFactor.show(new GenericDialect());
-        final List<String> expected = Arrays.asList("abc");
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<String> list = characterFactor.list(
-            new MockQueryEngine<String>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario(characterFactor) {
+            @Override
+            void use(AbstractCharacterFactor<String> query, QueryEngine engine) throws SQLException {
+                final List<String> expected = Arrays.asList("abc");
+                assertEquals(expected, query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final String queryString = characterFactor.show(new GenericDialect());
-        final List<String> expected = Arrays.asList("abc");
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = characterFactor.scroll(
-            new MockQueryEngine<String>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<String>("abc"));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario(characterFactor) {
+            @Override
+            void use(AbstractCharacterFactor<String> query, QueryEngine engine) throws SQLException {
+                int rows = query.scroll(engine,  new TestCallback<String>("abc"));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
+    private static abstract class Scenario extends AbstractQueryScenario<String, AbstractCharacterFactor<String>> {
+
+        private Scenario(AbstractCharacterFactor<String> query) {
+            super(query);
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            return Collections.emptyList();
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getString()).andReturn("abc");
+        }
     }
 
     private static class Person extends TableOrView {

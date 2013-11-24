@@ -1,15 +1,14 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractSearchedWhenClauseBaseList;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -441,40 +440,42 @@ public class WhenClauseBaseListTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractSearchedWhenClauseBaseList<String> whenClause = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
-        final String queryString = whenClause.show(new GenericDialect());
-        final List<String> expected = Arrays.asList("John");
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param1 =createMock(SqlParameter.class);
-        final SqlParameter param2 =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param1);
-        expect(parameters.next()).andReturn(param2);
-        param1.setLong(20L);
-        param2.setLong(1L);
-        replay(parameters, param1, param2);
-        final List<String> list = whenClause.list(new MockQueryEngine<String>(new SqlContext(),
-                expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters, param1, param2);
-
+        new Scenario(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick))) {
+            @Override
+            void use(AbstractSearchedWhenClauseBaseList<String> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList("John"), query.list(engine));
+            }
+        }.play();
     }
     public void testScroll() throws Exception {
-        final AbstractSearchedWhenClauseBaseList<String> whenClause = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
-        final String queryString = whenClause.show(new GenericDialect());
-        final List<String> expected = Arrays.asList("John");
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param1 =createMock(SqlParameter.class);
-        final SqlParameter param2 =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param1);
-        expect(parameters.next()).andReturn(param2);
-        param1.setLong(20L);
-        param2.setLong(1L);
-        replay(parameters, param1, param2);
-        final int callCount = whenClause.scroll(new MockQueryEngine<String>(new SqlContext(),
-                expected, queryString, parameters),
-                new TestCallback<String>("John"));
-        assertEquals(1, callCount);
-        verify(parameters, param1, param2);
+        new Scenario(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick))) {
+            @Override
+            void use(AbstractSearchedWhenClauseBaseList<String> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<String>("John")));
+            }
+        }.play();
+    }
+
+    private static abstract class Scenario extends AbstractQueryScenario<String, AbstractSearchedWhenClauseBaseList<String>> {
+        protected Scenario(AbstractSearchedWhenClauseBaseList<String> query) {
+            super(query);
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final SqlParameter param1 =createMock(SqlParameter.class);
+            final SqlParameter param2 =createMock(SqlParameter.class);
+            expect(parameters.next()).andReturn(param1);
+            param1.setLong(20L);
+            expect(parameters.next()).andReturn(param2);
+            param2.setLong(1L);
+            return Arrays.asList(param1, param2);
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getString()).andReturn("John");
+        }
     }
 
     private static class Person extends TableOrView {

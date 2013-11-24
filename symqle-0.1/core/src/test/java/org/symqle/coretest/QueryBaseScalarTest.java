@@ -1,20 +1,15 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
-import org.symqle.sql.AbstractQueryBaseScalar;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -157,29 +152,21 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractQueryBaseScalar<Long> queryBaseScalar = person.id.selectAll();
-        final String queryString = queryBaseScalar.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Long> list = queryBaseScalar.list(
-            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario123<AbstractQueryBaseScalar<Long>>(person.id.selectAll()) {
+            @Override
+            void use(AbstractQueryBaseScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(getExpected(), query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractQueryBaseScalar<Long> queryBaseScalar = person.id.selectAll();
-        final String queryString = queryBaseScalar.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = queryBaseScalar.scroll(
-            new MockQueryEngine<Long>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Long>(123L));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario123<AbstractQueryBaseScalar<Long>>(person.id.selectAll()) {
+            @Override
+            void use(AbstractQueryBaseScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, getCallback()));
+            }
+        }.play();
     }
 
     private static class Person extends TableOrView {

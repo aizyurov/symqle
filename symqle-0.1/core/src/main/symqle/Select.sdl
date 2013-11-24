@@ -34,7 +34,14 @@ public <T> int scroll(final SelectStatement<T> statement,
     }
     final Dialect bestDialect = initialContext.get(Dialect.class);
     final Query<T> query = prepareQuery(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
-    return engine.scroll(query, callback, options);
+    return engine.scroll(query,
+            new Callback<Row>() {
+                @Override
+                public boolean iterate(Row row) throws SQLException {
+                    return callback.iterate(query.extract(row));
+                }
+            },
+            options);
 }
 
 import java.sql.SQLException;

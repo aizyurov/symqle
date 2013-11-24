@@ -1,18 +1,13 @@
 package org.symqle.coretest;
 
-import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlParameter;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
 import org.symqle.jdbc.Option;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.SqlFunction;
-import org.symqle.sql.TableOrView;
-import org.symqle.sql.ValueExpression;
+import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
@@ -646,37 +641,44 @@ public class DynamicParameterTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String queryString = param.show(new OracleLikeDialect(), Option.allowNoTables(true));
-        final List<Long> expected = Arrays.asList(1L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter parameter = createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(parameter);
-        parameter.setLong(1L);
-        replay(parameters, parameter);
-        final List<Long> list = param.list(
-                new MockQueryEngine<Long>(SqlContextUtil.allowNoTablesContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters, parameter);
+        new Scenario(DynamicParameter.create(Mappers.LONG, 123L)) {
+            @Override
+            void use(DynamicParameter<Long> query, QueryEngine engine) throws SQLException {
+                final List<Long> expected = Arrays.asList(123L);
+                assertEquals(expected, query.list(engine, Option.allowNoTables(true)));
+            }
+        }.play();
     }
 
 
     public void testScroll() throws Exception {
-        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String queryString = param.show(new OracleLikeDialect(), Option.allowNoTables(true));
-        final List<Long> expected = Arrays.asList(1L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter parameter = createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(parameter);
-        parameter.setLong(1L);
-        replay(parameters, parameter);
-        final int callCount = param.scroll(new MockQueryEngine<Long>(
-                SqlContextUtil.allowNoTablesContext(), expected, queryString, parameters),
-                new TestCallback<Long>(1L));
-        assertEquals(1, callCount);
-        verify(parameters, parameter);
+        new Scenario(DynamicParameter.create(Mappers.LONG, 123L)) {
+            @Override
+            void use(DynamicParameter<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Long>(123L), Option.allowNoTables(true)));
+            }
+        }.play();
     }
 
+    private static abstract class Scenario extends AbstractQueryScenario<Long, DynamicParameter<Long>> {
+
+        private Scenario(DynamicParameter<Long> query) {
+            super(query, "C[0-9]", new OracleLikeDialect(), Option.allowNoTables(true));
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            SqlParameter parameter = createMock(SqlParameter.class);
+            expect(parameters.next()).andReturn(parameter);
+            parameter.setLong(123L);
+            return Collections.singletonList(parameter);
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getLong()).andReturn(123L);
+        }
+    }
 
     private static class Person extends TableOrView {
         private Person() {

@@ -1,9 +1,7 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractComparisonPredicate;
 import org.symqle.sql.AbstractStringExpression;
 import org.symqle.sql.Column;
@@ -11,7 +9,9 @@ import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
@@ -422,35 +422,41 @@ public class StringExpressionTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        final AbstractStringExpression<String> stringExpression = numberSign.concat(person.id);
-        final String queryString = stringExpression.show(new GenericDialect());
-        final List<String> expected = Arrays.asList("#1");
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param1 =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param1);
-        param1.setString("#");
-        replay(parameters, param1);
-        final List<String> list = stringExpression.list(new MockQueryEngine<String>(new SqlContext(),
-                expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters, param1);
+        new Scenario(numberSign.concat(person.id)) {
+            @Override
+            void use(AbstractStringExpression<String> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList("#1"), query.list(engine));
+            }
+        }.play();
     }
 
 
     public void testScroll() throws Exception {
-        final AbstractStringExpression<String> stringExpression = numberSign.concat(person.id);
-        final String queryString = stringExpression.show(new GenericDialect());
-        final List<String> expected = Arrays.asList("#1");
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param1 =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param1);
-        param1.setString("#");
-        replay(parameters, param1);
-        final int callCount = stringExpression.scroll(new MockQueryEngine<String>(new SqlContext(),
-                expected, queryString, parameters),
-                new TestCallback<String>("#1"));
-        assertEquals(1, callCount);
-        verify(parameters, param1);
+        new Scenario(numberSign.concat(person.id)) {
+            @Override
+            void use(AbstractStringExpression<String> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<String>("#1")));
+            }
+        }.play();
+    }
+
+    private static abstract class Scenario extends AbstractQueryScenario<String, AbstractStringExpression<String>> {
+        protected Scenario(AbstractStringExpression<String> query) {
+            super(query);
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final SqlParameter param1 =createMock(SqlParameter.class);
+            expect(parameters.next()).andReturn(param1);
+            param1.setString("#");
+            return Collections.singletonList(param1);
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getString()).andReturn("#1");
+        }
     }
 
     private static class Person extends TableOrView {

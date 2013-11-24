@@ -1,22 +1,14 @@
 package org.symqle.coretest;
 
 import org.easymock.Capture;
-import org.symqle.common.Callback;
-import org.symqle.common.Element;
-import org.symqle.common.Mappers;
-import org.symqle.common.Query;
-import org.symqle.common.Row;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.*;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.SqlFunction;
-import org.symqle.sql.TableOrView;
+import org.symqle.sql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.*;
@@ -588,65 +580,40 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name NOT LIKE ?", sql);
     }
 
-    public void testListFlow() throws Exception {
-        final Column<Long> column = person.id;
-        Capture<Query<Long>> queryCapture = new Capture<Query<Long>>();
-        Capture<Callback<Long>> callbackCapture = new Capture<Callback<Long>>();
-        QueryEngine engine = createMock(QueryEngine.class);
-        final String queryString = column.show(new GenericDialect());
-        expect(engine.initialContext()).andReturn(new SqlContext());
-        expect(engine.scroll(capture(queryCapture), capture(callbackCapture))).andReturn(0);
-        replay(engine);
-
-        assertEquals(0, column.list(engine).size());
-        verify(engine);
-        assertEquals(queryCapture.getValue().sql(), queryString);
-        assertEquals(callbackCapture.getValue().iterate(1L), true);
-    }
-
     public void testList() throws Exception {
-        final Column<Long> column = person.id;
-        final String queryString = column.show(new GenericDialect());
-        final List<Long> result = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Long> list = column.list(
-                new MockQueryEngine<Long>(new SqlContext(), result, queryString, parameters));
-        assertEquals(result,  list);
-        verify(parameters);
+        new Scenario(person.id) {
+            @Override
+            void use(Column<Long> query, QueryEngine engine) throws SQLException {
+                final List<Long> expected = Arrays.asList(123L);
+                assertEquals(expected, query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final Column<Long> column = person.id;
-        final String queryString = column.show(new OracleLikeDialect());
-        final List<Long> result = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final int callCount = column.scroll(
-                new MockQueryEngine<Long>(SqlContextUtil.allowNoTablesContext(), result, queryString, parameters, Option.allowNoTables(false)),
-                new TestCallback<Long>(123L), Option.allowNoTables(false));
-        assertEquals(1, callCount);
-        verify(parameters);
+        new Scenario(person.id) {
+            @Override
+            void use(Column<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Long>(123L)));
+            }
+        }.play();
     }
 
-    public void testExtractFromRow() throws Exception {
-        final Column<Long> column = person.id;
-        final String queryString = column.show(new GenericDialect());
-        final Row row = createMock(Row.class);
-        final Element element = createMock(Element.class);
-        final List<Row> rows = Arrays.asList(row);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        expect(row.getValue(matches("C[0-9]"))).andReturn(element);
-        expect(element.getLong()).andReturn(123L);
-        replay(parameters, row, element);
-        final List<Long> list = column.list(
-                new MockRowsQueryEngine(queryString, parameters, new SqlContext(), rows));
-        assertEquals(Arrays.asList(123L),  list);
-        verify(parameters, row, element);
-    }
+    private static abstract class Scenario extends AbstractQueryScenario<Long, Column<Long>> {
 
+        private Scenario(Column<Long> query) {
+            super(query);
+        }
 
-    public void testOptions() throws Exception {
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            return Collections.emptyList();
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getLong()).andReturn(123L);
+        }
     }
 
 

@@ -284,6 +284,7 @@ import org.symqle.querybuilder.UniqueNameProvider;
 import org.symqle.common.Sql;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.common.SqlContext;
+import org.symqle.common.Bug;
 import org.symqle.common.MalformedStatementException;
 public class SelectTableRegistry implements TableRegistry {
     private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
@@ -292,24 +293,14 @@ public class SelectTableRegistry implements TableRegistry {
 
     private final UniqueNameProvider nameProvider;
 
-    private final int capacity;
-
     public SelectTableRegistry(UniqueNameProvider nameProvider) {
         parent = null;
         this.nameProvider = nameProvider;
-        this.capacity = Integer.MAX_VALUE;
-    }
-
-    public SelectTableRegistry(UniqueNameProvider nameProvider, int capacity) {
-        parent = null;
-        this.nameProvider = nameProvider;
-        this.capacity = capacity;
     }
 
     public SelectTableRegistry(final TableRegistry parent) {
         this.parent = parent;
         this.nameProvider = null;
-        this.capacity = Integer.MAX_VALUE;
     }
 
     @Override
@@ -336,22 +327,10 @@ public class SelectTableRegistry implements TableRegistry {
     }
 
     public void addAll(Collection<TableOrView> tables) {
+        // it expected that addAll is called only when none of the tables
+        // had been registered yet
         for (TableOrView table : tables) {
-            if (parent != null && parent.getCorrelationName(table) != null) {
-                // these table belong to upper context
-                Set<TableOrView> intersection = new HashSet<TableOrView>(tables);
-                intersection.retainAll(localTables.keySet());
-                if (intersection.isEmpty()) {
-                    parent.addAll(tables);
-                    return;
-                } else {
-                    throw new IllegalStateException("cannot add "+tables+": " +
-                            table + " belongs to parent context but "
-                            + intersection + " belong to current level");
-                }
-            }
-        }
-        for (TableOrView table : tables) {
+            Bug.reportIfNotNull(getCorrelationName(table));
             addToLocalTables(table);
         }
     }

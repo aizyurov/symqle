@@ -3,9 +3,7 @@
 
 package org.symqle.jdbc;
 
-import org.symqle.common.Callback;
-import org.symqle.common.Query;
-import org.symqle.common.SqlContext;
+import org.symqle.common.*;
 
 import java.sql.SQLException;
 
@@ -15,8 +13,7 @@ public interface QueryEngine  {
 
     SqlContext initialContext();
 
-
-    <T> int scroll(Query<T> query, Callback<T> callback, Option... options) throws SQLException;
+    int scroll(Sql query, Callback<Row> callback, Option... options) throws SQLException;
 
     String getDatabaseName();
 }

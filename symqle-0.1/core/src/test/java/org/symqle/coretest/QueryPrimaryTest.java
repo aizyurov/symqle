@@ -1,22 +1,15 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
-import org.symqle.common.SqlParameters;
-import org.symqle.sql.AbstractQueryPrimary;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -116,33 +109,47 @@ public class QueryPrimaryTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        final String queryString = queryPrimary.show(new GenericDialect());
-        final List<Integer> expected = Arrays.asList(123);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param);
-        param.setString("A%");
-        replay(parameters, param);
-        final List<Integer> list = queryPrimary.list(
-            new MockQueryEngine<Integer>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters, param);
+        new Scenario(queryPrimary) {
+            @Override
+            void use(AbstractQueryPrimary<Integer> query, QueryEngine engine) throws SQLException {
+                final List<Integer> expected = Arrays.asList(123);
+                final List<Integer> list = queryPrimary.list(
+                        engine);
+                assertEquals(expected, list);
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final String queryString = queryPrimary.show(new GenericDialect());
-        final List<Integer> expected = Arrays.asList(123);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        expect(parameters.next()).andReturn(param);
-        param.setString("A%");
-        replay(parameters, param);
-        int rows = queryPrimary.scroll(
-            new MockQueryEngine<Integer>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Integer>(123));
-        assertEquals(1, rows);
-        verify(parameters, param);
+        new Scenario(queryPrimary) {
+            @Override
+            void use(AbstractQueryPrimary<Integer> query, QueryEngine engine) throws SQLException {
+                int rows = queryPrimary.scroll(
+                    engine, new TestCallback<Integer>(123));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
+    private abstract class Scenario extends AbstractQueryScenario<Integer, AbstractQueryPrimary<Integer>> {
+
+        protected Scenario(AbstractQueryPrimary<Integer> query) {
+            super(query, "S0");
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final SqlParameter param =createMock(SqlParameter.class);
+            expect(parameters.next()).andReturn(param);
+            param.setString("A%");
+            return Collections.singletonList(param);
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getInt()).andReturn(123);
+        }
+
     }
 
     private static class Employee extends TableOrView {

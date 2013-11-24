@@ -1,21 +1,17 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
-import org.symqle.sql.AbstractCastSpecification;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.SqlFunction;
-import org.symqle.sql.TableOrView;
+import org.symqle.common.*;
+import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.*;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.matches;
 
 /**
  * Created by IntelliJ IDEA.
@@ -546,29 +542,43 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
-        final String queryString = column.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Long> list = column.list(
-            new MockQueryEngine<Long>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario(person.id.cast("NUMBER(12,0)")) {
+            @Override
+            void use(AbstractCastSpecification<Long> query, QueryEngine engine) throws SQLException {
+                final List<Long> expected = Arrays.asList(123L);
+                final List<Long> list = query.list(engine);
+                assertEquals(expected, list);
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
-        final String queryString = column.show(new GenericDialect());
-        final List<Long> expected = Arrays.asList(123L);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        int rows = column.scroll(
-            new MockQueryEngine<Long>(new SqlContext(),
-                    expected, queryString, parameters),
-                new TestCallback<Long>(123L));
-        assertEquals(1, rows);
-        verify(parameters);
+        new Scenario(person.id.cast("NUMBER(12,0)")) {
+            @Override
+            void use(AbstractCastSpecification<Long> query, QueryEngine engine) throws SQLException {
+                int rows = query.scroll(
+                        engine,
+                    new TestCallback<Long>(123L));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
+    private abstract class Scenario extends AbstractQueryScenario<Long, AbstractCastSpecification<Long>> {
+
+        protected Scenario(AbstractCastSpecification<Long> query) {
+            super(query);
+        }
+
+        @Override
+        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+            return Collections.emptyList();
+        }
+
+        @Override
+        void elementCall(Element element) throws SQLException {
+            expect(element.getLong()).andReturn(123L);
+        }
     }
 
     private static class Person extends TableOrView {

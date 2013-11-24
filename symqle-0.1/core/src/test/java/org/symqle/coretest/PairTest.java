@@ -1,21 +1,13 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
-import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
-import org.symqle.common.Pair;
-import org.symqle.common.Row;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
-import org.symqle.jdbc.Option;
-import org.symqle.sql.AbstractQueryBase;
-import org.symqle.sql.AbstractQueryExpression;
-import org.symqle.sql.AbstractSelectList;
-import org.symqle.sql.Column;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.common.*;
+import org.symqle.jdbc.*;
+import org.symqle.sql.*;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
@@ -150,99 +142,95 @@ public class PairTest extends SqlTestCase {
 
 
     public void testDistinctList() throws Exception {
-        final AbstractQueryBase<Pair<Long, String>> queryBase = person.id.pair(person.name).distinct();
-        final String queryString = queryBase.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Pair<Long, String>> list = queryBase.list(
-                new MockQueryEngine<Pair<Long, String>>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario<AbstractQueryBase<Pair<Long, String>>>(person.id.pair(person.name).distinct()) {
+            @Override
+            protected void use(AbstractQueryBase<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
+                assertEquals(expected, query.list(engine));
+            }
+        }.play();
     }
 
     public void testDistinctScroll() throws Exception {
-        final AbstractQueryBase<Pair<Long, String>> queryBase = person.id.pair(person.name).distinct();
-        final String queryString = queryBase.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final int callCount = queryBase.scroll(
-                new MockQueryEngine<Pair<Long, String>>(new SqlContext(), expected, queryString, parameters),
-                new TestCallback<Pair<Long,String>>(Pair.make(123L, "John")));
-        assertEquals(1, callCount);
-        verify(parameters);
+        new Scenario<AbstractQueryBase<Pair<Long, String>>>(person.id.pair(person.name).distinct()) {
+            @Override
+            protected void use(AbstractQueryBase<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
+            }
+        }.play();
     }
 
     public void testList() throws Exception {
-        final AbstractSelectList<Pair<Long,String>> selectList = person.id.pair(person.name);
-        final String queryString = selectList.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Pair<Long, String>> list = selectList.list(
-                new MockQueryEngine<Pair<Long, String>>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
-    }
-
-    public void testExtract() throws Exception {
-        final AbstractSelectList<Pair<Long,String>> selectList = person.id.pair(person.name);
-        final String queryString = selectList.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final Row row = createMock(Row.class);
-        final Element element = createMock(Element.class);
-        final List<Row> rows = Arrays.asList(row);
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        expect(row.getValue(matches("C[0-9]"))).andReturn(element);
-        expect(element.getLong()).andReturn(123L);
-        expect(row.getValue(matches("C[0-9]"))).andReturn(element);
-        expect(element.getString()).andReturn("John");
-        replay(parameters, row, element);
-        final List<Pair<Long, String>> list = selectList.list(
-                new MockRowsQueryEngine(queryString, parameters, new SqlContext(), rows));
-        assertEquals(expected, list);
-        verify(parameters);
-
+        new Scenario<AbstractSelectList<Pair<Long, String>>>(person.id.pair(person.name)) {
+            @Override
+            protected void use(AbstractSelectList<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
+                assertEquals(expected, query.list(engine));
+            }
+        }.play();
     }
 
     public void testScroll() throws Exception {
-        final AbstractSelectList<Pair<Long,String>> selectList = person.id.pair(person.name);
-        final String queryString = selectList.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final int callCount = selectList.scroll(
-                new MockQueryEngine<Pair<Long, String>>(new SqlContext(), expected, queryString, parameters),
-                new TestCallback<Pair<Long,String>>(Pair.make(123L, "John")));
-        assertEquals(1, callCount);
-        verify(parameters);
+        new Scenario<AbstractSelectList<Pair<Long, String>>>(person.id.pair(person.name)) {
+            @Override
+            protected void use(AbstractSelectList<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
+            }
+        }.play();
     }
 
     public void testWhereList() throws Exception {
-        final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
-        final String queryString = queryExpression.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final List<Pair<Long, String>> list = queryExpression.list(
-                new MockQueryEngine<Pair<Long, String>>(new SqlContext(), expected, queryString, parameters));
-        assertEquals(expected, list);
-        verify(parameters);
+        new Scenario<AbstractQueryExpression<Pair<Long, String>>>(person.id.pair(person.name).where(person.name.isNotNull())) {
+            @Override
+            protected void use(AbstractQueryExpression<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
+                assertEquals(expected, query.list(engine));
+            }
+        }.play();
     }
 
     public void testWhereScroll() throws Exception {
-        final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
-        final String queryString = queryExpression.show(new GenericDialect());
-        final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-        final SqlParameters parameters = createMock(SqlParameters.class);
-        replay(parameters);
-        final int callCount = queryExpression.scroll(
-                new MockQueryEngine<Pair<Long, String>>(new SqlContext(), expected, queryString, parameters),
-                new TestCallback<Pair<Long,String>>(Pair.make(123L, "John")));
-        assertEquals(1, callCount);
-        verify(parameters);
+        new Scenario<AbstractQueryExpression<Pair<Long, String>>>(person.id.pair(person.name).where(person.name.isNotNull())) {
+            @Override
+            protected void use(AbstractQueryExpression<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
+            }
+        }.play();
     }
+
+
+    private static abstract class Scenario<StatementType extends SelectStatement<Pair<Long,String>>>  {
+        private final StatementType query;
+
+        protected abstract void use(
+                final StatementType query,
+                final QueryEngine engine)  throws SQLException;
+
+        protected Scenario(StatementType query) {
+            this.query = query;
+        }
+
+        public void play () throws SQLException {
+            final String queryString = Symqle.show(query, new GenericDialect());
+            final SqlParameters parameters = createMock(SqlParameters.class);
+            final Row row = createMock(Row.class);
+            final Element element1 = createMock(Element.class);
+            final Element element2 = createMock(Element.class);
+            expect(row.getValue(matches("C[0-9]"))).andReturn(element1);
+            expect(row.getValue(matches("C[0-9]"))).andReturn(element2);
+            expect(element1.getLong()).andReturn(123L);
+            expect(element2.getString()).andReturn("John");
+            final Object[] mocks = new Object[] {parameters, row, element1, element2};
+            replay(mocks);
+            final SqlContext context = new SqlContext();
+            final MockQueryEngine engine = new MockQueryEngine(context, Collections.singletonList(row), queryString, parameters);
+
+            use(query, engine);
+
+            verify(mocks);
+        }
+    }
+
 
     public void testToString() throws Exception {
         assertEquals("(1, John)", Pair.make(1, "John").toString());

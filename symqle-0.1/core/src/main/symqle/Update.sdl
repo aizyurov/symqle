@@ -172,10 +172,10 @@ public class Table extends TableOrView implements TargetTable {
     }
 }
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import org.symqle.querybuilder.UniqueNameProvider;
 import org.symqle.querybuilder.TableNameProvider;
+import org.symqle.common.Bug;
 import org.symqle.common.MalformedStatementException;
 class DataChangeTableRegistry implements TableRegistry {
 
@@ -183,18 +183,23 @@ class DataChangeTableRegistry implements TableRegistry {
     final UniqueNameProvider nameProvider = new TableNameProvider();
 
     public void addAll(final Collection<TableOrView> tables) {
+        Bug.reportIf(tables.isEmpty());
+        Set<TableOrView> illegalTables = new HashSet<TableOrView>(tables);
+        if (targetTable != null) {
+            illegalTables.remove(targetTable);
+        }
         if (tables.size() > 1) {
-            throw new IllegalStateException("Not valid in this context: " + tables);
-        } else if (tables.size() == 1) {
+            throw new MalformedStatementException("Illegal in this context: " + illegalTables);
+        } else {
             final TableOrView table = tables.iterator().next();
             if (targetTable == null) {
                 targetTable = table;
-            } else if (!table.equals(targetTable)) {
-                throw new MalformedStatementException("Illegal in this context: " + tables);
+            } else {
+                Bug.reportIf(table.equals(targetTable));
+                // table can be added only once
+                throw new MalformedStatementException("Illegal in this context: " + illegalTables);
             }
-            // else empty operation
         }
-        // else empty operation
     }
 
 
@@ -224,11 +229,7 @@ class DataChangeTableRegistry implements TableRegistry {
 
      @Override
      public List<TableOrView> getLocal() {
-         if (targetTable != null) {
-            return Collections.singletonList(targetTable);
-         } else {
-             return Collections.emptyList();
-         }
+        throw new IllegalStateException(Bug.MESSAGE);
      }
 }
 

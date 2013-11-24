@@ -15,6 +15,9 @@
 */
 
 package org.symqle.common;
+
+import java.sql.SQLException;
+
 /**
  * Intended for iterative operations on a series of objects.
  * The supplier calls callback once for each object.
@@ -30,6 +33,6 @@ public interface Callback<Arg> {
      * @param arg the object to process.
      * @return true to continue iterations, false to break.
      */
-    boolean iterate(Arg arg);
+    boolean iterate(Arg arg) throws SQLException;
 
 }
