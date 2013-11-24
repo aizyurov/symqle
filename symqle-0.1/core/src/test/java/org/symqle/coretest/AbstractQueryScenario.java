@@ -69,11 +69,6 @@ public abstract class AbstractQueryScenario<T, StatementType extends SelectState
         replay(mocks);
         final SqlContext context = new SqlContext();
         context.set(Dialect.class, dialect);
-        final UpdatableConfiguration configuration = new UpdatableConfiguration();
-        for (Option option : options) {
-            option.apply(configuration);
-        }
-        context.set(Configuration.class, configuration);
         final MockQueryEngine engine = new MockQueryEngine(context, Collections.singletonList(row), queryString, parameters, options);
 
         use(query, engine);
