@@ -59,7 +59,17 @@ public class DeleteTest extends SqlTestCase {
                 new MockEngine(2, null, statementString, parameters, new SqlContext()));
         assertEquals(2, affectedRows);
         verify(parameters);
+    }
 
+    public void testSubmit() throws Exception {
+        final AbstractDeleteStatementBase update = person.delete();
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final int affectedRows = update.submit(
+                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+        assertEquals(2, affectedRows);
+        verify(parameters);
     }
 
     public void testExecuteSearched() throws Exception {
@@ -71,6 +81,20 @@ public class DeleteTest extends SqlTestCase {
         param.setLong(1L);
         replay(parameters, param);
         final int affectedRows = update.execute(
+                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+        assertEquals(2, affectedRows);
+        verify(parameters, param);
+    }
+
+    public void testSubmitSearched() throws Exception {
+        final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param = createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(1L);
+        replay(parameters, param);
+        final int affectedRows = update.submit(
                 new MockEngine(2, null, statementString, parameters, new SqlContext()));
         assertEquals(2, affectedRows);
         verify(parameters, param);

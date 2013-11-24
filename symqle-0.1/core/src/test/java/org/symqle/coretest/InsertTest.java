@@ -105,6 +105,20 @@ public class InsertTest extends SqlTestCase {
         verify(parameters, param);
     }
 
+    public void testSubmit() throws Exception {
+        final AbstractInsertStatement update = person.insert(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.submit(
+                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
+    }
+
     public void testExecuteWithNoTables() throws Exception {
         final AbstractInsertStatement update = person.insert(person.name.set(Symqle.currentDate().map(Mappers.STRING)));
         final String statementString = update.show(new OracleLikeDialect());

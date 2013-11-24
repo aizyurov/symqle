@@ -16,13 +16,13 @@ public class MockEngine extends AbstractMockEngine implements Engine {
     final Object returnedKey;
 
     /**
-     * for execute, submit, flush the first element of list (Integer)
-     * is interpreted as number of affected rows
-     * fir executeReturnKey it is the generated key. Others are ignored.
-     * @param sqlContext
-     * @param resultSet
-     * @param statement
-     * @param options
+     *
+     * @param affectedRows return value for execute and submit
+     * @param returnedKey return value for executeReturnKey
+     * @param statement expected statement
+     * @param parameters mock object for parameters to call
+     * @param sqlContext initial context
+     * @param options expected execute/submit options
      */
     public MockEngine(final int affectedRows, final Object returnedKey, final String statement, final SqlParameters parameters, final SqlContext sqlContext, final Option... options) {
         super(statement, parameters, sqlContext, options);

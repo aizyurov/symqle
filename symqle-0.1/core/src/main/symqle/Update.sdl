@@ -71,6 +71,17 @@ import java.sql.SQLException;
      return engine.execute(sql, options);
 }
 
+:: public int submit(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
+     final SqlContext initialContext = engine.initialContext();
+     final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
+    for (final Option option : options) {
+       option.apply(configuration);
+    }
+    final Dialect bestDialect = initialContext.get(Dialect.class);
+     final Sql sql = prepareUpdate(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+     return engine.submit(sql, options);
+}
+
 DataChangeStatement ::=
     s:UpdateStatement :: implicit {}
 |

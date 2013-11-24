@@ -121,6 +121,20 @@ public class UpdateTest extends SqlTestCase {
         verify(parameters, param);
     }
 
+    public void testSubmit() throws Exception {
+        final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.submit(
+                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
+    }
+
     public void testExecuteWithOtherDialect() throws Exception {
         final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
         final String statementString = update.show(new GenericDialect());
@@ -147,6 +161,23 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.execute(
+                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param, param2);
+    }
+
+    public void testSubmitSearched() throws Exception {
+        final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final SqlParameter param =createMock(SqlParameter.class);
+        final SqlParameter param2 =createMock(SqlParameter.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        expect(parameters.next()).andReturn(param2);
+        param2.setLong(1L);
+        replay(parameters, param, param2);
+        int rows = update.submit(
                 new MockEngine(3, null, statementString, parameters, new SqlContext()));
         assertEquals(3, rows);
         verify(parameters, param, param2);
