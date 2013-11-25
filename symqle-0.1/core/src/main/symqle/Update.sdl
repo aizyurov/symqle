@@ -30,31 +30,40 @@
 
 public interface DataChangeStatement : Sql {}
 
-:: private Sql prepareUpdate(final DataChangeStatement statement, final Dialect dialect, final Configuration configuration) {
-    final SqlContext context = new SqlContext();
-    context.set(Dialect.class, dialect);
-    context.set(Configuration.class, configuration);
-   context.set(TableRegistry.class, new DataChangeTableRegistry());
-      final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
-     return new Sql() {
-         @Override
-         public String sql() {
-             return dialect.formatSql(rawSql.sql());
-         }
-         @Override
-         public void setParameters(final SqlParameters p) throws SQLException {
-             rawSql.setParameters(p);
-         }
-     };
-}
+:: private static Sql prepareUpdate(final DataChangeStatement statement, final SqlContext initialContext, final ColumnName<?> keyColumn, final Option[] options) {
+        final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
+        for (final Option option : options) {
+           option.apply(configuration);
+        }
+        final Dialect bestDialect = initialContext.get(Dialect.class);
+        final Dialect dialect = bestDialect != null ? bestDialect : new GenericDialect();
+        final SqlContext context = new SqlContext();
+        context.set(Dialect.class, dialect);
+        context.set(Configuration.class, configuration);
+        context.set(TableRegistry.class, new DataChangeTableRegistry());
+        final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
+        if (keyColumn != null) {
+            keyColumn.z$sqlOfColumnName(context);
+        }
+        return new Sql() {
+            @Override
+            public String sql() {
+                return dialect.formatSql(rawSql.sql());
+            }
+            @Override
+            public void setParameters(final SqlParameters p) throws SQLException {
+                rawSql.setParameters(p);
+            }
+        };
+    }
+
+
 
 import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
-     final UpdatableConfiguration configuration = new UpdatableConfiguration();
-     for (final Option option : options) {
-        option.apply(configuration);
-     }
-    return prepareUpdate(statement, dialect, configuration).sql();
+     final SqlContext initialContext = new SqlContext();
+     initialContext.set(Dialect.class, dialect);
+     return prepareUpdate(statement, initialContext, null, options).sql();
 }
 
 import org.symqle.jdbc.Option;
@@ -62,23 +71,13 @@ import org.symqle.jdbc.Engine;
 import java.sql.SQLException;
 :: public int execute(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
      final SqlContext initialContext = engine.initialContext();
-     final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
-    for (final Option option : options) {
-       option.apply(configuration);
-    }
-    final Dialect bestDialect = initialContext.get(Dialect.class);
-     final Sql sql = prepareUpdate(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+     final Sql sql = prepareUpdate(statement, initialContext, null, options);
      return engine.execute(sql, options);
 }
 
 :: public int submit(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
      final SqlContext initialContext = engine.initialContext();
-     final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
-    for (final Option option : options) {
-       option.apply(configuration);
-    }
-    final Dialect bestDialect = initialContext.get(Dialect.class);
-     final Sql sql = prepareUpdate(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+     final Sql sql = prepareUpdate(statement, initialContext, null, options);
      return engine.submit(sql, options);
 }
 
@@ -329,37 +328,12 @@ public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {}
 ;
 
-:: public <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {
-     final SqlContext initialContext = engine.initialContext();
-     final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
-    for (final Option option : options) {
-       option.apply(configuration);
-    }
-    final Dialect bestDialect = initialContext.get(Dialect.class);
-     final DataChangeStatement dataChange = Symqle.z$DataChangeStatement$from$InsertStatement(statement);
-     final Sql sql = prepareUpdateWithKey(keyColumn, dataChange, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
-     return engine.executeReturnKey(sql, keyColumn, options);
-    }
-
-:: private static Sql prepareUpdateWithKey(final ColumnName<?> keyColumn, final DataChangeStatement statement, final Dialect dialect, final Configuration configuration) {
-    final SqlContext context = new SqlContext();
-    context.set(Dialect.class, dialect);
-    context.set(Configuration.class, configuration);
-   context.set(TableRegistry.class, new DataChangeTableRegistry());
-      final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
-     // this label is unused; it is just a check that keyColumn is valid in this context
-     final String keyColumnLabel = keyColumn.z$sqlOfColumnName(context).sql();
-     return new Sql() {
-         @Override
-         public String sql() {
-             return dialect.formatSql(rawSql.sql());
-         }
-         @Override
-         public void setParameters(final SqlParameters p) throws SQLException {
-             rawSql.setParameters(p);
-         }
-     };
-}
+:: public static <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {
+       final SqlContext initialContext = engine.initialContext();
+       final DataChangeStatement dataChange = Symqle.z$DataChangeStatement$from$InsertStatement(statement);
+       final Sql sql = prepareUpdate(dataChange, initialContext, keyColumn, options);
+       return engine.executeReturnKey(sql, keyColumn, options);
+      }
 
 
 
