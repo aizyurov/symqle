@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
-import org.symqle.dialect.DerbyDialect;
-import org.symqle.dialect.MySqlDialect;
+import org.symqle.misc.ResourceUtils;
+import org.symqle.misc.SafeCallable;
 import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 
@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author lvovich
@@ -25,31 +27,39 @@ public final class DatabaseUtils {
         }
     }
 
-    private final static Dialect[] knownDialects = {
-            new DerbyDialect(),
-            new MySqlDialect()
-    };
-
-    private final static ConnectorWrapper[] KNOWN_WRAPPERs = {
-            new MySqlConnectorWrapper()
-    };
+    private final static Properties dialects = ResourceUtils.readProperties("symqle.dialects");
+    private final static Properties connectors = ResourceUtils.readProperties("symqle.connectors");
 
     public static Dialect getDialect(final String databaseName) {
-        for (Dialect dialect : knownDialects) {
-            if (dialect.getName().equals(databaseName)) {
-                return dialect;
+        final String className = dialects.getProperty(databaseName);
+        final AtomicReference<Dialect> reference = new AtomicReference<Dialect>();
+        new SafeCallable() {
+            @Override
+            public Void call() throws Exception {
+                reference.set(className != null ? (Dialect) Class.forName(className).newInstance() : new GenericDialect());
+                return null;
             }
-        }
-        return new GenericDialect();
+        }.run();
+        return reference.get();
     }
 
-    public static ConnectorWrapper getConnectorWrapperFactory(final String databaseName) {
-        for (ConnectorWrapper factory : KNOWN_WRAPPERs) {
-            if (factory.getName().equals(databaseName)) {
-                return factory;
-            }
+
+
+    public static Connector wrap(final Connector connector, final String databaseName) {
+        final String className = connectors.getProperty(databaseName);
+        if (className == null) {
+            return connector;
         }
-        return null;
+        final AtomicReference<Connector> reference = new AtomicReference<Connector>();
+        new SafeCallable() {
+            @Override
+            public Void call() throws Exception {
+                final ConnectorWrapper wrapper = (ConnectorWrapper) Class.forName(className).newInstance();
+                reference.set(wrapper.wrap(connector));
+                return null;
+            }
+        }.run();
+        return reference.get();
     }
 
 

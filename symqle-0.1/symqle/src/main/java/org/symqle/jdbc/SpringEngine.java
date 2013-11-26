@@ -20,16 +20,14 @@ public class SpringEngine extends AbstractEngine {
 
     protected SpringEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
         super(dialect, DatabaseUtils.getDatabaseName(dataSource), options);
-        final ConnectorWrapper connectorWrapper = DatabaseUtils.getConnectorWrapperFactory(getDatabaseName());
         final Connector connector = new SpringConnector(dataSource);
-        this.connector = connectorWrapper == null ? connector : connectorWrapper.wrap(connector);
+        this.connector = DatabaseUtils.wrap(connector, getDatabaseName());
     }
 
     protected SpringEngine(final DataSource dataSource, final Option... options) throws SQLException {
         super(DatabaseUtils.getDatabaseName(dataSource), options);
-        final ConnectorWrapper connectorWrapper = DatabaseUtils.getConnectorWrapperFactory(getDatabaseName());
         final Connector connector = new SpringConnector(dataSource);
-        this.connector = connectorWrapper == null ? connector : connectorWrapper.wrap(connector);
+        this.connector = DatabaseUtils.wrap(connector, getDatabaseName());
     }
 
     @Override

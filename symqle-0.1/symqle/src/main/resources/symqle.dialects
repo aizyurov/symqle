@@ -1,0 +1,2 @@
+MySQL = org.symqle.dialect.MySqlDialect
+Apache\ Derby = org.symqle.dialect.DerbyDialect
