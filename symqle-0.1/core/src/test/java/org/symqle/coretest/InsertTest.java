@@ -60,13 +60,9 @@ public class InsertTest extends SqlTestCase {
         assertSimilar("INSERT INTO person(name) VALUES((SELECT T0.name FROM person AS T0 WHERE T0.id = ?))", sql);
     }
 
-    public void testSubqueryFromNoTables() throws Exception {
-        try {
-            final String sql = person.insert(person.id.set(Symqle.currentTimestamp().map(Mappers.LONG))).show(new GenericDialect());
-            fail("MalformedStatementException expected but was " + sql);
-        } catch (MalformedStatementException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("At least one table is required for FROM clause"));
-        }
+    public void testSystemConstant() throws Exception {
+        final String sql = person.insert(person.id.set(Symqle.currentTimestamp().map(Mappers.LONG))).show(new GenericDialect());
+        assertEquals("INSERT INTO person(id) VALUES(CURRENT_TIMESTAMP)", sql);
     }
 
     public void testSourceIsTarget() throws Exception {

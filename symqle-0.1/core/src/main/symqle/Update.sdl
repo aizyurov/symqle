@@ -37,10 +37,10 @@ public interface DataChangeStatement : Sql {}
         }
         final Dialect bestDialect = initialContext.get(Dialect.class);
         final Dialect dialect = bestDialect != null ? bestDialect : new GenericDialect();
-        final SqlContext context = new SqlContext();
-        context.set(Dialect.class, dialect);
-        context.set(Configuration.class, configuration);
-        context.set(TableRegistry.class, new DataChangeTableRegistry());
+        final SqlContext context = new SqlContext().
+                put(Dialect.class, dialect).
+                put(Configuration.class, configuration).
+                put(TableRegistry.class, new DataChangeTableRegistry());
         final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
         if (keyColumn != null) {
             keyColumn.z$sqlOfColumnName(context);
@@ -61,8 +61,7 @@ public interface DataChangeStatement : Sql {}
 
 import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
-     final SqlContext initialContext = new SqlContext();
-     initialContext.set(Dialect.class, dialect);
+     final SqlContext initialContext = new SqlContext().put(Dialect.class, dialect);
      return prepareUpdate(statement, initialContext, null, options).sql();
 }
 

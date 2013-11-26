@@ -167,8 +167,6 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 |
     qe:QueryExpressionScalar<T> :: implicit {
             public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
-            // changes outer context!
-                context.set(UniqueNameProvider.class, new ScalarNameProvider());
                 final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
                 return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar(__rowMapper));
             }/*delegation*/

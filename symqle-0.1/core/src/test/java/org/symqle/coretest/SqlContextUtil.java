@@ -14,11 +14,10 @@ public class SqlContextUtil {
     }
 
     public static SqlContext allowNoTablesContext() {
-        final SqlContext context = new SqlContext();
-        context.set(Dialect.class, new OracleLikeDialect());
         UpdatableConfiguration configuration = new UpdatableConfiguration();
         configuration.setNoFromOk(true);
-        context.set(Configuration.class, configuration);
+        final SqlContext context = new SqlContext().put(Dialect.class, new OracleLikeDialect()).
+                put(Configuration.class, configuration);
         return context;
     }
 }
