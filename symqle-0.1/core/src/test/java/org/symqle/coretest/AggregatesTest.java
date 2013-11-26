@@ -152,7 +152,7 @@ public class AggregatesTest extends SqlTestCase  {
     public static abstract class Scenario extends AbstractQueryScenario<Integer,AbstractAggregateFunction<Integer>> {
 
         protected Scenario(AbstractAggregateFunction<Integer> query) {
-            super(query, "S0");
+            super(query, "C0");
         }
 
         @Override

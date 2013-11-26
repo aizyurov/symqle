@@ -62,10 +62,10 @@ public class InsertTest extends SqlTestCase {
 
     public void testSubqueryFromNoTables() throws Exception {
         try {
-            final String sql = person.insert(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show(new GenericDialect());
+            final String sql = person.insert(person.id.set(Symqle.currentTimestamp().map(Mappers.LONG))).show(new GenericDialect());
             fail("MalformedStatementException expected but was " + sql);
         } catch (MalformedStatementException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("Illegal in this context"));
+            assertTrue(e.getMessage(), e.getMessage().contains("At least one table is required for FROM clause"));
         }
     }
 

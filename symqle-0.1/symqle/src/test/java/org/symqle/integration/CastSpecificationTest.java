@@ -2,6 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
+import org.symqle.dialect.DerbyDialect;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractCastSpecification;
 
@@ -65,6 +66,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testOrderAsc() throws Exception {
         final Employee employee = new Employee();
+        final String show = createCast(employee).orderAsc().show(new DerbyDialect());
+        System.out.println(show);
         final List<Double> list = createCast(employee).orderAsc().list(getEngine());
         // Cooper, First, March, Pedersen, Redwood
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);

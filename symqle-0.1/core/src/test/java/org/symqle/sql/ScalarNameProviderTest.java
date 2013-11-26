@@ -8,17 +8,9 @@ import org.symqle.querybuilder.ScalarNameProvider;
  */
 public class ScalarNameProviderTest extends TestCase {
 
-    public void testTwice() throws Exception {
+    public void testName() throws Exception {
         final ScalarNameProvider scalarNameProvider = new ScalarNameProvider();
         final String uniqueName = scalarNameProvider.getUniqueName();
-        assertNotNull(uniqueName);
-        try {
-            final String uniqueName2 = scalarNameProvider.getUniqueName();
-            fail("Expected IllegalStateException but returned " + uniqueName2);
-        } catch (IllegalStateException e) {
-            // fine
-        }
-
-
+        assertEquals("C0", uniqueName);
     }
 }

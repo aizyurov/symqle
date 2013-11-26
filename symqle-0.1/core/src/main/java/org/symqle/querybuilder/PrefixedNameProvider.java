@@ -34,6 +34,6 @@ public abstract class PrefixedNameProvider implements UniqueNameProvider {
 
     @Override
     public final String getUniqueName() {
-        return prefix + (++counter);
+        return prefix + (counter++);
     }
 }

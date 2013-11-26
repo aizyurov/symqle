@@ -14,42 +14,42 @@ public class FunctionsTest extends TestCase {
 
     public void testAbs() throws Exception {
         final String sql = Functions.abs(person.id).show(new GenericDialect());
-        assertEquals("SELECT ABS(T1.id) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT ABS(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testLn() throws Exception {
         final String sql = Functions.ln(person.id).show(new GenericDialect());
-        assertEquals("SELECT LN(T1.id) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT LN(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testExp() throws Exception {
         final String sql = Functions.exp(person.id).show(new GenericDialect());
-        assertEquals("SELECT EXP(T1.id) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT EXP(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testCeil() throws Exception {
         final String sql = Functions.ceil(person.id).show(new GenericDialect());
-        assertEquals("SELECT CEIL(T1.id) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT CEIL(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testFloor() throws Exception {
         final String sql = Functions.floor(person.id).show(new GenericDialect());
-        assertEquals("SELECT FLOOR(T1.id) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT FLOOR(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testSqrt() throws Exception {
         final String sql = Functions.sqrt(person.id).show(new GenericDialect());
-        assertEquals("SELECT SQRT(T1.id) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT SQRT(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testMod() throws Exception {
         final String sql = Functions.mod(person.id, DynamicParameter.create(Mappers.INTEGER, 2)).show(new GenericDialect());
-        assertEquals("SELECT MOD(T1.id, ?) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT MOD(T0.id, ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPower() throws Exception {
         final String sql = Functions.power(person.id, DynamicParameter.create(Mappers.INTEGER, 2)).show(new GenericDialect());
-        assertEquals("SELECT POWER(T1.id, ?) AS C1 FROM person AS T1", sql);
+        assertEquals("SELECT POWER(T0.id, ?) AS C0 FROM person AS T0", sql);
     }
 
 

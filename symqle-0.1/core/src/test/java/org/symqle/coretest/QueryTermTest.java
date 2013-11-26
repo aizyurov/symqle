@@ -140,7 +140,7 @@ public class QueryTermTest extends SqlTestCase {
 
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryTerm<Long>> {
         protected Scenario(AbstractQueryTerm<Long> query) {
-            super(query, "S0");
+            super(query, "C0");
         }
 
         @Override

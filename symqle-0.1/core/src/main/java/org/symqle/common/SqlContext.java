@@ -50,6 +50,13 @@ public class SqlContext {
         return (T) theContext.get(clazz);
     }
 
+    public final <T> SqlContext put(final Class<T> clazz, final T impl) {
+        final SqlContext newContext = new SqlContext();
+        newContext.theContext.putAll(theContext);
+        newContext.theContext.put(clazz, impl);
+        return newContext;
+    }
+
     private final Map<Class<?>, Object> theContext = new HashMap<Class<?>, Object>();
 
 

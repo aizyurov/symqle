@@ -26,27 +26,19 @@ public final class Symqle  {
         new Symqle();
     }
 
-    private static SqlContext createInnerContext(SqlContext context) {
-        SqlContext innerContext = new SqlContext();
-        innerContext.set(UniqueNameProvider.class, null);
-        innerContext.set(Dialect.class, context.get(Dialect.class));
-        innerContext.set(Configuration.class, context.get(Configuration.class));
-        // create an empty AbstractFromClause for QueryExpressionScalar with current FromClause as enclosing
-        innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
-        return innerContext;
+    private static SqlContext makeLearningContext(final SqlContext context) {
+        return context.
+                put(Dialect.class, DebugDialect.get()).
+                put(Configuration.class, getDebugConfiguration()).
+                put(UniqueNameProvider.class, new ColumnNameProvider());
     }
 
     private static SqlContext createScalarInnerContext(SqlContext context) {
-        SqlContext innerContext = new SqlContext();
-        // if already in inner context, do not provide column labels
-        innerContext.set(UniqueNameProvider.class, context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider());
-        innerContext.set(Dialect.class, context.get(Dialect.class));
-        // create an empty AbstractFromClause with current FromClause as enclosing
-        innerContext.set(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
-        innerContext.set(Configuration.class, context.get(Configuration.class));
+        SqlContext innerContext = context.put(UniqueNameProvider.class,
+                context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider()).
+                put(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;
     }
-
 }
 
 

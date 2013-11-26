@@ -29,7 +29,7 @@ public class AbstractSelectorTest extends TestCase {
         final PersonSelector mapper = new PersonSelector(person);
         final String queryString = mapper.show(new GenericDialect());
         System.out.println(queryString);
-        assertEquals("SELECT T1.id AS C1, T1.name AS C2 FROM person AS T1", queryString);
+        assertEquals("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", queryString);
     }
 
     public void testNoMappers() {

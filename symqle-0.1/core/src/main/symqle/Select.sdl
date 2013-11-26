@@ -96,43 +96,32 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
     }
 
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
-        final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
-        // training: learn all tables participating in query
-        {
-            final SqlContext context = new SqlContext();
-            context.set(UniqueNameProvider.class, new ColumnNameProvider());
-            context.set(TableRegistry.class, tableRegistry);
-            context.set(Dialect.class, DebugDialect.get());
-            context.set(Configuration.class, getDebugConfiguration());
-            statement.z$sqlOfSelectStatement(context);
-        }
-        // real generation of Sql
-        final Query<T> query;
-        {
-            final SqlContext context = new SqlContext();
-            context.set(UniqueNameProvider.class, new ColumnNameProvider());
-            context.set(TableRegistry.class, tableRegistry);
-            context.set(Dialect.class, dialect);
-            context.set(Configuration.class, configuration);
-            query = statement.z$sqlOfSelectStatement(context);
-        }
-        return new Query<T>() {
-            @Override
-            public T extract(final Row row) throws SQLException {
-                return query.extract(row);
-            }
+    final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
+    final SqlContext context = new SqlContext().
+            put(UniqueNameProvider.class, new ColumnNameProvider()).
+            put(TableRegistry.class, tableRegistry).
+            put(Dialect.class, dialect).
+            put(Configuration.class, configuration);
 
-            @Override
-            public String sql() {
-                return dialect.formatSql(query.sql());
-            }
+    statement.z$sqlOfSelectStatement(makeLearningContext(context));
+    final Query<T> query = statement.z$sqlOfSelectStatement(context);
+    return new Query<T>() {
+        @Override
+        public T extract(final Row row) throws SQLException {
+            return query.extract(row);
+        }
 
-            @Override
-            public void setParameters(final SqlParameters p) throws SQLException {
-                query.setParameters(p);
-            }
-        };
-    }
+        @Override
+        public String sql() {
+            return dialect.formatSql(query.sql());
+        }
+
+        @Override
+        public void setParameters(final SqlParameters p) throws SQLException {
+            query.setParameters(p);
+        }
+    };
+}
 
 
 # # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification
@@ -190,8 +179,6 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
 |
     qe:QueryExpressionScalar<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {
             public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
-            // changes outer context!
-                context.set(UniqueNameProvider.class, new ScalarNameProvider());
                 final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
                 return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar_OrderByClause(__rowMapper, obc.z$sqlOfOrderByClause(context)));
             }/*delegation*/

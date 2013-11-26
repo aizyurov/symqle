@@ -1,17 +1,23 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.AbstractCastSpecification;
+import org.symqle.sql.Column;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.SqlFunction;
+import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.matches;
 
 /**
  * Created by IntelliJ IDEA.
@@ -57,7 +63,7 @@ public class CastSpecificationTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
-        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0 ASC", col.orderAsc().show(new GenericDialect()));
+        assertEquals("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0 ASC", col.orderAsc().show(new GenericDialect()));
     }
 
     public void testOrderDesc() throws Exception {

@@ -21,14 +21,9 @@ package org.symqle.querybuilder;
  * If called second time, throws an IllegalStateException.
  */
 public class ScalarNameProvider implements UniqueNameProvider {
-    private boolean called = false;
 
     @Override
     public final String getUniqueName() {
-        if (called) {
-            throw new IllegalStateException("Can be called only once");
-        }
-        called = true;
-        return "S0";
+        return "C0";
     }
 }

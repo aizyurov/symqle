@@ -1,15 +1,14 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Mappers;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.AbstractQueryBaseScalar;
+import org.symqle.sql.Column;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.easymock.EasyMock.*;
 
 /**
  * @author lvovich
@@ -50,27 +49,27 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
     public void testOrderAsc() throws Exception {
         final String sql = person.id.selectAll().orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0 ASC", sql);
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
     }
 
     public void testOrderBy() throws Exception {
         final String sql = person.id.selectAll().orderBy(person.name).show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY T0.name", sql);
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
     public void testAllForUpdate() throws Exception {
         final String sql = person.id.selectAll().forUpdate().show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 FOR UPDATE", sql);
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testOrderDesc() throws Exception {
         final String sql = person.id.selectAll().orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS S0 FROM person AS T0 ORDER BY S0 DESC", sql);
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
     }
 
     public void testDistincgForUpdate() throws Exception {
         final String sql = person.id.distinct().forUpdate().show(new GenericDialect());
-        assertSimilar("SELECT DISTINCT T0.id AS S0 FROM person AS T0 FOR UPDATE", sql);
+        assertSimilar("SELECT DISTINCT T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testForUpdate() throws Exception {

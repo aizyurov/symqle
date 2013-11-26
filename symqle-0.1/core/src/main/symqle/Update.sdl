@@ -321,12 +321,11 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
             * @return constructed Sql
             */
             public Sql z$sqlOfFromConstructor(final SqlContext context) {
-                final SqlContext innerContext = new SqlContext();
-                innerContext.set(Dialect.class, context.get(Dialect.class));
-                innerContext.set(Configuration.class, context.get(Configuration.class));
-                innerContext.set(TableRegistry.class, new NoTablesRegistry(context.get(TableRegistry.class)));
-                innerContext.set(ColumnNameProvider.class, context.get(ColumnNameProvider.class));
-                return context.get(Dialect.class).FromConstructor_is_LEFT_PAREN_InsertColumnList_RIGHT_PAREN_TableValueConstructor(l.z$sqlOfInsertColumnList(context), t.z$sqlOfTableValueConstructor(innerContext));
+                final SqlContext innerContext = context.put(TableRegistry.class,
+                        new NoTablesRegistry(context.get(TableRegistry.class)));
+                return context.get(Dialect.class)
+                  .FromConstructor_is_LEFT_PAREN_InsertColumnList_RIGHT_PAREN_TableValueConstructor(
+                        l.z$sqlOfInsertColumnList(context), t.z$sqlOfTableValueConstructor(innerContext));
             }
          }
 ;

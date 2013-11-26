@@ -134,7 +134,7 @@ public class QueryPrimaryTest extends SqlTestCase {
     private abstract class Scenario extends AbstractQueryScenario<Integer, AbstractQueryPrimary<Integer>> {
 
         protected Scenario(AbstractQueryPrimary<Integer> query) {
-            super(query, "S0");
+            super(query, "C0");
         }
 
         @Override

@@ -144,7 +144,7 @@ public class QueryExpressionScalarTest extends SqlTestCase {
 
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryExpressionScalar<Long>> {
         protected Scenario(AbstractQueryExpressionScalar<Long> query) {
-            super(query, "S0");
+            super(query, "C0");
         }
 
         @Override

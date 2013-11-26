@@ -14,18 +14,18 @@ public class MysqlDialectTest extends TestCase {
     public void testForReadOnly() {
         final Employee employee = new Employee();
         final String sql = employee.lastName.forReadOnly().show(new MySqlDialect());
-        assertEquals("SELECT T1.last_name AS C1 FROM employee AS T1", sql);
+        assertEquals("SELECT T0.last_name AS C0 FROM employee AS T0", sql);
     }
 
     public void testFromClauseFromNothing() {
         final String sql = Params.p(1).show(new MySqlDialect(), Option.allowNoTables(true));
-        assertEquals("SELECT ? AS C1", sql);
+        assertEquals("SELECT ? AS C0", sql);
     }
 
     public void testValueExpression_is_BooleanExpression() {
         final Employee employee = new Employee();
         final String sql = employee.lastName.where(employee.deptId.isNotNull().asValue().like("1%")).show(new MySqlDialect());
-        assertEquals("SELECT T1.last_name AS C1 FROM employee AS T1 WHERE(T1.dept_id IS NOT NULL) LIKE ?", sql);
+        assertEquals("SELECT T0.last_name AS C0 FROM employee AS T0 WHERE(T0.dept_id IS NOT NULL) LIKE ?", sql);
     }
 
     // demonstrate double parenthesizing (one for BooleanExpression->ValueExpression, the other for ValueExpression->ValueExpressionPrimary
@@ -34,7 +34,7 @@ public class MysqlDialectTest extends TestCase {
     public void testValueExpression_is_BooleanExpression2() {
         final Employee employee = new Employee();
         final String sql = employee.lastName.where(employee.deptId.isNotNull().asValue().eq(true)).show(new MySqlDialect());
-        assertEquals("SELECT T1.last_name AS C1 FROM employee AS T1 WHERE((T1.dept_id IS NOT NULL)) = ?", sql);
+        assertEquals("SELECT T0.last_name AS C0 FROM employee AS T0 WHERE((T0.dept_id IS NOT NULL)) = ?", sql);
     }
 
     public void testName() {
