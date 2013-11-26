@@ -172,5 +172,4 @@ public class AbstractSelectorTest extends TestCase {
         public Column<String> name = defineColumn(Mappers.STRING, "name");
     }
 
-
 }

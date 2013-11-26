@@ -2,12 +2,14 @@ package org.symqle.integration.model;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.symqle.jdbc.ConnectorEngine;
+import org.symqle.jdbc.DatabaseUtils;
 import org.symqle.jdbc.Engine;
 import org.symqle.sql.Dialect;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -15,7 +17,7 @@ import java.util.Properties;
 /**
  * @author lvovich
  */
-public class ExternalDbEnvironment implements TestEnvironment {
+public class ExternalDbEnvironment extends AbstractTestEnvironment {
 
     private final Engine engine;
 
@@ -50,6 +52,11 @@ public class ExternalDbEnvironment implements TestEnvironment {
             dataSource.setDriverClass(properties.getProperty("symqle.jdbc.driverClass"));
             dataSource.setUser(properties.getProperty("symqle.jdbc.user"));
             dataSource.setPassword(properties.getProperty("symqle.jdbc.password"));
+            final String databaseName = DatabaseUtils.getDatabaseName(dataSource);
+            String resource = databaseName + "DbSetup.sql";
+            final Connection connection = dataSource.getConnection();
+            initDatabase(connection, resource);
+            connection.close();
             final String dialectClass = System.getProperty("org.symqle.integration.dialect");
             if (dialectClass != null) {
                 final Class<?> dialectClazz = Class.forName(dialectClass);

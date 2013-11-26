@@ -6,17 +6,14 @@ import org.symqle.jdbc.ConnectorEngine;
 import org.symqle.jdbc.Engine;
 import org.symqle.sql.Dialect;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 
 /**
  * @author lvovich
  */
-public class DerbyEnvironment implements TestEnvironment {
+public class DerbyEnvironment extends AbstractTestEnvironment {
     private final String url = "jdbc:derby:memory:symqle";
     private final Engine engine = createEngine();
 
@@ -32,7 +29,8 @@ public class DerbyEnvironment implements TestEnvironment {
     public Engine createEngine() {
         try {
             final Connection connection = DriverManager.getConnection(url + ";create=true");
-            initDatabase(connection);
+            initDatabase(connection, "defaultDbSetup.sql");
+            connection.close();
             final ComboPooledDataSource dataSource = new ComboPooledDataSource();
             dataSource.setJdbcUrl(url);
             dataSource.setDriverClass(EmbeddedDriver.class.getName());
@@ -55,34 +53,6 @@ public class DerbyEnvironment implements TestEnvironment {
     @Override
     public Engine getEngine() {
         return engine;
-    }
-
-    private void initDatabase(final Connection connection) throws Exception {
-    final BufferedReader reader = new BufferedReader(
-            new InputStreamReader(DerbyEnvironment.class.getClassLoader().getResourceAsStream("defaultDbSetup.sql")));
-    try {
-        final StringBuilder builder = new StringBuilder();
-        try {
-            for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                if (line.equals("")) {
-                    final String sql = builder.toString();
-                    builder.setLength(0);
-                    if (sql.trim().length()>0) {
-//                        System.out.println(sql);
-                        final PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                        preparedStatement.executeUpdate();
-                        preparedStatement.close();
-                    }
-                } else {
-                    builder.append(" ").append(line);
-                }
-            }
-        } finally {
-            connection.close();
-        }
-    } finally {
-        reader.close();
-    }
     }
 
 }

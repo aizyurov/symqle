@@ -40,7 +40,7 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         return new InnerQuery(query);
     }
 
-    public final <E> KeyImpl<E> map(final SelectList<E> selectList) {
+    public final <E> RowMapper<E> map(final SelectList<E> selectList) {
         if (keysLocked.get()) {
             throw new IllegalStateException("map() cannot be called at this point");
         }

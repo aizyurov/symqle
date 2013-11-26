@@ -1,4 +1,20 @@
-drop table if exists employee, department, country
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+
+drop table if exists employee
+
+drop table if exists  department
+
+drop table if exists  country
+
+drop table if exists big_table, my_dual
+
+drop table if exists delete_detail
+
+drop table if exists delete_master
+
+drop table if exists one, insert_test, true_value, join_test_left, join_test_right, arithmetics, generated_keys, update_test
+
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 
 create table country (country_id INTEGER PRIMARY KEY, name VARCHAR(100), code varchar(3))
 
@@ -20,29 +36,29 @@ insert into country (country_id, name, code) values (1, 'United States of Americ
 
 insert into country (country_id, name, code) values (2, 'Russian Federation', 'RUS')
 
-insert into country (name, code) values ('France', 'FRA')
+insert into country (country_id, name, code) values (3, 'France', 'FRA')
 
 insert into department (dept_id, dept_name, country_id) values(1, 'HR', 1)
 
 insert into department (dept_id, dept_name, country_id) values (2, 'DEV', 2)
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (101, 'Margaret', 'Redwood',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (1, 'Margaret', 'Redwood',
  'HR Manager', '2008-08-22', 3000, 1 )
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (102, 'Bill', 'March',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (2, 'Bill', 'March',
  'HR Clerk', '2008-08-23', 2000, 1 )
 
-update department set manager_id = 101 where dept_name = 'HR'
+update department set manager_id = 1 where dept_name = 'HR'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (201, 'James', 'First',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (3, 'James', 'First',
  'Development manager', '2008-10-01', 3000, 2 )
 
-update department set manager_id = 201 where dept_name = 'DEV'
+update department set manager_id = 3 where dept_name = 'DEV'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (202, 'Alex', 'Pedersen',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) values (4, 'Alex', 'Pedersen',
  'guru', '2008-10-11', 2000, 2 )
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id, is_retired) values (203, 'James', 'Cooper',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id, is_retired) values (5, 'James', 'Cooper',
  'hacker', '2009-01-12', 1500, null, true )
 
 create table big_table (num integer)

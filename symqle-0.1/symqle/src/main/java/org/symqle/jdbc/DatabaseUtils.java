@@ -17,6 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class DatabaseUtils {
 
+    private DatabaseUtils() {}
+    static { new DatabaseUtils(); }
+
     public static String getDatabaseName(final DataSource dataSource) throws SQLException {
         final Connection connection = dataSource.getConnection();
         try {

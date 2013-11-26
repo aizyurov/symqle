@@ -5,8 +5,6 @@ package org.symqle.jdbc;
  */
 interface ConnectorWrapper {
 
-    String getName();
-
     Connector wrap(Connector connector);
 
 }
