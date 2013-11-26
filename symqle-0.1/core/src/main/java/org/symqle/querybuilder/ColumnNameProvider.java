@@ -19,12 +19,12 @@ package org.symqle.querybuilder;
 /**
  * Provides unique column name formed as "C0", "C1" etc.
  */
-public class ColumnNameProvider extends PrefixedNameProvider {
+public class ColumnNameProvider implements UniqueNameProvider {
 
-    /**
-     * No-arg constructor.
-     */
-    public ColumnNameProvider() {
-        super("C");
+    private int counter = 0;
+
+    @Override
+    public String getUniqueName() {
+        return "C" + (counter++);
     }
 }

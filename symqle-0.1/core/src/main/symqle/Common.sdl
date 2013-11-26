@@ -36,7 +36,7 @@ public final class Symqle  {
     private static SqlContext createScalarInnerContext(SqlContext context) {
         SqlContext innerContext = context.put(UniqueNameProvider.class,
                 context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider()).
-                put(TableRegistry.class, new SelectTableRegistry(context.get(TableRegistry.class)));
+                put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)));
         return innerContext;
     }
 }

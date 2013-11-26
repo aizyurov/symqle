@@ -1,7 +1,6 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
-import org.symqle.common.Query;
 import org.symqle.common.Row;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
@@ -50,14 +49,13 @@ abstract class AbstractQueryEngine implements QueryEngine {
 
     @Override
     public final SqlContext initialContext() {
-        final SqlContext context = new SqlContext();
-        context.set(Dialect.class, dialect);
         UpdatableConfiguration configuration = new UpdatableConfiguration();
         for (Option option : options) {
             option.apply(configuration);
         }
-        context.set(Configuration.class, configuration);
-        return context;
+        return new SqlContext().
+                put(Dialect.class, dialect).
+                put(Configuration.class, configuration);
     }
 
     protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final Option[] options) throws SQLException {

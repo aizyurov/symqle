@@ -26,19 +26,6 @@ import java.util.Map;
  */
 public class SqlContext {
 
-
-    /**
-     * Sets an object to this context.
-     * The clazz parameter is a key.
-     * If the context already contains this key, the value is overwritten.
-     * @param clazz the key
-     * @param impl the value to store
-     * @param <T> type of the value
-     */
-    public final <T> void set(final Class<T> clazz, final T impl) {
-        theContext.put(clazz, impl);
-    }
-
     /**
      * Gets an object from the context by key.
      * @param clazz the key
@@ -50,6 +37,13 @@ public class SqlContext {
         return (T) theContext.get(clazz);
     }
 
+    /**
+     * Creates a copy of {@code this} with one lkey/value pair replaced or added.
+     * @param clazz
+     * @param impl
+     * @param <T>
+     * @return
+     */
     public final <T> SqlContext put(final Class<T> clazz, final T impl) {
         final SqlContext newContext = new SqlContext();
         newContext.theContext.putAll(theContext);

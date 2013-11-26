@@ -1,0 +1,152 @@
+import java.util.Collection;
+import java.util.List;
+public interface TableRegistry {
+
+    void addAll(Collection<TableOrView> tables);
+
+    String getCorrelationName(TableOrView table);
+
+    public boolean nameInUse(final String name);
+}
+
+import java.util.Collection;
+import java.util.List;
+public interface SelectTableRegistry extends TableRegistry {
+
+    List<TableOrView> getLocal();
+}
+
+import java.util.*;
+import org.symqle.common.Bug;
+import org.symqle.common.MalformedStatementException;
+class RootSelectTableRegistry implements SelectTableRegistry {
+    private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
+
+
+    public void addAll(Collection<TableOrView> tables) {
+        // it expected that addAll is called only when none of the tables
+        // had been registered yet
+        for (TableOrView table : tables) {
+            Bug.reportIfNotNull(getCorrelationName(table));
+            addToLocalTables(table);
+        }
+    }
+
+
+    private void addToLocalTables(TableOrView table) {
+            final String newName = generateUniqueName();
+            localTables.put(table, newName);
+    }
+
+
+    public String generateUniqueName() {
+        int i=0;
+        String name = "T"+i;
+        while(nameInUse(name)) {
+            name = "T" + (++i);
+        }
+        return name;
+    }
+
+    @Override
+    public String getCorrelationName(final TableOrView table) {
+        return localTables.get(table);
+    }
+
+    @Override
+    public boolean nameInUse(final String name) {
+        return localTables.values().contains(name);
+    }
+
+    public List<TableOrView> getLocal() {
+        return new ArrayList<TableOrView>(localTables.keySet());
+    }
+}
+
+import java.util.List;
+class ChildSelectTableRegistry extends RootSelectTableRegistry {
+
+    private final TableRegistry parent;
+
+    public ChildSelectTableRegistry(final TableRegistry parent) {
+        this.parent = parent;
+    }
+
+    public String getCorrelationName(TableOrView table) {
+        final String parentName = parent.getCorrelationName(table);
+        return parentName != null ? parentName : super.getCorrelationName(table);
+    }
+
+    public boolean nameInUse(final String name) {
+        return parent.nameInUse(name) || super.nameInUse(name);
+    }
+}
+
+
+import java.util.*;
+import org.symqle.common.Bug;
+import org.symqle.common.MalformedStatementException;
+class DataChangeTableRegistry implements TableRegistry {
+
+    TableOrView targetTable;
+
+    public void addAll(final Collection<TableOrView> tables) {
+        Bug.reportIf(tables.isEmpty());
+        Set<TableOrView> illegalTables = new HashSet<TableOrView>(tables);
+        if (targetTable != null) {
+            illegalTables.remove(targetTable);
+        }
+        if (tables.size() > 1) {
+            throw new MalformedStatementException("Illegal in this context: " + illegalTables);
+        } else {
+            final TableOrView table = tables.iterator().next();
+            if (targetTable == null) {
+                targetTable = table;
+            } else {
+                Bug.reportIf(table.equals(targetTable));
+                // table can be added only once
+                throw new MalformedStatementException("Illegal in this context: " + illegalTables);
+            }
+        }
+    }
+
+
+    public String getCorrelationName(TableOrView table) {
+        if (table.equals(targetTable)) {
+            return targetTable.getName();
+        } else {
+            return null;
+        }
+    }
+
+
+    public boolean nameInUse(final String name) {
+        return targetTable.getName().equals(name);
+    }
+}
+
+import java.util.Collections;
+import org.symqle.common.MalformedStatementException;
+class NoTablesRegistry implements TableRegistry {
+    private final TableRegistry parent;
+
+     NoTablesRegistry(final TableRegistry parent) {
+         this.parent = parent;
+     }
+
+
+     public void addAll(Collection<TableOrView> tables) {
+        throw new MalformedStatementException("Illegal in this context: " + tables);
+    }
+
+    public String getCorrelationName(TableOrView table) {
+        if (parent.getCorrelationName(table) != null) {
+            throw new MalformedStatementException("Illegal in this context: " + table);
+        }
+        return null;
+    }
+
+    public boolean nameInUse(final String name) {
+        return parent.nameInUse(name);
+    }
+}

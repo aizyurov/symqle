@@ -4,7 +4,7 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
         implicit
     {
        public Sql z$sqlOfScalarSubquery(SqlContext context) {
-       final TableRegistry innerRegistry = new SelectTableRegistry(context.get(TableRegistry.class));
+       final TableRegistry innerRegistry = new ChildSelectTableRegistry(context.get(TableRegistry.class));
        final SqlContext innerContext = context.
                 put(UniqueNameProvider.class, null).
                 put(TableRegistry.class, innerRegistry);

@@ -96,7 +96,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
     }
 
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
-    final SelectTableRegistry tableRegistry = new SelectTableRegistry(new TableNameProvider());
+    final SelectTableRegistry tableRegistry = new RootSelectTableRegistry();
     final SqlContext context = new SqlContext().
             put(UniqueNameProvider.class, new ColumnNameProvider()).
             put(TableRegistry.class, tableRegistry).
