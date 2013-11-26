@@ -65,7 +65,16 @@ public class InsertTest extends SqlTestCase {
             final String sql = person.insert(person.id.set(person.parentId.where(person.id.eq(1L)).queryValue())).show(new GenericDialect());
             fail("MalformedStatementException expected but was " + sql);
         } catch (MalformedStatementException e) {
-            assertEquals(e.getMessage(), "At least one table is required for FROM clause");
+            assertTrue(e.getMessage(), e.getMessage().contains("Illegal in this context"));
+        }
+    }
+
+    public void testSourceIsTarget() throws Exception {
+        try {
+            final String sql = person.insert(person.id.set(person.parentId)).show(new GenericDialect());
+            fail("MalformedStatementException expected but was " + sql);
+        } catch (MalformedStatementException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Illegal in this context"));
         }
     }
 

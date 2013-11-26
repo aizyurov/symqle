@@ -212,7 +212,6 @@ class DataChangeTableRegistry implements TableRegistry {
         }
     }
 
-
     public String findCorrelationName(TableOrView table) {
         if (table.equals(targetTable)) {
             return targetTable.getName();
@@ -221,13 +220,9 @@ class DataChangeTableRegistry implements TableRegistry {
         }
     }
 
-
-
     public String generateUniqueName() {
         return nameProvider.getUniqueName();
     }
-
-
 
     public String getCorrelationName(TableOrView table) {
         if (table.equals(targetTable)) {
@@ -242,6 +237,56 @@ class DataChangeTableRegistry implements TableRegistry {
         throw new IllegalStateException(Bug.MESSAGE);
      }
 }
+
+import java.util.Collections;
+import java.util.List;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.querybuilder.UniqueNameProvider;
+import org.symqle.querybuilder.TableNameProvider;
+class NoTablesRegistry implements TableRegistry {
+    private final UniqueNameProvider nameProvider = new TableNameProvider();
+    private final TableRegistry parent;
+
+     NoTablesRegistry(final TableRegistry parent) {
+         this.parent = parent;
+     }
+
+     public void addAll(Collection<TableOrView> tables) {
+        throw new MalformedStatementException("Illegal in this context: " + tables);
+    }
+
+
+
+    public String findCorrelationName(TableOrView table) {
+        if (parent.getCorrelationName(table) != null) {
+            throw new MalformedStatementException("Illegal in this context: " + table);
+        }
+        return null;
+    }
+
+
+
+    public String generateUniqueName() {
+        return nameProvider.getUniqueName();
+    }
+
+
+
+    public String getCorrelationName(TableOrView table) {
+        if (parent.getCorrelationName(table) != null) {
+            throw new MalformedStatementException("Illegal in this context: " + table);
+        }
+        return null;
+    }
+
+
+
+    public List<TableOrView> getLocal() {
+        return Collections.emptyList();
+    }
+
+}
+
 
 public interface InsertStatement : Sql {}
 
@@ -269,7 +314,21 @@ interface FromConstructor : Sql {}
 # ;
 
 FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstructor
-         :: protected FromConstructor createFromConstructor {}
+         :: protected FromConstructor createFromConstructor {
+            /**
+            * Creates an Sql representing FromConstructor.
+            * @param context the Sql construction context
+            * @return constructed Sql
+            */
+            public Sql z$sqlOfFromConstructor(final SqlContext context) {
+                final SqlContext innerContext = new SqlContext();
+                innerContext.set(Dialect.class, context.get(Dialect.class));
+                innerContext.set(Configuration.class, context.get(Configuration.class));
+                innerContext.set(TableRegistry.class, new NoTablesRegistry(context.get(TableRegistry.class)));
+                innerContext.set(ColumnNameProvider.class, context.get(ColumnNameProvider.class));
+                return context.get(Dialect.class).FromConstructor_is_LEFT_PAREN_InsertColumnList_RIGHT_PAREN_TableValueConstructor(l.z$sqlOfInsertColumnList(context), t.z$sqlOfTableValueConstructor(innerContext));
+            }
+         }
 ;
 
 interface InsertColumnList : Sql {}

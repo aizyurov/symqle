@@ -60,6 +60,14 @@ insertFrom: t.insert(t.rows(t.x.set(s.x), t.y.set(s.z).where(s.w.eq(0)))).execut
 
 Labels, LabelRegistry (for union/except/intersect and subqueries)
 
+Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client
+
+Generator: generate client (primary keys, DTO, FullDTO)
+
+Generator: simple xml to override defaults (use JAXB)
+
+
+
 
 
 
