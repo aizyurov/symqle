@@ -20,23 +20,24 @@ public class Bug {
 
     public static void reportIf(boolean condition) {
         if (condition) {
-            throw new IllegalStateException(MESSAGE
-            );
+            throw new IllegalStateException(MESSAGE);
         }
     }
 
     public static void reportIfNull(Object o) {
         if (o == null) {
-            throw new IllegalStateException(MESSAGE
-            );
+            throw new IllegalStateException(MESSAGE);
         }
     }
 
     public static void reportIfNotNull(Object o) {
         if (o != null) {
-            throw new IllegalStateException(MESSAGE
-            );
+            throw new IllegalStateException(MESSAGE);
         }
+    }
+
+    public static void reportException(Exception e) {
+        throw new IllegalStateException(MESSAGE, e);
     }
 
 }

@@ -1,6 +1,10 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractValueExpressionPrimary;
@@ -8,15 +12,12 @@ import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
-import sun.net.dns.ResolverConfiguration;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.expect;
 
 /**

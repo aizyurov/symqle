@@ -5,7 +5,6 @@ import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
-import org.symqle.sql.TableOrView;
 
 
 /**
@@ -91,9 +90,20 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         Person manager = new Person();
         department.innerJoin(manager, department.managerId.eq(manager.id));
-        final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-            .queryValue().where(department.name.like("T%")).show(new GenericDialect());
-        assertSimilar("SELECT(SELECT T6.id FROM person AS T6 WHERE T6.name = ? AND T6.manager_id = T5.id) AS C1 FROM department AS T4 INNER JOIN person AS T5 ON T4.manager_id = T5.id WHERE T4.name LIKE ?", sql);
+        ;
+        {
+            final long startNanos = System.nanoTime();
+            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
+                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+            System.out.println("Compilation: "+ (System.nanoTime()-startNanos)/1000 + "micros");
+        }
+        {
+            final long startNanos = System.nanoTime();
+            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
+                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+            System.out.println("Compilation: "+ (System.nanoTime()-startNanos)/1000 + "micros");
+            assertSimilar("SELECT(SELECT T6.id FROM person AS T6 WHERE T6.name = ? AND T6.manager_id = T5.id) AS C1 FROM department AS T4 INNER JOIN person AS T5 ON T4.manager_id = T5.id WHERE T4.name LIKE ?", sql);
+        }
     }
 
     public void testInsertOfJoinedTablesFails() {

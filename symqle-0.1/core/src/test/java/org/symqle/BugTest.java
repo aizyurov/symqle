@@ -3,6 +3,8 @@ package org.symqle;
 import junit.framework.TestCase;
 import org.symqle.common.Bug;
 
+import java.sql.SQLException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: aizyurov
@@ -49,5 +51,13 @@ public class BugTest extends TestCase {
     public void testIfNotNullNull() {
         Bug.reportIfNotNull(null);
         assertTrue(true);
+    }
+
+    public void testException() {
+        try {
+            Bug.reportException(new SQLException());
+        } catch (IllegalStateException e) {
+            assertEquals(e.getCause().getClass(), SQLException.class);
+        }
     }
 }
