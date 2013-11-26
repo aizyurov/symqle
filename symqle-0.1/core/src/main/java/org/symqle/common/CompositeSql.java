@@ -37,22 +37,12 @@ public class CompositeSql implements Sql {
         this.other = other;
     }
 
-    /**
-     * Constructs Sql text as concatenation of Sql text of elements, separated by spaces.
-     * @return constructed text
-     */
-    public final String sql() {
-        // minor optimization
-        if (other.length==0) {
-            return first.sql();
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(first.sql());
-            for (Sql element : this.other) {
-                builder.append(' ');
-                builder.append(element.sql());
-            }
-            return builder.toString();
+    @Override
+    public void append(final SqlBuilder builder) {
+        first.append(builder);
+        for (Sql element: other) {
+            builder.append(' ');
+            element.append(builder);
         }
     }
 

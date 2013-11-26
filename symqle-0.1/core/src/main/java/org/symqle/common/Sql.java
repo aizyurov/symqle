@@ -26,10 +26,11 @@ import java.sql.SQLException;
 public interface Sql {
 
     /**
-     * The text of this Sql, may contain dynamic parameters (?).
+     * Appends the text of this Sql to an SqlBuilder.
+     * The text may contain dynamic parameters (?).
       * @return the text
      */
-    String sql();
+    void append(SqlBuilder builder);
 
     /**
      * Provide values for dynamic parameters.

@@ -17,6 +17,7 @@
 package org.symqle.querybuilder;
 
 import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;
 
 /**
@@ -1480,8 +1481,8 @@ public enum SqlTerm implements Sql {
     }
 
     @Override
-    public String sql() {
-        return toString();
+    public void append(final SqlBuilder builder) {
+        builder.append(s);
     }
 
     @Override
@@ -1489,9 +1490,4 @@ public enum SqlTerm implements Sql {
         // do nothing
     }
 
-
-    @Override
-    public String toString() {
-        return s;
-    }
 }

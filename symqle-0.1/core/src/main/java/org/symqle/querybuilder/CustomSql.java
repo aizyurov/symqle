@@ -17,6 +17,7 @@
 package org.symqle.querybuilder;
 
 import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;
 
 /**
@@ -35,8 +36,8 @@ public class CustomSql implements Sql {
     }
 
     @Override
-    public final String sql() {
-        return text;
+    public void append(final SqlBuilder a) {
+        a.append(text);
     }
 
     @Override
