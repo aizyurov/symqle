@@ -56,7 +56,7 @@ public class DeleteTest extends SqlTestCase {
         final SqlParameters parameters = createMock(SqlParameters.class);
         replay(parameters);
         final int affectedRows = update.execute(
-                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(2, affectedRows);
         verify(parameters);
     }
@@ -67,7 +67,7 @@ public class DeleteTest extends SqlTestCase {
         final SqlParameters parameters = createMock(SqlParameters.class);
         replay(parameters);
         final int affectedRows = update.submit(
-                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(2, affectedRows);
         verify(parameters);
     }
@@ -81,7 +81,7 @@ public class DeleteTest extends SqlTestCase {
         param.setLong(1L);
         replay(parameters, param);
         final int affectedRows = update.execute(
-                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(2, affectedRows);
         verify(parameters, param);
     }
@@ -95,7 +95,7 @@ public class DeleteTest extends SqlTestCase {
         param.setLong(1L);
         replay(parameters, param);
         final int affectedRows = update.submit(
-                new MockEngine(2, null, statementString, parameters, new SqlContext()));
+                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(2, affectedRows);
         verify(parameters, param);
     }

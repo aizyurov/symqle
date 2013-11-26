@@ -97,11 +97,11 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
     final SelectTableRegistry tableRegistry = new RootSelectTableRegistry();
-    final SqlContext context = new SqlContext().
+    final SqlContext context = new SqlContext.Builder().
             put(UniqueNameProvider.class, new ColumnNameProvider()).
             put(TableRegistry.class, tableRegistry).
             put(Dialect.class, dialect).
-            put(Configuration.class, configuration);
+            put(Configuration.class, configuration).toSqlContext();
 
     statement.z$sqlOfSelectStatement(makeLearningContext(context));
     final Query<T> query = statement.z$sqlOfSelectStatement(context);

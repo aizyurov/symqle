@@ -116,7 +116,7 @@ public class UpdateTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(3, rows);
         verify(parameters, param);
     }
@@ -130,7 +130,7 @@ public class UpdateTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(3, rows);
         verify(parameters, param);
     }
@@ -161,7 +161,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(3, rows);
         verify(parameters, param, param2);
     }
@@ -178,7 +178,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(3, rows);
         verify(parameters, param, param2);
     }
@@ -195,7 +195,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext(), Option.setQueryTimeout(20)),
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext(), Option.setQueryTimeout(20)),
                 Option.setQueryTimeout(20));
         assertEquals(3, rows);
         verify(parameters, param, param2);

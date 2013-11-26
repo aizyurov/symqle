@@ -43,7 +43,7 @@ public class InsertReturnKeyTest extends TestCase {
         replay(parameters);
         try {
             Long key = update.executeReturnKey(another.id,
-                    new MockEngine(1, Arrays.asList(123L), statementString, parameters, new SqlContext()));
+                    new MockEngine(1, Arrays.asList(123L), statementString, parameters, new SqlContext.Builder().toSqlContext()));
             assertEquals(123L, key.longValue());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {

@@ -26,6 +26,9 @@ import java.util.Map;
  */
 public class SqlContext {
 
+    private SqlContext(final Map<Class<?>, Object> source) {
+        theContext.putAll(source);
+    }
     /**
      * Gets an object from the context by key.
      * @param clazz the key
@@ -37,21 +40,46 @@ public class SqlContext {
         return (T) theContext.get(clazz);
     }
 
-    /**
-     * Creates a copy of {@code this} with one lkey/value pair replaced or added.
-     * @param clazz
-     * @param impl
-     * @param <T>
-     * @return
-     */
-    public final <T> SqlContext put(final Class<T> clazz, final T impl) {
-        final SqlContext newContext = new SqlContext();
-        newContext.theContext.putAll(theContext);
-        newContext.theContext.put(clazz, impl);
-        return newContext;
+//    /**
+//     * Creates a copy of {@code this} with one lkey/value pair replaced or added.
+//     * @param clazz
+//     * @param impl
+//     * @param <T>
+//     * @return
+//     */
+//    public final <T> SqlContext put(final Class<T> clazz, final T impl) {
+//        final SqlContext newContext = new SqlContext();
+//        newContext.theContext.putAll(theContext);
+//        newContext.theContext.put(clazz, impl);
+//        return newContext;
+//    }
+
+    public final Builder newBuilder() {
+        return new Builder(this.theContext);
     }
 
     private final Map<Class<?>, Object> theContext = new HashMap<Class<?>, Object>();
+
+    public static class Builder {
+
+        private final Map<Class<?>, Object> theContext = new HashMap<Class<?>, Object>();
+
+        public Builder() {
+        }
+
+        private Builder(final Map<Class<?>, Object> source) {
+            this.theContext.putAll(source);
+        }
+
+        public <T> Builder put(final Class<T> clazz, final T impl) {
+            theContext.put(clazz, impl);
+            return this;
+        }
+
+        public SqlContext toSqlContext() {
+            return new SqlContext(this.theContext);
+        }
+    }
 
 
 }

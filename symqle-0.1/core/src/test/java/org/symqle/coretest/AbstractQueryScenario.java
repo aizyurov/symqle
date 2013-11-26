@@ -69,7 +69,7 @@ public abstract class AbstractQueryScenario<T, StatementType extends SelectState
         mockList.add(element);
         final Object[] mocks = mockList.toArray(new Object[mockList.size()]);
         replay(mocks);
-        final SqlContext context = new SqlContext().put(Dialect.class, dialect);
+        final SqlContext context = new SqlContext.Builder().put(Dialect.class, dialect).toSqlContext();
         final MockQueryEngine engine = new MockQueryEngine(context, Collections.singletonList(row), queryString, parameters, options);
 
         use(query, engine);

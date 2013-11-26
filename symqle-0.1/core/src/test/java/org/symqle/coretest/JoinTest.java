@@ -138,5 +138,17 @@ public class JoinTest extends SqlTestCase {
         public Column<Long> managerId = defineColumn(Mappers.LONG, "manager_id");
     }
 
+    public static void main(String[] args) {
+        Person person = new Person();
+        Department department = new Department();
+        Person manager = new Person();
+        department.innerJoin(manager, department.managerId.eq(manager.id));
+        for (int i=0; i<Integer.valueOf(args[0]); i++)
+        {
+            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
+                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+        }
+
+    }
 
 }

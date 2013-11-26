@@ -1,20 +1,22 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
-import org.symqle.jdbc.*;
+import org.symqle.common.Element;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Mappers;
+import org.symqle.common.Pair;
+import org.symqle.common.Row;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
+import org.symqle.jdbc.Option;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.matches;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -222,7 +224,7 @@ public class PairTest extends SqlTestCase {
             expect(element2.getString()).andReturn("John");
             final Object[] mocks = new Object[] {parameters, row, element1, element2};
             replay(mocks);
-            final SqlContext context = new SqlContext();
+            final SqlContext context = new SqlContext.Builder().toSqlContext();
             final MockQueryEngine engine = new MockQueryEngine(context, Collections.singletonList(row), queryString, parameters);
 
             use(query, engine);

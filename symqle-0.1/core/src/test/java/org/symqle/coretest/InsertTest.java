@@ -105,7 +105,7 @@ public class InsertTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(3, rows);
         verify(parameters, param);
     }
@@ -119,7 +119,7 @@ public class InsertTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
         assertEquals(3, rows);
         verify(parameters, param);
     }

@@ -37,10 +37,10 @@ public interface DataChangeStatement : Sql {}
         }
         final Dialect bestDialect = initialContext.get(Dialect.class);
         final Dialect dialect = bestDialect != null ? bestDialect : new GenericDialect();
-        final SqlContext context = new SqlContext().
+        final SqlContext context = new SqlContext.Builder().
                 put(Dialect.class, dialect).
                 put(Configuration.class, configuration).
-                put(TableRegistry.class, new DataChangeTableRegistry());
+                put(TableRegistry.class, new DataChangeTableRegistry()).toSqlContext();
         final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
         if (keyColumn != null) {
             keyColumn.z$sqlOfColumnName(context);
@@ -61,7 +61,7 @@ public interface DataChangeStatement : Sql {}
 
 import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
-     final SqlContext initialContext = new SqlContext().put(Dialect.class, dialect);
+     final SqlContext initialContext = new SqlContext.Builder().put(Dialect.class, dialect).toSqlContext();
      return prepareUpdate(statement, initialContext, null, options).sql();
 }
 
@@ -214,8 +214,8 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
             * @return constructed Sql
             */
             public Sql z$sqlOfFromConstructor(final SqlContext context) {
-                final SqlContext innerContext = context.put(TableRegistry.class,
-                        new NoTablesRegistry(context.get(TableRegistry.class)));
+                final SqlContext innerContext = context.newBuilder().put(TableRegistry.class,
+                        new NoTablesRegistry(context.get(TableRegistry.class))).toSqlContext();
                 return context.get(Dialect.class)
                   .FromConstructor_is_LEFT_PAREN_InsertColumnList_RIGHT_PAREN_TableValueConstructor(
                         l.z$sqlOfInsertColumnList(context), t.z$sqlOfTableValueConstructor(innerContext));
