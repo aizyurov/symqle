@@ -46,17 +46,12 @@ public interface DataChangeStatement : Sql {}
             keyColumn.z$sqlOfColumnName(context);
         }
         return new Sql() {
-        // TODO get SqlBuilder from dialect
-        @Override
-        public void append(final SqlBuilder builder) {
-            final SqlBuilder rawBuilder = new StringSqlBuilder();
-            rawSql.append(rawBuilder);
-            builder.append(dialect.formatSql(rawBuilder.toString()));
-        }
-//            @Override
-//            public String sql() {
-//                return dialect.formatSql(rawSql.sql());
-//            }
+            @Override
+            public void append(final StringBuilder builder) {
+                final StringBuilder rawBuilder = new StringBuilder();
+                rawSql.append(rawBuilder);
+                builder.append(dialect.formatSql(rawBuilder.toString()));
+            }
             @Override
             public void setParameters(final SqlParameters p) throws SQLException {
                 rawSql.setParameters(p);
@@ -70,7 +65,7 @@ import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
      final SqlContext initialContext = new SqlContext.Builder().put(Dialect.class, dialect).
              toSqlContext();
-     final StringSqlBuilder sqlBuilder = new StringSqlBuilder();
+     final StringBuilder sqlBuilder = new StringBuilder();
      prepareUpdate(statement, initialContext, null, options).append(sqlBuilder);
     return sqlBuilder.toString();
 }

@@ -4,7 +4,6 @@ import junit.framework.Assert;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
-import org.symqle.common.StringSqlBuilder;
 import org.symqle.jdbc.Option;
 
 import java.sql.SQLException;
@@ -32,7 +31,7 @@ public class AbstractMockEngine extends Assert {
 
     protected final void verify(final Sql query, final Option[] options)
             throws SQLException {
-        StringSqlBuilder builder = new StringSqlBuilder();
+        StringBuilder builder = new StringBuilder();
         query.append(builder);
         assertEquals(statement, builder.toString());
         assertEquals(Arrays.asList(this.options), Arrays.asList(options));

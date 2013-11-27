@@ -92,7 +92,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
      for (Option option : options) {
          option.apply(configuration);
      }
-     final StringSqlBuilder sqlBuilder = new StringSqlBuilder();
+     final StringBuilder sqlBuilder = new StringBuilder();
      prepareQuery(statement, dialect, configuration).append(sqlBuilder);
     return sqlBuilder.toString();
     }
@@ -113,18 +113,12 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
             return query.extract(row);
         }
 
-        // TODO get SqlBuilder from dialect
         @Override
-        public void append(final SqlBuilder builder) {
-            final SqlBuilder rawBuilder = new StringSqlBuilder();
-            query.append(rawBuilder);
-            builder.append(dialect.formatSql(rawBuilder.toString()));
+        public void append(final StringBuilder builder) {
+            final StringBuilder tmp = new StringBuilder();
+            query.append(tmp);
+            builder.append(dialect.formatSql(tmp.toString()));
         }
-
-//        @Override
-//        public String sql() {
-//            return dialect.formatSql(query.sql());
-//        }
 
         @Override
         public void setParameters(final SqlParameters p) throws SQLException {

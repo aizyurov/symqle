@@ -30,7 +30,7 @@ public interface Sql {
      * The text may contain dynamic parameters (?).
       * @return the text
      */
-    void append(SqlBuilder builder);
+    void append(StringBuilder builder);
 
     /**
      * Provide values for dynamic parameters.

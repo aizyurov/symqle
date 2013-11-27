@@ -20,7 +20,6 @@ import org.symqle.common.Query;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
 import org.symqle.common.Sql;
-import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;
 
 import java.sql.SQLException;
@@ -50,7 +49,7 @@ public class ComplexQuery<T> implements Query<T> {
     }
 
     @Override
-    public void append(final SqlBuilder builder) {
+    public void append(final StringBuilder builder) {
        sql.append(builder);
     }
 

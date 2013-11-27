@@ -38,7 +38,7 @@ public class CompositeSql implements Sql {
     }
 
     @Override
-    public void append(final SqlBuilder builder) {
+    public void append(final StringBuilder builder) {
         first.append(builder);
         for (Sql element: other) {
             builder.append(' ');

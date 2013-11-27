@@ -59,7 +59,7 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
             public final Sql z$sqlOfDynamicParameterSpecification(SqlContext context) {
                 return new Sql() {
                     @Override
-                    public void append(final SqlBuilder builder) {
+                    public void append(final StringBuilder builder) {
                         builder.append("?");
                     }
 
