@@ -17,17 +17,17 @@
 package org.symqle.common;
 
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A context used by Symqle query builder.
  * It is like a map, key is Class, value is object of this class.
  */
 public class SqlContext {
 
-    private SqlContext(final Map<Class<?>, Object> source) {
-        theContext.putAll(source);
+    private static final int LENGTH = 4;
+
+    private SqlContext(final Class[] keys, final Object[] values) {
+        System.arraycopy(keys, 0, this.keys, 0, LENGTH);
+        System.arraycopy(values, 0, this.values, 0, LENGTH);
     }
     /**
      * Gets an object from the context by key.
@@ -37,47 +37,55 @@ public class SqlContext {
      */
     @SuppressWarnings("unchecked")
     public final <T> T get(final Class<T> clazz) {
-        return (T) theContext.get(clazz);
+        for (int i=0; i<LENGTH; i++) {
+            if (keys[i] == clazz) {
+                return (T) values[i];
+            }
+        }
+        return null;
     }
-
-//    /**
-//     * Creates a copy of {@code this} with one lkey/value pair replaced or added.
-//     * @param clazz
-//     * @param impl
-//     * @param <T>
-//     * @return
-//     */
-//    public final <T> SqlContext put(final Class<T> clazz, final T impl) {
-//        final SqlContext newContext = new SqlContext();
-//        newContext.theContext.putAll(theContext);
-//        newContext.theContext.put(clazz, impl);
-//        return newContext;
-//    }
 
     public final Builder newBuilder() {
-        return new Builder(this.theContext);
+        return new Builder(this.keys, this.values);
     }
 
-    private final Map<Class<?>, Object> theContext = new HashMap<Class<?>, Object>();
+    private final Class[] keys = new Class[LENGTH];
+    private final Object[] values = new Object[LENGTH];
 
     public static class Builder {
 
-        private final Map<Class<?>, Object> theContext = new HashMap<Class<?>, Object>();
+        private final Class[] keys = new Class[LENGTH];
+        private final Object[] values = new Object[LENGTH];
 
         public Builder() {
         }
 
-        private Builder(final Map<Class<?>, Object> source) {
-            this.theContext.putAll(source);
+        private Builder(final Class[] keys, final Object[] values) {
+            System.arraycopy(keys, 0, this.keys, 0, LENGTH);
+            System.arraycopy(values, 0, this.values, 0, LENGTH);
         }
 
         public <T> Builder put(final Class<T> clazz, final T impl) {
-            theContext.put(clazz, impl);
+            // first replace
+            for (int i=0; i<LENGTH; i++) {
+                if (keys[i] == clazz) {
+                    values[i] = impl;
+                    return this;
+                }
+            }
+            int i = 0;
+            // will have ArrayIndexOutOfBoundsException it there is no free slot
+            // ever expected
+            while (keys[i] !=null) {
+                i++;
+            }
+            keys[i] = clazz;
+            values[i] = impl;
             return this;
         }
 
         public SqlContext toSqlContext() {
-            return new SqlContext(this.theContext);
+            return new SqlContext(this.keys, this.values);
         }
     }
 

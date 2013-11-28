@@ -20,8 +20,7 @@ import java.util.*;
 import org.symqle.common.Bug;
 import org.symqle.common.MalformedStatementException;
 class RootSelectTableRegistry implements SelectTableRegistry {
-    private Map<TableOrView, String> localTables = new LinkedHashMap<TableOrView, String>();
-
+    private Map<TableOrView, String> localTables = new HashMap<TableOrView, String>();
 
     public void addAll(Collection<TableOrView> tables) {
         // it expected that addAll is called only when none of the tables
@@ -31,7 +30,6 @@ class RootSelectTableRegistry implements SelectTableRegistry {
             addToLocalTables(table);
         }
     }
-
 
     private void addToLocalTables(TableOrView table) {
             final String newName = generateUniqueName();
