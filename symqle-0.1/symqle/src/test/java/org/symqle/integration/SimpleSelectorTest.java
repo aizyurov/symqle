@@ -20,11 +20,11 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<EmployeeDTO> list = new EmployeeSelector(employee).list(getEngine());
         final Set<EmployeeDTO> expected = new HashSet<EmployeeDTO>(Arrays.asList(
-                new EmployeeDTO(1, "Margaret", "Redwood"),
-                new EmployeeDTO(2, "Bill", "March"),
-                new EmployeeDTO(3, "James", "First"),
-                new EmployeeDTO(4, "Alex", "Pedersen"),
-                new EmployeeDTO(5, "James", "Cooper")
+                new EmployeeDTO(1, "Margaret", "Redwood", 5),
+                new EmployeeDTO(2, "Bill", "March", 5),
+                new EmployeeDTO(3, "James", "First", 5),
+                new EmployeeDTO(4, "Alex", "Pedersen", 5),
+                new EmployeeDTO(5, "James", "Cooper", 5)
         ));
         assertEquals(expected, new HashSet<EmployeeDTO>(list));
     }
@@ -33,11 +33,11 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<EmployeeDTO> list = new EmployeeSelector(employee).orderBy(employee.lastName).list(getEngine());
         final List<EmployeeDTO> expected = Arrays.asList(
-                new EmployeeDTO(5, "James", "Cooper"),
-                new EmployeeDTO(3, "James", "First"),
-                new EmployeeDTO(2, "Bill", "March"),
-                new EmployeeDTO(4, "Alex", "Pedersen"),
-                new EmployeeDTO(1, "Margaret", "Redwood")
+                new EmployeeDTO(5, "James", "Cooper", 5),
+                new EmployeeDTO(3, "James", "First", 5),
+                new EmployeeDTO(2, "Bill", "March", 5),
+                new EmployeeDTO(4, "Alex", "Pedersen", 5),
+                new EmployeeDTO(1, "Margaret", "Redwood", 5)
         );
         assertEquals(expected, list);
     }
@@ -49,8 +49,8 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
                 orderBy(employee.lastName).
                 list(getEngine());
         final List<EmployeeDTO> expected = Arrays.asList(
-                new EmployeeDTO(3, "James", "First"),
-                new EmployeeDTO(1, "Margaret", "Redwood")
+                new EmployeeDTO(3, "James", "First", 5),
+                new EmployeeDTO(1, "Margaret", "Redwood", 5)
         );
         assertEquals(expected, list);
 
@@ -61,11 +61,13 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
         private final Integer id;
         private final String firstName;
         private final String lastName;
+        private final int total;
 
-        private EmployeeDTO(final Integer id, final String firstName, final String lastName) {
+        private EmployeeDTO(final Integer id, final String firstName, final String lastName, final int total) {
             this.id = id;
             this.firstName = firstName;
             this.lastName = lastName;
+            this.total = total;
         }
 
         @Override
@@ -78,6 +80,7 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
             if (!firstName.equals(that.firstName)) return false;
             if (!id.equals(that.id)) return false;
             if (!lastName.equals(that.lastName)) return false;
+            if (total != that.total) return false;
 
             return true;
         }
@@ -100,11 +103,14 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
         private final RowMapper<Integer> id;
         private final RowMapper<String> firstName;
         private final RowMapper<String> lastName;
+        private final RowMapper<Integer> count;
 
         private EmployeeSelector(final Employee employee) {
             id = map(employee.empId);
             firstName = map(employee.firstName);
             lastName = map(employee.lastName);
+            final Employee other = new Employee();
+            count = map(other.empId.count().queryValue());
         }
 
         @Override
@@ -112,7 +118,8 @@ public class SimpleSelectorTest extends AbstractIntegrationTestBase {
             return new EmployeeDTO(
                     id.extract(row),
                     firstName.extract(row),
-                    lastName.extract(row)
+                    lastName.extract(row),
+                    count.extract(row)
             );
         }
     }

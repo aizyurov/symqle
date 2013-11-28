@@ -86,8 +86,8 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public String sql() {
-            return query.sql();
+        public void append(final StringBuilder builder) {
+            query.append(builder);
         }
 
         @Override

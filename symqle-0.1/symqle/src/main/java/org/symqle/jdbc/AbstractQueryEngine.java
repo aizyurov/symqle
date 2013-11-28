@@ -53,13 +53,15 @@ abstract class AbstractQueryEngine implements QueryEngine {
         for (Option option : options) {
             option.apply(configuration);
         }
-        return new SqlContext().
+        return new SqlContext.Builder().
                 put(Dialect.class, dialect).
-                put(Configuration.class, configuration);
+                put(Configuration.class, configuration).toSqlContext();
     }
 
     protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final Option[] options) throws SQLException {
-        final PreparedStatement preparedStatement = connection.prepareStatement(query.sql());
+        StringBuilder stringBuilder = new StringBuilder();
+        query.append(stringBuilder);
+        final PreparedStatement preparedStatement = connection.prepareStatement(stringBuilder.toString());
         try {
             setupStatement(preparedStatement, query, options);
             final ResultSet resultSet = preparedStatement.executeQuery();
