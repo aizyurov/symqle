@@ -2,7 +2,7 @@ package org.symqle.coretest;
 
 import org.symqle.common.*;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractQueryExpressionScalar;
+import org.symqle.sql.AbstractQueryExpressionBodyScalar;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
@@ -20,7 +20,7 @@ import static org.easymock.EasyMock.verify;
 /**
  * @author lvovich
  */
-public class QueryExpressionScalarTest extends SqlTestCase {
+public class QueryExpressionBodyScalarTest extends SqlTestCase {
 
 
     public void testQueryValueBooleanValue() throws Exception {
@@ -127,7 +127,7 @@ public class QueryExpressionScalarTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario(employee.id.union(manager.id)) {
             @Override
-            void use(AbstractQueryExpressionScalar<Long> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(Arrays.asList(123L), query.list(engine));
             }
         }.play();
@@ -136,14 +136,14 @@ public class QueryExpressionScalarTest extends SqlTestCase {
     public void testScroll() throws Exception {
         new Scenario(employee.id.union(manager.id)) {
             @Override
-            void use(AbstractQueryExpressionScalar<Long> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Long>(123L)));
            }
         }.play();
     }
 
-    private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryExpressionScalar<Long>> {
-        protected Scenario(AbstractQueryExpressionScalar<Long> query) {
+    private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryExpressionBodyScalar<Long>> {
+        protected Scenario(AbstractQueryExpressionBodyScalar<Long> query) {
             super(query, "C0");
         }
 

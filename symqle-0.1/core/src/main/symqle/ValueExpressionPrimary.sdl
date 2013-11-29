@@ -280,7 +280,4 @@ ValueExpressionPrimary<Time> ::= CURRENT_TIME
 }
 ;
 
-public interface NumericLiteral :: Sql {}
-
-public class IntegerLiteral implements NumericLiteral {}
 

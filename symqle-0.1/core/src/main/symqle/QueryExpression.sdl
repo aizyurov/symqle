@@ -7,106 +7,99 @@
 
 public interface QueryExpressionBody<T> : Query<T> {}
 public class AbstractQueryExpressionBody<T> implements QueryExpressionBody<T> {}
-public interface QueryExpressionBodyScalar<T> : Query<T> {}
-public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody<T> {}
+public interface QueryExpressionBodyScalar<T> extends Scalar<T> : Query<T> {}
+public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBodyScalar<T> {}
 
-# we have different rules for QueryExpression and QueryExpressionScalar
-# the first one is just QueryBase with (maybe) WhereClause
-# the second one is really an expression, which may include union, intersection etc.
 # see QueryBase.sdl, Where.sdl
 
-<T> QueryExpression<T> ::=
+<T> QueryExpressionBody<T> ::=
     qb:QueryBase<T> :: implicit {}
 |
-    qb:QueryBase<T> wc:WhereClause :: public AbstractQueryExpression<T> where {}
+    qb:QueryBase<T> wc:WhereClause :: public AbstractQueryExpressionBody<T> where {}
 |
     qs:QuerySpecification<T> :: implicit {}
 ;
 
-public interface QueryExpressionScalar<T> extends Scalar<T> : Query<T> {}
-
-public class AbstractQueryExpressionScalar<T> implements QueryExpressionScalar<T> {}
-
-:: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionScalar<T> qe, final QueryTerm<T> qt) {
+:: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionBodyScalar<T> qe, final QueryTerm<T> qt) {
        // left and right parts have separate contexts
        final SqlContext leftContext = createScalarInnerContext(context);
        final SqlContext rightContext = createScalarInnerContext(context);
        // learning
-       qe.z$sqlOfQueryExpressionScalar(makeLearningContext(leftContext));
+       qe.z$sqlOfQueryExpressionBodyScalar(makeLearningContext(leftContext));
        qt.z$sqlOfQueryTerm(makeLearningContext(rightContext));
        // construction
-       final Query<T> left = qe.z$sqlOfQueryExpressionScalar(leftContext);
+       final Query<T> left = qe.z$sqlOfQueryExpressionBodyScalar(leftContext);
        final Query<T> right = qt.z$sqlOfQueryTerm(rightContext);
        return Pair.make(left, right);
 }
 
 
-<T> QueryExpressionScalar<T> ::=
+<T> QueryExpressionBodyScalar<T> ::=
     qt:QueryTerm<T> :: implicit {}
 |
-    qe:QueryExpressionScalar<T> UNION ALL qt:QueryTerm<T> ::
-        public AbstractQueryExpressionScalar<T> unionAll {
-            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+    qe:QueryExpressionBodyScalar<T> UNION ALL qt:QueryTerm<T> ::
+        public AbstractQueryExpressionBodyScalar<T> unionAll {
+            public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
                 Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
 
                 return new ComplexQuery<T>(operands.first(),
                     context.get(Dialect.class)
-                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_ALL_QueryTerm(operands.first(), operands.second()));
+                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(operands.first(), operands.second()));
             }
         }
 |
-    qe:QueryExpressionScalar<T> UNION DISTINCT qt:QueryTerm<T> ::
-        public AbstractQueryExpressionScalar<T> unionDistinct {
-            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+    qe:QueryExpressionBodyScalar<T> UNION DISTINCT qt:QueryTerm<T> ::
+        public AbstractQueryExpressionBodyScalar<T> unionDistinct {
+            public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
                 Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
 
                 return new ComplexQuery<T>(operands.first(),
                     context.get(Dialect.class)
-                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_DISTINCT_QueryTerm(operands.first(), operands.second()));
+                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(operands.first(), operands.second()));
             }
         }
 |
-    qe:QueryExpressionScalar<T> UNION qt:QueryTerm<T> ::
-        public AbstractQueryExpressionScalar<T> union {
-            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+    qe:QueryExpressionBodyScalar<T> UNION qt:QueryTerm<T> ::
+        public AbstractQueryExpressionBodyScalar<T> union {
+            public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
                 Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
 
                 return new ComplexQuery<T>(operands.first(),
                     context.get(Dialect.class)
-                        .QueryExpressionScalar_is_QueryExpressionScalar_UNION_QueryTerm(operands.first(), operands.second()));
+                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(operands.first(), operands.second()));
             }
         }
 |
-    qe:QueryExpressionScalar<T> EXCEPT ALL qt:QueryTerm<T> ::
-        public AbstractQueryExpressionScalar<T> exceptAll {
-            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+    qe:QueryExpressionBodyScalar<T> EXCEPT ALL qt:QueryTerm<T> ::
+        public AbstractQueryExpressionBodyScalar<T> exceptAll {
+            public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
                 Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
 
                 return new ComplexQuery<T>(operands.first(),
                     context.get(Dialect.class)
-                        .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_ALL_QueryTerm(operands.first(), operands.second()));
+                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(operands.first(), operands.second()));
             }
         }
 |
-    qe:QueryExpressionScalar<T> EXCEPT DISTINCT qt:QueryTerm<T> ::
-        public AbstractQueryExpressionScalar<T> exceptDistinct {
-            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+    qe:QueryExpressionBodyScalar<T> EXCEPT DISTINCT qt:QueryTerm<T> ::
+        public AbstractQueryExpressionBodyScalar<T> exceptDistinct {
+            public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
                 Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
 
                 return new ComplexQuery<T>(operands.first(),
                     context.get(Dialect.class)
-                        .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_DISTINCT_QueryTerm(operands.first(), operands.second()));
+                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(operands.first(), operands.second()));
             }
         }
 |
-    qe:QueryExpressionScalar<T> EXCEPT qt:QueryTerm<T> ::
-        public AbstractQueryExpressionScalar<T> except {
-            public Query<T> z$sqlOfQueryExpressionScalar(final SqlContext context) {
+    qe:QueryExpressionBodyScalar<T> EXCEPT qt:QueryTerm<T> ::
+        public AbstractQueryExpressionBodyScalar<T> except {
+            public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
                 Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
 
                 return new ComplexQuery<T>(operands.first(),
                     context.get(Dialect.class)
-                        .QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_QueryTerm(operands.first(), operands.second()));
+                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(operands.first(), operands.second()));
             }
         }
 ;
@@ -170,25 +163,11 @@ public class AbstractQueryPrimary<T> implements QueryPrimary<T> {}
 <T> QueryPrimary<T> ::=
     qs:QuerySpecification<T> :: implicit {}
 |
-    LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN :: implicit {}
-|
-    SELECT sl:AggregateSelectSublist<T> fc:FromClause wc:WhereClause :: private AbstractQueryPrimary<T> selectAggregate {}
-|
-    SELECT sl:AggregateSelectSublist<T> fc:FromClause :: private AbstractQueryPrimary<T> selectAggregate {}
+    LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN :: implicit {}
 ;
 
 
-:: public <T> AbstractQueryPrimary<T> where(final AggregateSelectSublist<T> sl, final WhereClause wc) {
-    return selectAggregate(sl, new ImplicitFromClause(), wc);
-}
-
-:: <T> QueryPrimary<T> implicit(final AggregateSelectSublist<T> sl) {
-    return selectAggregate(sl, new ImplicitFromClause());
-}
-
-
 public interface QuerySpecification<T> extends Scalar<T> : Query<T> {}
-
 
 public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
 

@@ -19,11 +19,11 @@ public class ImplicitConversionsTest extends TestCase {
         assertEquals(Mappers.LONG, queryPrimary.getMapper());
         final QueryTerm<Long> queryTerm = Symqle.z$QueryTerm$from$QueryPrimary(queryPrimary);
         assertEquals(Mappers.LONG, queryTerm.getMapper());
-        final QueryExpressionScalar<Long> queryExpressionScalar = Symqle.z$QueryExpressionScalar$from$QueryTerm(queryTerm);
+        final QueryExpressionBodyScalar<Long> queryExpressionScalar = Symqle.z$QueryExpressionBodyScalar$from$QueryTerm(queryTerm);
         assertEquals(Mappers.LONG, queryExpressionScalar.getMapper());
-        final ScalarSubquery<Long> scalarSubquery = Symqle.z$ScalarSubquery$from$QueryExpressionScalar(queryExpressionScalar);
+        final ScalarSubquery<Long> scalarSubquery = Symqle.z$ScalarSubquery$from$QueryExpressionBodyScalar(queryExpressionScalar);
         assertEquals(Mappers.LONG, scalarSubquery.getMapper());
-        final QueryPrimary<Long> queryPrimary1 = Symqle.z$QueryPrimary$from$QueryExpressionScalar(queryExpressionScalar);
+        final QueryPrimary<Long> queryPrimary1 = Symqle.z$QueryPrimary$from$QueryExpressionBodyScalar(queryExpressionScalar);
         assertEquals(Mappers.LONG, queryPrimary1.getMapper());
     }
 

@@ -159,8 +159,8 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 
 ##### QueryExpression ####
 
-public interface QueryExpression<T> :: Query<T> {}
-public class AbstractQueryExpression<T> implements QueryExpression<T>
+public interface QueryExpression<T> : Query<T> {}
+public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 
 # <query expression> ::= [ <with clause> ] <query expression body> [ <order by clause> ] [ <result offset clause> ] [ <fetch first clause> ]
 #
@@ -179,44 +179,44 @@ public class AbstractQueryExpression<T> implements QueryExpression<T>
 # | <host parameter name>
 # | <SQL parameter reference>
 # | <embedded variable name>
-# Symqle supports only <literal>, specifically NumericLiteral here
+# Symqle supports only <literal> here
 #
 # see QueryExpressionBody.sdl, Sort.sdl
 
 <T> QueryExpression<T> ::=
     qe:QueryExpressionBasic<T> :: implicit {}
 |
-    qe:QueryExpressionBasic<T> OFFSET offset:NumericLiteral ROWS FETCH FIRST limit:NumericLiteral ROWS ONLY ::
+    qe:QueryExpressionBasic<T> OFFSET offset:Literal ROWS FETCH FIRST limit:Literal ROWS ONLY ::
       private AbstractQueryExpression<T> offsetAndLimit {}
 
 |
-    qe:QueryExpressionBasic<T> OFFSET offset:NumericLiteral ::
+    qe:QueryExpressionBasic<T> OFFSET offset:Literal ::
       private AbstractQueryExpression<T> offsetOnly {}
 ;
 
 # public methods
-:: public <T> AbstractQueryExpression<T> offset(final QueryExpressionBasic qeb, int offset) {
-    return offsetOnly(qeb, offset);
+:: public <T> AbstractQueryExpression<T> offset(final QueryExpressionBasic<T> qeb, int offset) {
+    return offsetOnly(qeb, new IntLiteral(offset));
 }
 
-:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic qeb, int limit, int offset) {
-              return offsetAndLimit(qeb, offset, limit);
+:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit, int offset) {
+              return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
 }
 
 ##### QueryExpressionBasic ####
 
-public interface QueryExpressionBasic <T> :: Query<T> {}
-public class AbstractQueryExpressionBasic <T> implements QueryExpression<T>
+public interface QueryExpressionBasic <T> : Query<T> {}
+public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
 
 # <query expression body> [ <order by clause> ]
 
 <T> QueryExpressionBasic<T> ::=
     body:QueryExpressionBody<T> :: implicit {}
 |
-    body:QueryExpressionBody<T> order:OrderByClause :: private orderBy() {}
+    body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
 ;
 
-::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpression<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+::  public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
     SortSpecificationList list = createSortSpecificationList(sort);
      for (SortSpecification add: additionalSort) {
          list = appendSortSpecification(list, add);
@@ -226,3 +226,26 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T>
 
 # see QueryExpressionBody.sdl, Sort.sdl
 
+# Literal is used by Symqle in limit/offset only, so defining it here
+# note that it is not convertible to ValueExpression and is not Scalar;
+# we cannot select Literals
+public interface Literal : Sql {}
+
+import org.symqle.querybuilder.CustomSql;
+public class IntLiteral implements Literal {
+    private final int value;
+
+    public IntLiteral(int value) {
+        this.value = value;
+    }
+
+    /**
+    * Creates an Sql representing Literal.
+    * @param context the Sql construction context
+    * @return constructed Sql
+    */
+    public Sql z$sqlOfLiteral(SqlContext context) {
+        return new CustomSql(String.valueOf(value));
+    }
+
+}

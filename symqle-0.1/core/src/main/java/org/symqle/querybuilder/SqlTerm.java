@@ -1303,6 +1303,10 @@ public enum SqlTerm implements Sql {
     /**
      * <reserved word>
      */
+    OFFSET,
+    /**
+     * <reserved word>
+     */
     OID,
     /**
      * <reserved word>

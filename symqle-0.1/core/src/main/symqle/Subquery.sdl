@@ -1,6 +1,6 @@
 public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
 
-<T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionScalar<T> RIGHT_PAREN ::
+<T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN ::
         implicit
     {
        public Sql z$sqlOfScalarSubquery(SqlContext context) {
@@ -10,10 +10,10 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
                 put(TableRegistry.class, innerRegistry).toSqlContext();
 
          // learning
-       qe.z$sqlOfQueryExpressionScalar(makeLearningContext(innerContext));
+       qe.z$sqlOfQueryExpressionBodyScalar(makeLearningContext(innerContext));
        // real Sql generation
-           final Sql base = qe.z$sqlOfQueryExpressionScalar(innerContext);
-           return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_QueryExpressionScalar_RIGHT_PAREN(base);
+           final Sql base = qe.z$sqlOfQueryExpressionBodyScalar(innerContext);
+           return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_QueryExpressionBodyScalar_RIGHT_PAREN(base);
     }
 }
 ;

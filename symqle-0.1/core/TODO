@@ -50,25 +50,33 @@ ALL/ANY/SOME (future release)
 
 (done) replace IllegalStateException/IllegalArgumentException -> BadStatementException
 
-databaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + BatchingGate: submitUpdate, flush.
+(done) databaseGate: executeQuery, executeUpdate, execute(ConnectionCallback) + BatchingGate: submitUpdate, flush.
 (done) move normalization of SQL to Dialect (may be different for different dialects). Remove NiceSql.
 
-make SqlContext immutable. Separate logic  of TableRegistry and FROM clause generation. SingelTableRegistry and
+(done) make SqlContext immutable. Separate logic  of TableRegistry and FROM clause generation. SingelTableRegistry and
 NoTablesRegistry (check that a.insert(set(a.name=a.nick)).execute() is invalid). The last is optional, some DBs support insert into a (a,b) values (1, a) -add to Configuration
 
 insertFrom: t.insert(t.rows(t.x.set(s.x), t.y.set(s.z).where(s.w.eq(0)))).execute()
 
-Labels, LabelRegistry (for union/except/intersect and subqueries)
+Labels, LabelRegistry (?) (for union/except/intersect and subqueries)
 
-Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client
+Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client. Another possibility: Key<Type, Marker>.
+They will not be assignable to each other. Then only Key is in symqle-client, need not generate code for each new key
+- just new Marker interface (suspicious)
 
 Generator: generate client (primary keys, DTO, FullDTO)
 
 Generator: simple xml to override defaults (use JAXB)
 
+Compiler: push methods to interfaces; if there are conflicting interfaces, implement nearest only
 
+Compiler: generate TestCases interfaces
 
+Core: refactor Select Statement
 
+Core: make Sql abstract class and enforce this.appendTo(builder); builder.toString().equals(this.toString());  
+
+Core: (AggregateSelectList,SelectSublist) -> ScalarSelectList
 
 
 

@@ -84,7 +84,7 @@ import static org.symqle.querybuilder.SqlTerm.*;
 * Each nonterminal symbol is constructed exactly as required by the rule.
 * Subclasses may override methods preserving semantics.
 * e.g. replace {@code concat(qe, EXCEPT, qt)} for {@code concat(qe, MINUS, qt)}
-* in {@link #QueryExpressionScalar_is_QueryExpressionScalar_EXCEPT_QueryTerm(org.symqle.common.Sql, org.symqle.common.Sql)}
+* in {@link #QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(org.symqle.common.Sql, org.symqle.common.Sql)}
 */
 public class GenericDialect implements Dialect {
 
