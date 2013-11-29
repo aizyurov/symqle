@@ -1,7 +1,14 @@
+#### QueryExpressionBody ###
 
-public interface QueryExpression<T> : Query<T> {}
+# There are 2 flavors of QueryExpressionBody: multicolumn and scalar, the latter is QueryExpressionBodyScalar
+# Scalar supports the whole hierarchy of QueryTerm, QueryPrimary, QuerySpecification
+# Multicolumn QueryExpressionBody is derived only from QuerySpecification
 
-public class AbstractQueryExpression<T> implements QueryExpression<T> {}
+
+public interface QueryExpressionBody<T> : Query<T> {}
+public class AbstractQueryExpressionBody<T> implements QueryExpressionBody<T> {}
+public interface QueryExpressionBodyScalar<T> : Query<T> {}
+public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody<T> {}
 
 # we have different rules for QueryExpression and QueryExpressionScalar
 # the first one is just QueryBase with (maybe) WhereClause

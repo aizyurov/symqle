@@ -1,9 +1,11 @@
-# # corresponds to direct_select-statement in Sql-2003.2
-public interface SelectStatement<T> : Query<T>
-{}
+##### SelectStatement ####
 
-public class AbstractSelectStatement<T> implements SelectStatement<T>
-{}
+
+# corresponds to <direct_select_statement: multiple rows>
+
+public interface SelectStatement<T> : Query<T> {}
+
+public class AbstractSelectStatement<T> implements SelectStatement<T> {}
 
 # key Symqle methods to query values
 
@@ -15,7 +17,7 @@ import org.symqle.jdbc.QueryEngine;
     /**
      * Executes a statement and calls callback for each returned row.
      * @param statement provides the query and mapper.
-     * @param gate provides connection to DB
+     * @param engine gate to DB
      * @param callback will be called until it returns false or there are no more rows
      * @param options will be applied to java.sql.Statement
      * @param <T> the type of object passed to callback
@@ -51,7 +53,7 @@ import org.symqle.jdbc.Option;
     /**
      * Executes a statement and returns the list of objects of type T.
      * @param statement provides the query and mapper.
-     * @param gate provides connection to DB
+     * @param engine gate to DB
      * @param options will be applied to java.sql.Statement
      * @param <T> the type of objects to create from result set rows
      * @return the list of objects
@@ -127,19 +129,18 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
     };
 }
 
+###### SelectStatement Construction methods #####
 
-# # direct_zSelectStatement:_multiple_rows ::= zCursorSpecification
-# # zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
-# # updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
-# 
-# # Symqle re-defines this in the following way:
-# # updateability_clause moves to zSelectStatement;
-# # OF column_name_list is not supported in the current version (0.7)
-# 
-# forward references: CursorSpecification, AbstractCursorSpecification
+#  <direct select statement: multiple rows> ::= <cursor specification>
+#  <cursor specification> ::= <query expression> [ <updatability clause> ]
+# updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
+#
+# Changes:
+# <cursor specification> is redundant for Symqle (may be intrioduced later
+# [ OF column_name_list ] not supported
 
 <T> SelectStatement<T> ::=
-    cspec:CursorSpecification<T> :: implicit {}
+    qe:QueryExpression<T> :: implicit {}
 |
     /**
     * Creates select statement for read only.
@@ -148,43 +149,71 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
     * @param <T> the type of objects, to which result set rows will be converted.
     * @return new select statement
     */
-    cspec:CursorSpecification<T>  FOR READ ONLY ::
+    qe:QueryExpression<T>  FOR READ ONLY ::
         import java.util.LinkedList;
         public AbstractSelectStatement<T> forReadOnly {}
 |
-    cspec:CursorSpecification<T> FOR UPDATE
+    qe:QueryExpression<T> FOR UPDATE
         :: public AbstractSelectStatement<T> forUpdate {}
 ;
 
+##### QueryExpression ####
 
-public interface CursorSpecification<T> : Query<T> {}
+public interface QueryExpression<T> :: Query<T> {}
+public class AbstractQueryExpression<T> implements QueryExpression<T>
 
-public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
+# <query expression> ::= [ <with clause> ] <query expression body> [ <order by clause> ] [ <result offset clause> ] [ <fetch first clause> ]
+#
+# Changes:
+# [ <with clause> ] not supported
+# [ <result offset clause> ] [ <fetch first clause> ] -> [ <result offset clause> [ <fetch first clause> ]]
+# i.e. we require offset if there is an limit, but may be offset only
+# additional non-terminals
+#     QueryExpressionBasic for <query expression body> [ <order by clause> ]
+# two flavors: QueryExpressionBody and QueryExpressionBodyScalar
+# [<result offset clause>] ::= OFFSET <offset row count> { ROW | ROWS }
+# <offset row count> ::= <simple value specification>
+# <fetch first clause> ::= FETCH { FIRST | NEXT } [ <fetch first row count> ] { ROW | ROWS } ONLY
+# <fetch first row count> ::= <simple value specification>
+# <simple value specification> ::= <literal>
+# | <host parameter name>
+# | <SQL parameter reference>
+# | <embedded variable name>
+# Symqle supports only <literal>, specifically NumericLiteral here
+#
+# see QueryExpressionBody.sdl, Sort.sdl
 
-# #zCursorSpecification ::= zQueryExpression [ zOrderByClause ] [ updatability_clause ]
-# #updatability_clause moved to zSelectStatement
-# 
-# see QueryExpression.sdl, Sort.sdl
-
-<T> CursorSpecification<T> ::=
-    qe:QueryExpression<T> :: implicit {}
+<T> QueryExpression<T> ::=
+    qe:QueryExpressionBasic<T> :: implicit {}
 |
-    qe:QueryExpressionScalar<T> :: implicit {
-            public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
-                final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
-                return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar(__rowMapper));
-            }/*delegation*/
+    qe:QueryExpressionBasic<T> OFFSET offset:NumericLiteral ROWS FETCH FIRST limit:NumericLiteral ROWS ONLY ::
+      private AbstractQueryExpression<T> offsetAndLimit {}
 
-    }
 |
-    qe:QueryExpression<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {}
+    qe:QueryExpressionBasic<T> OFFSET offset:NumericLiteral ::
+      private AbstractQueryExpression<T> offsetOnly {}
+;
+
+# public methods
+:: public <T> AbstractQueryExpression<T> offset(final QueryExpressionBasic qeb, int offset) {
+    return offsetOnly(qeb, offset);
+}
+
+:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic qeb, int limit, int offset) {
+              return offsetAndLimit(qeb, offset, limit);
+}
+
+##### QueryExpressionBasic ####
+
+public interface QueryExpressionBasic <T> :: Query<T> {}
+public class AbstractQueryExpressionBasic <T> implements QueryExpression<T>
+
+# <query expression body> [ <order by clause> ]
+
+<T> QueryExpressionBasic<T> ::=
+    body:QueryExpressionBody<T> :: implicit {}
 |
-    qe:QueryExpressionScalar<T> obc:OrderByClause :: private AbstractCursorSpecification<T> orderBy {
-            public Query<T> z$sqlOfCursorSpecification(final SqlContext context) {
-                final Query<T> __rowMapper = qe.z$sqlOfQueryExpressionScalar(context);
-                return new ComplexQuery<T>(__rowMapper, context.get(Dialect.class).CursorSpecification_is_QueryExpressionScalar_OrderByClause(__rowMapper, obc.z$sqlOfOrderByClause(context)));
-            }/*delegation*/
-    }
+    body:QueryExpressionBody<T> order:OrderByClause :: private orderBy() {}
 ;
 
 ::  public <T> AbstractCursorSpecification<T> orderBy(final QueryExpression<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
@@ -195,23 +224,5 @@ public class AbstractCursorSpecification<T> implements CursorSpecification<T> {}
      return  orderBy(qe, createOrderByClause(list));
 }
 
-::  public <T> AbstractCursorSpecification<T> orderAsc(final QueryExpressionScalar<T> qe) {
-      final SortSpecification sortSpec = z$SortSpecification$from$SortOrderingSpecification(asc(createScalarSortKey()));
-      SortSpecificationList list = createSortSpecificationList(sortSpec);
-      return orderBy(qe, createOrderByClause(list));
-}
+# see QueryExpressionBody.sdl, Sort.sdl
 
-::  public <T> AbstractCursorSpecification<T> orderDesc(final QueryExpressionScalar<T> qe) {
-      final SortSpecification sortSpec = z$SortSpecification$from$SortOrderingSpecification(desc(createScalarSortKey()));
-      SortSpecificationList list = createSortSpecificationList(sortSpec);
-      return orderBy(qe, createOrderByClause(list));
-}
-
-::    private SortKey createScalarSortKey() {
-          return new SortKey() {
-              @Override
-              public Sql z$sqlOfSortKey(final SqlContext context) {
-                  return new CustomSql(context.get(UniqueNameProvider.class).getUniqueName());
-              }
-          };
-      }
