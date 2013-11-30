@@ -117,9 +117,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 
         @Override
         public void append(final StringBuilder builder) {
-            final StringBuilder tmp = new StringBuilder();
-            query.append(tmp);
-            builder.append(dialect.formatSql(tmp.toString()));
+            builder.append(dialect.formatSql(query.toString()));
         }
 
         @Override
