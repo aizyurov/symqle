@@ -26,9 +26,10 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     private final Sql createInsertIntoDeleteMaster(final int id, final String description) {
         return new Sql() {
+
             @Override
-            public String sql() {
-                return "INSERT INTO delete_master (master_id, description) values (?, ?)";
+            public void append(StringBuilder builder) {
+                builder.append("INSERT INTO delete_master (master_id, description) values (?, ?)");
             }
 
             @Override
@@ -41,9 +42,10 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     private final Sql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
         return new Sql() {
+
             @Override
-            public String sql() {
-                return "INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)";
+            public void append(StringBuilder builder) {
+                builder.append("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)");
             }
 
             @Override

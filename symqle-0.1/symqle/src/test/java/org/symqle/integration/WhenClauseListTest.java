@@ -55,34 +55,6 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
         ), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClauseList(employee)
-                .orderAsc()
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                "Alex",
-                "Bill",
-                "high",
-                "high",
-                "low"
-        ), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClauseList(employee)
-                .orderDesc()
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                "low",
-                "high",
-                "high",
-                "Bill",
-                "Alex"
-        ), list);
-    }
-
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseList(employee)
@@ -478,7 +450,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
             final List<String> list = createWhenClauseList(employee)
                     .collate("utf8_unicode_ci")
                     .concat("+")
-                    .orderAsc()
+                    .orderBy(employee.firstName)
                     .list(getEngine());
             assertEquals(Arrays.asList(
                     "Alex+",

@@ -62,24 +62,6 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("First"), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        if (notApplicable) {
-            return;
-        }
-        final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).orderAsc().list(getEngine());
-        assertEquals(Arrays.asList("First"), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        if (notApplicable) {
-            return;
-        }
-        final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).orderDesc().list(getEngine());
-        assertEquals(Arrays.asList("First"), list);
-    }
-
     public void testUnionAll() throws Exception {
         if (notApplicable) {
             return;

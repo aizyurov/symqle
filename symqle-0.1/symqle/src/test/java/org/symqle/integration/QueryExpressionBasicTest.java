@@ -3,7 +3,7 @@ package org.symqle.integration;
 import org.symqle.common.Callback;
 import org.symqle.dialect.MySqlDialect;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractCursorSpecification;
+import org.symqle.sql.AbstractQueryExpressionBasic;
 import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
@@ -14,10 +14,11 @@ import java.util.List;
 /**
  * @author lvovich
  */
-public class CursorSpecificationTest extends AbstractIntegrationTestBase {
+public class QueryExpressionBasicTest extends AbstractIntegrationTestBase {
 
-    private AbstractCursorSpecification<String> createCursorSpecificaton(final Employee employee) {
-        return employee.lastName.orderBy(employee.lastName);
+    private AbstractQueryExpressionBasic<String> createCursorSpecificaton(final Employee employee) {
+        final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.lastName.orderBy(employee.lastName);
+        return queryExpressionBasic;
     }
 
     public void testList() throws Exception {

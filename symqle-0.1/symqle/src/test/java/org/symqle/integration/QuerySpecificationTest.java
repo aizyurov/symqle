@@ -4,6 +4,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.dialect.MySqlDialect;
 import org.symqle.sql.AbstractQuerySpecification;
+import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class QuerySpecificationTest extends AbstractIntegrationTestBase {
 
-    private AbstractQuerySpecification<String> querySpec(final Employee employee) {
+    private AbstractQuerySpecificationScalar<String> querySpec(final Employee employee) {
         return employee.lastName.where(employee.salary.gt(2500.0));
     }
 
@@ -31,18 +32,6 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = querySpec(employee).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
-    }
-
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).orderAsc().list(getEngine());
-        assertEquals(Arrays.asList("First", "Redwood"), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = querySpec(employee).orderDesc().list(getEngine());
-        assertEquals(Arrays.asList("Redwood", "First"), list);
     }
 
     public void testForUpdate() throws Exception {
@@ -166,7 +155,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         // subquery: all employees of any department, which have the same first name of this dept manager but the manager himself
-        final AbstractQuerySpecification<Integer> subquery = employee.empId.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
+        final AbstractQuerySpecificationScalar<Integer> subquery = employee.empId.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
         final List<String> list = department.deptName.where(subquery.exists()).list(getEngine());
         assertEquals(Arrays.asList("DEV"), list);
     }
@@ -175,7 +164,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final Department department = new Department();
         // subquery: all employees of any department, which have the same first name of this dept manager but the manager himself
-        final AbstractQuerySpecification<String> subquery = employee.lastName.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
+        final AbstractQuerySpecificationScalar<String> subquery = employee.lastName.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
         final List<String> list = department.deptName.where(subquery.contains("Cooper")).list(getEngine());
         assertEquals(Arrays.asList("DEV"), list);
     }
@@ -185,7 +174,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         // subquery: all employees, which have the same first name of dept manager but the managet himself
         // for "DEV" department there is only one, so it may be used for queryValue
-        final AbstractQuerySpecification<String> subquery = employee.lastName.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
+        final AbstractQuerySpecificationScalar<String> subquery = employee.lastName.where(department.manager().firstName.eq(employee.firstName).and(department.manager().empId.ne(employee.empId)));
         final List<String> list = subquery.queryValue().where(department.deptName.eq("DEV")).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
 

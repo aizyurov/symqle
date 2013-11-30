@@ -371,18 +371,6 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).orderAsc().list(getEngine());
-        assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).orderDesc().list(getEngine());
-        assertEquals(Arrays.asList(3100.0, 3100.0, 2100.0, 2100.0, 1600.0), list);
-    }
-
     public void testOrderByNullsFirst() throws Exception {
         final Employee employee = new Employee();
         try {

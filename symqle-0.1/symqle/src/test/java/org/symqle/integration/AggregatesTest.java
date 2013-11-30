@@ -23,18 +23,6 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(5), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().orderAsc().list(getEngine());
-        assertEquals(Arrays.asList(5), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().orderDesc().list(getEngine());
-        assertEquals(Arrays.asList(5), list);
-    }
-
     public void testUnion() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = employee.empId.count().union(employee.empId.count().where(employee.salary.gt(1800.0))).list(getEngine());
@@ -153,7 +141,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = department.deptName
                 .where(employee.salary.sum().exists())
-                .orderAsc()
+                .orderBy(department.deptName)
                 .list(getEngine());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
@@ -163,7 +151,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = department.deptName
                 .where(employee.salary.sum().contains(11500.0))
-                .orderAsc()
+                .orderBy(department.deptName)
                 .list(getEngine());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }
@@ -173,7 +161,7 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = department.deptName
                 .where(Params.p(5).in(employee.empId.count()))
-                .orderAsc()
+                .orderBy(department.deptName)
                 .list(getEngine());
         assertEquals(Arrays.asList("DEV", "HR"), list);
     }

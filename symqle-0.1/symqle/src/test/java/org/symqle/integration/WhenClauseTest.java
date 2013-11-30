@@ -52,54 +52,6 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
         ), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee)
-                .orderAsc()
-                .list(getEngine());
-        try {
-            assertEquals(Arrays.asList(
-                    "James",
-                    "Margaret",
-                    (String)null,
-                    (String)null,
-                    (String)null
-            ), list);
-        } catch (AssertionFailedError e) {
-            assertEquals(Arrays.asList(
-                    (String)null,
-                    (String)null,
-                    (String)null,
-                    "James",
-                    "Margaret"
-            ), list);
-        }
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee)
-                .orderDesc()
-                .list(getEngine());
-        try {
-            assertEquals(Arrays.asList(
-                    (String)null,
-                    (String)null,
-                    (String)null,
-                    "Margaret",
-                    "James"
-            ), list);
-        } catch (AssertionFailedError e) {
-            assertEquals(Arrays.asList(
-                    "Margaret",
-                    "James",
-                    (String)null,
-                    (String)null,
-                    (String)null
-            ), list);
-        }
-    }
-
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClause(employee)

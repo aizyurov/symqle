@@ -42,28 +42,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("X"), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
-        final MyDual myDual = new MyDual();
-        final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.orderAsc().list(getEngine(), Option.allowNoTables(true));
-        assertEquals(Arrays.asList("X"), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
-        final MyDual myDual = new MyDual();
-        final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
-        final List<String> list = primary.orderDesc().list(getEngine(), Option.allowNoTables(true));
-        assertEquals(Arrays.asList("X"), list);
-    }
-
     public void testCast() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
         if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {

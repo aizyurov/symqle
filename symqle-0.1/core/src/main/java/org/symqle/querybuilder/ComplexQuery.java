@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * It delegates its methods to the constructor arguments.
  * @param <T> type of objects created by row mapper.
  */
-public class ComplexQuery<T> implements Query<T> {
+public class ComplexQuery<T> extends Query<T> {
     private final RowMapper<T> extractor;
     private final Sql sql;
 

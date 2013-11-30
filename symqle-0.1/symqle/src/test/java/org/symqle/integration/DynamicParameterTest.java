@@ -577,34 +577,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         }
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<String> list = Params.p("abc").orderAsc().list(getEngine(), Option.allowNoTables(true));
-            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("abc"));
-            assertEquals(expected, list);
-        } catch (SQLException e) {
-            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
-        } catch (MalformedStatementException e) {
-            expectMalformedStatementException(e, GenericDialect.class);
-        }
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<String> list = Params.p("abc").orderDesc().list(getEngine(), Option.allowNoTables(true));
-            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("abc"));
-            assertEquals(expected, list);
-        } catch (SQLException e) {
-            // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
-        } catch (MalformedStatementException e) {
-            expectMalformedStatementException(e, GenericDialect.class);
-        }
-    }
-
     public void testOrderByAsc() throws Exception {
         final Employee employee = new Employee();
         try {

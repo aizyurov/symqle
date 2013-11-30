@@ -64,22 +64,6 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(1500.0, 3000.0, 2000.0, 2000.0, 3000.0), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final String show = createCast(employee).orderAsc().show(new DerbyDialect());
-        System.out.println(show);
-        final List<Double> list = createCast(employee).orderAsc().list(getEngine());
-        // Cooper, First, March, Pedersen, Redwood
-        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).orderDesc().list(getEngine());
-        // Cooper, First, March, Pedersen, Redwood
-        assertEquals(Arrays.asList(3000.0, 3000.0, 2000.0, 2000.0, 1500.0), list);
-    }
-
     public void testSortSpecification() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName

@@ -26,5 +26,5 @@ package org.symqle.common;
  * @version 0.1
  * @param <JavaType> the type of associated Java objects
  */
-public interface Query<JavaType> extends Sql, RowMapper<JavaType> {
+public abstract class Query<JavaType> extends Sql implements RowMapper<JavaType> {
 }

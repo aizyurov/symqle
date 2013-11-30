@@ -399,18 +399,6 @@ public class TermTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderAsc().list(getEngine()));
-        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = toListOfDouble(createTerm(employee).orderDesc().list(getEngine()));
-        assertEquals(Arrays.asList(-1500.0, -2000.0, -2000.0, -3000.0, -3000.0), list);
-    }
-
     public void testOrderByNullsFirst() throws Exception {
         final Employee employee = new Employee();
         try {

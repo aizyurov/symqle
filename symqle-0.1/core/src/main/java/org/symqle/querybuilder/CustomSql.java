@@ -23,7 +23,7 @@ import org.symqle.common.SqlParameters;
  * Text-only Sql, no parameters,
  * The  text is provided in the constructor.
  */
-public class CustomSql implements Sql {
+public class CustomSql extends Sql {
     private final String text;
 
     /**

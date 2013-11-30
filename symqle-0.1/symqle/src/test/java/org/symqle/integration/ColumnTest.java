@@ -785,9 +785,10 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         for (int i=0; i<2000000; i++) {
             final int value = i;
             getEngine().execute(new Sql() {
+
                 @Override
-                public String sql() {
-                    return "insert into big_table (num) values(?)";
+                public void append(StringBuilder builder) {
+                    builder.append("insert into big_table (num) values(?)");
                 }
 
                 @Override

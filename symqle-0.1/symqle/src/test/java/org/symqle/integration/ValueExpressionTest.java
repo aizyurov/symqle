@@ -32,18 +32,6 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList(false, true, true, true, true), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).orderAsc().list(getEngine());
-        assertEquals(Arrays.asList(false, true, true, true, true), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).orderDesc().list(getEngine());
-        assertEquals(Arrays.asList(true, true, true, true, false), list);
-    }
-
     public void testCast() throws Exception {
         try {
             final Employee employee = new Employee();

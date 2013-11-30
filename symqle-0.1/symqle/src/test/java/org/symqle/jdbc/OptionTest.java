@@ -2,7 +2,7 @@ package org.symqle.jdbc;
 
 import junit.framework.TestCase;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractCursorSpecification;
+import org.symqle.sql.AbstractQueryExpressionBasic;
 import org.symqle.sql.GenericDialect;
 
 import javax.sql.DataSource;
@@ -22,8 +22,8 @@ public class OptionTest extends TestCase {
 
     public void testOptions() throws Exception {
         Employee employee = new Employee();
-        final AbstractCursorSpecification<String> cursorSpecification = employee.firstName.orderBy(employee.firstName);
-        final String queryString = cursorSpecification.show(new GenericDialect());
+        final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.firstName.orderBy(employee.firstName);
+        final String queryString = queryExpressionBasic.show(new GenericDialect());
         final DataSource connector = createMock(DataSource.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final Connection connection = createMock(Connection.class);
@@ -49,7 +49,7 @@ public class OptionTest extends TestCase {
         connection.close();
         replay(connector, connection,  statement, resultSet, metaData);
         final Engine engine = new ConnectorEngine(connector);
-        final List<String> list = cursorSpecification.list(engine,
+        final List<String> list = queryExpressionBasic.list(engine,
                 Option.setFetchDirection(ResultSet.FETCH_FORWARD),
                 Option.setFetchSize(2),
                 Option.setMaxFieldSize(5),
@@ -61,8 +61,8 @@ public class OptionTest extends TestCase {
 
     public void testEngineOptions() throws Exception {
         Employee employee = new Employee();
-        final AbstractCursorSpecification<String> cursorSpecification = employee.firstName.orderBy(employee.firstName);
-        final String queryString = cursorSpecification.show(new GenericDialect());
+        final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.firstName.orderBy(employee.firstName);
+        final String queryString = queryExpressionBasic.show(new GenericDialect());
         final DataSource connector = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);
@@ -93,7 +93,7 @@ public class OptionTest extends TestCase {
                         Option.setMaxFieldSize(5),
                         Option.setMaxRows(10),
                         Option.setQueryTimeout(7));
-        final List<String> list = cursorSpecification.list(engine
+        final List<String> list = queryExpressionBasic.list(engine
                 );
         assertEquals(Arrays.asList("Alex"), list);
         verify(connector, connection, statement, resultSet, metaData);

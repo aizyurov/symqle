@@ -16,11 +16,12 @@ public class MySqlDialect extends GenericDialect {
 
     /**
      * Mysql does not support FOR READ ONLY; just omitted
-      * @param cspec
+      * @param qe QueryExpression
      * @return
      */
-    public Sql SelectStatement_is_CursorSpecification_FOR_READ_ONLY(final Sql cspec) {
-        return SelectStatement_is_CursorSpecification(cspec);
+    @Override
+    public Sql SelectStatement_is_QueryExpression_FOR_READ_ONLY(Sql qe) {
+        return SelectStatement_is_QueryExpression(qe);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class MySqlDialect extends GenericDialect {
         // mysql dialect misunderstands usage of BooleanExpression where ValueExpression is required in construction
         // WHERE T.x IS NOT NULL LIKE '0'
         // surrounding with parentheses to avoid it
-        return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
+        return concat(SqlTerm.LEFT_PAREN.toSql(), bve, SqlTerm.RIGHT_PAREN.toSql());
     }
 
 }

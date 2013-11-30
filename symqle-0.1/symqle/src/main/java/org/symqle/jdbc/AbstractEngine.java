@@ -54,7 +54,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         final Connection connection = getConnection();
         try {
             flush(connection);
-            final PreparedStatement preparedStatement = connection.prepareStatement(statement.sql());
+            final PreparedStatement preparedStatement = connection.prepareStatement(statement.toString());
             try {
                 setupStatement(preparedStatement, statement, options);
                 statement.setParameters(new StatementParameters(preparedStatement));
@@ -72,7 +72,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         final Connection connection = getConnection();
         try {
             flush(connection);
-            final PreparedStatement preparedStatement = connection.prepareStatement(statement.sql(), Statement.RETURN_GENERATED_KEYS);
+            final PreparedStatement preparedStatement = connection.prepareStatement(statement.toString(), Statement.RETURN_GENERATED_KEYS);
             try {
                 setupStatement(preparedStatement, statement, options);
                 statement.setParameters(new StatementParameters(preparedStatement));
@@ -121,7 +121,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
             return Engine.NOTHING_FLUSHED;
         }
         try {
-            final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statement.sql());
+            final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statement.toString());
             try {
                 setupStatement(preparedStatement, currentKey.statement, currentKey.options);
                 for (Sql queued : queue) {
@@ -175,7 +175,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
 
             final StatementKey that = (StatementKey) o;
 
-            if (!statement.sql().equals(that.statement.sql())) return false;
+            if (!statement.toString().equals(that.statement.toString())) return false;
             if (!Arrays.equals(options, that.options)) return false;
 
             return true;
@@ -183,7 +183,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
 
         @Override
         public int hashCode() {
-            int result = statement.sql().hashCode();
+            int result = statement.toString().hashCode();
             result = 31 * result + Arrays.hashCode(options);
             return result;
         }

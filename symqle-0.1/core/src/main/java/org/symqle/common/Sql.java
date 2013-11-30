@@ -23,20 +23,26 @@ import java.sql.SQLException;
  * The interface also provides values for the parameters.
  * T
  */
-public interface Sql {
+public abstract class Sql {
 
     /**
      * Appends the text of this Sql to an SqlBuilder.
      * The text may contain dynamic parameters (?).
       * @return the text
      */
-    void append(StringBuilder builder);
+    public abstract void append(StringBuilder builder);
 
     /**
      * Provide values for dynamic parameters.
      * @param p SqlParameters to write parameter values into
      * @throws SQLException if jdbc driver cannot set parameters
      */
-    void setParameters(SqlParameters p) throws SQLException;
+    public abstract void setParameters(SqlParameters p) throws SQLException;
+
+    public final String toString() {
+        final StringBuilder builder = new StringBuilder();
+        this.append(builder);
+        return builder.toString();
+    }
 
 }

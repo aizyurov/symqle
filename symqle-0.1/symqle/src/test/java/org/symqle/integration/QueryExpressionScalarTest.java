@@ -4,7 +4,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.TrueValue;
 import org.symqle.dialect.MySqlDialect;
-import org.symqle.sql.AbstractQueryExpressionScalar;
+import org.symqle.sql.AbstractQueryExpressionBodyScalar;
 import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
 
-    private AbstractQueryExpressionScalar<Boolean> singleRowTrue() {
+    private AbstractQueryExpressionBodyScalar<Boolean> singleRowTrue() {
         final TrueValue trueValue = new TrueValue();
         return trueValue.value.distinct().union(trueValue.value.where(trueValue.value.eq(false)));
     }
@@ -53,7 +53,7 @@ public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
      * @param employee
      * @return
      */
-    private AbstractQueryExpressionScalar<String> firstNames(final Employee employee) {
+    private AbstractQueryExpressionBodyScalar<String> firstNames(final Employee employee) {
         final Department department = new Department();
         return employee.firstName.distinct().unionAll(department.manager().firstName);
     }
@@ -178,20 +178,6 @@ public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
                 expectSQLException(e, "MySQL");
             }
         }
-    }
-
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = firstNames(employee).orderAsc().list(getEngine());
-        assertEquals(Arrays.asList("Alex", "Bill", "James", "James", "Margaret", "Margaret"), list);
-
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = firstNames(employee).orderDesc().list(getEngine());
-        assertEquals(Arrays.asList("Margaret", "Margaret", "James", "James", "Bill", "Alex"), list);
-
     }
 
     public void testList() throws Exception {

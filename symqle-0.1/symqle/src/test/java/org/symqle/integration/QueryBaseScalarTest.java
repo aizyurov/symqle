@@ -171,18 +171,6 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).orderAsc().list(getEngine());
-        assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = distinctFirstNames(employee).orderDesc().list(getEngine());
-        assertEquals(Arrays.asList("Margaret", "James", "Bill", "Alex"), list);
-    }
-
     public void testForUpdate() throws Exception {
         final Employee employee = new Employee();
         try {

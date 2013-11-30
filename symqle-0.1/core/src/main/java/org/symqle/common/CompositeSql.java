@@ -23,7 +23,7 @@ import java.sql.SQLException;
  * Provides implementation of {@link #sql()} and {@link #setParameters(SqlParameters)}
  * @author Alexander Izyurov
  */
-public class CompositeSql implements Sql {
+public class CompositeSql extends Sql {
     private final Sql first;
     private final Sql[] other;
 

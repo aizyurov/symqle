@@ -51,61 +51,6 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         ), list);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClauseBaseList(employee)
-                .orderAsc()
-                .list(getEngine());
-        // expect NULLS LAST
-        try {
-            assertEquals(Arrays.asList(
-                    "high",
-                    "high",
-                    "low",
-                (String)null,
-                (String)null
-            ), list);
-        } catch (AssertionFailedError e) {
-            if ("MySQL".equals(getDatabaseName())) {
-                assertEquals(Arrays.asList(
-                        (String)null,
-                        (String)null,
-                        "high",
-                        "high",
-                        "low"
-                ), list);
-            }
-        }
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClauseBaseList(employee)
-                .orderDesc()
-                .list(getEngine());
-        // expect NULLS FIRST for reverse sort
-        try {
-            assertEquals(Arrays.asList(
-                    (String)null,
-                    (String)null,
-                    "low",
-                    "high",
-                    "high"
-            ), list);
-        } catch (AssertionFailedError e) {
-            if ("MySQL".equals(getDatabaseName())) {
-                assertEquals(Arrays.asList(
-                        "low",
-                        "high",
-                        "high",
-                        (String)null,
-                        (String)null
-                ), list);
-            }
-
-        }
-    }
-
     public void testWhere() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)

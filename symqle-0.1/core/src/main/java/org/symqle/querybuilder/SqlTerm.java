@@ -24,7 +24,7 @@ import org.symqle.common.SqlParameters;
  *
  * @author Alexander Izyurov
  */
-public enum SqlTerm implements Sql {
+public enum SqlTerm {
 
     /**************************
      * Special characters
@@ -1483,14 +1483,8 @@ public enum SqlTerm implements Sql {
         this.s = s;
     }
 
-    @Override
-    public void append(final StringBuilder builder) {
-        builder.append(s);
-    }
-
-    @Override
-    public void setParameters(final SqlParameters p) {
-        // do nothing
+    public Sql toSql() {
+        return new CustomSql(s);
     }
 
 }
