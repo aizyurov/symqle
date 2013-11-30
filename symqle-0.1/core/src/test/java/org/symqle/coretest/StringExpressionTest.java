@@ -149,16 +149,6 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        String sql = numberSign.concat(person.id).orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        String sql = numberSign.concat(person.id).orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
-    }
-
     public void testOrderByNullsFirst() throws Exception {
         String sql = person.id.orderBy(numberSign.concat(person.id).nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id NULLS FIRST", sql);

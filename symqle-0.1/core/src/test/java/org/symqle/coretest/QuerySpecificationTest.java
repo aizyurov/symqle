@@ -4,11 +4,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractQuerySpecification;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.sql.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -25,25 +21,16 @@ public class QuerySpecificationTest extends SqlTestCase {
 
 
     public void testShow() throws Exception {
-        final AbstractQuerySpecification<Long> querySpecification = person.id.where(person.name.isNotNull());
+        final AbstractQuerySpecificationScalar<Long> querySpecification = person.id.where(person.name.isNotNull());
         final String sql = querySpecification.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
         assertSimilar(sql, querySpecification.show(new GenericDialect()));
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = employee.id.where(employee.name.isNotNull()).queryValue().orderBy(person.name).show(new GenericDialect());
+        final AbstractQuerySpecificationScalar<Long> specification = employee.id.where(employee.name.isNotNull());
+        final String sql = specification.queryValue().orderBy(person.name).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
-    }
-
-    public void testOrderAsc() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY C0 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY C0 DESC", sql);
     }
 
     public void testForUpdate() throws Exception {
@@ -120,18 +107,18 @@ public class QuerySpecificationTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        new Scenario123<AbstractQuerySpecification<Long>>(person.id.where(person.name.isNull())) {
+        new Scenario123<AbstractQuerySpecificationScalar<Long>>(person.id.where(person.name.isNull())) {
             @Override
-            void use(AbstractQuerySpecification<Long> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQuerySpecificationScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(getExpected(), query.list(engine));
             }
         }.play();
     }
 
     public void testScroll() throws Exception {
-        new Scenario123<AbstractQuerySpecification<Long>>(person.id.where(person.name.isNull())) {
+        new Scenario123<AbstractQuerySpecificationScalar<Long>>(person.id.where(person.name.isNull())) {
             @Override
-            void use(AbstractQuerySpecification<Long> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQuerySpecificationScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, getCallback()));
             }
         }.play();

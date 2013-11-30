@@ -262,16 +262,6 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = person.name.eq(person.nickName).asValue().orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
-    }
-
     public void testAsSortSpecification() throws Exception {
         final String sql = person.name.orderBy(person.name.eq(person.nickName).asValue()).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 ORDER BY T0.name = T0.nick", sql);

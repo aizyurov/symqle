@@ -2,7 +2,7 @@ package org.symqle.coretest;
 
 import org.symqle.common.*;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractCursorSpecification;
+import org.symqle.sql.AbstractQueryExpressionBasic;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -17,11 +17,12 @@ import static org.easymock.EasyMock.*;
 /**
  * @author lvovich
  */
-public class CursorSpecificationTest extends SqlTestCase {
+public class QueryExpressionBasicTest extends SqlTestCase {
 
 
     public void testShow() throws Exception {
-        final String sql = person.id.orderBy(person.id).show(new GenericDialect());
+        final AbstractQueryExpressionBasic<Long> queryExpressionBasic = person.id.orderBy(person.id);
+        final String sql = queryExpressionBasic.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id", sql);
         final String sql2 = person.id.orderBy(person.id).show(new GenericDialect());
         assertSimilar(sql, sql2);
@@ -38,9 +39,10 @@ public class CursorSpecificationTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        new Scenario(person.id.orderBy(person.id)) {
+        final AbstractQueryExpressionBasic<Long> queryExpressionBasic = person.id.orderBy(person.id);
+        new Scenario(queryExpressionBasic) {
             @Override
-            void use(AbstractCursorSpecification<Long> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQueryExpressionBasic<Long> query, QueryEngine engine) throws SQLException {
                 final List<Long> expected = Arrays.asList(123L);
                 assertEquals(expected, query.list(engine));
             }
@@ -50,15 +52,15 @@ public class CursorSpecificationTest extends SqlTestCase {
     public void testScroll() throws Exception {
         new Scenario(person.id.orderBy(person.id)) {
             @Override
-            void use(AbstractCursorSpecification<Long> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQueryExpressionBasic<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Long>(123L)));
             }
         }.play();
     }
 
-    private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractCursorSpecification<Long>> {
+    private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryExpressionBasic<Long>> {
 
-        private Scenario(AbstractCursorSpecification<Long> query) {
+        private Scenario(AbstractQueryExpressionBasic<Long> query) {
             super(query);
         }
 

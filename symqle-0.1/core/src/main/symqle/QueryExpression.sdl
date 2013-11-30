@@ -13,10 +13,6 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
 # see QueryBase.sdl, Where.sdl
 
 <T> QueryExpressionBody<T> ::=
-    qb:QueryBase<T> :: implicit {}
-|
-    qb:QueryBase<T> wc:WhereClause :: public AbstractQueryExpressionBody<T> where {}
-|
     qs:QuerySpecification<T> :: implicit {}
 ;
 
@@ -161,22 +157,12 @@ public interface QueryPrimary<T> extends Scalar<T>  : Query<T> {}
 public class AbstractQueryPrimary<T> implements QueryPrimary<T> {}
 
 <T> QueryPrimary<T> ::=
-    qs:QuerySpecification<T> :: implicit {}
+    qs:QuerySpecificationScalar<T> :: implicit {}
 |
     LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN :: implicit {}
 ;
 
 
-public interface QuerySpecification<T> extends Scalar<T> : Query<T> {}
-
-public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
-
-<T> QuerySpecification<T> ::=
-    qb:QueryBaseScalar<T> :: implicit {}
-|
-    qb:QueryBaseScalar<T> wc:WhereClause ::
-         public AbstractQuerySpecification<T> where {}
-;
 
 
 

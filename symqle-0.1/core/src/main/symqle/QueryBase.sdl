@@ -1,3 +1,27 @@
+
+public interface QuerySpecification<T> : Query<T> {}
+public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
+
+public interface QuerySpecificationScalar<T> extends Scalar<T> : Query<T> {}
+public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationScalar<T> {}
+
+<T> QuerySpecificationScalar<T> ::=
+    qb:QueryBaseScalar<T> :: implicit {}
+|
+    qb:QueryBaseScalar<T> wc:WhereClause ::
+         public AbstractQuerySpecificationScalar<T> where {}
+;
+
+<T> QuerySpecification<T> ::=
+    qb:QueryBase<T> :: implicit {}
+|
+    qb:QueryBase<T> wc:WhereClause ::
+         public AbstractQuerySpecification<T> where {}
+;
+
+
+
+
 # QueryBase and QueryBaseScalar
 
 public interface QueryBase<T> : Query<T> {}
@@ -7,6 +31,36 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
 # see SelectList.sdl, FromClause.sdl
 # all methods derived from syntax are protected
 # public methods do not include FromClause
+
+public interface QueryBaseScalar<T> extends Scalar<T> :  Query<T> {}
+
+public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
+
+# see SelectList.sdl, FromClause.sdl
+
+<T> QueryBaseScalar<T> ::=
+    SELECT sl:SelectListScalar<T> fc:FromClause :: protected QueryBaseScalar<T> from {}
+|
+    SELECT ALL sl:SelectListScalar<T> fc:FromClause ::
+         protected AbstractQueryBaseScalar<T> selectAll {}
+|
+    SELECT DISTINCT sl:SelectListScalar<T> fc:FromClause ::
+         protected AbstractQueryBaseScalar<T> distinct {}
+;
+
+
+:: <T> QueryBaseScalar<T> implicit(final SelectListScalar<T> sl) {
+    return from(sl, new ImplicitFromClause());
+}
+
+# public methods for construction of AbstractQueryBaseScalar
+:: public <T> AbstractQueryBaseScalar<T> selectAll(final SelectListScalar<T> sl) {
+    return selectAll(sl, new ImplicitFromClause());
+}
+
+:: public <T> AbstractQueryBaseScalar<T> distinct(final SelectListScalar<T> sl) {
+    return distinct(sl, new ImplicitFromClause());
+}
 
 <T> QueryBase<T> ::=
     SELECT sl:SelectList<T> fc:FromClause :: protected QueryBase<T> from {}
@@ -35,35 +89,4 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
     return distinct(sl, new ImplicitFromClause());
 }
 
-# :: <T> QueryBase<T> implicit (final SelectList<T> sl) {}
 
-public interface QueryBaseScalar<T> extends Scalar<T> :  Query<T> {}
-
-public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
-
-# scalar counterpart of SelectList is SelectSublist rather than SelectListScalar
-# see SelectList.sdl, FromClause.sdl
-
-<T> QueryBaseScalar<T> ::=
-    SELECT sl:SelectSublist<T> fc:FromClause :: protected QueryBaseScalar<T> from {}
-|
-    SELECT ALL sl:SelectSublist<T> fc:FromClause ::
-         protected AbstractQueryBaseScalar<T> selectAll {}
-|
-    SELECT DISTINCT sl:SelectSublist<T> fc:FromClause ::
-         protected AbstractQueryBaseScalar<T> distinct {}
-;
-
-
-:: <T> QueryBaseScalar<T> implicit(final SelectSublist<T> sl) {
-    return from(sl, new ImplicitFromClause());
-}
-
-# public methods for construction of AbstractQueryBaseScalar
-:: public <T> AbstractQueryBaseScalar<T> selectAll(final SelectSublist<T> sl) {
-    return selectAll(sl, new ImplicitFromClause());
-}
-
-:: public <T> AbstractQueryBaseScalar<T> distinct(final SelectSublist<T> sl) {
-    return distinct(sl, new ImplicitFromClause());
-}

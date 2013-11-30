@@ -59,10 +59,10 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testWhere() throws Exception {
-        final AbstractQueryExpression<Pair<Long, String>> queryExpression = person.id.pair(person.name).where(person.name.isNotNull());
-        final String sql = queryExpression.show(new GenericDialect());
+        final AbstractQuerySpecification<Pair<Long, String>> querySpecification = person.id.pair(person.name).where(person.name.isNotNull());
+        final String sql = querySpecification.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
-        final String sql2 = queryExpression.show(new GenericDialect());
+        final String sql2 = querySpecification.show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
@@ -182,9 +182,10 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testWhereList() throws Exception {
-        new Scenario<AbstractQueryExpression<Pair<Long, String>>>(person.id.pair(person.name).where(person.name.isNotNull())) {
+        final AbstractQuerySpecification<Pair<Long, String>> specification = person.id.pair(person.name).where(person.name.isNotNull());
+        new Scenario<AbstractQuerySpecification<Pair<Long, String>>>(specification) {
             @Override
-            protected void use(AbstractQueryExpression<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+            protected void use(AbstractQuerySpecification<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
                 final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
                 assertEquals(expected, query.list(engine));
             }
@@ -192,9 +193,9 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testWhereScroll() throws Exception {
-        new Scenario<AbstractQueryExpression<Pair<Long, String>>>(person.id.pair(person.name).where(person.name.isNotNull())) {
+        new Scenario<AbstractQuerySpecification<Pair<Long, String>>>(person.id.pair(person.name).where(person.name.isNotNull())) {
             @Override
-            protected void use(AbstractQueryExpression<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+            protected void use(AbstractQuerySpecification<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
             }
         }.play();

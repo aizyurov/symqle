@@ -90,16 +90,6 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 WHERE T1.name IS NULL", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final String sql = person.id.count().orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 ORDER BY C1 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = person.id.count().orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 ORDER BY C1 DESC", sql);
-    }
-
     public void testExists() throws Exception {
         // rather meaningless
         final Person parent = new Person();

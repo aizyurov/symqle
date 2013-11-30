@@ -261,28 +261,6 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY T1.id", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final Column<Long> id = person.id;
-        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        try {
-            final String sql = param.orderAsc().show(new GenericDialect());
-            fail("MalformedStatementException expected");
-        } catch (MalformedStatementException e) {
-            // expected
-        }
-    }
-
-    public void testOrderDesc() throws Exception {
-        final Column<Long> id = person.id;
-        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        try {
-            final String sql = param.orderDesc().show(new GenericDialect());
-            fail("MalformedStatementException expected");
-        } catch (MalformedStatementException e) {
-            // expected
-        }
-    }
-
     public void testAsSortSpecification() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);

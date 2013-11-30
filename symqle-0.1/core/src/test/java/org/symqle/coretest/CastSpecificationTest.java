@@ -61,16 +61,6 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.distinct().show(new GenericDialect()));
     }
 
-    public void testOrderAsc() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
-        assertEquals("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0 ASC", col.orderAsc().show(new GenericDialect()));
-    }
-
-    public void testOrderDesc() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
-        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0 DESC", col.orderDesc().show(new GenericDialect()));
-    }
-
     public void testAsFunctionArgument() throws Exception {
         final String sql = SqlFunction.create("abs", Mappers.LONG).apply(person.id.cast("NUMBER (12,0)")).show(new GenericDialect());
         assertSimilar("SELECT abs(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);

@@ -167,7 +167,8 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 # Changes:
 # [ <with clause> ] not supported
 # [ <result offset clause> ] [ <fetch first clause> ] -> [ <result offset clause> [ <fetch first clause> ]]
-# i.e. we require offset if there is an limit, but may be offset only
+# i.e. we require limit if there is an offset, but may be limit only
+# offset only is not allowed (mysql limitation)
 # additional non-terminals
 #     QueryExpressionBasic for <query expression body> [ <order by clause> ]
 # two flavors: QueryExpressionBody and QueryExpressionBodyScalar
@@ -190,13 +191,13 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
       private AbstractQueryExpression<T> offsetAndLimit {}
 
 |
-    qe:QueryExpressionBasic<T> OFFSET offset:Literal ::
-      private AbstractQueryExpression<T> offsetOnly {}
+    qe:QueryExpressionBasic<T> LIMIT limit:Literal ::
+      private AbstractQueryExpression<T> limitOnly {}
 ;
 
 # public methods
-:: public <T> AbstractQueryExpression<T> offset(final QueryExpressionBasic<T> qeb, int offset) {
-    return offsetOnly(qeb, new IntLiteral(offset));
+:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
+    return limitOnly(qeb, new IntLiteral(limit));
 }
 
 :: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit, int offset) {
@@ -214,9 +215,21 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
     body:QueryExpressionBody<T> :: implicit {}
 |
     body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
+|
+    body:QueryExpressionBodyScalar<T> :: implicit {}
+|
+    body:QueryExpressionBodyScalar<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
 ;
 
 ::  public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+    SortSpecificationList list = createSortSpecificationList(sort);
+     for (SortSpecification add: additionalSort) {
+         list = appendSortSpecification(list, add);
+     }
+     return  orderBy(qe, createOrderByClause(list));
+}
+
+::  public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBodyScalar<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
     SortSpecificationList list = createSortSpecificationList(sort);
      for (SortSpecification add: additionalSort) {
          list = appendSortSpecification(list, add);

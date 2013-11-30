@@ -24,16 +24,6 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final String sql = characterFactor.orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 ORDER BY C1 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = characterFactor.orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 ORDER BY C1 DESC", sql);
-    }
-
     public void testCast() throws Exception {
         final String sql = characterFactor.cast("CHAR(10)").show(new GenericDialect());
         assertSimilar("SELECT CAST(T1.name COLLATE latin1_general_ci AS CHAR(10)) AS C1 FROM person AS T1", sql);

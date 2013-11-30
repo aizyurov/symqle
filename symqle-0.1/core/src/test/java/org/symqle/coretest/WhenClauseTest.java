@@ -177,16 +177,6 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 ORDER BY T0.nick", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
-    }
-
     public void testOrderByNullsFirst() throws Exception {
         String sql = person.id.orderBy(person.age.gt(20L).then(person.name).nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name END NULLS FIRST", sql);

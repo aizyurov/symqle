@@ -93,16 +93,6 @@ public class QueryPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM employee AS T1 WHERE T1.name LIKE ? FOR UPDATE", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final String sql = queryPrimary.orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM employee AS T1 WHERE T1.name LIKE ? ORDER BY C1 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = queryPrimary.orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM employee AS T1 WHERE T1.name LIKE ? ORDER BY C1 DESC", sql);
-    }
-
     public void testQueryValue() throws Exception {
         final String sql = queryPrimary.queryValue().orderBy(new Employee().id).show(new GenericDialect());
         assertSimilar("SELECT(SELECT COUNT(T1.id) FROM employee AS T1 WHERE T1.name LIKE ?) AS C1 FROM employee AS T2 ORDER BY T2.id", sql);
@@ -111,7 +101,7 @@ public class QueryPrimaryTest extends SqlTestCase {
     public void testList() throws Exception {
         new Scenario(queryPrimary) {
             @Override
-            void use(AbstractQueryPrimary<Integer> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQuerySpecificationScalar<Integer> query, QueryEngine engine) throws SQLException {
                 final List<Integer> expected = Arrays.asList(123);
                 final List<Integer> list = queryPrimary.list(
                         engine);
@@ -123,7 +113,7 @@ public class QueryPrimaryTest extends SqlTestCase {
     public void testScroll() throws Exception {
         new Scenario(queryPrimary) {
             @Override
-            void use(AbstractQueryPrimary<Integer> query, QueryEngine engine) throws SQLException {
+            void use(AbstractQuerySpecificationScalar<Integer> query, QueryEngine engine) throws SQLException {
                 int rows = queryPrimary.scroll(
                     engine, new TestCallback<Integer>(123));
                 assertEquals(1, rows);
@@ -131,9 +121,9 @@ public class QueryPrimaryTest extends SqlTestCase {
         }.play();
     }
 
-    private abstract class Scenario extends AbstractQueryScenario<Integer, AbstractQueryPrimary<Integer>> {
+    private abstract class Scenario extends AbstractQueryScenario<Integer, AbstractQuerySpecificationScalar<Integer>> {
 
-        protected Scenario(AbstractQueryPrimary<Integer> query) {
+        protected Scenario(AbstractQuerySpecificationScalar<Integer> query) {
             super(query, "C0");
         }
 
@@ -161,7 +151,7 @@ public class QueryPrimaryTest extends SqlTestCase {
     }
 
     private static final Employee employee = new Employee();
-    private static final AbstractQueryPrimary<Integer> queryPrimary = employee.id.count().where(employee.name.like("A%"));
+    private static final AbstractQuerySpecificationScalar<Integer> queryPrimary = employee.id.count().where(employee.name.like("A%"));
 
 
 }

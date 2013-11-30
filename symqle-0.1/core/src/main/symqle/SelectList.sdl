@@ -30,6 +30,14 @@ import org.symqle.common.Pair;
     }
 ;
 
+public interface SelectListScalar<T> extends Scalar<T> : Query<T> {}
+
+<T> SelectListScalar<T> ::=
+    ssl:SelectSublist<T> :: implicit {}
+|
+    asl:AggregateSelectSublist<T> :: implicit {}
+;
+
 
 
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}

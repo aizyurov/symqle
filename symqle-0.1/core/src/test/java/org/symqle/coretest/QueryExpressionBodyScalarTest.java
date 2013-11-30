@@ -29,7 +29,8 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
     }
 
     public void testShow() throws Exception {
-        final String sql = employee.id.union(manager.id).show(new GenericDialect());
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.union(manager.id);
+        final String sql = queryExpressionBodyScalar.show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2", sql);
         final String sql2 = employee.id.union(manager.id).show(new GenericDialect());
         assertSimilar(sql, sql2);
@@ -43,16 +44,6 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
     public void testForReadOnly() throws Exception {
         final String sql = employee.id.union(manager.id).forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 FOR READ ONLY", sql);
-    }
-
-    public void testOrderAsc() throws Exception {
-        final String sql = employee.id.union(manager.id).orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 ORDER BY C0 ASC", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = employee.id.union(manager.id).orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 ORDER BY C0 DESC", sql);
     }
 
     public void testUnion() throws Exception {

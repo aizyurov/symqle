@@ -7,11 +7,7 @@ import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractValueExpressionPrimary;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.sql.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -29,7 +25,8 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     public void testShow() throws Exception {
         {
             try {
-                final String sql = person.id.where(person.name.eq(employee.name)).queryValue().show(new GenericDialect());
+                final AbstractQuerySpecificationScalar<Long> querySpecificationScalar = person.id.where(person.name.eq(employee.name));
+                final String sql = querySpecificationScalar.queryValue().show(new GenericDialect());
                 fail("expected MalformedStatementException but was " + sql);
             } catch (MalformedStatementException e) {
                 assertTrue(e.getMessage(), e.getMessage().startsWith("Implicit cross joins are not allowed"));
@@ -241,24 +238,6 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final String sql = person.id.where(person.name.eq(employee.name)).queryValue().orderBy(employee.id).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0 FROM employee AS T1 ORDER BY T1.id", sql);
-    }
-
-    public void testOrderAsc() throws Exception {
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().orderAsc().show(new GenericDialect());
-            fail("MalformedStatementException expected");
-        } catch (Exception e) {
-            // OK
-        }
-    }
-
-    public void testOrderDesc() throws Exception {
-        try {
-            final String sql = person.id.where(person.name.eq(employee.name)).queryValue().orderDesc().show(new GenericDialect());
-            fail("MalformedStatementException expected");
-        } catch (Exception e) {
-            // OK
-        }
     }
 
     public void testAsSortSpecification() throws Exception {

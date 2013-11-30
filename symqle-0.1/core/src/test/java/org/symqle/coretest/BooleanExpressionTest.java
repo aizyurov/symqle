@@ -1,10 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
-import org.symqle.sql.AbstractQuerySpecification;
-import org.symqle.sql.Column;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.sql.*;
 
 /**
  * @author lvovich
@@ -47,8 +44,8 @@ public class BooleanExpressionTest extends SqlTestCase {
     }
 
     public void testIsUnknown() throws Exception {
-        final AbstractQuerySpecification<Long> where = person.id.where(person.alive.asPredicate().or(person.cute.asPredicate()).isUnknown());
-        final String sql = where.orderBy(person.id).show(new GenericDialect());
+        final AbstractQuerySpecificationScalar<Long> querySpecificationScalar = person.id.where(person.alive.asPredicate().or(person.cute.asPredicate()).isUnknown());
+        final String sql = querySpecificationScalar.orderBy(person.id).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) IS UNKNOWN ORDER BY T0.id", sql);
     }
 

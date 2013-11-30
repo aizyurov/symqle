@@ -47,24 +47,9 @@ public class QueryBaseScalarTest extends SqlTestCase {
         assertSimilar("SELECT ALL T2.id AS C1 FROM person AS T2 WHERE T2.name IS NOT NULL", sql);
     }
 
-    public void testOrderAsc() throws Exception {
-        final String sql = person.id.selectAll().orderAsc().show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0 ASC", sql);
-    }
-
-    public void testOrderBy() throws Exception {
-        final String sql = person.id.selectAll().orderBy(person.name).show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY T0.name", sql);
-    }
-
     public void testAllForUpdate() throws Exception {
         final String sql = person.id.selectAll().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
-    }
-
-    public void testOrderDesc() throws Exception {
-        final String sql = person.id.selectAll().orderDesc().show(new GenericDialect());
-        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 ORDER BY C0 DESC", sql);
     }
 
     public void testDistincgForUpdate() throws Exception {
