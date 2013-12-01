@@ -3,14 +3,17 @@
 
 # corresponds to <direct_select_statement: multiple rows>
 
-public interface SelectStatement<T> : Query<T> {}
+import java.sql.SQLException;
+import org.symqle.jdbc.Option;
+import org.symqle.jdbc.QueryEngine;
+public interface SelectStatement<T> : Query<T> {
+}
 
 public class AbstractSelectStatement<T> implements SelectStatement<T> {}
 
 # key Symqle methods to query values
 
 import java.sql.SQLException;
-import org.symqle.common.Callback;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 ::
@@ -189,7 +192,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
       private AbstractQueryExpression<T> offsetAndLimit {}
 
 |
-    qe:QueryExpressionBasic<T> LIMIT limit:Literal ::
+    qe:QueryExpressionBasic<T> FETCH FIRST limit:Literal ROWS ONLY ::
       private AbstractQueryExpression<T> limitOnly {}
 ;
 
@@ -198,7 +201,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
     return limitOnly(qeb, new IntLiteral(limit));
 }
 
-:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit, int offset) {
+:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
               return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
 }
 
@@ -213,21 +216,9 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
     body:QueryExpressionBody<T> :: implicit {}
 |
     body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
-|
-    body:QueryExpressionBodyScalar<T> :: implicit {}
-|
-    body:QueryExpressionBodyScalar<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
 ;
 
 ::  public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
-    SortSpecificationList list = createSortSpecificationList(sort);
-     for (SortSpecification add: additionalSort) {
-         list = appendSortSpecification(list, add);
-     }
-     return  orderBy(qe, createOrderByClause(list));
-}
-
-::  public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBodyScalar<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
     SortSpecificationList list = createSortSpecificationList(sort);
      for (SortSpecification add: additionalSort) {
          list = appendSortSpecification(list, add);

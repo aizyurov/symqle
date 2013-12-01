@@ -85,6 +85,23 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 FOR READ ONLY", sql);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = person.id.count().limit(1).show(new GenericDialect());
+        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 FETCH FIRST 1 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = person.id.count().limit(1, 2).show(new GenericDialect());
+        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY", sql);
+    }
+
+    public void testOrderBy() throws Exception {
+        // incorrect statement! must have GROUP BY
+        // will throw SQLException with real database
+        final String sql = person.id.count().orderBy(person.name).show(new GenericDialect());
+        assertSimilar("SELECT COUNT(T0.id) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
+    }
+
     public void testWhere() throws Exception {
         final String sql = person.id.count().where(person.name.isNull()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 WHERE T1.name IS NULL", sql);

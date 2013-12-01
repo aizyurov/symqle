@@ -3,7 +3,7 @@
 (done) common functions
 database-specific functions
 (done) Remove singletons -use no-arg constructor for dialects.
-decouple dialect mappings and DataSourceGate (via symqle-dialect.properties).
+(done) decouple dialect mappings and DataSourceGate (via symqle-dialect.properties).
 
 Postgresql dialect
 Oracle dialect
@@ -11,3 +11,6 @@ Sybase dialect
 
 test transactions
 SpringEngine (transactions)
+
+SmartSelector: get(MapRow); map-like implementation of Row - key is Sql produced with DebugDialect/MockTableRegistry.
+MockTableRegistry returns table.toString for getCorrelationName (so subquiries beleive all tables are from top level scope).

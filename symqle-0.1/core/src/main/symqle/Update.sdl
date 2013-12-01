@@ -28,6 +28,9 @@
 #  <null specification> ::= NULL
 #  <default specification> ::= DEFAULT
 
+import java.sql.SQLException;
+import org.symqle.jdbc.Option;
+import org.symqle.jdbc.Engine;
 public interface DataChangeStatement : Sql {}
 
 :: private static Sql prepareUpdate(final DataChangeStatement statement, final SqlContext initialContext, final ColumnName<?> keyColumn, final Option[] options) {
@@ -184,8 +187,11 @@ public class Table extends TableOrView implements TargetTable {
     }
 }
 
-public interface InsertStatement : Sql {}
 
+import java.sql.SQLException;
+import org.symqle.jdbc.Option;
+import org.symqle.jdbc.Engine;
+public interface InsertStatement : Sql {}
 public class AbstractInsertStatement implements InsertStatement {}
 
 # TODO <override clause> not implemented

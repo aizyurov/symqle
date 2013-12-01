@@ -9,16 +9,23 @@ public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationSc
     qb:QueryBaseScalar<T> :: implicit {}
 |
     qb:QueryBaseScalar<T> wc:WhereClause ::
-         public AbstractQuerySpecificationScalar<T> where {}
+         private AbstractQuerySpecificationScalar<T> whereScalar {}
 ;
 
 <T> QuerySpecification<T> ::=
     qb:QueryBase<T> :: implicit {}
 |
     qb:QueryBase<T> wc:WhereClause ::
-         public AbstractQuerySpecification<T> where {}
+         public AbstractQuerySpecification<T> whereTuple {}
 ;
 
+:: public <T> AbstractQuerySpecification<T> where(final AbstractQueryBase<T> qb, final WhereClause wc) {
+    return whereTuple(qb, wc);
+}
+
+:: public <T> AbstractQuerySpecificationScalar<T> where(final AbstractQueryBaseScalar<T> qb, final WhereClause wc) {
+    return whereScalar(qb, wc);
+}
 
 
 
@@ -54,11 +61,11 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 }
 
 # public methods for construction of AbstractQueryBaseScalar
-:: public <T> AbstractQueryBaseScalar<T> selectAll(final SelectListScalar<T> sl) {
+:: public <T> AbstractQueryBaseScalar<T> selectAll(final AbstractSelectListScalar<T> sl) {
     return selectAll(sl, new ImplicitFromClause());
 }
 
-:: public <T> AbstractQueryBaseScalar<T> distinct(final SelectListScalar<T> sl) {
+:: public <T> AbstractQueryBaseScalar<T> distinct(final AbstractSelectListScalar<T> sl) {
     return distinct(sl, new ImplicitFromClause());
 }
 
@@ -81,11 +88,11 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 }
 
 # public methods for construction of AbstractQueryBase
-:: public <T> AbstractQueryBase<T> selectAll(final SelectList<T> sl) {
+:: public <T> AbstractQueryBase<T> selectAll(final AbstractSelectList<T> sl) {
     return selectAll(sl, new ImplicitFromClause());
 }
 
-:: public <T> AbstractQueryBase<T> distinct(final SelectList<T> sl) {
+:: public <T> AbstractQueryBase<T> distinct(final AbstractSelectList<T> sl) {
     return distinct(sl, new ImplicitFromClause());
 }
 

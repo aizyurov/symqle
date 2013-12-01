@@ -14,6 +14,8 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
 
 <T> QueryExpressionBody<T> ::=
     qs:QuerySpecification<T> :: implicit {}
+|
+    qebs:QueryExpressionBodyScalar<T> :: implicit {}
 ;
 
 :: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionBodyScalar<T> qe, final QueryTerm<T> qt) {
