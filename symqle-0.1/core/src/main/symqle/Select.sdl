@@ -4,6 +4,7 @@
 # corresponds to <direct_select_statement: multiple rows>
 
 import java.sql.SQLException;
+import java.util.List;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 public interface SelectStatement<T> : Query<T> {
@@ -139,6 +140,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 # Changes:
 # <cursor specification> is redundant for Symqle (may be intrioduced later
 # [ OF column_name_list ] not supported
+# SelectStatement methods require these imports, but it has no productions for its methods
 
 <T> SelectStatement<T> ::=
     qe:QueryExpression<T> :: implicit {}

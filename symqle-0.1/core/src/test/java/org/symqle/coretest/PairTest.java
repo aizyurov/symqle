@@ -154,7 +154,8 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testDistinctScroll() throws Exception {
-        new Scenario<AbstractQueryBase<Pair<Long, String>>>(person.id.pair(person.name).distinct()) {
+        final AbstractSelectList<Pair<Long, String>> pair = person.id.pair(person.name);
+        new Scenario<AbstractQueryBase<Pair<Long, String>>>(pair.distinct()) {
             @Override
             protected void use(AbstractQueryBase<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
