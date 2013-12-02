@@ -11,9 +11,7 @@ public class ImplicitConversionsTest extends TestCase {
     public void testQueryExpression() throws Exception {
         final SelectSublist<Long> selectSublist = Symqle.z$SelectSublist$from$ValueExpression(person.id);
         assertEquals(Mappers.LONG, selectSublist.getMapper());
-        final SelectListScalar<Long> selectListScalar = Symqle.z$SelectListScalar$from$SelectSublist(selectSublist);
-        assertEquals(Mappers.LONG, selectListScalar.getMapper());
-        final QueryBaseScalar<Long> queryBaseScalar = Symqle.z$QueryBaseScalar$from$SelectListScalar(selectListScalar);
+        final QueryBaseScalar<Long> queryBaseScalar = Symqle.z$QueryBaseScalar$from$SelectSublist(selectSublist);
         assertEquals(Mappers.LONG, queryBaseScalar.getMapper());
         final QuerySpecificationScalar<Long> querySpecification = Symqle.z$QuerySpecificationScalar$from$QueryBaseScalar(queryBaseScalar);
         assertEquals(Mappers.LONG, querySpecification.getMapper());
@@ -100,8 +98,7 @@ public class ImplicitConversionsTest extends TestCase {
     public void testQueryPrimary() throws Exception {
         final AbstractAggregateFunction<Integer> count = person.id.count();
         final AggregateSelectSublist<Integer> selectSublist = Symqle.z$AggregateSelectSublist$from$AggregateFunction(count);
-        final SelectListScalar<Integer> selectListScalar = Symqle.z$SelectListScalar$from$AggregateSelectSublist(selectSublist);
-        final QueryBaseScalar<Integer> queryBaseScalar = Symqle.z$QueryBaseScalar$from$SelectListScalar(selectListScalar);
+        final QueryBaseScalar<Integer> queryBaseScalar = Symqle.z$QueryBaseScalar$from$AggregateSelectSublist(selectSublist);
         final QuerySpecificationScalar<Integer> querySpecificationScalar = Symqle.z$QuerySpecificationScalar$from$QueryBaseScalar(queryBaseScalar);
         final QueryPrimary<Integer> queryPrimary = Symqle.z$QueryPrimary$from$QuerySpecificationScalar(querySpecificationScalar);
         assertEquals(Mappers.INTEGER, selectSublist.getMapper());

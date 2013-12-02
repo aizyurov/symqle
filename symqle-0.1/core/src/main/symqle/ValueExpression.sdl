@@ -9,7 +9,7 @@ public interface ValueExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractValueExpression<T> implements ValueExpression<T> {}
 
-:: public <T> AbstractValueExpression<T> map(final AbstractValueExpression<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractValueExpression<T> map(final ValueExpression<?> e, final Mapper<T> mapper) {
     return new AbstractValueExpression<T>() {
         @Override
         public Mapper<T> getMapper() {
@@ -47,7 +47,7 @@ public interface StringExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractStringExpression<T> implements StringExpression<T> {}
 
-:: public <T> AbstractStringExpression<T> map(final AbstractStringExpression<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractStringExpression<T> map(final StringExpression<?> e, final Mapper<T> mapper) {
     return new AbstractStringExpression<T>() {
         @Override
         public Mapper<T> getMapper() {

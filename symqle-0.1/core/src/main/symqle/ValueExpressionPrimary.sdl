@@ -18,7 +18,7 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 
 public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary<T> {}
 
-:: public <T> AbstractValueExpressionPrimary<T> map(final AbstractValueExpressionPrimary<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractValueExpressionPrimary<T> map(final ValueExpressionPrimary<?> e, final Mapper<T> mapper) {
     return new AbstractValueExpressionPrimary<T>() {
         @Override
         public Mapper<T> getMapper() {

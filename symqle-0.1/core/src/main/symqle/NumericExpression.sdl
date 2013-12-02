@@ -24,7 +24,7 @@ NumericExpression<Number> ::=
          }
 ;
 
-:: public <T> AbstractNumericExpression<T> map(final AbstractNumericExpression<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractNumericExpression<T> map(final NumericExpression<?> e, final Mapper<T> mapper) {
     return new AbstractNumericExpression<T>() {
         @Override
         public Mapper<T> getMapper() {
@@ -78,7 +78,7 @@ Term<Number> ::=
     return div(t, DynamicParameter.create(Mappers.NUMBER, n));
  }
 
-:: public <T> AbstractTerm<T> map(final AbstractTerm<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractTerm<T> map(final Term<?> e, final Mapper<T> mapper) {
     return new AbstractTerm<T>() {
         @Override
         public Mapper<T> getMapper() {
@@ -105,7 +105,7 @@ public class AbstractFactor<T> implements Factor<T> {}
     MINUS e:ValueExpressionPrimary<T> :: public AbstractFactor<T> opposite {}
 ;
 
-:: public <T> AbstractFactor<T> map(final AbstractFactor<?> e, final Mapper<T> mapper) {
+:: public <T> AbstractFactor<T> map(final Factor<?> e, final Mapper<T> mapper) {
     return new AbstractFactor<T>() {
         @Override
         public Mapper<T> getMapper() {

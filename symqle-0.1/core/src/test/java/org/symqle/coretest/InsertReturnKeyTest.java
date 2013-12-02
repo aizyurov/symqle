@@ -10,7 +10,6 @@ import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractInsertStatement;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
-import org.symqle.sql.Symqle;
 import org.symqle.sql.Table;
 
 import java.util.Arrays;
@@ -25,7 +24,8 @@ import static org.easymock.EasyMock.verify;
 public class InsertReturnKeyTest extends TestCase {
 
     public void testExecute() throws Exception {
-        final AbstractInsertStatement update = person.insert(person.name.set(Symqle.currentDate().map(Mappers.STRING)));
+        final Person people = new Person();
+        final AbstractInsertStatement update = person.insert(person.subordinatesCount.set(people.id.count().queryValue()));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
         final SqlParameter param =createMock(SqlParameter.class);
@@ -58,6 +58,7 @@ public class InsertReturnKeyTest extends TestCase {
         }
         public Column<Long> id = defineColumn(Mappers.LONG, "id");
         public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Integer> subordinatesCount = defineColumn(Mappers.INTEGER, "total");
     }
 
     private static Person person = new Person();

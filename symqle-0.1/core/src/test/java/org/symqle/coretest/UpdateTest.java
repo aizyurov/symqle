@@ -23,7 +23,8 @@ import static org.easymock.EasyMock.verify;
 public class UpdateTest extends SqlTestCase {
 
     public void testOneColumn() throws Exception {
-        final String sql = person.update(person.parentId.set(person.id)).show(new GenericDialect());
+        final AbstractUpdateStatementBase update = person.update(person.parentId.set(person.id));
+        final String sql = update.show(new GenericDialect());
         assertSimilar("UPDATE person SET parent_id = person.id", sql);
         final String sql2 = person.update(person.parentId.set(person.id)).show(new GenericDialect());
         assertSimilar(sql, sql2);
