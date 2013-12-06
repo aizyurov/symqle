@@ -138,7 +138,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 # updatability_clause ::= FOR { READ ONLY | UPDATE [ OF column_name_list ] }
 #
 # Changes:
-# <cursor specification> is redundant for Symqle (may be intrioduced later
+# <cursor specification> is redundant for Symqle (may be introduced later)
 # [ OF column_name_list ] not supported
 # SelectStatement methods require these imports, but it has no productions for its methods
 

@@ -4,14 +4,14 @@ public interface FromClause : Sql {}
 #
 # <table reference list> ::= <table reference> [ { <comma> <table reference> }... ]
 
-FromClause ::= FROM t:TableReferenceList :: protected FromClause createFrom {}
+FromClause ::= FROM t:TableReferenceList :: FromClause createFrom {}
 ;
 
 public interface TableReferenceList : Sql {}
 
-TableReferenceList ::= r:TableReference :: protected TableReferenceList createTableReferenceList {}
+TableReferenceList ::= r:TableReference :: TableReferenceList createTableReferenceList {}
 |
-    l:TableReferenceList COMMA r:TableReference :: protected TableReferenceList appendTableReferenceList {}
+    l:TableReferenceList COMMA r:TableReference :: TableReferenceList appendTableReferenceList {}
 ;
 
 # <table reference> ::= <table primary or joined table> [ <sample clause> ]
@@ -20,9 +20,9 @@ TableReferenceList ::= r:TableReference :: protected TableReferenceList createTa
 public interface TableReference : Sql {}
 
 TableReference ::=
-    t:TablePrimary :: protected TableReference tableReferenceFromPrimary {}
+    t:TablePrimary :: TableReference tableReferenceFromPrimary {}
 |
-    t:JoinedTable :: protected TableReference tableReferenceFromJoinedTable {}
+    t:JoinedTable :: TableReference tableReferenceFromJoinedTable {}
 ;
 
 public interface JoinedTable : Sql {}
@@ -43,10 +43,10 @@ public interface TablePrimary : Sql {}
 TablePrimary ::= t:TableName AS id:Identifier
 ;
 
-JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable leftJoin {}
-    | l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable rightJoin {}
-    | l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable innerJoin {}
-    | l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable outerJoin {}
+JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: JoinedTable leftJoin {}
+    | l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: JoinedTable rightJoin {}
+    | l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: JoinedTable innerJoin {}
+    | l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: JoinedTable outerJoin {}
 ;
 
 public interface TableName : Sql {

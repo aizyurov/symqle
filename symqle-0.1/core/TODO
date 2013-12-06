@@ -29,7 +29,7 @@ Remove list(DataSource,...) ?
 
 (done) collate clause
 
-Symqle methods visibility. Package scope and public methods of Symqle become public in abstract classes. Protected methods make no sense - to be removed. 
+(done) Symqle methods visibility. Package scope and public methods of Symqle become public in abstract classes. Protected methods make no sense - to be removed.
 
 (done) rename booleanValue -> asPredicate
 
@@ -60,9 +60,7 @@ insertFrom: t.insert(t.rows(t.x.set(s.x), t.y.set(s.z).where(s.w.eq(0)))).execut
 
 Labels, LabelRegistry (?) (for union/except/intersect and subqueries)
 
-Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client. Another possibility: Key<Type, Marker>.
-They will not be assignable to each other. Then only Key is in symqle-client, need not generate code for each new key
-- just new Marker interface (suspicious)
+Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client.
 
 Generator: generate client (primary keys, DTO, FullDTO)
 
@@ -71,13 +69,14 @@ Generator: simple xml to override defaults (use JAXB)
 (discarded) Compiler: push methods to interfaces; if there are conflicting interfaces, implement nearest only
 impossible: e.g map(), which is in multiple interfaces, would block all but one.
 
-Compiler: generate TestCases interfaces
-
 (done) Core: refactor Select Statement
 
 (done) Core: make Sql abstract class and enforce this.appendTo(builder); builder.toString().equals(this.toString());
 
-(done) Core: (AggregateSelectList,SelectSublist) -> ScalarSelectList
+Provide a separate class for database system variables. add current_user
 
+compiler: redirect stderr to log
 
+simplify insert/update: use SetClauseList directly and add explicit SetClauseList ::= AbstractSetClauseList COMMA SetClause :: SetClauseList also {}
 
+simplify OrderBy: SortSpecificationList ::= ... :: AbstractSortSpecificationList then(? - conflict with when-then)
