@@ -106,7 +106,7 @@ public class AbstractFactor<T> implements Factor<T> {}
 ;
 
 :: public <T> AbstractFactor<T> map(final Factor<?> e, final Mapper<T> mapper) {
-    return new AbstractFactor<T>() {
+    return new AbstractFactor<T>() {       
         @Override
         public Mapper<T> getMapper() {
             return mapper;
