@@ -37,7 +37,19 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 # see SelectList.sdl, FromClause.sdl
 
 <T> QueryBaseScalar<T> ::=
+    SELECT sl:AggregateSelectSublist<T> :: implicit {
+            public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
+                return from(sl, new ImplicitFromClause()).z$sqlOfQueryBaseScalar(context);
+            }
+    }
+|
     SELECT sl:AggregateSelectSublist<T> fc:FromClause :: private QueryBaseScalar<T> from {}
+|
+    SELECT sl:SelectSublist<T>  :: implicit {
+            public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
+                return from(sl, new ImplicitFromClause()).z$sqlOfQueryBaseScalar(context);
+            }
+    }
 |
     SELECT sl:SelectSublist<T> fc:FromClause :: private QueryBaseScalar<T> from {}
 |
@@ -49,13 +61,6 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 ;
 
 
-:: <T> QueryBaseScalar<T> implicit(final AggregateSelectSublist<T> sl) {
-    return from(sl, new ImplicitFromClause());
-}
-
-:: <T> QueryBaseScalar<T> implicit(final SelectSublist<T> sl) {
-    return from(sl, new ImplicitFromClause());
-}
 
 # public methods for construction of AbstractQueryBaseScalar
 :: public <T> AbstractQueryBaseScalar<T> selectAll(final SelectSublist<T> sl) {
@@ -67,30 +72,34 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 }
 
 <T> QueryBase<T> ::=
+    SELECT sl:SelectList<T> :: implicit {
+        public Query<T> z$sqlOfQueryBase(final SqlContext context) {
+            return from(sl, new ImplicitFromClause()).z$sqlOfQueryBase(context);
+        }
+    }
+|
     SELECT sl:SelectList<T> fc:FromClause :: private QueryBase<T> from {}
+|
+    SELECT ALL sl:SelectList<T> :: public AbstractQueryBase<T> selectAll {
+        public Query<T> z$sqlOfQueryBase(final SqlContext context) {
+            return selectAll(sl, new ImplicitFromClause()).z$sqlOfQueryBase(context);
+        }
+    }
 |
     SELECT ALL sl:SelectList<T> fc:FromClause ::
          private AbstractQueryBase<T> selectAll {
          }
+|
+    SELECT DISTINCT sl:SelectList<T> :: public AbstractQueryBase<T> distinct {
+        public Query<T> z$sqlOfQueryBase(final SqlContext context) {
+            return distinct(sl, new ImplicitFromClause()).z$sqlOfQueryBase(context);
+        }
+    }
 |
     SELECT DISTINCT sl:SelectList<T> fc:FromClause ::
          private AbstractQueryBase<T> distinct {
          }
 ;
 
-# implicit conversion from SelectList
-
-:: <T> QueryBase<T> implicit(final SelectList<T> sl) {
-    return from(sl, new ImplicitFromClause());
-}
-
-# public methods for construction of AbstractQueryBase
-:: public <T> AbstractQueryBase<T> selectAll(final SelectList<T> sl) {
-    return selectAll(sl, new ImplicitFromClause());
-}
-
-:: public <T> AbstractQueryBase<T> distinct(final SelectList<T> sl) {
-    return distinct(sl, new ImplicitFromClause());
-}
 
 
