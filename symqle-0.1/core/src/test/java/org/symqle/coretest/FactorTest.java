@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.*;
+import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.*;
 
@@ -33,6 +34,11 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
         final String sql2 = person.id.opposite().show(new GenericDialect());
         assertSimilar(sql, sql2);
+    }
+
+    public void testAsSublist() throws Exception {
+        final String sql = person.id.opposite().queryValue().show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT(SELECT - T0.id FROM person AS T0) AS C0 FROM dual AS T1", sql);
     }
 
     public void testMap() throws Exception {
