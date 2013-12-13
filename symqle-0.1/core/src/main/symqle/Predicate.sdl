@@ -25,13 +25,8 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
     e:ValueExpressionPrimary<T> :: implicit {}
 ;
 
-Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN :: implicit {
-            public Mapper<Boolean> getMapper() {
-                return Mappers.BOOLEAN;
-            }
-    }
-;
-
+# skipped Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN
+# because we can do it better vila ValueExpressionPrimary using asValue()
 
 public interface ComparisonPredicate : Sql {}
 
@@ -98,11 +93,12 @@ public interface InPredicateValue<T> : Sql {}
 ;
 
 public interface InValueList<T> : Sql {}
+public class AbstractInValueList<T> implements InValueList<T> {}
 
 <T>  InValueList<T> ::=
-    e1:ValueExpression<T> :: protected InValueList<T> createInValueList {}
+    e1:ValueExpression<T> :: protected AbstractInValueList<T> createInValueList {}
 |
-    l:InValueList<T> COMMA e:ValueExpression<T> :: protected InValueList<T> append {}
+    l:InValueList<T> COMMA e:ValueExpression<T> :: protected AbstractInValueList<T> append {}
 ;
 
 # public convenience methods for construction of InPredicate from list of ValueExpression
@@ -116,15 +112,25 @@ public interface InValueList<T> : Sql {}
 }
 
 :: public <T> AbstractInPredicate contains(final ScalarSubquery<T> subquery, T element) {
-    return in(DynamicParameter.create(subquery.getMapper(), element), z$InPredicateValue$from$ScalarSubquery(subquery));
+    return DynamicParameter.create(subquery.getMapper(), element).in(new AbstractScalarSubquery<T>() {
+        @Override
+        public Mapper<T> getMapper() {
+            return subquery.getMapper();
+        }
+
+        @Override
+        public Sql z$sqlOfScalarSubquery(final SqlContext context) {
+            return subquery.z$sqlOfScalarSubquery(context);
+        }
+    });
 }
 
 :: protected <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {
-     InValueList<T> list = createInValueList(DynamicParameter.create(mapper, first));
+     AbstractInValueList<T> list = createInValueList(DynamicParameter.create(mapper, first));
      for (T e: other) {
          list = append(list, DynamicParameter.create(mapper, e));
      }
-     return z$InPredicateValue$from$InValueList(list);
+     return list;
 }
 
 public interface NullPredicate : Sql {}

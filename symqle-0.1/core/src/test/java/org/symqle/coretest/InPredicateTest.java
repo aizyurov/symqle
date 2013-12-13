@@ -32,26 +32,6 @@ public class InPredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.name IN(SELECT T1.name FROM employee AS T1)", sql);
     }
 
-    public void testIn() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).in(employee.name.isNotNull().asValue())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) IN(SELECT T2.name IS NOT NULL FROM employee AS T2)", sql);
-    }
-
-    public void testNotIn() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).notIn(employee.name.isNotNull().asValue())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) NOT IN(SELECT T2.name IS NOT NULL FROM employee AS T2)", sql);
-    }
-
-    public void testInList() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).in(true, false)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) IN(?, ?)", sql);
-    }
-
-    public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).notIn(true, false)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) NOT IN(?, ?)", sql);
-    }
-
     public void testIsTrue() throws Exception {
         final String sql = person.id.where(person.name.in(employee.name).isTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IN(SELECT T1.name FROM employee AS T1) IS TRUE", sql);
@@ -80,77 +60,6 @@ public class InPredicateTest extends SqlTestCase {
     public void testIsNotUnknown() throws Exception {
         final String sql = person.id.where(person.name.in(employee.name).isNotUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IN(SELECT T1.name FROM employee AS T1) IS NOT UNKNOWN", sql);
-    }
-
-    public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).isNull()).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) IS NULL", sql);
-    }
-
-    public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).isNotNull()).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) IS NOT NULL", sql);
-    }
-
-    public void testEq() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).eq(person.id.isNotNull())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) =(T0.id IS NOT NULL)", sql);
-    }
-
-    public void testNe() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).ne(person.id.isNotNull())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) <>(T0.id IS NOT NULL)", sql);
-    }
-
-    public void testGt() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).gt(person.id.isNotNull())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) >(T0.id IS NOT NULL)", sql);
-    }
-
-    public void testGe() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).ge(person.id.isNotNull())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) >=(T0.id IS NOT NULL)", sql);
-    }
-
-    public void testLt() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).lt(person.id.isNotNull())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) <(T0.id IS NOT NULL)", sql);
-    }
-
-    public void testLe() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).le(person.id.isNotNull())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) <=(T0.id IS NOT NULL)", sql);
-    }
-
-
-    public void testEqValue() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).eq(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) = ?", sql);
-    }
-
-    public void testNeValue() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).ne(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) <> ?", sql);
-    }
-
-    public void testGtValue() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).gt(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) > ?", sql);
-    }
-
-    public void testGeValue() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).ge(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) >= ?", sql);
-    }
-
-    public void testLtValue() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).lt(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) < ?", sql);
-    }
-
-    public void testLeValue() throws Exception {
-        final String sql = person.id.where(person.name.in(employee.name).le(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name IN(SELECT T1.name FROM employee AS T1)) <= ?", sql);
     }
 
     public void testAsValue() throws Exception {

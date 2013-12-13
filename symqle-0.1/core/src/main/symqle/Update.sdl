@@ -290,7 +290,12 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
 
 :: public static <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {
        final SqlContext initialContext = engine.initialContext();
-       final DataChangeStatement dataChange = Symqle.z$DataChangeStatement$from$InsertStatement(statement);
+       final DataChangeStatement dataChange = new AbstractInsertStatement() {
+           @Override
+           public Sql z$sqlOfInsertStatement(final SqlContext context) {
+               return statement.z$sqlOfInsertStatement(context);
+           }
+       };
        final Sql sql = prepareUpdate(dataChange, initialContext, keyColumn, options);
        return engine.executeReturnKey(sql, keyColumn, options);
       }

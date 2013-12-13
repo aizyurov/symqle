@@ -56,17 +56,6 @@ public class BooleanTestTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS NOT UNKNOWN", sql);
     }
 
-    public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isNull()).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS NULL", sql);
-    }
-
-    public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isNotNull()).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS NOT NULL", sql);
-    }
-
-
     public void testOrAnd() throws Exception {
         final String sql = person.id.where(person.alive.asPredicate().or(person.smart.asPredicate()).and(person.friendly.asPredicate().isTrue())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.smart) AND T0.friendly IS TRUE", sql);
@@ -81,86 +70,6 @@ public class BooleanTestTest extends SqlTestCase {
         final String sql = person.id.where(person.alive.asPredicate().or(person.smart.asPredicate()).or(person.friendly.asPredicate().isTrue())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive OR T0.smart OR T0.friendly IS TRUE", sql);
     }
-
-    public void testEq() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().eq(person.smart.asPredicate().isTrue())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) =(T0.smart IS TRUE)", sql);
-    }
-
-    public void testNe() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().ne(person.smart.asPredicate())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) <>(T0.smart)", sql);
-    }
-
-    public void testGt() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().gt(person.smart.asPredicate())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) >(T0.smart)", sql);
-    }
-
-    public void testGe() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().ge(person.smart.asPredicate())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) >=(T0.smart)", sql);
-    }
-
-    public void testLt() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().lt(person.smart.asPredicate())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) <(T0.smart)", sql);
-    }
-
-    public void testLe() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().le(person.smart.asPredicate())).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) <=(T0.smart)", sql);
-    }
-
-    public void testEqValue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().eq(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) = ?", sql);
-    }
-
-    public void testNeValue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().ne(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) <> ?", sql);
-    }
-
-    public void testGtValue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().gt(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) > ?", sql);
-    }
-
-    public void testGeValue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().ge(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) >= ?", sql);
-    }
-
-    public void testLtValue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().lt(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) < ?", sql);
-    }
-
-    public void testLeValue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().le(true)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) <= ?", sql);
-    }
-
-    public void testIn() throws Exception {
-        String sql = person.id.where(person.smart.asPredicate().isTrue().in(person2.alive.asPredicate().isTrue().asValue())).show(new GenericDialect());
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS TRUE) IN(SELECT T2.alive IS TRUE FROM person AS T2)", sql);
-    }
-
-    public void testNotIn() throws Exception {
-        String sql = person.id.where(person.smart.asPredicate().isTrue().notIn(person2.alive.asPredicate().asValue())).show(new GenericDialect());
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.smart IS TRUE) NOT IN(SELECT T2.alive FROM person AS T2)", sql);
-    }
-
-    public void testInList() throws Exception {
-        String sql = person.id.where(person.smart.asPredicate().isTrue().in(true, false)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS TRUE) IN(?, ?)", sql);
-   }
-
-    public void testNotInList() throws Exception {
-        String sql = person.id.where(person.smart.asPredicate().isTrue().notIn(true, false)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.smart IS TRUE) NOT IN(?, ?)", sql);
-   }
 
     public void testThen() throws Exception {
         final String sql = person.alive.asPredicate().isTrue().then(person.id).show(new GenericDialect());
