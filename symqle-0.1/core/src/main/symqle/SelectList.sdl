@@ -1,6 +1,5 @@
 
 public interface SelectList<T> : Query<T> {}
-
 public class AbstractSelectList<T> implements SelectList<T> {}
 
 <T> SelectList<T> ::=
@@ -30,6 +29,13 @@ import org.symqle.common.Pair;
     }
 ;
 
+public interface SelectSublistScalar<T> extends Scalar<T> : Query<T> {}
+
+<T> SelectSublistScalar<T> ::=
+  sl:SelectSublist<T> :: implicit
+|
+  sl:AggregateSelectSublist<T> :: implicit
+;
 
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
 

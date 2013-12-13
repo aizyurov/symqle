@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.sql.AbstractBooleanTest;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -12,47 +13,51 @@ import org.symqle.sql.TableOrView;
 public class BooleanTestTest extends SqlTestCase {
 
     public void testAnd() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().and(person.smart.asPredicate())).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().and(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS TRUE AND T0.smart", sql);
     }
 
+    private AbstractBooleanTest createBooleanTest() {
+        return person.alive.asPredicate().isTrue();
+    }
+
     public void testOr() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().or(person.smart.asPredicate())).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().or(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS TRUE OR T0.smart", sql);
     }
 
     public void testNegate() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().negate()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().negate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.alive IS TRUE", sql);
     }
 
     public void testIsTrue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isTrue()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().isTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS TRUE", sql);
     }
 
     public void testIsNotTrue() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isNotTrue()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().isNotTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS NOT TRUE", sql);
     }
 
     public void testIsFalse() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isFalse()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().isFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS FALSE", sql);
     }
 
     public void testIsNotFalse() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isNotFalse()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().isNotFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS NOT FALSE", sql);
     }
 
     public void testIsUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isUnknown()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().isUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS UNKNOWN", sql);
     }
 
     public void testIsNotUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().isTrue().isNotUnknown()).show(new GenericDialect());
+        final String sql = person.id.where(createBooleanTest().isNotUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive IS TRUE) IS NOT UNKNOWN", sql);
     }
 
@@ -72,13 +77,18 @@ public class BooleanTestTest extends SqlTestCase {
     }
 
     public void testThen() throws Exception {
-        final String sql = person.alive.asPredicate().isTrue().then(person.id).show(new GenericDialect());
+        final String sql = createBooleanTest().then(person.id).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.alive IS TRUE THEN T0.id END AS C0 FROM person AS T0", sql);
     }
 
     public void testThenNull() throws Exception {
-        final String sql = person.id.ge(0L).then(person.id).orWhen(person.alive.asPredicate().isTrue().thenNull()).show(new GenericDialect());
+        final String sql = person.id.ge(0L).then(person.id).orWhen(createBooleanTest().thenNull()).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.id >= ? THEN T0.id WHEN T0.alive IS TRUE THEN NULL END AS C0 FROM person AS T0", sql);
+    }
+
+    public void testAsValue() throws Exception {
+        final String sql = createBooleanTest().asValue().show(new GenericDialect());
+        assertSimilar("SELECT T0.alive IS TRUE AS C0 FROM person AS T0", sql);
     }
 
     private static class Person extends TableOrView {
