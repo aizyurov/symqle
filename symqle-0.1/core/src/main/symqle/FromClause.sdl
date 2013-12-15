@@ -43,10 +43,10 @@ public interface TablePrimary : Sql {}
 TablePrimary ::= t:TableName AS id:Identifier
 ;
 
-JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: JoinedTable leftJoin {}
-    | l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: JoinedTable rightJoin {}
-    | l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: JoinedTable innerJoin {}
-    | l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: JoinedTable outerJoin {}
+JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable leftJoin {}
+    | l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable rightJoin {}
+    | l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable innerJoin {}
+    | l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable outerJoin {}
 ;
 
 public interface TableName : Sql {
