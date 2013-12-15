@@ -69,21 +69,6 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FOR READ ONLY", sql);
     }
 
-    public void testWhereOrderBy() throws Exception {
-        final String sql = person.id.pair(person.name).where(person.name.isNotNull()).orderBy(person.name).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY T0.name", sql);
-    }
-
-    public void testWhereForUpdate() throws Exception {
-        final String sql = person.id.pair(person.name).where(person.name.isNotNull()).forUpdate().show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FOR UPDATE", sql);
-    }
-
-    public void testWhereForReadOnly() throws Exception {
-        final String sql = person.id.pair(person.name).where(person.name.isNotNull()).forReadOnly().show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FOR READ ONLY", sql);
-    }
-
     public void testOrderByForUpdate() throws Exception {
         final String sql = person.id.pair(person.name).orderBy(person.name).forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name FOR UPDATE", sql);
@@ -122,26 +107,6 @@ public class PairTest extends SqlTestCase {
         new PairScenario<AbstractSelectList<Pair<Long, String>>>(person.id.pair(person.name)) {
             @Override
             protected void use(AbstractSelectList<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
-                assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
-            }
-        }.play();
-    }
-
-    public void testWhereList() throws Exception {
-        final AbstractQuerySpecification<Pair<Long, String>> specification = person.id.pair(person.name).where(person.name.isNotNull());
-        new PairScenario<AbstractQuerySpecification<Pair<Long, String>>>(specification) {
-            @Override
-            protected void use(AbstractQuerySpecification<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
-                final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
-                assertEquals(expected, query.list(engine));
-            }
-        }.play();
-    }
-
-    public void testWhereScroll() throws Exception {
-        new PairScenario<AbstractQuerySpecification<Pair<Long, String>>>(person.id.pair(person.name).where(person.name.isNotNull())) {
-            @Override
-            protected void use(AbstractQuerySpecification<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
             }
         }.play();

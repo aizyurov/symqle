@@ -24,75 +24,106 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
 
 
     public void testQueryValueBooleanValue() throws Exception {
-        final String sql = person.id.where(employee.id.union(manager.id).queryValue().asPredicate()).show(new GenericDialect());
+        final String sql = person.id.where(createQueryExpressionBodyScalar().queryValue().asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 UNION SELECT T2.id FROM manager AS T2)", sql);
     }
 
+    private AbstractQueryExpressionBodyScalar<Long> createQueryExpressionBodyScalar() {
+        return employee.id.union(manager.id);
+    }
+
     public void testShow() throws Exception {
-        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.union(manager.id);
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = createQueryExpressionBodyScalar();
         final String sql = queryExpressionBodyScalar.show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2", sql);
-        final String sql2 = employee.id.union(manager.id).show(new GenericDialect());
+        final String sql2 = createQueryExpressionBodyScalar().show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = employee.id.union(manager.id).forUpdate().show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = employee.id.union(manager.id).forReadOnly().show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 FOR READ ONLY", sql);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = createQueryExpressionBodyScalar().limit(10).show(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 FETCH FIRST 10 ROWS ONLY", sql);
+        
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createQueryExpressionBodyScalar().limit(10,20).show(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+
+    }
+
+    public void testOrderBy() throws Exception {
+        try {
+            final String sql = employee.id.union(manager.id).orderBy(employee.name).show(new GenericDialect());
+            fail ("MalformedStatementException expected but returned " + sql);
+        } catch (MalformedStatementException e) {
+            // Ok
+        }
+        try {
+            final String sql = employee.id.union(manager.id).orderBy(manager.name).show(new GenericDialect());
+            fail ("MalformedStatementException expected but returned " + sql);
+        } catch (MalformedStatementException e) {
+            // Ok
+        }
+    }
+
     public void testUnion() throws Exception {
-        final String sql = employee.id.union(manager.id).union(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().union(person.id).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 UNION SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = employee.id.union(manager.id).unionAll(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().unionAll(person.id).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 UNION ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testUnionDistinct() throws Exception {
-        final String sql = employee.id.union(manager.id).unionDistinct(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().unionDistinct(person.id).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 UNION DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExcept() throws Exception {
-        final String sql = employee.id.union(manager.id).except(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().except(person.id).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 EXCEPT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = employee.id.union(manager.id).exceptAll(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().exceptAll(person.id).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 EXCEPT ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testExceptDistinct() throws Exception {
-        final String sql = employee.id.union(manager.id).exceptDistinct(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().exceptDistinct(person.id).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2 EXCEPT DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testIntersect() throws Exception {
-        final String sql = employee.id.union(manager.id).intersect(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().intersect(person.id).show(new GenericDialect());
         assertSimilar("(SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2) INTERSECT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = employee.id.union(manager.id).intersectAll(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().intersectAll(person.id).show(new GenericDialect());
         assertSimilar("(SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2) INTERSECT ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testIntersectDistinct() throws Exception {
-        final String sql = employee.id.union(manager.id).intersectDistinct(person.id).show(new GenericDialect());
+        final String sql = createQueryExpressionBodyScalar().intersectDistinct(person.id).show(new GenericDialect());
         assertSimilar("(SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2) INTERSECT DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
@@ -116,7 +147,8 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        new Scenario(employee.id.union(manager.id)) {
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = createQueryExpressionBodyScalar();
+        new Scenario(queryExpressionBodyScalar) {
             @Override
             void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(Arrays.asList(123L), query.list(engine));
@@ -125,7 +157,7 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
     }
 
     public void testScroll() throws Exception {
-        new Scenario(employee.id.union(manager.id)) {
+        new Scenario(createQueryExpressionBodyScalar()) {
             @Override
             void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Long>(123L)));

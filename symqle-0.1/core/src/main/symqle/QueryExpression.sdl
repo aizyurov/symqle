@@ -6,9 +6,6 @@
 
 
 public interface QueryExpressionBody<T> : Query<T> {}
-public class AbstractQueryExpressionBody<T> implements QueryExpressionBody<T> {}
-public interface QueryExpressionBodyScalar<T> extends Scalar<T> : Query<T> {}
-public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBodyScalar<T> {}
 
 # see QueryBase.sdl, Where.sdl
 
@@ -17,6 +14,9 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
 |
     qebs:QueryExpressionBodyScalar<T> :: implicit {}
 ;
+
+public interface QueryExpressionBodyScalar<T> extends Scalar<T> : Query<T> {}
+public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBodyScalar<T> {}
 
 :: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionBodyScalar<T> qe, final QueryTerm<T> qt) {
        // left and right parts have separate contexts

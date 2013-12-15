@@ -1,125 +1,75 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
-import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameters;
+import org.symqle.common.Pair;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.AbstractQuerySpecification;
+import org.symqle.sql.Column;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
 /**
- * @author lvovich
+ * Created by IntelliJ IDEA.
+ * User: aizyurov
+ * Date: 15.12.2013
+ * Time: 20:03:17
+ * To change this template use File | Settings | File Templates.
  */
 public class QuerySpecificationTest extends SqlTestCase {
 
-
-    public void testShow() throws Exception {
-        final AbstractQuerySpecificationScalar<Long> querySpecification = person.id.where(person.name.isNotNull());
-        final String sql = querySpecification.show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
-        assertSimilar(sql, querySpecification.show(new GenericDialect()));
+    private AbstractQuerySpecification<Pair<Long, String>> createQuerySpecification() {
+        return person.id.pair(person.name).where(person.name.isNotNull());
     }
 
-    public void testQueryValue() throws Exception {
-        final AbstractQuerySpecificationScalar<Long> specification = employee.id.where(employee.name.isNotNull());
-        final String sql = specification.queryValue().orderBy(person.name).show(new GenericDialect());
-        assertSimilar("SELECT(SELECT T3.id FROM employee AS T3 WHERE T3.name IS NOT NULL) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
+    public void testShow() throws Exception {
+        final String sql = createQuerySpecification().show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
+    }
+
+    public void testLimit() throws Exception {
+        final String sql = createQuerySpecification().limit(20).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createQuerySpecification().limit(10,20).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).forUpdate().show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL FOR UPDATE", sql);
+        final String sql = createQuerySpecification().forUpdate().show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).forReadOnly().show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL FOR READ ONLY", sql);
+        final String sql = createQuerySpecification().forReadOnly().show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FOR READ ONLY", sql);
     }
 
-    public void testUnion() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).union(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL UNION SELECT T1.id AS C0 FROM employee AS T1", sql);
-
+    public void testOrderBy() throws Exception {
+        final String sql = createQuerySpecification().orderBy(person.name).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY T0.name", sql);
     }
-
-    public void testUnionAll() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).unionAll(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL UNION ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-    public void testUnionDistinct() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).unionDistinct(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL UNION DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-
-    public void testExcept() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).except(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-
-    public void testExceptAll() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).exceptAll(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-    public void testExceptDistinct() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).exceptDistinct(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-
-    public void testIntersect() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).intersect(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL INTERSECT SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-
-    public void testIntersectAll() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).intersectAll(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL INTERSECT ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-    public void testIntersectDistinct() throws Exception {
-        final String sql = person.id.where(person.name.isNotNull()).intersectDistinct(employee.id).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL INTERSECT DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
-
-    }
-
-    public void testExists() throws Exception {
-        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).exists()).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
-
-    }
-
-    public void testContains() throws Exception {
-        final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).contains(1L)).show(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
-    }
-
 
     public void testList() throws Exception {
-        new Scenario123<AbstractQuerySpecificationScalar<Long>>(person.id.where(person.name.isNull())) {
+        new PairScenario<AbstractQuerySpecification<Pair<Long, String>>>(createQuerySpecification()) {
             @Override
-            void use(AbstractQuerySpecificationScalar<Long> query, QueryEngine engine) throws SQLException {
-                assertEquals(getExpected(), query.list(engine));
+            protected void use(AbstractQuerySpecification<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
+                assertEquals(expected, query.list(engine));
             }
         }.play();
     }
 
     public void testScroll() throws Exception {
-        new Scenario123<AbstractQuerySpecificationScalar<Long>>(person.id.where(person.name.isNull())) {
+        new PairScenario<AbstractQuerySpecification<Pair<Long, String>>>(createQuerySpecification()) {
             @Override
-            void use(AbstractQuerySpecificationScalar<Long> query, QueryEngine engine) throws SQLException {
-                assertEquals(1, query.scroll(engine, getCallback()));
+            protected void use(AbstractQuerySpecification<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
             }
         }.play();
     }
@@ -130,20 +80,9 @@ public class QuerySpecificationTest extends SqlTestCase {
         }
         public Column<Long> id = defineColumn(Mappers.LONG, "id");
         public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> age = defineColumn(Mappers.LONG, "age");
     }
 
     private static Person person = new Person();
-
-    private static class Employee extends TableOrView {
-        private Employee() {
-            super("employee");
-        }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-    }
-
-    private static Employee employee = new Employee();
-
-    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
 
 }
