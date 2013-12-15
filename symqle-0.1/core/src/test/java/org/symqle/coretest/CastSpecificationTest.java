@@ -29,9 +29,12 @@ import static org.easymock.EasyMock.expect;
 public class CastSpecificationTest extends SqlTestCase {
 
 
+    private AbstractCastSpecification<Long> createCast() {
+        return person.id.cast("NUMBER(12,0)");
+    }
+
     public void testShow() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
-        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1", col.show(new GenericDialect()));
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1", col.show(new GenericDialect()));
     }
 
@@ -41,23 +44,23 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1", col.map(Mappers.LONG).show(new GenericDialect()));
     }
 
     public void testSelectStatementFunctionality() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.show(new GenericDialect()));
     }
 
     public void testSelectAll() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT ALL CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.selectAll().show(new GenericDialect()));
 
     }
 
     public void testSelectDistinct() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT DISTINCT CAST(T1.id AS NUMBER(12,0)) AS C0 FROM person AS T0", col.distinct().show(new GenericDialect()));
     }
 
@@ -67,154 +70,154 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testAsFunctionMultipleArguments() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = SqlFunction.create("max", Mappers.LONG).apply(column, column).show(new GenericDialect());
         assertSimilar("SELECT max(CAST(T1.id AS NUMBER(12,0)), CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
     public void testAsCondition() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = id.where(person.id.asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
     public void testEq() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final Column<Long> age = person.age;
         final String sql = person.id.where(id.eq(age)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) = T0.age", sql);
     }
 
     public void testNe() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
         final String sql = person.id.where(column.ne(age)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) <> T0.age", sql);
     }
 
     public void testGt() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
         final String sql = person.id.where(column.gt(age)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) > T0.age", sql);
     }
 
     public void testGe() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
         final String sql = person.id.where(column.ge(age)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) >= T0.age", sql);
     }
 
     public void testLt() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
         final String sql = person.id.where(column.lt(age)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) < T0.age", sql);
     }
 
     public void testLe() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
         final String sql = person.id.where(column.le(age)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) <= T0.age", sql);
     }
 
     public void testEqValue() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = person.id.where(id.eq(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) = ?", sql);
     }
 
     public void testNeValue() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = person.id.where(id.ne(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) <> ?", sql);
     }
 
     public void testLtValue() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = person.id.where(id.lt(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) < ?", sql);
     }
 
     public void testLeValue() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = person.id.where(id.le(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) <= ?", sql);
     }
 
     public void testGtValue() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = person.id.where(id.gt(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) > ?", sql);
     }
 
     public void testGeValue() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> id = createCast();
         final String sql = person.id.where(id.ge(1L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) >= ?", sql);
     }
 
     public void testExceptAll() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.exceptAll(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     public void testExceptDistinct() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.exceptDistinct(person.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     public void testExcept() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.except(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 EXCEPT SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     public void testUnionAll() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.unionAll(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 UNION ALL SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     public void testUnionDistinct() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.unionDistinct(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     public void testUnion() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.union(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 UNION SELECT T1.age AS C0 FROM person AS T1", sql);
     }
 
     public void testIntersectAll() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.intersectAll(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.age AS C0 FROM person AS T1", sql);
 
     }
 
     public void testIntersectDistinct() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.intersectDistinct(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
 
     }
 
     public void testIntersect() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final String sql = column.intersect(person2.age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 INTERSECT SELECT T1.age AS C0 FROM person AS T1", sql);
 
     }
 
     public void testUseSameTableInDistinct() throws Exception {
-        final AbstractCastSpecification<Long> column = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
         final String sql = column.intersectDistinct(age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.age AS C0 FROM person AS T1", sql);
@@ -222,12 +225,12 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testSelectForUpdate() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 FOR UPDATE", col.forUpdate().show(new GenericDialect()));
     }
 
     public void testSelectForReadOnly() throws Exception {
-        final AbstractCastSpecification<Long> col = person.id.cast("NUMBER(12,0)");
+        final AbstractCastSpecification<Long> col = createCast();
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 FOR READ ONLY", col.forReadOnly().show(new GenericDialect()));
     }
 
@@ -468,7 +471,7 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testCount() throws Exception {
-        final String sql = person.id.cast("NUMBER(12,0)").count().show(new GenericDialect());
+        final String sql = createCast().count().show(new GenericDialect());
         assertSimilar("SELECT COUNT(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
@@ -498,22 +501,22 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testAvg() throws Exception {
-        final String sql = person.id.cast("NUMBER(12,0)").avg().show(new GenericDialect());
+        final String sql = createCast().avg().show(new GenericDialect());
         assertSimilar("SELECT AVG(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
     public void testSum() throws Exception {
-        final String sql = person.id.cast("NUMBER(12,0)").sum().show(new GenericDialect());
+        final String sql = createCast().sum().show(new GenericDialect());
         assertSimilar("SELECT SUM(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
     public void testMax() throws Exception {
-        final String sql = person.id.cast("NUMBER(12,0)").max().show(new GenericDialect());
+        final String sql = createCast().max().show(new GenericDialect());
         assertSimilar("SELECT MAX(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
     public void testMin() throws Exception {
-        final String sql = person.id.cast("NUMBER(12,0)").min().show(new GenericDialect());
+        final String sql = createCast().min().show(new GenericDialect());
         assertSimilar("SELECT MIN(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
@@ -537,8 +540,20 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.name IS NOT NULL THEN T0.id ELSE CAST(T0.id AS NUMBER) END AS C0 FROM person AS T0", sql);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = createCast().limit(10).show(new GenericDialect());
+        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1 FETCH FIRST 10 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createCast().limit(1, 2).show(new GenericDialect());
+        assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1 OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY", sql);
+    }
+
+
+
     public void testList() throws Exception {
-        new Scenario(person.id.cast("NUMBER(12,0)")) {
+        new Scenario(createCast()) {
             @Override
             void use(AbstractCastSpecification<Long> query, QueryEngine engine) throws SQLException {
                 final List<Long> expected = Arrays.asList(123L);
@@ -549,7 +564,7 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testScroll() throws Exception {
-        new Scenario(person.id.cast("NUMBER(12,0)")) {
+        new Scenario(createCast()) {
             @Override
             void use(AbstractCastSpecification<Long> query, QueryEngine engine) throws SQLException {
                 int rows = query.scroll(

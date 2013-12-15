@@ -30,6 +30,16 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar(show, show2);
     }
 
+    public void testDistinct() throws Exception {
+        final String sql = person.id.count().distinct().show(new GenericDialect());
+        assertSimilar("SELECT DISTINCT COUNT(T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testSelectAll() throws Exception {
+        final String sql = person.id.count().selectAll().show(new GenericDialect());
+        assertSimilar("SELECT ALL COUNT(T1.id) AS C1 FROM person AS T1", sql);
+    }
+
     public void testUnion() throws Exception {
         final String show = person.id.count().union(person.parentId.count()).show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);

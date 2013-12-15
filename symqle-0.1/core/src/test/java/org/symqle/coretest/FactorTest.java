@@ -36,6 +36,16 @@ public class FactorTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = person.id.opposite().limit(10).show(new GenericDialect());
+        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 FETCH FIRST 10 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = person.id.opposite().limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
     public void testAsSublist() throws Exception {
         final String sql = person.id.opposite().queryValue().show(new OracleLikeDialect(), Option.allowNoTables(true));
         assertSimilar("SELECT(SELECT - T0.id FROM person AS T0) AS C0 FROM dual AS T1", sql);

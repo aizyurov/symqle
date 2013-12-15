@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.sql.AbstractNullPredicate;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -11,48 +12,57 @@ import org.symqle.sql.TableOrView;
  */
 public class NullPredicateTest extends SqlTestCase {
 
+    public void testAsValue() throws Exception {
+        final String sql = createNullPredicate().asValue().show(new GenericDialect());
+        assertSimilar("SELECT T0.alive IS NULL AS C0 FROM person AS T0", sql);
+    }
+
     public void testAnd() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().and(person.smart.asPredicate())).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().and(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL AND T0.smart", sql);
     }
 
+    private AbstractNullPredicate createNullPredicate() {
+        return person.alive.isNull();
+    }
+
     public void testOr() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().or(person.smart.asPredicate())).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().or(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL OR T0.smart", sql);
     }
 
     public void testNegate() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().negate()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().negate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.alive IS NULL", sql);
     }
 
     public void testIsTrue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isTrue()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().isTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS TRUE", sql);
     }
 
     public void testIsNotTrue() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotTrue()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().isNotTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS NOT TRUE", sql);
     }
 
     public void testIsFalse() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isFalse()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().isFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS FALSE", sql);
     }
 
     public void testIsNotFalse() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotFalse()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().isNotFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS NOT FALSE", sql);
     }
 
     public void testIsUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isUnknown()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().isUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS UNKNOWN", sql);
     }
 
     public void testIsNotUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.isNull().isNotUnknown()).show(new GenericDialect());
+        final String sql = person.id.where(createNullPredicate().isNotUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive IS NULL IS NOT UNKNOWN", sql);
     }
 

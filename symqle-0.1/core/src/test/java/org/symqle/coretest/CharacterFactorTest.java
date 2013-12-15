@@ -24,6 +24,16 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = characterFactor.limit(10).show(new GenericDialect());
+        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 FETCH FIRST 10 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = characterFactor.limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
     public void testCast() throws Exception {
         final String sql = characterFactor.cast("CHAR(10)").show(new GenericDialect());
         assertSimilar("SELECT CAST(T1.name COLLATE latin1_general_ci AS CHAR(10)) AS C1 FROM person AS T1", sql);
