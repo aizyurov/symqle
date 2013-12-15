@@ -16,12 +16,26 @@ import java.sql.SQLException;
 public class QueryBaseScalarTest extends SqlTestCase {
 
 
+    private AbstractQueryBaseScalar<Long> createQueryBaseScalar() {
+        return person.id.selectAll();
+    }
+
     public void testShow() throws Exception {
-        final AbstractQueryBaseScalar<Long> qbs = person.id.selectAll();
+        final AbstractQueryBaseScalar<Long> qbs = createQueryBaseScalar();
         final String sql = qbs.show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0", sql);
         final String sql2 = qbs.show(new GenericDialect());
         assertSimilar(sql, sql2);
+    }
+
+    public void testLimit() throws Exception {
+        final String sql = createQueryBaseScalar().limit(10).show(new GenericDialect());
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FETCH FIRST 10 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createQueryBaseScalar().limit(10,20).show(new GenericDialect());
+        assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
 
@@ -43,12 +57,12 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
     public void testWhere() throws Exception {
 
-        final String sql = person.id.selectAll().where(person.name.isNotNull()).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().where(person.name.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT ALL T2.id AS C1 FROM person AS T2 WHERE T2.name IS NOT NULL", sql);
     }
 
     public void testAllForUpdate() throws Exception {
-        final String sql = person.id.selectAll().forUpdate().show(new GenericDialect());
+        final String sql = createQueryBaseScalar().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
     }
 
@@ -58,85 +72,85 @@ public class QueryBaseScalarTest extends SqlTestCase {
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.selectAll().forUpdate().show(new GenericDialect());
+        final String sql = createQueryBaseScalar().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.selectAll().forReadOnly().show(new GenericDialect());
+        final String sql = createQueryBaseScalar().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testUnion() throws Exception {
-        final String sql = person.id.selectAll().union(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().union(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 UNION SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = person.id.selectAll().unionAll(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().unionAll(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 UNION ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
     public void testUnionDistinct() throws Exception {
-        final String sql = person.id.selectAll().unionDistinct(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().unionDistinct(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testExcept() throws Exception {
-        final String sql = person.id.selectAll().except(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().except(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 EXCEPT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = person.id.selectAll().exceptAll(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().exceptAll(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
     public void testExceptDistinct() throws Exception {
-        final String sql = person.id.selectAll().exceptDistinct(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().exceptDistinct(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testIntersect() throws Exception {
-        final String sql = person.id.selectAll().intersect(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().intersect(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 INTERSECT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = person.id.selectAll().intersectAll(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().intersectAll(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
     public void testIntersectDistinct() throws Exception {
-        final String sql = person.id.selectAll().intersectDistinct(employee.id).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().intersectDistinct(employee.id).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.id AS C0 FROM employee AS T1", sql);
 
     }
 
     public void testExists() throws Exception {
-        final String sql = person.id.selectAll().where(employee.name.selectAll().exists()).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().where(employee.name.selectAll().exists()).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT ALL T1.name FROM employee AS T1)", sql);
     }
 
     public void testContains() throws Exception {
-        final String sql = person.id.selectAll().where(employee.name.selectAll().contains("Jim")).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().where(employee.name.selectAll().contains("Jim")).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT ALL T1.name FROM employee AS T1)", sql);
 
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = person.id.selectAll().queryValue().where(employee.name.isNotNull()).show(new GenericDialect());
+        final String sql = createQueryBaseScalar().queryValue().where(employee.name.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT(SELECT ALL T0.id FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
     }
 
 
     public void testList() throws Exception {
-        new Scenario123<AbstractQueryBaseScalar<Long>>(person.id.selectAll()) {
+        new Scenario123<AbstractQueryBaseScalar<Long>>(createQueryBaseScalar()) {
             @Override
             void use(AbstractQueryBaseScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(getExpected(), query.list(engine));
@@ -145,7 +159,7 @@ public class QueryBaseScalarTest extends SqlTestCase {
     }
 
     public void testScroll() throws Exception {
-        new Scenario123<AbstractQueryBaseScalar<Long>>(person.id.selectAll()) {
+        new Scenario123<AbstractQueryBaseScalar<Long>>(createQueryBaseScalar()) {
             @Override
             void use(AbstractQueryBaseScalar<Long> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, getCallback()));
