@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.sql.AbstractBooleanPrimary;
 import org.symqle.sql.AbstractBooleanTerm;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
@@ -12,13 +13,22 @@ import org.symqle.sql.TableOrView;
  */
 public class BooleanTermTest extends SqlTestCase {
 
+    private AbstractBooleanTerm createBooleanTerm() {
+        return person.alive.asPredicate().and(person.cute.asPredicate());
+    }
+
+    public void testAdapt() throws Exception {
+        final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asPredicate();
+        final AbstractBooleanTerm adaptor = AbstractBooleanTerm.adapt(abstractBooleanPrimary);
+        final String sql1 = person.id.where(abstractBooleanPrimary).show(new GenericDialect());
+        final String sql2 = person.id.where(adaptor).show(new GenericDialect());
+        assertEquals(sql1, sql2);
+
+    }
+
     public void testAnd() throws Exception {
         final String sql = person.id.where(createBooleanTerm().and(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive AND T0.cute AND T0.smart", sql);
-    }
-
-    private AbstractBooleanTerm createBooleanTerm() {
-        return person.alive.asPredicate().and(person.cute.asPredicate());
     }
 
     public void testOr() throws Exception {

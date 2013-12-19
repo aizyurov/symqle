@@ -26,6 +26,16 @@ public class DeleteTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractDeleteStatementBase deleteStatementBase = person.delete();
+        final String sql1 = deleteStatementBase.show(new GenericDialect());
+        final String sql2 = AbstractDeleteStatement.adapt(deleteStatementBase).show(new GenericDialect());
+        assertEquals(sql1, sql2);
+        final String sql3 = AbstractDeleteStatementBase.adapt(deleteStatementBase).show(new GenericDialect());
+        assertEquals(sql1, sql3);
+
+    }
+
     public void testWhere() throws Exception {
         final AbstractDeleteStatement deleteStatement = person.delete().where(person.id.eq(1L));
         final String sql = deleteStatement.show(new GenericDialect());

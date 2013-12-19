@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.sql.AbstractComparisonPredicate;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -11,48 +12,59 @@ import org.symqle.sql.TableOrView;
  */
 public class ComparisonPredicateTest extends SqlTestCase {
 
+    private AbstractComparisonPredicate createComparisonPredicate() {
+        return person.alive.eq(person.cute);
+    }
+
+    public void testAdapt() throws Exception {
+        final String sql1 = person.id.where(createComparisonPredicate()).show(new GenericDialect());
+        final String sql2 = person.id.where(AbstractComparisonPredicate.adapt(createComparisonPredicate())).show(new GenericDialect());
+        assertEquals(sql1, sql2);
+
+    }
+
     public void testAnd() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).and(person.smart.asPredicate())).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().and(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute AND T0.smart", sql);
     }
 
     public void testOr() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).or(person.smart.asPredicate())).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().or(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute OR T0.smart", sql);
     }
 
     public void testNegate() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).negate()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().negate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE NOT T0.alive = T0.cute", sql);
     }
 
     public void testIsTrue() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).isTrue()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().isTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute IS TRUE", sql);
     }
 
     public void testIsNotTrue() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).isNotTrue()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().isNotTrue()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute IS NOT TRUE", sql);
     }
 
     public void testIsFalse() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).isFalse()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().isFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute IS FALSE", sql);
     }
 
     public void testIsNotFalse() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).isNotFalse()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().isNotFalse()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute IS NOT FALSE", sql);
     }
 
     public void testIsUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).isUnknown()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().isUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute IS UNKNOWN", sql);
     }
 
     public void testIsNotUnknown() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.cute).isNotUnknown()).show(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().isNotUnknown()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute IS NOT UNKNOWN", sql);
     }
 

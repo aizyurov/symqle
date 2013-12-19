@@ -8,13 +8,21 @@ import org.symqle.sql.*;
  */
 public class BooleanExpressionTest extends SqlTestCase {
 
+    private AbstractBooleanExpression createBooleanExpression() {
+        return person.alive.asPredicate().or(person.cute.asPredicate());
+    }
+
+    public void testAdapt() throws Exception {
+        final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asPredicate();
+        final AbstractBooleanExpression abstractBooleanExpression = AbstractBooleanExpression.adapt(abstractBooleanPrimary);
+        final String sql1 = person.id.where(abstractBooleanPrimary).show(new GenericDialect());
+        final String sql2 = person.id.where(abstractBooleanExpression).show(new GenericDialect());
+        assertEquals(sql1, sql2);
+    }
+
     public void testAnd() throws Exception {
         final String sql = person.id.where(createBooleanExpression().and(person.smart.asPredicate())).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) AND T0.smart", sql);
-    }
-
-    private AbstractBooleanExpression createBooleanExpression() {
-        return person.alive.asPredicate().or(person.cute.asPredicate());
     }
 
     public void testOr() throws Exception {

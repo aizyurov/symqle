@@ -1,6 +1,9 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractAggregateFunction;
 import org.symqle.sql.Column;
@@ -13,10 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -28,6 +28,13 @@ public class AggregatesTest extends SqlTestCase  {
         final String show2 = person.id.count().show(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1", show);
         assertSimilar(show, show2);
+    }
+
+    public void testAdapt() throws Exception {
+        final AbstractAggregateFunction<Integer> function = person.id.count();
+        final AbstractAggregateFunction<Integer> adaptor = AbstractAggregateFunction.adapt(function);
+        assertEquals(function.show(new GenericDialect()), adaptor.show(new GenericDialect()));
+        assertEquals(function.getMapper(), adaptor.getMapper());
     }
 
     public void testDistinct() throws Exception {
