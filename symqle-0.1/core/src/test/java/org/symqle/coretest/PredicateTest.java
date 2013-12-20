@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
-import org.symqle.sql.AbstractComparisonPredicate;
+import org.symqle.sql.AbstractPredicate;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -10,15 +10,15 @@ import org.symqle.sql.TableOrView;
 /**
  * @author lvovich
  */
-public class ComparisonPredicateTest extends SqlTestCase {
+public class PredicateTest extends SqlTestCase {
 
-    private AbstractComparisonPredicate createComparisonPredicate() {
+    private AbstractPredicate createComparisonPredicate() {
         return person.alive.eq(person.cute);
     }
 
     public void testAdapt() throws Exception {
         final String sql1 = person.id.where(createComparisonPredicate()).show(new GenericDialect());
-        final String sql2 = person.id.where(AbstractComparisonPredicate.adapt(createComparisonPredicate())).show(new GenericDialect());
+        final String sql2 = person.id.where(AbstractPredicate.adapt(createComparisonPredicate())).show(new GenericDialect());
         assertEquals(sql1, sql2);
 
     }

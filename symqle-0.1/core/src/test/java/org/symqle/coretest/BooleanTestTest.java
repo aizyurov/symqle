@@ -2,7 +2,7 @@ package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
 import org.symqle.sql.AbstractBooleanTest;
-import org.symqle.sql.AbstractComparisonPredicate;
+import org.symqle.sql.AbstractPredicate;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -23,7 +23,7 @@ public class BooleanTestTest extends SqlTestCase {
     }
 
     public void testAdapt() throws Exception {
-        final AbstractComparisonPredicate predicate = person.id.eq(1L);
+        final AbstractPredicate predicate = person.id.eq(1L);
         final String sql1 = person.id.where(predicate).show(new GenericDialect());
         final String sql2 = person.id.where(AbstractBooleanTest.adapt(predicate)).show(new GenericDialect());
         assertEquals(sql1, sql2);

@@ -47,6 +47,12 @@ public class CastSpecificationTest extends SqlTestCase {
         assertEquals(cast.getMapper(), adaptor.getMapper());
     }
 
+    public void testAsInValueList() throws Exception {
+        final AbstractCastSpecification<Long> cast = createCast();
+        final String sql = person.name.where(person.parentId.in(cast.asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.parent_id IN(CAST(T1.id AS NUMBER(12,0)))", sql);
+    }
+
     public void testCollate() throws Exception {
         final String sql = person.name.cast("CHAR(10)").collate("latin1_general_ci").show(new GenericDialect());
         assertSimilar("SELECT CAST(T1.name AS CHAR(10)) COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);

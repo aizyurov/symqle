@@ -1,8 +1,11 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractComparisonPredicate;
+import org.symqle.sql.AbstractPredicate;
 import org.symqle.sql.AbstractStringExpression;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
@@ -16,8 +19,6 @@ import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -94,7 +95,7 @@ public class StringExpressionTest extends SqlTestCase {
 
     public void testEqValue() throws Exception {
         final AbstractStringExpression<String> stringExpression = numberSign.concat(person.id);
-        final AbstractComparisonPredicate predicate = stringExpression.eq("#12");
+        final AbstractPredicate predicate = stringExpression.eq("#12");
         final String sql = person.id.where(predicate).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
     }
