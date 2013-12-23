@@ -110,7 +110,12 @@ public class AbstractInValueList<T> implements InValueList<T> {}
 }
 
 :: public <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, T element) {
-    return DynamicParameter.create(subquery.getMapper(), element).in(AbstractScalarSubquery.adapt(subquery));
+    return DynamicParameter.create(subquery.getMapper(), element).in(new InPredicateValue<T>() {
+        @Override
+        public Sql z$sqlOfInPredicateValue(final SqlContext context) {
+            return z$InPredicateValue$from$ScalarSubquery(subquery).z$sqlOfInPredicateValue(context);
+        }
+    });
 }
 
 :: protected <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {

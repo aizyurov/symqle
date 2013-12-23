@@ -37,6 +37,7 @@ public class FunctionTest extends SqlTestCase {
         assertEquals(adaptor.getMapper(), abs(person.id).getMapper());
     }
 
+
     public void testLimit() throws Exception {
         final String sql = abs(person.id).limit(20).show(new GenericDialect());
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
@@ -174,6 +175,12 @@ public class FunctionTest extends SqlTestCase {
         String sql = id.where(abs(id).in(abs(id2))).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE abs(T1.id) IN(SELECT abs(T2.id) FROM employee AS T2)", sql);
     }
+
+    public void testInValueList() throws Exception {
+        final String sql = person.id.where(person.id.in(abs(person.id).asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id IN(abs(T1.id))", sql);
+    }
+
 
     public void testContains() throws Exception {
         final Column<Long> id  =  person.id;

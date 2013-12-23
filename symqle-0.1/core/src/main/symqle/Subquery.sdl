@@ -1,5 +1,4 @@
 public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
-public class AbstractScalarSubquery<T> implements ScalarSubquery<T> {}
 
 <T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN ::
         implicit

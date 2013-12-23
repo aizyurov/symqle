@@ -43,8 +43,10 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
     }
 
     public void testAdapt() throws Exception {
-        final String sql = AbstractQueryExpressionBodyScalar.adapt(employee.id).show(new GenericDialect());
+        final AbstractQueryExpressionBodyScalar<Long> adaptor = AbstractQueryExpressionBodyScalar.adapt(employee.id);
+        final String sql = adaptor.show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1", sql);
+        assertEquals(adaptor.getMapper(), employee.id.getMapper());
     }
 
     public void testForUpdate() throws Exception {
