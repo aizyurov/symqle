@@ -1,6 +1,5 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Callback;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.jdbc.QueryEngine;
@@ -34,6 +33,11 @@ public class QueryExpressionTest extends SqlTestCase {
     public void testForReadOnly() throws Exception {
         final String sql = createQueryExpression().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FETCH FIRST 10 ROWS ONLY FOR READ ONLY", sql);
+    }
+
+    public void testAdapt() throws Exception {
+        final String sql = AbstractQueryExpression.adapt(person.id.pair(person.name)).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
     public void testList() throws Exception {

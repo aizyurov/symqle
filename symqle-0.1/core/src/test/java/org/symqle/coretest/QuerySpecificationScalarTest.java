@@ -2,11 +2,13 @@ package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.AbstractQuerySpecificationScalar;
+import org.symqle.sql.Column;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
-
-import static org.easymock.EasyMock.createMock;
 
 /**
  * @author lvovich
@@ -23,6 +25,12 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
         final String sql = querySpecification.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
         assertSimilar(sql, querySpecification.show(new GenericDialect()));
+    }
+
+    public void testAdapt() throws Exception {
+        final AbstractQuerySpecificationScalar<Long> adaptor = AbstractQuerySpecificationScalar.adapt(person.id);
+        assertEquals(adaptor.getMapper(), person.id.getMapper());
+        assertEquals(adaptor.show(new GenericDialect()), person.id.show(new GenericDialect()));
     }
 
     public void testQueryValue() throws Exception {

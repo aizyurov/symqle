@@ -36,6 +36,18 @@ public class FactorTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractFactor<Long> adaptor = AbstractFactor.adapt(person.id);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
+        assertEquals(adaptor.getMapper(), person.id.getMapper());
+    }
+
+    public void testAsInValueList() throws Exception {
+        final String sql = person.name.where(person.id.in(person.id.opposite().asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id IN(- T1.id)", sql);
+    }
+
     public void testLimit() throws Exception {
         final String sql = person.id.opposite().limit(10).show(new GenericDialect());
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 FETCH FIRST 10 ROWS ONLY", sql);

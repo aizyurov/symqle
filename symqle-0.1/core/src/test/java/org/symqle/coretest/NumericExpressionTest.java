@@ -18,177 +18,193 @@ import static org.easymock.EasyMock.expect;
 public class NumericExpressionTest extends SqlTestCase {
 
     public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.id.add(two).isNull()).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IS NULL", sql);
     }
 
+    private AbstractNumericExpression<Number> createNumericExpression() {
+        return person.id.add(two);
+    }
+
     public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.id.add(two).isNotNull()).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IS NOT NULL", sql);
+    }
+
+    public void testInValueList() throws Exception {
+        final String sql = person.name.where(person.id.map(Mappers.NUMBER).in(createNumericExpression().asInValueList().append(person.id.mult(2)))).show(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(T0.id + ?, T0.id * ?)", sql);
     }
 
 
     public void testShow() throws Exception {
-        final String sql = person.id.add(two).show(new GenericDialect());
+        final String sql = createNumericExpression().show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
-        final String sql2 = person.id.add(two).show(new GenericDialect());
+        final String sql2 = createNumericExpression().show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractNumericExpression<Long> adaptor = AbstractNumericExpression.adapt(person.id);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
+        assertEquals(adaptor.getMapper(), person.id.getMapper());
+    }
+
     public void testLimit() throws Exception {
-        final String sql = person.id.add(two).limit(10).show(new GenericDialect());
+        final String sql = createNumericExpression().limit(10).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 FETCH FIRST 10 ROWS ONLY", sql);
     }
 
     public void testLimit2() throws Exception {
-        final String sql = person.id.add(two).limit(10, 20).show(new GenericDialect());
+        final String sql = createNumericExpression().limit(10, 20).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testMap() throws Exception {
-        final String sql = person.id.add(two).map(Mappers.INTEGER).show(new GenericDialect());
+        final String sql = createNumericExpression().map(Mappers.INTEGER).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSelectAll() throws Exception {
-        final String sql = person.id.add(two).selectAll().show(new GenericDialect());
+        final String sql = createNumericExpression().selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSelectDistinct() throws Exception {
-        final String sql = person.id.add(two).distinct().show(new GenericDialect());
+        final String sql = createNumericExpression().distinct().show(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.id.add(two).where(person.id.eq(two)).show(new GenericDialect());
+        final String sql = createNumericExpression().where(person.id.eq(two)).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 WHERE T0.id = ?", sql);
 
     }
 
     public void testEq() throws Exception {
-        final String sql = person.id.where(person.id.add(two).eq(person.id.add(0))).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().eq(person.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? = T0.id + ?", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(person.id.add(two).ne(person.id.add(0))).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().ne(person.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <> T0.id + ?", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(person.id.add(two).gt(person.id.add(0))).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().gt(person.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? > T0.id + ?", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(person.id.add(two).ge(person.id.add(0))).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().ge(person.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? >= T0.id + ?", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(person.id.add(two).lt(person.id.add(0))).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().lt(person.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? < T0.id + ?", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(person.id.add(two).le(person.id.add(0))).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().le(person.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <= T0.id + ?", sql);
     }
 
     public void testEqValue() throws Exception {
-        final String sql = person.id.where(person.id.add(two).eq(0L)).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().eq(0L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? = ?", sql);
     }
 
     public void testNeValue() throws Exception {
-        final String sql = person.id.where(person.id.add(two).ne(0L)).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().ne(0L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <> ?", sql);
     }
 
     public void testGtValue() throws Exception {
-        final String sql = person.id.where(person.id.add(two).gt(0L)).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().gt(0L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? > ?", sql);
     }
 
     public void testGeValue() throws Exception {
-        final String sql = person.id.where(person.id.add(two).ge(0L)).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().ge(0L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? >= ?", sql);
     }
 
     public void testLtValue() throws Exception {
-        final String sql = person.id.where(person.id.add(two).lt(0L)).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().lt(0L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? < ?", sql);
     }
 
     public void testLeValue() throws Exception {
-        final String sql = person.id.where(person.id.add(two).le(0L)).show(new GenericDialect());
+        final String sql = person.id.where(createNumericExpression().le(0L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? <= ?", sql);
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(person.id.add(two).in(person2.id.add(two))).show(new GenericDialect());
+        String sql = person.id.where(createNumericExpression().in(person2.id.add(two))).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id + ? IN(SELECT T2.id + ? FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(person.id.add(two).notIn(person2.id.add(0))).show(new GenericDialect());
+        String sql = person.id.where(createNumericExpression().notIn(person2.id.add(0))).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id + ? NOT IN(SELECT T2.id + ? FROM person AS T2)", sql);
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(person.id.add(two).in(10L, 12L)).show(new GenericDialect());
+        String sql = person.id.where(createNumericExpression().in(10L, 12L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(person.id.add(two).notIn(10L, 12L)).show(new GenericDialect());
+        String sql = person.id.where(createNumericExpression().notIn(10L, 12L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT IN(?, ?)", sql);
    }
 
     public void testOrderBy() throws Exception {
-        String sql = person.id.add(two).orderBy(person.id.add(two)).show(new GenericDialect());
+        String sql = createNumericExpression().orderBy(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 ORDER BY T0.id + ?", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.id.add(two).nullsFirst()).show(new GenericDialect());
+        String sql = person.id.orderBy(createNumericExpression().nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.id.add(two).nullsLast()).show(new GenericDialect());
+        String sql = person.id.orderBy(createNumericExpression().nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.id.add(two).desc()).show(new GenericDialect());
+        String sql = person.id.orderBy(createNumericExpression().desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.id.add(two).asc()).show(new GenericDialect());
+        String sql = person.id.orderBy(createNumericExpression().asc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id + ? ASC", sql);
     }
 
 
     public void testOpposite() throws Exception {
-        final String sql = person.id.add(two).opposite().show(new GenericDialect());
+        final String sql = createNumericExpression().opposite().show(new GenericDialect());
         assertSimilar("SELECT -(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testCast() throws Exception {
-        final String sql = person.id.add(two).cast("NUMBER").show(new GenericDialect());
+        final String sql = createNumericExpression().cast("NUMBER").show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id + ? AS NUMBER) AS C0 FROM person AS T0", sql);
     }
 
     public void testAdd() throws Exception {
-        String sql = person.id.add(two).add(person.id.add(two)).show(new GenericDialect());
+        String sql = createNumericExpression().add(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? +(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPair() throws Exception {
-        String sql = person.id.add(two).pair(person.name).show(new GenericDialect());
+        String sql = createNumericExpression().pair(person.name).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
@@ -198,84 +214,84 @@ public class NumericExpressionTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(person.id.add(two).asPredicate()).show(new GenericDialect());
+        String sql = person.id.where(createNumericExpression().asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id + ?)", sql);
     }
 
     public void testSub() throws Exception {
-        String sql = person.id.add(two).sub(person.id.add(two)).show(new GenericDialect());
+        String sql = createNumericExpression().sub(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? -(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubNumber() throws Exception {
-        String sql = person.id.add(two).sub(2).show(new GenericDialect());
+        String sql = createNumericExpression().sub(2).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = person.id.add(two).mult(person.id.add(two)).show(new GenericDialect());
+        String sql = createNumericExpression().mult(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) *(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        String sql = person.id.add(two).mult(2).show(new GenericDialect());
+        String sql = createNumericExpression().mult(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        String sql = person.id.add(two).div(person.id.add(two)).show(new GenericDialect());
+        String sql = createNumericExpression().div(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) /(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        String sql = person.id.add(two).div(2).show(new GenericDialect());
+        String sql = createNumericExpression().div(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = person.id.add(two).concat(person.id.add(two)).show(new GenericDialect());
+        String sql = createNumericExpression().concat(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) ||(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstring() throws Exception {
-        String sql = person.id.add(two).substring(person.id).show(new GenericDialect());
+        String sql = createNumericExpression().substring(person.id).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING((T0.id + ?) FROM T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstring2() throws Exception {
-        String sql = person.id.add(two).substring(person.id, person.id.div(2)).show(new GenericDialect());
+        String sql = createNumericExpression().substring(person.id, person.id.div(2)).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING((T0.id + ?) FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstringParam() throws Exception {
-        String sql = person.id.add(two).substring(2).show(new GenericDialect());
+        String sql = createNumericExpression().substring(2).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING((T0.id + ?) FROM ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstringParam2() throws Exception {
-        String sql = person.id.add(two).substring(2,5).show(new GenericDialect());
+        String sql = createNumericExpression().substring(2, 5).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING((T0.id + ?) FROM ? FOR ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPosition() throws Exception {
-        String sql = person.id.add(two).positionOf(person.id).show(new GenericDialect());
+        String sql = createNumericExpression().positionOf(person.id).show(new GenericDialect());
         assertSimilar("SELECT POSITION(T0.id IN(T0.id + ?)) AS C0 FROM person AS T0", sql);
     }
 
     public void testPositionParam() throws Exception {
-        String sql = person.id.add(two).positionOf("1").show(new GenericDialect());
+        String sql = createNumericExpression().positionOf("1").show(new GenericDialect());
         assertSimilar("SELECT POSITION(? IN(T0.id + ?)) AS C0 FROM person AS T0", sql);
     }
 
 
 
     public void testCollate() throws Exception {
-        String sql = person.id.add(two).collate("latin1_general_ci").show(new GenericDialect());
+        String sql = createNumericExpression().collate("latin1_general_ci").show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        String sql = person.id.add(two).concat(" id").show(new GenericDialect());
+        String sql = createNumericExpression().concat(" id").show(new GenericDialect());
         assertSimilar("SELECT(T0.id + ?) || ? AS C0 FROM person AS T0", sql);
     }
     

@@ -29,6 +29,12 @@ public class InsertTest extends SqlTestCase {
         assertSimilar(sql, insert.show(new GenericDialect()));
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)));
+        final AbstractInsertStatement adaptor = AbstractInsertStatement.adapt(insert);
+        assertEquals(insert.show(new GenericDialect()), adaptor.show(new GenericDialect()));
+    }
+
     public void testSetNull() throws Exception {
         final String sql = person.insert(person.parentId.setNull()).show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id) VALUES(NULL)", sql);

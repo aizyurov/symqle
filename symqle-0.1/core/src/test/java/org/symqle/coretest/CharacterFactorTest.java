@@ -33,6 +33,11 @@ public class CharacterFactorTest extends SqlTestCase {
         assertEquals(column.getMapper(), adaptor.getMapper());
     }
 
+    public void testAsInValueList() throws Exception {
+        final String sql = person.id.where(person.name.in(characterFactor.asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.name IN(T1.name COLLATE latin1_general_ci)", sql);
+    }
+
     public void testLimit() throws Exception {
         final String sql = characterFactor.limit(10).show(new GenericDialect());
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 FETCH FIRST 10 ROWS ONLY", sql);

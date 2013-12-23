@@ -28,6 +28,12 @@ public class QueryBaseScalarTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractQueryBaseScalar<Long> adaptor = AbstractQueryBaseScalar.adapt(person.id);
+        assertEquals(person.id.getMapper(), adaptor.getMapper());
+        assertEquals(person.id.show(new GenericDialect()), adaptor.show(new GenericDialect()));
+    }
+
     public void testLimit() throws Exception {
         final String sql = createQueryBaseScalar().limit(10).show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 FETCH FIRST 10 ROWS ONLY", sql);

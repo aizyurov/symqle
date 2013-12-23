@@ -31,6 +31,12 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar(abs(col).show(new GenericDialect()), abs(col).show(new GenericDialect()));
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractRoutineInvocation<Long> adaptor = AbstractRoutineInvocation.adapt(abs(person.id));
+        assertEquals(adaptor.show(new GenericDialect()), abs(person.id).show(new GenericDialect()));
+        assertEquals(adaptor.getMapper(), abs(person.id).getMapper());
+    }
+
     public void testLimit() throws Exception {
         final String sql = abs(person.id).limit(20).show(new GenericDialect());
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);

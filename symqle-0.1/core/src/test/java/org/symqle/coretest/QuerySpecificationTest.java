@@ -30,6 +30,11 @@ public class QuerySpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
     }
 
+    public void testAdapt() throws Exception {
+        final String sql = AbstractQuerySpecification.adapt(person.id.pair(person.name)).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
+    }
+
     public void testLimit() throws Exception {
         final String sql = createQuerySpecification().limit(20).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FETCH FIRST 20 ROWS ONLY", sql);

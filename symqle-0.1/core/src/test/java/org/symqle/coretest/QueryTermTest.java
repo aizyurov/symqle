@@ -27,6 +27,13 @@ public class QueryTermTest extends SqlTestCase {
         assertSimilar(sql, queryTerm.show(new GenericDialect()));
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractQueryTerm<Long> adaptor = AbstractQueryTerm.adapt(employee.id);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1", sql);
+        assertEquals(adaptor.getMapper(), employee.id.getMapper());
+    }
+
     public void testOrderBy() throws Exception {
         final AbstractQueryTerm<Long> queryTerm = employee.id.intersect(manager.id);
         try {

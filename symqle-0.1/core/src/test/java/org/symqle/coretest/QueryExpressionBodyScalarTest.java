@@ -1,6 +1,10 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractQueryExpressionBodyScalar;
 import org.symqle.sql.Column;
@@ -14,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -38,6 +40,11 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 UNION SELECT T2.id AS C0 FROM manager AS T2", sql);
         final String sql2 = createQueryExpressionBodyScalar().show(new GenericDialect());
         assertSimilar(sql, sql2);
+    }
+
+    public void testAdapt() throws Exception {
+        final String sql = AbstractQueryExpressionBodyScalar.adapt(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C0 FROM employee AS T1", sql);
     }
 
     public void testForUpdate() throws Exception {

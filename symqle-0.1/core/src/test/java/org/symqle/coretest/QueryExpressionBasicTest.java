@@ -28,6 +28,11 @@ public class QueryExpressionBasicTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final String sql = AbstractQueryExpressionBasic.adapt(person.id).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testForUpdate() throws Exception {
         final String sql = person.id.orderBy(person.id).forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR UPDATE", sql);
