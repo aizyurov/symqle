@@ -30,6 +30,22 @@ public class UpdateTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractUpdateStatementBase update = person.update(person.parentId.set(person.id));
+        final AbstractUpdateStatement adaptor = AbstractUpdateStatement.adapt(update);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("UPDATE person SET parent_id = person.id", sql);
+    }
+
+    public void testAdaptBase() throws Exception {
+        final AbstractUpdateStatementBase update = person.update(person.parentId.set(person.id));
+        final AbstractUpdateStatementBase adaptor = AbstractUpdateStatementBase.adapt(update);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("UPDATE person SET parent_id = person.id", sql);
+
+    }
+
+
     public void testSetNull() throws Exception {
         final String sql = person.update(person.parentId.setNull()).show(new GenericDialect());
         assertSimilar("UPDATE person SET parent_id = NULL", sql);
