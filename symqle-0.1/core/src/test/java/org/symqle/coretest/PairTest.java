@@ -20,15 +20,25 @@ import java.util.List;
  */
 public class PairTest extends SqlTestCase {
 
+    private AbstractSelectList<Pair<Long, String>> createSelectList() {
+        return person.id.pair(person.name);
+    }
+
     public void testShow() throws Exception {
-        final String sql = person.id.pair(person.name).show(new GenericDialect());
+        final String sql = createSelectList().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
-        final String sql2 = person.id.pair(person.name).show(new GenericDialect());
+        final String sql2 = createSelectList().show(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
+    public void testAdapt() throws Exception {
+        final String sql = AbstractSelectList.adapt(person.id).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
+    }
+
+
     public void testPairChain() throws Exception {
-        final String sql = person.id.pair(person.name).pair(person.age).show(new GenericDialect());
+        final String sql = createSelectList().pair(person.age).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1, T0.age AS C2 FROM person AS T0", sql);
 
     }
@@ -38,16 +48,16 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1, T0.age AS C2 FROM person AS T0", sql);
     }
 
-    public void testAll() throws Exception {
-        final String sql = person.id.pair(person.name).selectAll().show(new GenericDialect());
+    public void testSelectAll() throws Exception {
+        final String sql = createSelectList().selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
-        final String sql2 = person.id.pair(person.name).selectAll().show(new GenericDialect());
+        final String sql2 = createSelectList().selectAll().show(new GenericDialect());
         assertSimilar(sql, sql2);
 
     }
 
     public void testWhere() throws Exception {
-        final AbstractQuerySpecification<Pair<Long, String>> querySpecification = person.id.pair(person.name).where(person.name.isNotNull());
+        final AbstractQuerySpecification<Pair<Long, String>> querySpecification = createSelectList().where(person.name.isNotNull());
         final String sql = querySpecification.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
         final String sql2 = querySpecification.show(new GenericDialect());
@@ -55,27 +65,37 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testOrderBy() throws Exception {
-        final String sql = person.id.pair(person.name).orderBy(person.name).show(new GenericDialect());
+        final String sql = createSelectList().orderBy(person.name).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = createSelectList().limit(20).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createSelectList().limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
     public void testForUpdate() throws Exception {
-        final String sql = person.id.pair(person.name).forUpdate().show(new GenericDialect());
+        final String sql = createSelectList().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.pair(person.name).forReadOnly().show(new GenericDialect());
+        final String sql = createSelectList().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testOrderByForUpdate() throws Exception {
-        final String sql = person.id.pair(person.name).orderBy(person.name).forUpdate().show(new GenericDialect());
+        final String sql = createSelectList().orderBy(person.name).forUpdate().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name FOR UPDATE", sql);
     }
 
     public void testOrderByForReadOnly() throws Exception {
-        final String sql = person.id.pair(person.name).orderBy(person.name).forReadOnly().show(new GenericDialect());
+        final String sql = createSelectList().orderBy(person.name).forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name FOR READ ONLY", sql);
     }
 
@@ -94,7 +114,7 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testList() throws Exception {
-        new PairScenario<AbstractSelectList<Pair<Long, String>>>(person.id.pair(person.name)) {
+        new PairScenario<AbstractSelectList<Pair<Long, String>>>(createSelectList()) {
             @Override
             protected void use(AbstractSelectList<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
                 final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
@@ -104,7 +124,7 @@ public class PairTest extends SqlTestCase {
     }
 
     public void testScroll() throws Exception {
-        new PairScenario<AbstractSelectList<Pair<Long, String>>>(person.id.pair(person.name)) {
+        new PairScenario<AbstractSelectList<Pair<Long, String>>>(createSelectList()) {
             @Override
             protected void use(AbstractSelectList<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));

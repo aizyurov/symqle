@@ -25,255 +25,271 @@ import static org.easymock.EasyMock.expect;
  */
 public class StringExpressionTest extends SqlTestCase {
 
+    private AbstractStringExpression<String> createStringExpression() {
+        return numberSign.concat(person.id);
+    }
+
     public void testIsNull() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).isNull()).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id IS NULL", sql);
     }
 
     public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).isNotNull()).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id IS NOT NULL", sql);
     }
 
 
     public void testShow() throws Exception {
-        final String sql = numberSign.concat(person.id).show(new GenericDialect());
+        final String sql = createStringExpression().show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
-        assertSimilar(sql, numberSign.concat(person.id).show(new GenericDialect()));
+        assertSimilar(sql, createStringExpression().show(new GenericDialect()));
+    }
+
+    public void testAdapt() throws Exception {
+        final AbstractStringExpression<Long> adaptor = AbstractStringExpression.adapt(person.id);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
+        assertEquals(adaptor.getMapper(), person.id.getMapper());
     }
 
     public void testMap() throws Exception {
-        final String sql = numberSign.concat(person.id).map(Mappers.STRING).show(new GenericDialect());
+        final String sql = createStringExpression().map(Mappers.STRING).show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testSelectAll() throws Exception {
-        final String sql = numberSign.concat(person.id).selectAll().show(new GenericDialect());
+        final String sql = createStringExpression().selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testSelectDistinct() throws Exception {
-        final String sql = numberSign.concat(person.id).distinct().show(new GenericDialect());
+        final String sql = createStringExpression().distinct().show(new GenericDialect());
         assertSimilar("SELECT DISTINCT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = numberSign.concat(person.id).where(person.id.concat(numberSign).eq(numberSign)).show(new GenericDialect());
+        final String sql = createStringExpression().where(person.id.concat(numberSign).eq(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 WHERE T0.id || ? = ?", sql);
 
     }
 
+    public void testAsInValueList() throws Exception {
+        final String sql = person.id.where(numberSign.in(createStringExpression().asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(? || T0.id)", sql);
+    }
+
     public void testEq() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).eq(numberSign)).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().eq(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).ne(numberSign)).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().ne(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <> ?", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).gt(numberSign)).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().gt(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id > ?", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).ge(numberSign)).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().ge(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id >= ?", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).lt(numberSign)).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().lt(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id < ?", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).le(numberSign)).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().le(numberSign)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <= ?", sql);
     }
 
     public void testEqValue() throws Exception {
-        final AbstractStringExpression<String> stringExpression = numberSign.concat(person.id);
+        final AbstractStringExpression<String> stringExpression = createStringExpression();
         final AbstractPredicate predicate = stringExpression.eq("#12");
         final String sql = person.id.where(predicate).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
     }
 
     public void testNeValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).ne("#12")).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().ne("#12")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <> ?", sql);
     }
 
     public void testGtValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).gt("#12")).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().gt("#12")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id > ?", sql);
     }
 
     public void testGeValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).ge("#12")).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().ge("#12")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id >= ?", sql);
     }
 
     public void testLtValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).lt("#12")).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().lt("#12")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id < ?", sql);
     }
 
     public void testLeValue() throws Exception {
-        final String sql = person.id.where(numberSign.concat(person.id).le("#12")).show(new GenericDialect());
+        final String sql = person.id.where(createStringExpression().le("#12")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <= ?", sql);
     }
 
     public void testIn() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).in(numberSign.concat(person2.id))).show(new GenericDialect());
+        String sql = person.id.where(createStringExpression().in(numberSign.concat(person2.id))).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? || T1.id IN(SELECT ? || T2.id FROM person AS T2)", sql);
     }
 
     public void testNotIn() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).notIn(numberSign.concat(person2.id))).show(new GenericDialect());
+        String sql = person.id.where(createStringExpression().notIn(numberSign.concat(person2.id))).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? || T1.id NOT IN(SELECT ? || T2.id FROM person AS T2)", sql);
     }
 
     public void testInList() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).in("#123", "#124")).show(new GenericDialect());
+        String sql = person.id.where(createStringExpression().in("#123", "#124")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).notIn("#123", "#124")).show(new GenericDialect());
+        String sql = person.id.where(createStringExpression().notIn("#123", "#124")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id NOT IN(?, ?)", sql);
    }
 
     public void testOrderBy() throws Exception {
-        String sql = numberSign.concat(person.id).orderBy(numberSign.concat(person.id)).show(new GenericDialect());
+        String sql = createStringExpression().orderBy(createStringExpression()).show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).nullsFirst()).show(new GenericDialect());
+        String sql = person.id.orderBy(createStringExpression().nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).nullsLast()).show(new GenericDialect());
+        String sql = person.id.orderBy(createStringExpression().nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).desc()).show(new GenericDialect());
+        String sql = person.id.orderBy(createStringExpression().desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(numberSign.concat(person.id).asc()).show(new GenericDialect());
+        String sql = person.id.orderBy(createStringExpression().asc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY ? || T0.id ASC", sql);
     }
 
 
     public void testOpposite() throws Exception {
-        final String sql = numberSign.concat(person.id).opposite().show(new GenericDialect());
+        final String sql = createStringExpression().opposite().show(new GenericDialect());
         assertSimilar("SELECT -(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testCast() throws Exception {
-        final String sql = numberSign.concat(person.id).cast("CHAR(10)").show(new GenericDialect());
+        final String sql = createStringExpression().cast("CHAR(10)").show(new GenericDialect());
         assertSimilar("SELECT CAST(? || T0.id AS CHAR(10)) AS C0 FROM person AS T0", sql);
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(numberSign.concat(person.id).asPredicate()).show(new GenericDialect());
+        String sql = person.id.where(createStringExpression().asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(? || T0.id)", sql);
     }
 
     public void testPair() throws Exception {
-        String sql = numberSign.concat(person.id).pair(person.name).show(new GenericDialect());
+        String sql = createStringExpression().pair(person.name).show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
     public void testAdd() throws Exception {
-        String sql = numberSign.concat(person.id).add(numberSign.concat(person.id)).show(new GenericDialect());
+        String sql = createStringExpression().add(createStringExpression()).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) +(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testSub() throws Exception {
-        String sql = numberSign.concat(person.id).sub(numberSign.concat(person.id)).show(new GenericDialect());
+        String sql = createStringExpression().sub(createStringExpression()).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) -(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testMult() throws Exception {
-        String sql = numberSign.concat(person.id).mult(numberSign.concat(person.id)).show(new GenericDialect());
+        String sql = createStringExpression().mult(createStringExpression()).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) *(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testDiv() throws Exception {
-        String sql = numberSign.concat(person.id).div(numberSign.concat(person.id)).show(new GenericDialect());
+        String sql = createStringExpression().div(createStringExpression()).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) /(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testConcat() throws Exception {
-        String sql = numberSign.concat(person.id).concat(numberSign.concat(person.id)).show(new GenericDialect());
+        String sql = createStringExpression().concat(createStringExpression()).show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id ||(? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstring() throws Exception {
-        String sql = numberSign.concat(person.id).substring(person.id).show(new GenericDialect());
+        String sql = createStringExpression().substring(person.id).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstring2() throws Exception {
-        String sql = numberSign.concat(person.id).substring(person.id, person.id.div(2)).show(new GenericDialect());
+        String sql = createStringExpression().substring(person.id, person.id.div(2)).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstringParam() throws Exception {
-        String sql = numberSign.concat(person.id).substring(2).show(new GenericDialect());
+        String sql = createStringExpression().substring(2).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstringParam2() throws Exception {
-        String sql = numberSign.concat(person.id).substring(2, 5).show(new GenericDialect());
+        String sql = createStringExpression().substring(2, 5).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM ? FOR ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPosition() throws Exception {
-        String sql = numberSign.concat(person.id).positionOf(person.id).show(new GenericDialect());
+        String sql = createStringExpression().positionOf(person.id).show(new GenericDialect());
         assertSimilar("SELECT POSITION(T0.id IN ? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testPositionParam() throws Exception {
-        String sql = numberSign.concat(person.id).positionOf("A").show(new GenericDialect());
+        String sql = createStringExpression().positionOf("A").show(new GenericDialect());
         assertSimilar("SELECT POSITION(? IN ? || T0.id) AS C0 FROM person AS T0", sql);
     }
 
 
     public void testAddNumber() throws Exception {
-        String sql = numberSign.concat(person.id).add(2).show(new GenericDialect());
+        String sql = createStringExpression().add(2).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) + ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSubNumber() throws Exception {
-        String sql = numberSign.concat(person.id).sub(2).show(new GenericDialect());
+        String sql = createStringExpression().sub(2).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) - ? AS C0 FROM person AS T0", sql);
     }
 
     public void testMultNumber() throws Exception {
-        String sql = numberSign.concat(person.id).mult(2).show(new GenericDialect());
+        String sql = createStringExpression().mult(2).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) * ? AS C0 FROM person AS T0", sql);
     }
 
     public void testDivNumber() throws Exception {
-        String sql = numberSign.concat(person.id).div(2).show(new GenericDialect());
+        String sql = createStringExpression().div(2).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) / ? AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        String sql = numberSign.concat(person.id).concat(" test").show(new GenericDialect());
+        String sql = createStringExpression().concat(" test").show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testCollate() throws Exception {
-        String sql = numberSign.concat(person.id).collate("latin1_general_ci").show(new GenericDialect());
+        String sql = createStringExpression().collate("latin1_general_ci").show(new GenericDialect());
         // concat have less precedence, so parenthesized
         assertSimilar("SELECT(? || T0.id) COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
     }
@@ -341,6 +357,16 @@ public class StringExpressionTest extends SqlTestCase {
     public void testForReadOnly() throws Exception {
         final String sql = person.id.concat(" test").forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T0.id || ? AS C0 FROM person AS T0 FOR READ ONLY", sql);
+    }
+
+    public void testLimit() throws Exception {
+        final String sql = createStringExpression().limit(20).show(new GenericDialect());
+        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createStringExpression().limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testQueryValue() {
@@ -413,7 +439,7 @@ public class StringExpressionTest extends SqlTestCase {
 
 
     public void testList() throws Exception {
-        new Scenario(numberSign.concat(person.id)) {
+        new Scenario(createStringExpression()) {
             @Override
             void use(AbstractStringExpression<String> query, QueryEngine engine) throws SQLException {
                 assertEquals(Arrays.asList("#1"), query.list(engine));
@@ -423,7 +449,7 @@ public class StringExpressionTest extends SqlTestCase {
 
 
     public void testScroll() throws Exception {
-        new Scenario(numberSign.concat(person.id)) {
+        new Scenario(createStringExpression()) {
             @Override
             void use(AbstractStringExpression<String> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<String>("#1")));

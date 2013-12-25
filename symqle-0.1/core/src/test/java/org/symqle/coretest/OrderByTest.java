@@ -1,6 +1,8 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Mappers;
+import org.symqle.sql.AbstractSortOrderingSpecification;
+import org.symqle.sql.AbstractSortSpecification;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -33,6 +35,19 @@ public class OrderByTest extends SqlTestCase {
         String sql = person.id.pair(person.name).orderBy(person.name.nullsFirst(), person.age.desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
     }
+
+    public void testAdaptToAbstractSortOrderingSpecification() throws Exception {
+        AbstractSortOrderingSpecification sort = AbstractSortOrderingSpecification.adapt(person.age);
+        final String sql = person.id.orderBy(sort).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
+    }
+
+    public void testAdaptToAbstractSortSpecification() throws Exception {
+        AbstractSortSpecification sort = AbstractSortSpecification.adapt(person.age);
+        final String sql = person.id.orderBy(sort).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
+    }
+
 
 
 

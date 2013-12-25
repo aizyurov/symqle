@@ -1,7 +1,11 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.AbstractSearchedWhenClause;
 import org.symqle.sql.AbstractSearchedWhenClauseBaseList;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
@@ -14,30 +18,50 @@ import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
  */
 public class WhenClauseBaseListTest extends SqlTestCase {
 
+    private AbstractSearchedWhenClauseBaseList<String> createWhenClauseBaseList() {
+        return person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
+    }
+
     public void testShow() throws Exception {
-        final AbstractSearchedWhenClauseBaseList<String> baseList = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
+        final AbstractSearchedWhenClauseBaseList<String> baseList = createWhenClauseBaseList();
         final String sql = baseList.show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0", sql);
         assertSimilar(sql, baseList.show(new GenericDialect()));
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractSearchedWhenClause<String> adaptee = person.age.gt(20L).then(person.name);
+        final AbstractSearchedWhenClauseBaseList<String> adaptor = AbstractSearchedWhenClauseBaseList.adapt(adaptee);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0", sql);
+        assertEquals(adaptee.getMapper(), adaptor.getMapper());
+    }
+
+    public void testLimit() throws Exception {
+        final String sql = createWhenClauseBaseList().limit(20).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = createWhenClauseBaseList().limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
     public void testMap() throws Exception {
-        final AbstractSearchedWhenClauseBaseList<String> baseList = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick));
+        final AbstractSearchedWhenClauseBaseList<String> baseList = createWhenClauseBaseList();
         final String sql = baseList.map(Mappers.STRING).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0", sql);
         assertSimilar(sql, baseList.show(new GenericDialect()));
     }
 
     public void testElse() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).orElse(person.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().orElse(person.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick ELSE T0.nick END AS C0 FROM person AS T0", sql);
     }
 
@@ -53,103 +77,109 @@ public class WhenClauseBaseListTest extends SqlTestCase {
 
 
     public void testSelectAll() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).selectAll().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().selectAll().show(new GenericDialect());
         assertSimilar("SELECT ALL CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0", sql);
     }
 
     public void testSelectDistinct() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).distinct().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().distinct().show(new GenericDialect());
         assertSimilar("SELECT DISTINCT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).where(person.name.eq("John")).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().where(person.name.eq("John")).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 WHERE T0.name = ?", sql);
 
     }
 
+    public void testInValueList() throws Exception {
+        final String sql = person.id.where(person.nick.in(createWhenClauseBaseList().asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.nick IN(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END)", sql);
+    }
+
+
     public void testEq() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).eq(person.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().eq(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END = T0.nick", sql);
     }
 
     public void testNe() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).ne(person.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().ne(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END <> T0.nick", sql);
     }
 
     public void testGt() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).gt(person.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().gt(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END > T0.nick", sql);
     }
 
     public void testGe() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).ge(person.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().ge(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END >= T0.nick", sql);
     }
 
     public void testLt() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).lt(person.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().lt(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END < T0.nick", sql);
     }
 
     public void testLe() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).le(person.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().le(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END <= T0.nick", sql);
     }
 
     public void testEqValue() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).eq("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().eq("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END = ?", sql);
     }
 
     public void testNeValue() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).ne("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().ne("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END <> ?", sql);
     }
 
     public void testGtValue() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).gt("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().gt("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END > ?", sql);
     }
 
     public void testGeValue() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).ge("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().ge("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END >= ?", sql);
     }
 
     public void testLtValue() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).lt("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().lt("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END < ?", sql);
     }
 
     public void testLeValue() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).le("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().le("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END <= ?", sql);
     }
 
     public void testIn() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).in(person2.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().in(person2.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END IN(SELECT T1.nick FROM person AS T1)", sql);
     }
 
     public void testNotIn() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).notIn(person2.nick)).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().notIn(person2.nick)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NOT IN(SELECT T1.nick FROM person AS T1)", sql);
     }
 
     public void testInList() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).in("John", "James")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().in("John", "James")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END IN(?, ?)", sql);
    }
 
     public void testNotInList() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).notIn("John")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().notIn("John")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NOT IN(?)", sql);
    }
 
     public void testAsInSubquery() throws Exception {
-        final String sql = person2.id.where(person2.nick.in(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)))).show(new GenericDialect());
+        final String sql = person2.id.where(person2.nick.in(createWhenClauseBaseList())).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.nick IN(SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM person AS T0)", sql);
     }
 
@@ -159,32 +189,32 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     }
 
     public void testSort() throws Exception {
-        String sql = person.id.orderBy(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick))).show(new GenericDialect());
+        String sql = person.id.orderBy(createWhenClauseBaseList()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END", sql);
     }
 
     public void testOrderBy() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).orderBy(person.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().orderBy(person.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 ORDER BY T0.nick", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).nullsFirst()).show(new GenericDialect());
+        String sql = person.id.orderBy(createWhenClauseBaseList().nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).nullsLast()).show(new GenericDialect());
+        String sql = person.id.orderBy(createWhenClauseBaseList().nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
-        String sql = person.id.orderBy(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).desc()).show(new GenericDialect());
+        String sql = person.id.orderBy(createWhenClauseBaseList().desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
-        String sql = person.id.orderBy(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).asc()).show(new GenericDialect());
+        String sql = person.id.orderBy(createWhenClauseBaseList().asc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END ASC", sql);
     }
 
@@ -200,7 +230,7 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     }
 
     public void testPair() throws Exception {
-        String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).pair(person.name).show(new GenericDialect());
+        String sql = createWhenClauseBaseList().pair(person.name).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
@@ -251,186 +281,186 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     }
 
     public void testConcat() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).concat(person.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().concat(person.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END || T0.nick AS C0 FROM person AS T0", sql);
     }
 
     public void testConcatString() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).concat(" test").show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().concat(" test").show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END || ? AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstring() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).substring(person.id).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().substring(person.id).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstring2() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).substring(person.id, person.id.div(2)).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().substring(person.id, person.id.div(2)).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstringParam() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).substring(2).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().substring(2).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testSubstringParam2() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).substring(2, 5).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().substring(2, 5).show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM ? FOR ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPosition() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).positionOf(person.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().positionOf(person.nick).show(new GenericDialect());
         assertSimilar("SELECT POSITION(T0.nick IN CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
     public void testPositionParam() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).positionOf("A").show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().positionOf("A").show(new GenericDialect());
         assertSimilar("SELECT POSITION(? IN CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
 
     public void testCollate() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).collate("latin1_general_ci").show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().collate("latin1_general_ci").show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END COLLATE latin1_general_ci AS C0 FROM person AS T0", sql);
     }
 
     public void testUnion() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).union(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().union(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 UNION SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).unionAll(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().unionAll(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 UNION ALL SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testUnionDistinct() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).unionDistinct(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().unionDistinct(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 UNION DISTINCT SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testExcept() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).except(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().except(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 EXCEPT SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).exceptAll(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().exceptAll(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 EXCEPT ALL SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testExceptDistinct() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).exceptDistinct(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().exceptDistinct(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 EXCEPT DISTINCT SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
 
     public void testIntersect() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).intersect(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().intersect(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 INTERSECT SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).intersectAll(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().intersectAll(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 INTERSECT ALL SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testIntersectDistinct() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).intersectDistinct(person2.nick).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().intersectDistinct(person2.nick).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 INTERSECT DISTINCT SELECT T1.nick AS C0 FROM person AS T1", sql);
     }
 
     public void testExists() throws Exception {
-        final String sql = employee.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).exists()).show(new GenericDialect());
+        final String sql = employee.id.where(createWhenClauseBaseList().exists()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T0.age > ? THEN T0.nick END FROM person AS T1)", sql);
     }
 
     public void testContains() throws Exception {
-        final String sql = employee.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).contains("Jim")).show(new GenericDialect());
+        final String sql = employee.id.where(createWhenClauseBaseList().contains("Jim")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T0.age > ? THEN T0.nick END FROM person AS T1)", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).forUpdate().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().forUpdate().show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).forReadOnly().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).queryValue().where(employee.name.isNotNull()).show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().queryValue().where(employee.name.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT(SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM person AS T0) AS C0 FROM employee AS T1 WHERE T1.name IS NOT NULL", sql);
     }
     
     public void testIsNull() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).isNull()).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END IS NULL", sql);
     }
 
     public void testIsNotNull() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).isNotNull()).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END IS NOT NULL", sql);
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).like(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().like(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).notLike(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().notLike(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NOT LIKE ?", sql);
     }
 
     public void testLikeString() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).like("J%")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().like("J%")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END LIKE ?", sql);
     }
 
     public void testNotLikeString() throws Exception {
-        final String sql = person.id.where(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).notLike("J%")).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClauseBaseList().notLike("J%")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END NOT LIKE ?", sql);
     }
 
     public void testCount() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).count().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().count().show(new GenericDialect());
         assertSimilar("SELECT COUNT(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
     public void testCountDistinct() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).countDistinct().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().countDistinct().show(new GenericDialect());
         assertSimilar("SELECT COUNT(DISTINCT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
     public void testAvg() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).avg().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().avg().show(new GenericDialect());
         assertSimilar("SELECT AVG(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
     public void testSum() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).sum().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().sum().show(new GenericDialect());
         assertSimilar("SELECT SUM(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
     public void testMin() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).min().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().min().show(new GenericDialect());
         assertSimilar("SELECT MIN(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
     public void testMax() throws Exception {
-        final String sql = person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick)).max().show(new GenericDialect());
+        final String sql = createWhenClauseBaseList().max().show(new GenericDialect());
         assertSimilar("SELECT MAX(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
     }
 
 
 
     public void testList() throws Exception {
-        new Scenario(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick))) {
+        new Scenario(createWhenClauseBaseList()) {
             @Override
             void use(AbstractSearchedWhenClauseBaseList<String> query, QueryEngine engine) throws SQLException {
                 assertEquals(Arrays.asList("John"), query.list(engine));
@@ -438,7 +468,7 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         }.play();
     }
     public void testScroll() throws Exception {
-        new Scenario(person.age.gt(20L).then(person.name).orWhen(person.age.gt(1L).then(person.nick))) {
+        new Scenario(createWhenClauseBaseList()) {
             @Override
             void use(AbstractSearchedWhenClauseBaseList<String> query, QueryEngine engine) throws SQLException {
                 assertEquals(1, query.scroll(engine, new TestCallback<String>("John")));

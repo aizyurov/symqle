@@ -1,19 +1,23 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.AbstractTerm;
+import org.symqle.sql.Column;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.TableOrView;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * @author lvovich
@@ -37,6 +41,13 @@ public class TermTest extends SqlTestCase {
         assertSimilar(sql, person.id.mult(two).show(new GenericDialect()));
     }
 
+    public void testAdapt() throws Exception {
+        final AbstractTerm<Long> adaptor = AbstractTerm.adapt(person.id);
+        final String sql = adaptor.show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
+        assertEquals(adaptor.getMapper(), person.id.getMapper());
+    }
+
     public void testMap() throws Exception {
         final String sql = person.id.mult(two).map(Mappers.INTEGER).show(new GenericDialect());
         assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0", sql);
@@ -57,6 +68,11 @@ public class TermTest extends SqlTestCase {
         final String sql = person.id.mult(two).where(person.id.eq(two)).show(new GenericDialect());
         assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0 WHERE T0.id = ?", sql);
 
+    }
+
+    public void testAsInValueList() throws Exception {
+        final String sql = person.id.where(person.id.add(0).in(person.id.mult(two).asInValueList())).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? IN(T0.id * ?)", sql);
     }
 
     public void testEq() throws Exception {
@@ -339,6 +355,16 @@ public class TermTest extends SqlTestCase {
     public void testForReadOnly() throws Exception {
         final String sql = person.id.mult(2).forReadOnly().show(new GenericDialect());
         assertSimilar("SELECT T1.id * ? AS C1 FROM person AS T1 FOR READ ONLY", sql);
+    }
+
+    public void testLimit() throws Exception {
+        final String sql = person.id.mult(2).limit(20).show(new GenericDialect());
+        assertSimilar("SELECT T1.id * ? AS C1 FROM person AS T1 FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = person.id.mult(2).limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT T1.id * ? AS C1 FROM person AS T1 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testQueryValue() throws Exception {
