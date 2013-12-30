@@ -3,7 +3,7 @@ package org.symqle.integration;
 import org.symqle.common.Pair;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractNullPredicate;
+import org.symqle.sql.AbstractPredicate;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -19,21 +19,21 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
      * @param employee
      * @return
      */
-    private AbstractNullPredicate createBasicCondition(final Employee employee) {
-        final AbstractNullPredicate aNull = employee.deptId.isNull();
+    private AbstractPredicate createBasicCondition(final Employee employee) {
+        final AbstractPredicate aNull = employee.deptId.isNull();
         return aNull;
     }
 
     public void testAnd() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.and(employee.salary.gt(2500.0))).list(getEngine());
         assertEquals(Arrays.asList(), list);
     }
 
     public void testOr() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.or(employee.firstName.eq("Bill")))
                 .orderBy(employee.lastName)
                 .list(getEngine());
@@ -42,7 +42,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testNegate() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.negate()).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
 
@@ -50,7 +50,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsTrue() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isTrue())
                     .orderBy(employee.lastName)
@@ -64,7 +64,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsNotTrue() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotTrue())
                     .orderBy(employee.lastName)
@@ -78,7 +78,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsFalse() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isFalse())
                     .orderBy(employee.lastName)
@@ -92,7 +92,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsNotFalse() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotFalse())
                     .orderBy(employee.lastName)
@@ -106,7 +106,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsUnknown() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isUnknown())
                     .orderBy(employee.lastName)
@@ -120,7 +120,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsNotUnknown() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotUnknown())
                     .orderBy(employee.lastName)
@@ -134,7 +134,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testThen() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<Pair<String,String>> list = employee.lastName.pair(basicCondition.then(employee.firstName))
                 .orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(Pair.make("Cooper", "James"), Pair.make("First", null), Pair.make("March", null), Pair.make("Pedersen", null), Pair.make("Redwood", null)), list);
@@ -142,7 +142,7 @@ public class NullPredicateTest extends AbstractIntegrationTestBase {
 
     public void testThenNull() throws Exception {
         final Employee employee = new Employee();
-        final AbstractNullPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<Pair<String,String>> list = employee.lastName.pair(
                     employee.salary.gt(2500.0).then(employee.firstName).orWhen(basicCondition.thenNull()).orElse(Params.p(":)"))
                 )

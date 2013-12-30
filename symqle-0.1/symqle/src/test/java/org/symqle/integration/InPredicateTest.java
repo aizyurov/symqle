@@ -3,7 +3,7 @@ package org.symqle.integration;
 import org.symqle.common.Pair;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractInPredicate;
+import org.symqle.sql.AbstractPredicate;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -19,16 +19,16 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
      * @param employee
      * @return
      */
-    private AbstractInPredicate createBasicCondition(final Employee employee) {
+    private AbstractPredicate createBasicCondition(final Employee employee) {
         final Employee another = new Employee();
-        final AbstractInPredicate james = employee.salary.in(another.salary.where(another.firstName.eq("James")));
+        final AbstractPredicate james = employee.salary.in(another.salary.where(another.firstName.eq("James")));
         return james;
 
     }
 
     public void testAnd() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.and(employee.salary.gt(2500.0)))
                 .orderBy(employee.lastName)
                 .list(getEngine());
@@ -37,7 +37,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testOr() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.or(employee.firstName.eq("Bill")))
                 .orderBy(employee.lastName)
                 .list(getEngine());
@@ -46,7 +46,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testNegate() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<String> list = employee.lastName.where(basicCondition.negate()).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("March", "Pedersen"), list);
 
@@ -54,7 +54,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsTrue() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isTrue())
                     .orderBy(employee.lastName)
@@ -68,7 +68,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsNotTrue() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotTrue())
                     .orderBy(employee.lastName)
@@ -82,7 +82,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsFalse() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isFalse())
                     .orderBy(employee.lastName)
@@ -96,7 +96,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsNotFalse() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotFalse())
                     .orderBy(employee.lastName)
@@ -110,7 +110,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsUnknown() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isUnknown())
                     .orderBy(employee.lastName)
@@ -124,7 +124,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testIsNotUnknown() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         try {
             final List<String> list = employee.lastName.where(basicCondition.isNotUnknown())
                     .orderBy(employee.lastName)
@@ -138,7 +138,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testThen() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<Pair<String,String>> list = employee.lastName.pair(basicCondition.then(employee.firstName))
                 .orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(Pair.make("Cooper", "James"), Pair.make("First", "James"), Pair.make("March", null), Pair.make("Pedersen", null), Pair.make("Redwood", "Margaret")), list);
@@ -146,7 +146,7 @@ public class InPredicateTest extends AbstractIntegrationTestBase {
 
     public void testThenNull() throws Exception {
         final Employee employee = new Employee();
-        final AbstractInPredicate basicCondition = createBasicCondition(employee);
+        final AbstractPredicate basicCondition = createBasicCondition(employee);
         final List<Pair<String,String>> list = employee.lastName.pair(
                     employee.salary.gt(2500.0).then(employee.firstName).orWhen(basicCondition.thenNull()).orElse(Params.p(":)"))
                 )
