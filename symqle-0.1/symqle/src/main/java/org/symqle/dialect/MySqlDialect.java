@@ -1,6 +1,7 @@
 package org.symqle.dialect;
 
 import org.symqle.common.Sql;
+import org.symqle.querybuilder.CustomSql;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.GenericDialect;
 
@@ -37,4 +38,13 @@ public class MySqlDialect extends GenericDialect {
         return concat(SqlTerm.LEFT_PAREN.toSql(), bve, SqlTerm.RIGHT_PAREN.toSql());
     }
 
+    @Override
+    public Sql QueryExpression_is_QueryExpressionBasic_FETCH_FIRST_Literal_ROWS_ONLY(final Sql qe, final Sql limit) {
+        return concat(qe, SqlTerm.LIMIT.toSql(), new CustomSql("0"), SqlTerm.COMMA.toSql(), limit);
+    }
+
+    @Override
+    public Sql QueryExpression_is_QueryExpressionBasic_OFFSET_Literal_ROWS_FETCH_FIRST_Literal_ROWS_ONLY(final Sql qe, final Sql offset, final Sql limit) {
+        return concat(qe, SqlTerm.LIMIT.toSql(), offset, SqlTerm.COMMA.toSql(), limit);
+    }
 }

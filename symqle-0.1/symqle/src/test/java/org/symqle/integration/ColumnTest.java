@@ -12,14 +12,12 @@ import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
-import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
 import org.symqle.querybuilder.CustomSql;
+import org.symqle.sql.AbstractQueryExpression;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.Dialect;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -131,6 +129,20 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         assertTrue(list.toString(), list.contains("Bill"));
         assertTrue(list.toString(), list.contains("James"));
         assertTrue(list.toString(), list.contains("Alex"));
+    }
+
+    public void testLimit() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractQueryExpression<String> queryExpression = employee.lastName.limit(4);
+        System.out.println(queryExpression.show(getEngine().initialContext().get(Dialect.class)));
+        final List<String> list = queryExpression.list(getEngine());
+        assertEquals(4, list.size());
+    }
+
+    public void testLimit2() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.limit(2, 3).list(getEngine());
+        assertEquals(3, list.size());
     }
 
     public void testAsFunctionArgument() throws Exception {
