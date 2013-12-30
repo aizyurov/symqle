@@ -1,17 +1,22 @@
 package org.symqle.coretest;
 
-import org.easymock.Capture;
-import org.symqle.common.*;
-import org.symqle.jdbc.Option;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.Column;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.SqlFunction;
+import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Created by IntelliJ IDEA.
@@ -303,6 +308,16 @@ public class ColumnTest extends SqlTestCase {
         String sql = id.where(age.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age IS NOT NULL", sql);
    }
+
+    public void testLimit() throws Exception {
+        final String sql = person.id.limit(20).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = person.id.limit(10, 20).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
 
     public void testOrderBy() throws Exception {
         final Column<Long> id  =  person.id;

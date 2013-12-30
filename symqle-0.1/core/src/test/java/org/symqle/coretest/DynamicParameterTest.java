@@ -1,9 +1,18 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.Column;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.GenericDialect;
+import org.symqle.sql.SqlFunction;
+import org.symqle.sql.TableOrView;
+import org.symqle.sql.ValueExpression;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -12,8 +21,6 @@ import java.util.List;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,14 +50,10 @@ public class DynamicParameterTest extends SqlTestCase {
 
     public void testOracleLikeDialect() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
-        final String sql = param.show(new GenericDialect() {
-            @Override
-            public String fallbackTableName() {
-                return "dual";
-            }
-        }, Option.allowNoTables(true));
-        assertSimilar("SELECT ? AS C1 FROM dual AS T1", sql);
+        final String sql = param.show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT ? AS C0 FROM dual AS T0", sql);
     }
+
 
 
     public void testSelectAll() throws Exception {
@@ -419,6 +422,18 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
+    public void testUnionOracleLikeDialect() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.union(person.id).show(new OracleLikeDialect(), Option.allowNoTables(true));
+//        assertSimilar("SELECT ? AS C0 FROM dual AS D727817162 UNION SELECT T0.id AS C0 FROM person AS T0", sql);
+    }
+
+    public void testMySqlLikeDialect() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.union(person.id).show(new MysqlLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT ? AS C0 UNION SELECT T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testUnionAll() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
@@ -579,6 +594,16 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
+    public void testLimit() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.LONG, 1L).limit(20).show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT ? AS C0 FROM dual AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = DynamicParameter.create(Mappers.LONG, 1L).limit(10, 20).show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT ? AS C0 FROM dual AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
     public void testForReadOnly() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
         try {
@@ -634,7 +659,7 @@ public class DynamicParameterTest extends SqlTestCase {
     private static abstract class Scenario extends AbstractQueryScenario<Long, DynamicParameter<Long>> {
 
         private Scenario(DynamicParameter<Long> query) {
-            super(query, "C[0-9]", new OracleLikeDialect(), Option.allowNoTables(true));
+            super(query, "C[0-9]", new MysqlLikeDialect(), Option.allowNoTables(true));
         }
 
         @Override

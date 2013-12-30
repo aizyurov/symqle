@@ -40,7 +40,6 @@ public class PairTest extends SqlTestCase {
     public void testPairChain() throws Exception {
         final String sql = createSelectList().pair(person.age).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1, T0.age AS C2 FROM person AS T0", sql);
-
     }
 
     public void testPairArgument() throws Exception {
@@ -53,7 +52,6 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT ALL T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
         final String sql2 = createSelectList().selectAll().show(new GenericDialect());
         assertSimilar(sql, sql2);
-
     }
 
     public void testWhere() throws Exception {

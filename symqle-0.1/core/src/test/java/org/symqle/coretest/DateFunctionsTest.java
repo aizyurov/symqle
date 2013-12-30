@@ -1,10 +1,7 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
-import org.symqle.sql.Column;
-import org.symqle.sql.GenericDialect;
+import org.symqle.jdbc.Option;
 import org.symqle.sql.Symqle;
-import org.symqle.sql.TableOrView;
 
 /**
  * @author lvovich
@@ -12,26 +9,18 @@ import org.symqle.sql.TableOrView;
 public class DateFunctionsTest extends SqlTestCase {
 
     public void testCurrentDate() throws Exception {
-        final String sql = Symqle.currentDate().pair(new Dual().dummy).show(new GenericDialect());
-        assertSimilar("SELECT CURRENT_DATE AS C0, T1.dummy AS C1 FROM dual AS T1", sql);
+        final String sql = Symqle.currentDate().show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT CURRENT_DATE AS C0 FROM dual AS T1", sql);
     }
 
     public void testCurrentTimestamp() throws Exception {
-        final String sql = Symqle.currentTimestamp().pair(new Dual().dummy).show(new GenericDialect());
-        assertSimilar("SELECT CURRENT_TIMESTAMP AS C0, T1.dummy AS C1 FROM dual AS T1", sql);
+        final String sql = Symqle.currentTimestamp().show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT CURRENT_TIMESTAMP AS C0 FROM dual AS T1", sql);
     }
 
     public void testCurrentTime() throws Exception {
-        final String sql = Symqle.currentTime().pair(new Dual().dummy).show(new GenericDialect());
-        assertSimilar("SELECT CURRENT_TIME AS C0, T1.dummy AS C1 FROM dual AS T1", sql);
+        final String sql = Symqle.currentTime().show(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT CURRENT_TIME AS C0 FROM dual AS T1", sql);
     }
 
-    private static class Dual extends TableOrView {
-
-        private Dual() {
-            super("dual");
-        }
-
-        public final Column<String> dummy = defineColumn(Mappers.STRING, "dummy");
-    }
 }
