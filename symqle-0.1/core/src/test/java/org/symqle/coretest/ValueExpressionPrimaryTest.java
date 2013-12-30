@@ -60,8 +60,10 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final String sql = createValueExpressionPrimary().map(Mappers.STRING).orderBy(employee.name).show(new GenericDialect());
+        final AbstractValueExpressionPrimary<String> remapped = createValueExpressionPrimary().map(Mappers.STRING);
+        final String sql = remapped.orderBy(employee.name).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
+        assertEquals(Mappers.STRING, remapped.getMapper());
     }
 
     public void testAll() throws Exception {

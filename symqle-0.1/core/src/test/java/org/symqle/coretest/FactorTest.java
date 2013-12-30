@@ -64,8 +64,10 @@ public class FactorTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final String sql = person.id.opposite().map(Mappers.DOUBLE).show(new GenericDialect());
+        final AbstractFactor<Double> remapped = person.id.opposite().map(Mappers.DOUBLE);
+        final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.DOUBLE, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {

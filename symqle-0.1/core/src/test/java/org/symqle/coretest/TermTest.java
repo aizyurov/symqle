@@ -49,9 +49,11 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final String sql = person.id.mult(two).map(Mappers.INTEGER).show(new GenericDialect());
+        final AbstractTerm<Integer> remapped = person.id.mult(two).map(Mappers.INTEGER);
+        final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0", sql);
         assertSimilar(sql, person.id.mult(two).show(new GenericDialect()));
+        assertEquals(Mappers.INTEGER, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {

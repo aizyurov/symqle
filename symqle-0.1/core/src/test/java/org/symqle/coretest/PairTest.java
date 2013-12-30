@@ -36,6 +36,15 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testNoTablesMysqlLikeDialect() throws Exception {
+        final String sql = Symqle.currentDate().pair(Symqle.currentTime()).show(new MysqlLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT CURRENT_DATE AS C0, CURRENT_TIME AS C1", sql);
+        final String sql2 = Symqle.currentDate().pair(Symqle.currentTime()).distinct().show(new MysqlLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT DISTINCT CURRENT_DATE AS C0, CURRENT_TIME AS C1", sql2);
+        final String sql3 = Symqle.currentDate().pair(Symqle.currentTime()).selectAll().show(new MysqlLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT ALL CURRENT_DATE AS C0, CURRENT_TIME AS C1", sql3);
+    }
+
 
     public void testPairChain() throws Exception {
         final String sql = createSelectList().pair(person.age).show(new GenericDialect());

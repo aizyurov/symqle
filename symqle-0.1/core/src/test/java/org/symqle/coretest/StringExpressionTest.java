@@ -5,6 +5,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
+import org.symqle.sql.AbstractNumericExpression;
 import org.symqle.sql.AbstractPredicate;
 import org.symqle.sql.AbstractStringExpression;
 import org.symqle.sql.Column;
@@ -54,8 +55,10 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final String sql = createStringExpression().map(Mappers.STRING).show(new GenericDialect());
+        final AbstractStringExpression<String> remapped = createStringExpression().map(Mappers.STRING);
+        final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {
@@ -233,33 +236,45 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testSubstring() throws Exception {
-        String sql = createStringExpression().substring(person.id).show(new GenericDialect());
+        final AbstractStringExpression<String> substring = createStringExpression().substring(person.id);
+        String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM T0.id) AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, substring.getMapper());
     }
 
     public void testSubstring2() throws Exception {
-        String sql = createStringExpression().substring(person.id, person.id.div(2)).show(new GenericDialect());
+        final AbstractStringExpression<String> substring = createStringExpression().substring(person.id, person.id.div(2));
+        String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, substring.getMapper());
     }
 
     public void testSubstringParam() throws Exception {
-        String sql = createStringExpression().substring(2).show(new GenericDialect());
+        final AbstractStringExpression<String> substring = createStringExpression().substring(2);
+        String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM ?) AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, substring.getMapper());
     }
 
     public void testSubstringParam2() throws Exception {
-        String sql = createStringExpression().substring(2, 5).show(new GenericDialect());
+        final AbstractStringExpression<String> substring = createStringExpression().substring(2, 5);
+        String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM ? FOR ?) AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, substring.getMapper());
     }
 
     public void testPosition() throws Exception {
-        String sql = createStringExpression().positionOf(person.id).show(new GenericDialect());
+        final AbstractNumericExpression<Integer> pos = createStringExpression().positionOf(person.id);
+        String sql = pos.show(new GenericDialect());
         assertSimilar("SELECT POSITION(T0.id IN ? || T0.id) AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.INTEGER, pos.getMapper());
     }
 
     public void testPositionParam() throws Exception {
-        String sql = createStringExpression().positionOf("A").show(new GenericDialect());
+        final AbstractNumericExpression<Integer> pos = createStringExpression().positionOf("A");
+        String sql = pos.show(new GenericDialect());
         assertSimilar("SELECT POSITION(? IN ? || T0.id) AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.INTEGER, pos.getMapper());
     }
 
 

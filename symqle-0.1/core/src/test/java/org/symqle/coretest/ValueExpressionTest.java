@@ -43,8 +43,11 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final String sql = createValueExpression().map(Mappers.STRING).show(new GenericDialect());
+        final AbstractValueExpression<String> remapped = createValueExpression().map(Mappers.STRING);
+        final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, remapped.getMapper());
+
     }
 
     public void testAll() throws Exception {

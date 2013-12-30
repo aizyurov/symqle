@@ -50,8 +50,10 @@ public class FunctionTest extends SqlTestCase {
 
     public void testMap() throws Exception {
         final Column<Long> col = person.id;
-        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", abs(col).map(Mappers.LONG).show(new GenericDialect()));
+        final AbstractValueExpressionPrimary<Long> remapped = abs(col).map(Mappers.LONG);
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", remapped.show(new GenericDialect()));
         assertSimilar(abs(col).show(new GenericDialect()), abs(col).show(new GenericDialect()));
+        assertEquals(Mappers.LONG, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {
