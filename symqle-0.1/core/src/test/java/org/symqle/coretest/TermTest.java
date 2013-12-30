@@ -435,8 +435,19 @@ public class TermTest extends SqlTestCase {
     }
     
 
-    public void testList() throws Exception {
+    public void testListMult() throws Exception {
         new Scenario(person.id.mult(2)) {
+            @Override
+            void use(AbstractTerm<Number> query, QueryEngine engine) throws SQLException {
+                final List<Number> list = query.list(engine);
+                assertEquals(1, list.size());
+                assertEquals(123, list.get(0).intValue());
+            }
+        }.play();
+    }
+
+    public void testListDiv() throws Exception {
+        new Scenario(person.id.div(2)) {
             @Override
             void use(AbstractTerm<Number> query, QueryEngine engine) throws SQLException {
                 final List<Number> list = query.list(engine);

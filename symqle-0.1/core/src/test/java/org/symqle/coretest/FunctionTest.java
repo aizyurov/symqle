@@ -37,7 +37,6 @@ public class FunctionTest extends SqlTestCase {
         assertEquals(adaptor.getMapper(), abs(person.id).getMapper());
     }
 
-
     public void testLimit() throws Exception {
         final String sql = abs(person.id).limit(20).show(new GenericDialect());
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
@@ -288,6 +287,7 @@ public class FunctionTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         String sql = currentUser().pair(id).show(new GenericDialect());
         assertSimilar("SELECT user() AS C0, T0.id AS C1 FROM person AS T0", sql);
+        assertEquals(Mappers.STRING, currentUser().getMapper());
     }
 
     public void testAdd() throws Exception {

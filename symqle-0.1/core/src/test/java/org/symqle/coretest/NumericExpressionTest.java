@@ -430,8 +430,19 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT MAX(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
-    public void testList() throws Exception {
+    public void testListAdd() throws Exception {
         new Scenario(person.id.add(2)) {
+            @Override
+            void use(AbstractNumericExpression<Number> query, QueryEngine engine) throws SQLException {
+                final List<Number> list = query.list(engine);
+                assertEquals(1, list.size());
+                assertEquals(123, list.get(0).intValue());
+            }
+        }.play();
+    }
+
+    public void testListSub() throws Exception {
+        new Scenario(person.id.sub(2)) {
             @Override
             void use(AbstractNumericExpression<Number> query, QueryEngine engine) throws SQLException {
                 final List<Number> list = query.list(engine);

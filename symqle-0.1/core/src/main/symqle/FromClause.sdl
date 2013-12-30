@@ -4,190 +4,19 @@ public interface FromClause : Sql {}
 #
 # <table reference list> ::= <table reference> [ { <comma> <table reference> }... ]
 
-FromClause ::= FROM t:TableReferenceList :: FromClause createFrom {}
+FromClause ::= FROM t:TableReferenceList :: protected FromClause createFrom {}
 ;
 
 public interface TableReferenceList : Sql {}
 
-TableReferenceList ::= r:TableReference :: TableReferenceList createTableReferenceList {}
+# used by FromClauseBuilder, protected methods
+TableReferenceList ::= r:TableReference :: protected TableReferenceList createTableReferenceList {}
 |
-    l:TableReferenceList COMMA r:TableReference :: TableReferenceList appendTableReferenceList {}
+    l:TableReferenceList COMMA r:TableReference :: protected TableReferenceList appendTableReferenceList {}
 ;
 
 # <table reference> ::= <table primary or joined table> [ <sample clause> ]
 # Symqle does not support <sample clause>, so we are omitting <tableprimary or joined table>
-
-public interface TableReference : Sql {}
-
-TableReference ::=
-    t:TablePrimary :: TableReference tableReferenceFromPrimary {}
-|
-    t:JoinedTable :: TableReference tableReferenceFromJoinedTable {}
-;
-
-public interface JoinedTable : Sql {}
-
-# <table primary> ::=
-#		<table or query name> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
-#	|	<derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
-#	|	<lateral derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
-#	|	<collection derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
-#	|	<table function derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
-#	|	<only spec> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
-#	|	<left paren> <joined table> <right paren>
-#
-# only the first one is supported, AS <correlation name> is always used <correlation name> is just Identifier
-
-public interface TablePrimary : Sql {}
-
-TablePrimary ::= t:TableName AS id:Identifier
-;
-
-JoinedTable ::= l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable leftJoin {}
-    | l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable rightJoin {}
-    | l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable innerJoin {}
-    | l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: protected JoinedTable outerJoin {}
-;
-
-public interface TableName : Sql {
-}
-
-# a simgle class TableOrView implements both TableName and Join
-# Tables are handled specially by SelectTableRegistry
-
-# TableOrView implements TableReference by having a TableReference inside
-import org.symqle.querybuilder.CustomSql;
-import org.symqle.common.Mapper;
-import org.symqle.common.MalformedStatementException;
-import java.util.Set;
-import java.util.LinkedHashSet;
-import java.util.HashSet;
-public class TableOrView implements TableName, TablePrimary, TableReference {
-    private final String name;
-
-    // initialized by converting from TablePrimary
-    private TableReference tableReference = Symqle.tableReferenceFromPrimary(this);
-
-    private TableOrView referral = null;
-
-    private Set<TableOrView> referents = new LinkedHashSet<TableOrView>();
-
-    protected TableOrView(final String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public <T> Column<T> defineColumn(final Mapper<T> mapper, final String name) {
-        return new Column(mapper, name, this);
-    }
-
-    private void checkJoin(TableOrView other) {
-        if (other.referral != null) {
-            throw new MalformedStatementException(other + "is already joined to "+ other.referral);
-        }
-        other.referral = this;
-        referents.add(other);
-        Set<TableOrView> foundReferrals = new HashSet<TableOrView>();
-        Set<TableOrView> maybeCycle = new HashSet<TableOrView>();
-        // try to find cycle starting from other
-        TableOrView t;
-        for (t = this; t != null; t = t.referral) {
-            maybeCycle.add(t);
-            if (other==t) {
-                // cycle!
-                throw new MalformedStatementException("Cyclic join: " + maybeCycle);
-            }
-        }
-        // OK, came to the root
-    }
-
-    public TableOrView joinedTableRoot() {
-        return referral == null ? this : referral.joinedTableRoot();
-    }
-        public Set<TableOrView> joinedTableParticipants() {
-            if (referral != null) {
-                return referral.joinedTableParticipants();
-            } else {
-                Set<TableOrView> participants = new LinkedHashSet<TableOrView>();
-                participants.add(this);
-                participants.addAll(reachableReferents());
-                return participants;
-            }
-        }
-
-        private Set<TableOrView> reachableReferents() {
-            Set<TableOrView> reachable = new LinkedHashSet<TableOrView>();
-            reachable.addAll(referents);
-            for (TableOrView t: referents) {
-                reachable.addAll(t.reachableReferents());
-            }
-            return reachable;
-        }
-
-    public void leftJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        final JoinedTable joinedTable = Symqle.leftJoin(tableReference, other, condition);
-        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
-    }
-
-    public void innerJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        final JoinedTable joinedTable = Symqle.innerJoin(tableReference, other, condition);
-        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
-    }
-
-    public void rightJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        final JoinedTable joinedTable = Symqle.rightJoin(tableReference, other, condition);
-        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
-    }
-
-    public void outerJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        final JoinedTable joinedTable = Symqle.outerJoin(tableReference, other, condition);
-        tableReference = Symqle.tableReferenceFromJoinedTable(joinedTable);
-    }
-
-
-    /**
-    * Creates an Sql representing <code>this</code>
-    * @param context the Sql construction context
-    * @return sql conforming to <code>this</code> syntax
-    */
-    public Sql z$sqlOfTableName(SqlContext context) {
-        return new CustomSql(name);
-    }
-    /**
-    * Creates an Sql representing <code>this</code>
-    * @param context the Sql construction context
-    * @return sql conforming to <code>this</code> syntax
-    */
-    public Sql z$sqlOfTablePrimary(SqlContext context) {
-        return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
-                new CustomSql(getCorrelationName(context)));
-    }
-    /**
-    * Creates an Sql representing <code>this</code>
-    * @param context the Sql construction context
-    * @return sql conforming to <code>this</code> syntax
-    */
-    public Sql z$sqlOfTableReference(SqlContext context) {
-        return tableReference.z$sqlOfTableReference(context);
-    }
-
-    public String getCorrelationName(SqlContext context) {
-        String name;
-        for (name = context.get(TableRegistry.class).getCorrelationName(this);
-                name == null;
-                name = context.get(TableRegistry.class).getCorrelationName(this)) {
-            context.get(TableRegistry.class).addAll(joinedTableParticipants());
-        }
-        return name;
-    }
-}
 
 # <joined table> ::=
 #		<cross join>
@@ -209,7 +38,44 @@ public class TableOrView implements TableName, TablePrimary, TableReference {
 #
 # <join specification> ::= <join condition> | <named columns join>
 # Symqle does not support/use <named columns join>, so we are inlining <join condition> in Join productions
+# Additionally, JoinedTable is also expanded inline as TableReference
+# methods are used internally by TableOrView, they are not public
 
+
+public interface TableReference : Sql {}
+
+TableReference ::=
+    t:TablePrimary :: protected TableReference asTableReference {}
+|
+    l:TableReference LEFT JOIN r:TableReference ON c:BooleanExpression :: protected TableReference leftJoin {}
+|
+    l:TableReference RIGHT JOIN r:TableReference ON c:BooleanExpression :: protected TableReference rightJoin {}
+|
+    l:TableReference INNER JOIN r:TableReference ON c:BooleanExpression :: protected TableReference innerJoin {}
+|
+    l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: protected TableReference outerJoin {}
+;
+
+public interface JoinedTable : Sql {}
+
+# <table primary> ::=
+#		<table or query name> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
+#	|	<derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<lateral derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<collection derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<table function derived table> [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ]
+#	|	<only spec> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
+#	|	<left paren> <joined table> <right paren>
+#
+# only the first one is supported, AS <correlation name> is always used <correlation name> is just Identifier
+
+public interface TablePrimary : Sql {}
+
+TablePrimary ::= t:TableName AS id:Identifier
+;
+
+public interface TableName : Sql {
+}
 
 
 
