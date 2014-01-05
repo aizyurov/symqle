@@ -6,7 +6,9 @@ public interface TableRegistry {
 
     String getCorrelationName(TableOrView table);
 
-    public boolean nameInUse(final String name);
+    boolean nameInUse(final String name);
+
+    void lock();
 }
 
 import java.util.Collection;
@@ -17,12 +19,23 @@ public interface SelectTableRegistry extends TableRegistry {
 }
 
 import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import org.symqle.common.Bug;
 import org.symqle.common.MalformedStatementException;
-class RootSelectTableRegistry implements SelectTableRegistry {
+
+
+ class RootSelectTableRegistry implements SelectTableRegistry {
+
     private Map<TableOrView, String> localTables = new HashMap<TableOrView, String>();
 
+    private boolean locked = false;
+
+
     public void addAll(Collection<TableOrView> tables) {
+        if (locked) {
+            throw new MalformedStatementException("Illegal in this context: " + tables);
+        }
         // it expected that addAll is called only when none of the tables
         // had been registered yet
         for (TableOrView table : tables) {
@@ -31,10 +44,12 @@ class RootSelectTableRegistry implements SelectTableRegistry {
         }
     }
 
+
     private void addToLocalTables(TableOrView table) {
             final String newName = generateUniqueName();
             localTables.put(table, newName);
     }
+
 
 
     public String generateUniqueName() {
@@ -46,19 +61,25 @@ class RootSelectTableRegistry implements SelectTableRegistry {
         return name;
     }
 
-    @Override
+
     public String getCorrelationName(final TableOrView table) {
         return localTables.get(table);
     }
 
-    @Override
-    public boolean nameInUse(final String name) {
-        return localTables.values().contains(name);
-    }
 
     public List<TableOrView> getLocal() {
         return new ArrayList<TableOrView>(localTables.keySet());
     }
+
+
+    public boolean nameInUse(final String name) {
+        return localTables.values().contains(name);
+    }
+
+     @Override
+     public void lock() {
+         locked = true;
+     }
 }
 
 import java.util.List;
@@ -121,6 +142,11 @@ class DataChangeTableRegistry implements TableRegistry {
     public boolean nameInUse(final String name) {
         return targetTable.getName().equals(name);
     }
+
+     @Override
+     public void lock() {
+         // do nothing
+     }
 }
 
 import java.util.Collections;
@@ -147,4 +173,9 @@ class NoTablesRegistry implements TableRegistry {
     public boolean nameInUse(final String name) {
         return parent.nameInUse(name);
     }
+
+     @Override
+     public void lock() {
+         // do nothing
+     }
 }

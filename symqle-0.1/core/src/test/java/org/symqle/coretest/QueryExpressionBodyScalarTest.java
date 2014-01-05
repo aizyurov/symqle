@@ -5,6 +5,7 @@ import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
+import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractQueryExpressionBodyScalar;
 import org.symqle.sql.Column;
@@ -74,6 +75,12 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         try {
             final String sql = employee.id.union(manager.id).orderBy(employee.name).show(new GenericDialect());
+            fail ("MalformedStatementException expected but returned " + sql);
+        } catch (MalformedStatementException e) {
+            // Ok
+        }
+        try {
+            final String sql = employee.id.union(manager.id).orderBy(employee.name).show(new MysqlLikeDialect(), Option.allowNoTables(true));
             fail ("MalformedStatementException expected but returned " + sql);
         } catch (MalformedStatementException e) {
             // Ok
