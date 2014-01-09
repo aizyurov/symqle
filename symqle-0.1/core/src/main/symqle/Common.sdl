@@ -26,7 +26,7 @@ public final class Symqle  {
         new Symqle();
     }
 
-    private static SqlContext makeLearningContext(final SqlContext context) {
+    protected static SqlContext makeLearningContext(final SqlContext context) {
         return context.newBuilder().
                 put(Dialect.class, DebugDialect.get()).
                 put(Configuration.class, getDebugConfiguration()).

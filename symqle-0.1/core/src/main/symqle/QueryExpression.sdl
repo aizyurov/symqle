@@ -40,66 +40,72 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> UNION ALL qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> unionAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
-
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(operands.first(), operands.second()));
+                return new UnionExceptBuilder<T>(qe, qt){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(left, right);
+                    }
+                }.build(context);
             }
         }
 |
     qe:QueryExpressionBodyScalar<T> UNION DISTINCT qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> unionDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
-
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(operands.first(), operands.second()));
+                return new UnionExceptBuilder<T>(qe, qt){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(left, right);
+                    }
+                }.build(context);
             }
         }
 |
     qe:QueryExpressionBodyScalar<T> UNION qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> union {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
-
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(operands.first(), operands.second()));
+                return new UnionExceptBuilder<T>(qe, qt){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(left, right);
+                    }
+                }.build(context);
             }
         }
 |
     qe:QueryExpressionBodyScalar<T> EXCEPT ALL qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> exceptAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
-
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(operands.first(), operands.second()));
+                return new UnionExceptBuilder<T>(qe, qt){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(left, right);
+                    }
+                }.build(context);
             }
         }
 |
     qe:QueryExpressionBodyScalar<T> EXCEPT DISTINCT qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> exceptDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
-
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(operands.first(), operands.second()));
+                return new UnionExceptBuilder<T>(qe, qt){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(left, right);
+                    }
+                }.build(context);
             }
         }
 |
     qe:QueryExpressionBodyScalar<T> EXCEPT qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> except {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareUnionOperands(context, qe, qt);
-
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(operands.first(), operands.second()));
+                return new UnionExceptBuilder<T>(qe, qt){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(left, right);
+                    }
+                }.build(context);
             }
         }
 ;

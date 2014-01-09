@@ -1,0 +1,40 @@
+import org.symqle.common.Query;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlContext;
+import org.symqle.querybuilder.ComplexQuery;
+
+/**
+ * @author lvovich
+ */
+public abstract class UnionExceptBuilder<T> {
+
+    private final QueryExpressionBodyScalar<T> qe;
+    private final QueryTerm<T> qt;
+
+    protected UnionExceptBuilder(final QueryExpressionBodyScalar<T> qe, final QueryTerm<T> qt) {
+        this.qe = qe;
+        this.qt = qt;
+    }
+
+    public Query<T> build(final SqlContext context) {
+        ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
+        // left and right parts have separate contexts
+        final SqlContext leftContext = context.newBuilder()
+                .put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)))
+                .toSqlContext();
+        // TODO no ColumnNameProvider for right context
+        final SqlContext rightContext = context.newBuilder()
+                        .put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)))
+                        .toSqlContext();
+        // learning
+        qe.z$sqlOfQueryExpressionBodyScalar(Symqle.makeLearningContext(leftContext));
+        qt.z$sqlOfQueryTerm(Symqle.makeLearningContext(rightContext));
+        // construction
+        final Query<T> left = qe.z$sqlOfQueryExpressionBodyScalar(leftContext);
+        final Sql right = qt.z$sqlOfQueryTerm(rightContext);
+        return new ComplexQuery<T>(left, composeSql(context.get(Dialect.class), left, right));
+    }
+
+    protected abstract Sql composeSql(Dialect dialect, Sql left, Sql right);
+}
+
