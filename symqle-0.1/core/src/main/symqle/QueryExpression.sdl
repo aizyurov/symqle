@@ -18,22 +18,6 @@ public interface QueryExpressionBody<T> : Query<T> {}
 public interface QueryExpressionBodyScalar<T> extends Scalar<T> : Query<T> {}
 public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBodyScalar<T> {}
 
-:: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionBodyScalar<T> qe, final QueryTerm<T> qt) {
-       // do not allow any tables in parent context
-       ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
-       // left and right parts have separate contexts
-       final SqlContext leftContext = createScalarInnerContext(context);
-       final SqlContext rightContext = createScalarInnerContext(context);
-       // learning
-       qe.z$sqlOfQueryExpressionBodyScalar(makeLearningContext(leftContext));
-       qt.z$sqlOfQueryTerm(makeLearningContext(rightContext));
-       // construction
-       final Query<T> left = qe.z$sqlOfQueryExpressionBodyScalar(leftContext);
-       final Query<T> right = qt.z$sqlOfQueryTerm(rightContext);
-       return Pair.make(left, right);
-}
-
-
 <T> QueryExpressionBodyScalar<T> ::=
     qt:QueryTerm<T> :: implicit {}
 |
@@ -116,50 +100,42 @@ public interface QueryTerm<T> extends Scalar<T> :  Query<T> {}
 
 public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 
-:: private <T> Pair<Query<T>, Query<T>> prepareIntersectOperands(final SqlContext context, final QueryTerm<T> qt, final QueryPrimary<T> qp) {
-   // do not allow any tables in parent context
-   ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
-   final SqlContext leftContext = createScalarInnerContext(context);
-   final SqlContext rightContext = createScalarInnerContext(context);
-   qt.z$sqlOfQueryTerm(makeLearningContext(leftContext));
-   qp.z$sqlOfQueryPrimary(makeLearningContext(rightContext));
-   // construction
-   final Query<T> left = qt.z$sqlOfQueryTerm(leftContext);
-   final Query<T> right = qp.z$sqlOfQueryPrimary(rightContext);
-   return Pair.make(left, right);
-}
-
-
 <T> QueryTerm<T> ::=
     qp:QueryPrimary<T> :: implicit {}
 |
     qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
         public AbstractQueryTerm<T> intersectAll {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareIntersectOperands(context, qt, qp);
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryTerm_is_QueryTerm_INTERSECT_ALL_QueryPrimary(operands.first(), operands.second()));
+                return new IntersectBuilder<T>(qt, qp){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryTerm_is_QueryTerm_INTERSECT_ALL_QueryPrimary(left, right);
+                    }
+                }.build(context);
             }
         }
 |
     qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareIntersectOperands(context, qt, qp);
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryTerm_is_QueryTerm_INTERSECT_DISTINCT_QueryPrimary(operands.first(), operands.second()));
+                return new IntersectBuilder<T>(qt, qp){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryTerm_is_QueryTerm_INTERSECT_DISTINCT_QueryPrimary(left, right);
+                    }
+                }.build(context);
             }
           }
 |
     qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersect {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                Pair<Query<T>, Query<T>> operands = prepareIntersectOperands(context, qt, qp);
-                return new ComplexQuery<T>(operands.first(),
-                    context.get(Dialect.class)
-                        .QueryTerm_is_QueryTerm_INTERSECT_QueryPrimary(operands.first(), operands.second()));
+                return new IntersectBuilder<T>(qt, qp){
+                    @Override
+                    protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
+                        return dialect.QueryTerm_is_QueryTerm_INTERSECT_QueryPrimary(left, right);
+                    }
+                }.build(context);
             }
           }
 ;

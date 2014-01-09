@@ -1,12 +1,35 @@
 import org.symqle.common.Query;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.ComplexQuery;
+import org.symqle.querybuilder.ScalarNameProvider;
+import org.symqle.querybuilder.UniqueNameProvider;
 
 /**
  * @author lvovich
  */
-public abstract class UnionExceptBuilder<T> {
+public abstract class SetOperationBuilder<T> {
+    public abstract Query<T> build(SqlContext context);
+
+    protected final SqlContext createInnerContext(final SqlContext context) {
+        final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+        final UniqueNameProvider innerNameProvider = nameProvider == null ? null : new ScalarNameProvider();
+        return context.newBuilder()
+                        .put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)))
+                        .put(UniqueNameProvider.class, innerNameProvider)
+                        .toSqlContext();
+    }
+}
+
+import org.symqle.common.Query;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlContext;
+import org.symqle.querybuilder.ComplexQuery;
+
+
+/**
+ * @author lvovich
+ */
+public abstract class UnionExceptBuilder<T> extends SetOperationBuilder<T> {
 
     private final QueryExpressionBodyScalar<T> qe;
     private final QueryTerm<T> qt;
@@ -16,16 +39,12 @@ public abstract class UnionExceptBuilder<T> {
         this.qt = qt;
     }
 
+    @Override
     public Query<T> build(final SqlContext context) {
         ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
         // left and right parts have separate contexts
-        final SqlContext leftContext = context.newBuilder()
-                .put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)))
-                .toSqlContext();
-        // TODO no ColumnNameProvider for right context
-        final SqlContext rightContext = context.newBuilder()
-                        .put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)))
-                        .toSqlContext();
+        final SqlContext leftContext = createInnerContext(context);
+        final SqlContext rightContext = createInnerContext(context);
         // learning
         qe.z$sqlOfQueryExpressionBodyScalar(Symqle.makeLearningContext(leftContext));
         qt.z$sqlOfQueryTerm(Symqle.makeLearningContext(rightContext));
@@ -36,5 +55,42 @@ public abstract class UnionExceptBuilder<T> {
     }
 
     protected abstract Sql composeSql(Dialect dialect, Sql left, Sql right);
+}
+
+import org.symqle.common.Query;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlContext;
+import org.symqle.querybuilder.ComplexQuery;
+
+
+/**
+ * @author lvovich
+ */
+public abstract class IntersectBuilder<T> extends SetOperationBuilder<T>  {
+
+    private final QueryTerm<T> qt;
+    private final QueryPrimary<T> qp;
+
+    protected IntersectBuilder(final QueryTerm<T> qt, final QueryPrimary<T> qp) {
+        this.qp = qp;
+        this.qt = qt;
+    }
+
+    public Query<T> build(final SqlContext context) {
+        ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
+        // left and right parts have separate contexts
+        final SqlContext leftContext = createInnerContext(context);
+        final SqlContext rightContext = createInnerContext(context);
+        // learning
+        qt.z$sqlOfQueryTerm(Symqle.makeLearningContext(leftContext));
+        qp.z$sqlOfQueryPrimary(Symqle.makeLearningContext(rightContext));
+        // construction
+        final Query<T> left = qt.z$sqlOfQueryTerm(leftContext);
+        final Sql right = qp.z$sqlOfQueryPrimary(rightContext);
+        return new ComplexQuery<T>(left, composeSql(context.get(Dialect.class), left, right));
+    }
+
+    protected abstract Sql composeSql(Dialect dialect, Sql left, Sql right);
+
 }
 

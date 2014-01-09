@@ -33,12 +33,6 @@ public final class Symqle  {
                 put(UniqueNameProvider.class, new ColumnNameProvider()).toSqlContext();
     }
 
-    private static SqlContext createScalarInnerContext(SqlContext context) {
-        SqlContext innerContext = context.newBuilder().put(UniqueNameProvider.class,
-                context.get(UniqueNameProvider.class) == null ? null :new ScalarNameProvider()).
-                put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class))).toSqlContext();
-        return innerContext;
-    }
 }
 
 
