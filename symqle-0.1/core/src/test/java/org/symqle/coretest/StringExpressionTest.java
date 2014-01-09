@@ -5,13 +5,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractNumericExpression;
-import org.symqle.sql.AbstractPredicate;
-import org.symqle.sql.AbstractStringExpression;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.TableOrView;
+import org.symqle.sql.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -163,6 +157,12 @@ public class StringExpressionTest extends SqlTestCase {
         String sql = person.id.where(createStringExpression().notIn("#123", "#124")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id NOT IN(?, ?)", sql);
    }
+
+    public void testLabel() throws Exception {
+        final Label l = new Label();
+        String sql = createStringExpression().label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
 
     public void testOrderBy() throws Exception {
         String sql = createStringExpression().orderBy(createStringExpression()).show(new GenericDialect());

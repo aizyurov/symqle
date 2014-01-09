@@ -271,6 +271,12 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT(- T0.id) || ? AS C0 FROM person AS T0", sql);
     }
     
+    public void testLabel() throws Exception {
+        Label l = new Label();
+        String sql = person.id.opposite().label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
     public void testOrderBy() throws Exception {
         String sql = person.id.opposite().orderBy(person.id.opposite()).show(new GenericDialect());
         assertSimilar("SELECT - T0.id AS C0 FROM person AS T0 ORDER BY - T0.id", sql);

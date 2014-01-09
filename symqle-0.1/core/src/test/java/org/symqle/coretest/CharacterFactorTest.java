@@ -1,10 +1,14 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Element;
+import org.symqle.common.Mappers;
+import org.symqle.common.SqlParameter;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractCharacterFactor;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
@@ -12,7 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author lvovich
@@ -86,6 +90,12 @@ public class CharacterFactorTest extends SqlTestCase {
     public void testDistinct() throws Exception {
         final String sql = characterFactor.distinct().show(new GenericDialect());
         assertSimilar("SELECT DISTINCT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
+    }
+
+    public void testLabel() throws Exception {
+        Label l = new Label();
+        final String sql = characterFactor.label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 ORDER BY C1", sql);
     }
 
     public void testOrderBy() throws Exception {

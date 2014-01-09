@@ -10,6 +10,7 @@ import org.symqle.sql.AbstractValueExpression;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
@@ -285,6 +286,12 @@ public class ValueExpressionTest extends SqlTestCase {
     public void testLimit2() throws Exception {
         final String sql = createValueExpression().limit(10, 20).show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+    public void testLabel() throws Exception {
+        final Label l = new Label();
+        final String sql = createValueExpression().label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 ORDER BY C0", sql);
     }
 
     public void testOrderBy() throws Exception {

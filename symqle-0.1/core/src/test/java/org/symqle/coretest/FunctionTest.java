@@ -229,6 +229,13 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.age) IS NOT NULL", sql);
    }
 
+    public void testLabel() throws Exception {
+        final Column<Long> id  =  person.id;
+        final Label l = new Label();
+        String sql = abs(id).label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
     public void testOrderBy() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;

@@ -17,6 +17,7 @@ import org.symqle.querybuilder.CustomSql;
 import org.symqle.sql.AbstractQueryExpression;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.Dialect;
+import org.symqle.sql.Label;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -738,6 +739,14 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "Redwood"));
         Collections.sort(expected);
         Collections.sort(list);
+        assertEquals(expected, list);
+    }
+
+    public void testLabelOrderBy() throws Exception {
+        final Employee employee = new Employee();
+        Label<String> l = new Label<String>();
+        final List<String> list = employee.lastName.label(l).where(employee.firstName.notLike("%es")).orderBy(l).list(getEngine());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "Redwood"));
         assertEquals(expected, list);
     }
 

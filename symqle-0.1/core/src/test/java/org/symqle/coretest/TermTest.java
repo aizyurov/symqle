@@ -9,6 +9,7 @@ import org.symqle.sql.AbstractTerm;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.TableOrView;
 
 import java.math.BigDecimal;
@@ -156,6 +157,12 @@ public class TermTest extends SqlTestCase {
         String sql = person.id.where(person.id.mult(two).notIn(2L, 4L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? NOT IN(?, ?)", sql);
    }
+
+    public void testLabel() throws Exception {
+        final Label l = new Label();
+        String sql = person.id.mult(two).label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
 
     public void testOrderBy() throws Exception {
         String sql = person.id.mult(two).orderBy(person.id.mult(two)).show(new GenericDialect());

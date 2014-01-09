@@ -81,7 +81,8 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
 
 public interface ColumnReference<T> extends Scalar<T> : Sql {}
 
-<T> ColumnReference<T> ::= tableRef:Identifier PERIOD columnName:ColumnName<T>
+<T> ColumnReference<T> ::=
+    tableRef:Identifier PERIOD columnName:ColumnName<T>
 ;
 
 import org.symqle.querybuilder.CustomSql;

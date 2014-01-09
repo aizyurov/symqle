@@ -10,6 +10,7 @@ import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.TableOrView;
 import org.symqle.sql.ValueExpression;
@@ -249,6 +250,14 @@ public class DynamicParameterTest extends SqlTestCase {
         String sql = id.where(param.isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IS NOT NULL", sql);
    }
+
+    public void testLabel() throws Exception {
+        final Column<Long> id = person.id;
+        final Label l = new Label();
+        final DynamicParameter<Long> param = DynamicParameter.create(Mappers.LONG, 1L);
+        final String sql = param.label(l).orderBy(l, id).show(new GenericDialect());
+        assertSimilar("SELECT ? AS C1 FROM person AS T1 ORDER BY C1, T1.id", sql);
+    }
 
     public void testOrderBy() throws Exception {
         final Column<Long> id = person.id;

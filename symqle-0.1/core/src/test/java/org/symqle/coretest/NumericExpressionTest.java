@@ -165,6 +165,12 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT IN(?, ?)", sql);
    }
 
+    public void testLabel() throws Exception {
+        Label l = new Label();
+        String sql = createNumericExpression().label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
     public void testOrderBy() throws Exception {
         String sql = createNumericExpression().orderBy(createNumericExpression()).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0 ORDER BY T0.id + ?", sql);

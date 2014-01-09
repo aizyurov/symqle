@@ -271,6 +271,12 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL) AS C0 FROM dual AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
+    public void testLabel() throws Exception {
+        final Label l = new Label();
+        final String sql = createValueExpressionPrimary().label(l).where(employee.id.isNotNull()).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0 FROM employee AS T1 WHERE T1.id IS NOT NULL ORDER BY C0", sql);
+    }
+
     public void testOrderBy() throws Exception {
         final String sql = createValueExpressionPrimary().orderBy(employee.id).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0 FROM employee AS T1 ORDER BY T1.id", sql);
@@ -390,6 +396,41 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
+    }
+
+    public void testIn() throws Exception {
+        final String sql = person.id.where(employee.id.queryValue().in(person2.id.selectAll())).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IN(SELECT ALL T2.id FROM person AS T2)", sql);
+    }
+
+    public void testNotIn() throws Exception {
+        final String sql = person.id.where(employee.id.queryValue().notIn(person2.id.selectAll())).show(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) NOT IN(SELECT ALL T2.id FROM person AS T2)", sql);
+    }
+
+    public void testInList() throws Exception {
+        final String sql = person.name.where(employee.id.queryValue().in(1L, 2L)).show(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IN(?, ?)", sql);
+    }
+
+    public void testNotInList() throws Exception {
+        final String sql = person.name.where(employee.id.queryValue().notIn(1L, 2L)).show(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) NOT IN(?, ?)", sql);
+    }
+
+    public void testIsNull() throws Exception {
+        final String sql = person.name.where(employee.id.queryValue().isNull()).show(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IS NULL", sql);
+    }
+
+    public void testIsNotNull() throws Exception {
+        final String sql = person.name.where(employee.id.queryValue().isNotNull()).show(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IS NOT NULL", sql);
+    }
+
+    public void testOpposite() throws Exception {
+        final String sql = employee.id.queryValue().opposite().orderBy(person.name).show(new GenericDialect());
+        assertSimilar("SELECT -(SELECT T3.id FROM employee AS T3) AS C1 FROM person AS T2 ORDER BY T2.name", sql);
     }
 
     public void testAsInArgument() throws Exception {
@@ -535,6 +576,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
     private static Person person = new Person();
+    private static Person person2 = new Person();
     private static Employee employee = new Employee();
 
 }

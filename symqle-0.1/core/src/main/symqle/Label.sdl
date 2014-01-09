@@ -1,0 +1,31 @@
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Mapper;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlContext;
+import org.symqle.querybuilder.CustomSql;
+
+/**
+ * @author lvovich
+ */
+public class Label implements SortKey {
+
+    private String name;
+    private ValueExpression<?> owner;
+
+    void setName(final ValueExpression<?> owner, final String name) {
+        if (this.owner !=null && this.owner != owner) {
+            throw new MalformedStatementException("Label used twice: " + this);
+        }
+        this.owner = owner;
+        this.name = name;
+    }
+
+    @Override
+    public Sql z$sqlOfSortKey(final SqlContext context) {
+        if (owner == null) {
+            throw new MalformedStatementException("Unassigned label: " + this);
+        }
+        return new CustomSql(name);
+    }
+
+}

@@ -9,6 +9,7 @@ import org.symqle.sql.AbstractSearchedWhenClauseList;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
@@ -176,6 +177,12 @@ public class WhenClauseListTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END", sql);
     }
 
+
+    public void testLabel() throws Exception {
+        final Label l = new Label();
+        final String sql = createWhenClauseList().label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
 
     public void testOrderBy() throws Exception {
         final String sql = createWhenClauseList().orderBy(person.nick).show(new GenericDialect());

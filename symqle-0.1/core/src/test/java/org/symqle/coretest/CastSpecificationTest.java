@@ -9,6 +9,7 @@ import org.symqle.sql.AbstractCastSpecification;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.TableOrView;
 
@@ -318,6 +319,13 @@ public class CastSpecificationTest extends SqlTestCase {
         String sql = id.where(age.cast("NUMBER (12,0)").isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.age AS NUMBER(12,0)) IS NOT NULL", sql);
    }
+
+    public void testLabel() throws Exception {
+        Label l = new Label();
+        String sql = person.id.cast("NUMBER (12,0)").label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0", sql);
+    }
+
 
     public void testOrderBy() throws Exception {
         final Column<Long> age = person.age;

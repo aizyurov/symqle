@@ -38,6 +38,7 @@ public interface SelectListScalar<T> extends Scalar<T> : Query<T> {}
 ;
 
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
+public class AbstractSelectSublist<T> implements SelectSublist<T> {}
 
 public interface Identifier : Sql {}
 
@@ -68,6 +69,31 @@ public interface Identifier : Sql {}
 |
     ve:ValueExpression<T> AS id:Identifier
 ;
+
+:: public <T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Label label) {
+  return new AbstractSelectSublist<T>() {
+          public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
+              final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+              final Sql veSql = ve.z$sqlOfValueExpression(context);
+              if (nameProvider == null) {
+                  throw new MalformedStatementException("Label cannot be used in this context");
+              } else {
+                  final String name = nameProvider.getUniqueName();
+                  label.setName(ve, name);
+                  return new ComplexQuery<T>(new RowMapper<T>(){
+                              @Override
+                              public T extract(Row row) throws SQLException {
+                                  return ve.getMapper().value(row.getValue(name));
+                              }
+                          }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new CustomSql(name)));
+              }
+          }
+        @Override
+        public Mapper<T> getMapper() {
+            return ve.getMapper();
+        }
+  };
+}
 
 public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
 

@@ -10,6 +10,7 @@ import org.symqle.sql.AbstractSearchedWhenClauseBaseList;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.Label;
 import org.symqle.sql.TableOrView;
 
 import java.sql.SQLException;
@@ -191,6 +192,12 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     public void testSort() throws Exception {
         String sql = person.id.orderBy(createWhenClauseBaseList()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END", sql);
+    }
+
+    public void testLabel() throws Exception {
+        final Label l = new Label();
+        final String sql = createWhenClauseBaseList().label(l).orderBy(l).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END AS C0 FROM person AS T0 ORDER BY C0", sql);
     }
 
     public void testOrderBy() throws Exception {
