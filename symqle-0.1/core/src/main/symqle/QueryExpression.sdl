@@ -20,7 +20,7 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
 
 :: private <T> Pair<Query<T>, Query<T>> prepareUnionOperands(final SqlContext context, final QueryExpressionBodyScalar<T> qe, final QueryTerm<T> qt) {
        // do not allow any tables in parent context
-       context.get(TableRegistry.class).lock();
+       ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
        // left and right parts have separate contexts
        final SqlContext leftContext = createScalarInnerContext(context);
        final SqlContext rightContext = createScalarInnerContext(context);
@@ -112,7 +112,7 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 
 :: private <T> Pair<Query<T>, Query<T>> prepareIntersectOperands(final SqlContext context, final QueryTerm<T> qt, final QueryPrimary<T> qp) {
    // do not allow any tables in parent context
-   context.get(TableRegistry.class).lock();
+   ((SelectTableRegistry) context.get(TableRegistry.class)).lock();
    final SqlContext leftContext = createScalarInnerContext(context);
    final SqlContext rightContext = createScalarInnerContext(context);
    qt.z$sqlOfQueryTerm(makeLearningContext(leftContext));
