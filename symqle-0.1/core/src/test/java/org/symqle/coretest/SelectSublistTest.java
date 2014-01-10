@@ -3,13 +3,7 @@ package org.symqle.coretest;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractPredicate;
-import org.symqle.sql.AbstractSelectSublist;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.Label;
-import org.symqle.sql.TableOrView;
+import org.symqle.sql.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -168,6 +162,20 @@ public class SelectSublistTest extends SqlTestCase {
 
     }
 
+    public void testQueryValue() throws Exception {
+        final Label l = new Label();
+        final AbstractSelectSublist<Long> selectSublist = person.id.label(l);
+        final AbstractValueExpressionPrimary<Long> subqueryValue = selectSublist.queryValue();
+        try {
+            final String sql = subqueryValue.where(employee.id.isNotNull()).show(new GenericDialect());
+            fail("MalformedStatementException expected but returned " + sql);
+        } catch (MalformedStatementException e) {
+            // Ok - labels not applicable to subqueries
+        }
+
+
+    }
+
     public void testList() throws Exception {
         final Label l = new Label();
         final AbstractSelectSublist<Long> selectSublist = person.id.label(l);
@@ -179,6 +187,17 @@ public class SelectSublistTest extends SqlTestCase {
         }.play();
     }
 
+
+    public void testScroll() throws Exception {
+        final Label l = new Label();
+        final AbstractSelectSublist<Long> selectSublist = person.id.label(l);
+        new Scenario123<AbstractSelectSublist<Long>>(selectSublist){
+            @Override
+            void use(final AbstractSelectSublist<Long> query, final QueryEngine engine) throws SQLException {
+                query.scroll(engine, new TestCallback<Long>(123L));
+            }
+        }.play();
+    }
 
     private static class Employee extends TableOrView {
         private Employee() {
