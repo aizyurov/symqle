@@ -3,14 +3,12 @@ package org.symqle.integration;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
-import org.symqle.dialect.DerbyDialect;
 import org.symqle.generic.Functions;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.jdbc.Option;
-import org.symqle.sql.Dialect;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.GenericDialect;
 
@@ -122,19 +120,8 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testAsCondition() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<String> list = employee.lastName.where(Params.p(false).asPredicate()).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // derby: ERROR 42X19: The WHERE or HAVING clause or CHECK CONSTRAINT definition is an untyped parameter expression.  It must be a BOOLEAN expression.
-            // DerbyDialect fixes this problem
-            if (DerbyDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should not get here: be fixed by DerbyDialect!
-                throw e;
-            } else {
-                expectSQLException(e, "Apache Derby");
-            }
-        }
+        final List<String> list = employee.lastName.where(Params.p(false).asPredicate()).list(getEngine());
+        assertEquals(0, list.size());
     }
 
     public void testEq() throws Exception {
@@ -190,7 +177,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").ne("James")).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // derby: ERROR 42X35: It is not allowed for both operands of '<>' to be ? parameters.
             expectSQLException(e, "Apache Derby");
         }
@@ -202,7 +188,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").gt("James")).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // derby: ERROR 42X35: It is not allowed for both operands of '>' to be ? parameters.
             expectSQLException(e, "Apache Derby");
         }
@@ -214,7 +199,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.where(Params.p("Margaret").ge("James")).list(getEngine());
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Redwood", "Cooper", "First")), new HashSet<String>(list));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // derby: ERROR 42X35: It is not allowed for both operands of '>=' to be ? parameters.
             expectSQLException(e, "Apache Derby");
         }
@@ -265,7 +249,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             final List<String> list = Params.p("Redwood").except(employee.firstName).list(getEngine(), Option.allowNoTables(true));
             assertEquals(new HashSet<String>(Arrays.asList("Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
             expectSQLException(e, "Apache Derby", "MySQL");
@@ -337,7 +320,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(expected, list);
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             expectSQLException(e, "Apache Derby");
         } catch (MalformedStatementException e) {
@@ -464,7 +446,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
     public void testIn() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        System.out.println(employee.lastName.where(Params.p("Margaret").in(department.manager().firstName.where(employee.department().deptId.eq(department.deptId)))).show(getEngine().initialContext().get(Dialect.class)));
         final List<String> list = employee.lastName.where(Params.p("Margaret").in(department.manager().firstName.where(employee.department().deptId.eq(department.deptId)))).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "March"));
         Collections.sort(expected);
@@ -600,7 +581,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
             Collections.sort(list);
             assertEquals(expected, list);
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             expectSQLException(e, "Apache Derby", "MySQL");
         }

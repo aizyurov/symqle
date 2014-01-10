@@ -33,13 +33,15 @@ public <T> int scroll(final SelectStatement<T> statement,
                           final Callback<T> callback,
                           final Option... options
                           ) throws SQLException {
-    final SqlContext initialContext = engine.initialContext();
-    final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
-    for (final Option option : options) {
-       option.apply(configuration);
+    final Dialect dialect = engine.getDialect();
+    final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
+    List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+    allOptions.addAll(Arrays.asList(options));
+    UpdatableConfiguration configuration = new UpdatableConfiguration();
+    for (Option option : allOptions) {
+        option.apply(configuration);
     }
-    final Dialect bestDialect = initialContext.get(Dialect.class);
-    final Query<T> query = prepareQuery(statement, bestDialect != null ? bestDialect : new GenericDialect(), configuration);
+    final Query<T> query = prepareQuery(statement, dialect, configuration);
     return engine.scroll(query,
             new Callback<Row>() {
                 @Override

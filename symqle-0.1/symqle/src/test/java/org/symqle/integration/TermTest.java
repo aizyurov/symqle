@@ -7,10 +7,8 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
-import org.symqle.dialect.MySqlDialect;
 import org.symqle.sql.AbstractFactor;
 import org.symqle.sql.AbstractTerm;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -560,19 +558,9 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<Double> list = toListOfDouble(createTerm(employee).forReadOnly().list(getEngine()));
-            Collections.sort(list);
-            assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final List<Double> list = toListOfDouble(createTerm(employee).forReadOnly().list(getEngine()));
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }
 
     public void testQueryValueNegative() throws Exception {

@@ -3,20 +3,14 @@
 
 # Scalar interface is also defined here, because code generator should know it
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.sql.*;
+import java.util.*;
 import javax.sql.DataSource;
 import org.symqle.common.*;
 import org.symqle.querybuilder.*;
 import org.symqle.jdbc.Configuration;
 import org.symqle.jdbc.UpdatableConfiguration;
+import static org.symqle.common.SqlContext.Builder;
 public final class Symqle  {
     private Symqle() {
     }

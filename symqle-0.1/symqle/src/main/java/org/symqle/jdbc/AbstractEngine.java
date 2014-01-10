@@ -149,7 +149,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
 
     @Override
     public int submit(final Sql statement, final Option... options) throws SQLException {
-        int rowsAffected = 0;
+        int rowsAffected = NOTHING_FLUSHED;
         final StatementKey newKey = new StatementKey(statement, options);
         if (queue.size() >= batchSize || !newKey.equals(currentKey)) {
             rowsAffected = flush();

@@ -1,11 +1,9 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
-import org.symqle.dialect.MySqlDialect;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -122,18 +120,8 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).forReadOnly().list(getEngine());
-            assertEquals(Arrays.asList(4), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).forReadOnly().list(getEngine());
+        assertEquals(Arrays.asList(4), list);
     }
 
     public void testExists() throws Exception {

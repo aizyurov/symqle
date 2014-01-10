@@ -2,10 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
-import org.symqle.dialect.MySqlDialect;
-import org.symqle.sql.AbstractQuerySpecification;
 import org.symqle.sql.AbstractQuerySpecificationScalar;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -43,19 +40,9 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
             final List<String> list = querySpec(employee).forReadOnly().list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("First", "Redwood"), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
     }
 
     public void testUnionAll() throws Exception {

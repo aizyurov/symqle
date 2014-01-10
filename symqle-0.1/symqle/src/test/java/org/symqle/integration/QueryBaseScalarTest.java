@@ -1,10 +1,8 @@
 package org.symqle.integration;
 
-import org.symqle.dialect.MySqlDialect;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.TrueValue;
 import org.symqle.sql.AbstractQueryBaseScalar;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -185,19 +183,9 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<String> list = distinctFirstNames(employee).forReadOnly().list(getEngine());
-            Collections.sort(list);
-            assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final List<String> list = distinctFirstNames(employee).forReadOnly().list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
     }
 
     public void testList() throws Exception {

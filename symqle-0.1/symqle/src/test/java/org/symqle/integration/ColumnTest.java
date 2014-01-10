@@ -5,7 +5,6 @@ import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
-import org.symqle.dialect.MySqlDialect;
 import org.symqle.generic.Functions;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
@@ -16,7 +15,6 @@ import org.symqle.jdbc.Option;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.sql.AbstractQueryExpression;
 import org.symqle.sql.AbstractSelectList;
-import org.symqle.sql.Dialect;
 import org.symqle.sql.Label;
 
 import java.sql.ResultSet;
@@ -135,7 +133,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testLimit() throws Exception {
         final Employee employee = new Employee();
         final AbstractQueryExpression<String> queryExpression = employee.lastName.limit(4);
-        System.out.println(queryExpression.show(getEngine().initialContext().get(Dialect.class)));
         final List<String> list = queryExpression.list(getEngine());
         assertEquals(4, list.size());
     }
@@ -352,23 +349,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testSelectForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<String> list = employee.lastName.forReadOnly().list(getEngine());
-            assertEquals(5, list.size());
-            assertTrue(list.toString(), list.contains("Cooper"));
-            assertTrue(list.toString(), list.contains("Redwood"));
-            assertTrue(list.toString(), list.contains("March"));
-            assertTrue(list.toString(), list.contains("First"));
-            assertTrue(list.toString(), list.contains("Pedersen"));
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final List<String> list = employee.lastName.forReadOnly().list(getEngine());
+        assertEquals(5, list.size());
+        assertTrue(list.toString(), list.contains("Cooper"));
+        assertTrue(list.toString(), list.contains("Redwood"));
+        assertTrue(list.toString(), list.contains("March"));
+        assertTrue(list.toString(), list.contains("First"));
+        assertTrue(list.toString(), list.contains("Pedersen"));
     }
 
     public void testExists() throws Exception {
@@ -479,7 +466,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.lastName.orderBy(employee.deptId.nullsLast()).list(getEngine());
             assertEquals("Cooper", list.get(list.size()-1));
         } catch (SQLException e) {
-            final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
             // mysql does not support NULLS LAST
             expectSQLException(e, "MySQL");
         }
@@ -631,7 +617,6 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testConcat() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
         final List<String> list = employee.firstName.concat(employee.lastName).where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList("MargaretRedwood"), list);
     }
@@ -656,14 +641,12 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testConcatString() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
         final List<String> list = employee.firstName.concat(" expected").where(employee.lastName.eq("Redwood")).list(getEngine());
         assertEquals(Arrays.asList("Margaret expected"), list);
     }
 
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
-        final Class<? extends Dialect> dialectClass = getEngine().initialContext().get(Dialect.class).getClass();
         try {
             final List<String> list = employee.firstName.collate("utf8_unicode_ci").where(employee.lastName.eq("Redwood")).list(getEngine());
             assertEquals(Arrays.asList("Margaret"), list);
@@ -744,9 +727,17 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testLabelOrderBy() throws Exception {
         final Employee employee = new Employee();
-        Label<String> l = new Label<String>();
+        Label l = new Label();
         final List<String> list = employee.lastName.label(l).where(employee.firstName.notLike("%es")).orderBy(l).list(getEngine());
         final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "Pedersen", "Redwood"));
+        assertEquals(expected, list);
+    }
+
+    public void testLabelOrderByDesc() throws Exception {
+        final Employee employee = new Employee();
+        Label l = new Label();
+        final List<String> list = employee.lastName.label(l).where(employee.firstName.notLike("%es")).orderBy(l.desc()).list(getEngine());
+        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("Redwood", "Pedersen", "March"));
         assertEquals(expected, list);
     }
 

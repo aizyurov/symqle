@@ -8,8 +8,6 @@ import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractValueExpressionPrimary;
-import org.symqle.sql.Dialect;
-import org.symqle.sql.GenericDialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -33,9 +31,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testList() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.list(getEngine(), Option.allowNoTables(true));
@@ -44,9 +39,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testCast() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.cast("CHAR(1)").list(getEngine(), Option.allowNoTables(true));
@@ -55,9 +47,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final One one = new One();
         final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();
         final List<String> list = primary.list(getEngine(), Option.allowNoTables(true));
@@ -66,9 +55,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testAll() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.selectAll().list(getEngine(), Option.allowNoTables(true));
@@ -77,9 +63,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
 
     public void testDistinct() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final MyDual myDual = new MyDual();
         final AbstractValueExpressionPrimary<String> primary = myDual.dummy.queryValue();
         final List<String> list = primary.distinct().list(getEngine(), Option.allowNoTables(true));
@@ -574,10 +557,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testExists() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final Department department = new Department();
         final List<String> list = department.deptName.where(creatPrimary(department).exists())
                 .orderBy(department.deptName)
@@ -586,10 +565,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testContains() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final Department department = new Department();
         final List<String> list = department.deptName.where(creatPrimary(department).contains("March"))
                 .orderBy(department.deptName)
@@ -598,10 +573,6 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testForUpdate() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         try {
             final One one = new One();
             final List<Integer> list = one.id.queryValue().forUpdate().list(getEngine(), Option.allowNoTables(true));
@@ -613,20 +584,12 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     }
 
     public void testForReadOnly() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final One one = new One();
         final List<Integer> list = one.id.queryValue().forReadOnly().list(getEngine(), Option.allowNoTables(true));
         assertEquals(Arrays.asList(1), list);
     }
 
     public void testQueryValue() throws Exception {
-        // GenericDialect does not support Option.allowNoTables(true)
-        if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-            return;
-        }
         final One one = new One();
         final List<Integer> list = one.id.queryValue().queryValue().list(getEngine(), Option.allowNoTables(true));
         assertEquals(Arrays.asList(1), list);

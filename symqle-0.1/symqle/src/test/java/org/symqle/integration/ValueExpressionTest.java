@@ -8,8 +8,6 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.sql.AbstractValueExpression;
-import org.symqle.sql.Dialect;
-import org.symqle.sql.GenericDialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -33,22 +31,13 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     }
 
     public void testCast() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getEngine());
-            Collections.sort(list);
-            final List<String> expected = "MySQL".equals(getDatabaseName()) ?
-                    Arrays.asList("0", "1", "1", "1", "1") :
-                    Arrays.asList("false", "true ", "true ", "true ", "true ");
-            assertEquals(expected, list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getEngine());
+        Collections.sort(list);
+        final List<String> expected = "MySQL".equals(getDatabaseName()) ?
+                Arrays.asList("0", "1", "1", "1", "1") :
+                Arrays.asList("false", "true ", "true ", "true ", "true ");
+        assertEquals(expected, list);
     }
 
     public void testMap() throws Exception {
@@ -428,35 +417,16 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     }
 
     public void testOrderByArgument() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
-            assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
+        assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
 
     }
 
     public void testOrderByNullsFirst() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
-            assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-            // mysql: does not support NULLS FIRST
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
+        assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
     }
 
     public void testOrderByNullsLast() throws Exception {
@@ -465,44 +435,21 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             final List<String> list = employee.firstName.orderBy(createVE(employee), employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
             // mysql: does not support NULLS LAST
                 expectSQLException(e, "MySQL");
-            }
         }
     }
 
     public void testAsc() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee).asc(), employee.firstName).list(getEngine());
-            assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.orderBy(createVE(employee).asc(), employee.firstName).list(getEngine());
+        assertEquals(Arrays.asList("James", "Alex", "Bill", "James", "Margaret"), list);
     }
 
     public void testDesc() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<String> list = employee.firstName.orderBy(createVE(employee).desc(), employee.firstName).list(getEngine());
-            assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret", "James"), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<String> list = employee.firstName.orderBy(createVE(employee).desc(), employee.firstName).list(getEngine());
+        assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret", "James"), list);
     }
 
     public void testUnionAll() throws Exception {
@@ -633,47 +580,29 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     }
 
     public void testWhenClause() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<Pair<Boolean, String>> list = employee.firstName.eq("James").then(createVE(employee)).pair(employee.lastName)
-                    .orderBy(employee.lastName)
-                    .list(getEngine());
-            assertEquals(Arrays.asList(
-                    Pair.make(false, "Cooper"),
-                    Pair.make(true, "First"),
-                    Pair.make((Boolean) null, "March"),
-                    Pair.make((Boolean) null, "Pedersen"),
-                    Pair.make((Boolean) null, "Redwood")), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<Pair<Boolean, String>> list = employee.firstName.eq("James").then(createVE(employee)).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make(false, "Cooper"),
+                Pair.make(true, "First"),
+                Pair.make((Boolean) null, "March"),
+                Pair.make((Boolean) null, "Pedersen"),
+                Pair.make((Boolean) null, "Redwood")), list);
     }
 
     public void testElse() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<Pair<Boolean, String>> list = employee.firstName.ne("James").then(Params.p(false)).orElse(createVE(employee)).pair(employee.lastName)
-                    .orderBy(employee.lastName)
-                    .list(getEngine());
-            assertEquals(Arrays.asList(
-                    Pair.make(false, "Cooper"),
-                    Pair.make(true, "First"),
-                    Pair.make(false, "March"),
-                    Pair.make(false, "Pedersen"),
-                    Pair.make(false, "Redwood")), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<Pair<Boolean, String>> list = employee.firstName.ne("James").then(Params.p(false)).orElse(createVE(employee)).pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make(false, "Cooper"),
+                Pair.make(true, "First"),
+                Pair.make(false, "March"),
+                Pair.make(false, "Pedersen"),
+                Pair.make(false, "Redwood")), list);
     }
 
     public void testLike() throws Exception {
@@ -723,63 +652,27 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     }
 
     public void testCount() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<Integer> list = createVE(employee).count().list(getEngine());
-            assertEquals(Arrays.asList(5), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect causes Derby exception: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<Integer> list = createVE(employee).count().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     public void testCountDistinct() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<Integer> list = createVE(employee).countDistinct().list(getEngine());
-            assertEquals(Arrays.asList(2), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<Integer> list = createVE(employee).countDistinct().list(getEngine());
+        assertEquals(Arrays.asList(2), list);
     }
 
     public void testMin() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).min().list(getEngine());
-            assertEquals(Arrays.asList(false), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<Boolean> list = createVE(employee).min().list(getEngine());
+        assertEquals(Arrays.asList(false), list);
     }
 
     public void testMax() throws Exception {
-        try {
-            final Employee employee = new Employee();
-            final List<Boolean> list = createVE(employee).max().list(getEngine());
-            assertEquals(Arrays.asList(true), list);
-        } catch (SQLException e) {
-            if (getEngine().initialContext().get(Dialect.class).getClass().equals(GenericDialect.class)) {
-                // Generic dialect is incompatible with Derby: Syntax error: Encountered "IS" at...
-                expectSQLException(e, "Apache Derby");
-            } else {
-                throw e;
-            }
-        }
+        final Employee employee = new Employee();
+        final List<Boolean> list = createVE(employee).max().list(getEngine());
+        assertEquals(Arrays.asList(true), list);
     }
 
     public void testSum() throws Exception {

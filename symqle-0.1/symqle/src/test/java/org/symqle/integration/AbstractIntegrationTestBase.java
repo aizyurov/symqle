@@ -6,7 +6,6 @@ import org.symqle.integration.model.DerbyEnvironment;
 import org.symqle.integration.model.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
 import org.symqle.jdbc.Engine;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     }
 
     protected final void expectMalformedStatementException(MalformedStatementException e, Class... dialects) {
-        if (Arrays.asList(dialects).contains(getEngine().initialContext().get(Dialect.class).getClass())) {
+        if (Arrays.asList(dialects).contains(getEngine().getDialect().getClass())) {
             return;
         }
         throw e;

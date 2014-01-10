@@ -33,17 +33,15 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 public interface DataChangeStatement : Sql {}
 
-:: private static Sql prepareUpdate(final DataChangeStatement statement, final SqlContext initialContext, final ColumnName<?> keyColumn, final Option[] options) {
-        final UpdatableConfiguration configuration = new UpdatableConfiguration(initialContext.get(Configuration.class));
+:: private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final ColumnName<?> keyColumn, final List<Option> options) {
+        final UpdatableConfiguration configuration = new UpdatableConfiguration();
         for (final Option option : options) {
            option.apply(configuration);
         }
-        final Dialect bestDialect = initialContext.get(Dialect.class);
-        final Dialect dialect = bestDialect != null ? bestDialect : new GenericDialect();
-        final SqlContext context = new SqlContext.Builder().
-                put(Dialect.class, dialect).
-                put(Configuration.class, configuration).
-                put(TableRegistry.class, new DataChangeTableRegistry()).toSqlContext();
+        final SqlContext context = contextBuilder
+                .put(Configuration.class, configuration)
+                .put(TableRegistry.class, new DataChangeTableRegistry())
+                .toSqlContext();
         final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
         if (keyColumn != null) {
             keyColumn.z$sqlOfColumnName(context);
@@ -51,7 +49,7 @@ public interface DataChangeStatement : Sql {}
         return new Sql() {
             @Override
             public void append(final StringBuilder builder) {
-                builder.append(dialect.formatSql(rawSql.toString()));
+                builder.append(context.get(Dialect.class).formatSql(rawSql.toString()));
             }
             @Override
             public void setParameters(final SqlParameters p) throws SQLException {
@@ -64,10 +62,9 @@ public interface DataChangeStatement : Sql {}
 
 import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
-     final SqlContext initialContext = new SqlContext.Builder().put(Dialect.class, dialect).
-             toSqlContext();
+     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
      final StringBuilder sqlBuilder = new StringBuilder();
-     prepareUpdate(statement, initialContext, null, options).append(sqlBuilder);
+     prepareUpdate(statement, contextBuilder, null, Arrays.asList(options)).append(sqlBuilder);
     return sqlBuilder.toString();
 }
 
@@ -75,14 +72,19 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 import java.sql.SQLException;
 :: public int execute(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
-     final SqlContext initialContext = engine.initialContext();
-     final Sql sql = prepareUpdate(statement, initialContext, null, options);
+     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
+     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+     allOptions.addAll(Arrays.asList(options));
+     final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
      return engine.execute(sql, options);
 }
 
 :: public int submit(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
-     final SqlContext initialContext = engine.initialContext();
-     final Sql sql = prepareUpdate(statement, initialContext, null, options);
+     final Dialect dialect = engine.getDialect();
+     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
+     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+     allOptions.addAll(Arrays.asList(options));
+     final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
      return engine.submit(sql, options);
 }
 
@@ -289,14 +291,16 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
 ;
 
 :: public static <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {
-       final SqlContext initialContext = engine.initialContext();
+     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
+     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+     allOptions.addAll(Arrays.asList(options));
        final DataChangeStatement dataChange = new AbstractInsertStatement() {
            @Override
            public Sql z$sqlOfInsertStatement(final SqlContext context) {
                return statement.z$sqlOfInsertStatement(context);
            }
        };
-       final Sql sql = prepareUpdate(dataChange, initialContext, keyColumn, options);
+       final Sql sql = prepareUpdate(dataChange, contextBuilder, keyColumn, allOptions);
        return engine.executeReturnKey(sql, keyColumn, options);
       }
 

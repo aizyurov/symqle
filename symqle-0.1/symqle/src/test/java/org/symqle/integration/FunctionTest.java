@@ -2,13 +2,11 @@ package org.symqle.integration;
 
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
-import org.symqle.dialect.MySqlDialect;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.One;
 import org.symqle.sql.AbstractRoutineInvocation;
-import org.symqle.sql.Dialect;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.ValueExpression;
 
@@ -521,19 +519,9 @@ public class FunctionTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<Double> list = abs(employee.salary.opposite()).forReadOnly().list(getEngine());
-            Collections.sort(list);
-            assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final List<Double> list = abs(employee.salary.opposite()).forReadOnly().list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
     public void testExists() throws Exception {

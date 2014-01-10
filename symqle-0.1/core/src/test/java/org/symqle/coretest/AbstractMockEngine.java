@@ -5,9 +5,13 @@ import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
+import org.symqle.sql.Dialect;
+import org.symqle.sql.GenericDialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author lvovich
@@ -25,10 +29,14 @@ public class AbstractMockEngine extends Assert {
         this.parameters = parameters;
     }
 
-    public SqlContext initialContext() {
-        return sqlContext;
+    public Dialect getDialect() {
+        final Dialect contextDialect = sqlContext.get(Dialect.class);
+        return contextDialect == null ? new GenericDialect() : contextDialect;
     }
 
+    public List<Option> getOptions() {
+        return Collections.emptyList();
+    }
     protected final void verify(final Sql query, final Option[] options)
             throws SQLException {
         StringBuilder builder = new StringBuilder();

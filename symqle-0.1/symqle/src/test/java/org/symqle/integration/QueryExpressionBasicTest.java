@@ -1,10 +1,8 @@
 package org.symqle.integration;
 
 import org.symqle.common.Callback;
-import org.symqle.dialect.MySqlDialect;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractQueryExpressionBasic;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,18 +38,8 @@ public class QueryExpressionBasicTest extends AbstractIntegrationTestBase {
 
     public void testForReadOnly() throws Exception {
         final Employee employee = new Employee();
-        try {
-            final List<String> list = createCursorSpecificaton(employee).forReadOnly().list(getEngine());
-            assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
-        } catch (SQLException e) {
-            if (MySqlDialect.class.equals(getEngine().initialContext().get(Dialect.class).getClass())) {
-                // should work with MySqlDialect
-                throw e;
-            } else {
-                // mysql does not support FOR READ ONLY natively
-                expectSQLException(e, "MySQL");
-            }
-        }
+        final List<String> list = createCursorSpecificaton(employee).forReadOnly().list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
     public void testScroll() throws Exception {

@@ -17,7 +17,7 @@ Remove list(DataSource,...) ?
 
 (done) refactor Pair - rename all methods and variables
 
-(postpone: SQL2010) LIMIT/OFFSET
+(done) LIMIT/OFFSET
 
 (done) add ORDER BY for union/except/intersect (without parameter, there is only one column accessible via Context)
 
@@ -40,8 +40,6 @@ http://kobyleha.com/en/programming/java/how_to_build_skin_for_maven_2_site_plugi
 
 (postpone) sequences
 
-ALL/ANY/SOME (future release)
-
 (done) return generated keys
 
 (done) inner/right/outer joins
@@ -58,7 +56,7 @@ NoTablesRegistry (check that a.insert(set(a.name=a.nick)).execute() is invalid).
 
 insertFrom: t.insert(t.rows(t.x.set(s.x), t.y.set(s.z).where(s.w.eq(0)))).execute()
 
-Labels, LabelRegistry (?) (for union/except/intersect and subqueries)
+(done) Labels, LabelRegistry (?) (for union/except/intersect and subqueries)
 
 Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client.
 
@@ -80,3 +78,8 @@ compiler: redirect stderr to log
 simplify insert/update: use SetClauseList directly and add explicit SetClauseList ::= AbstractSetClauseList COMMA SetClause :: SetClauseList also {}
 
 simplify OrderBy: SortSpecificationList ::= ... :: AbstractSortSpecificationList then(? - conflict with when-then)
+
+SelectStatement#countRows
+
+ALL/ANY/SOME (future release)
+

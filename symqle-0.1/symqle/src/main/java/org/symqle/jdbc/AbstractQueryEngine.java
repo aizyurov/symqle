@@ -3,7 +3,6 @@ package org.symqle.jdbc;
 import org.symqle.common.Callback;
 import org.symqle.common.Row;
 import org.symqle.common.Sql;
-import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
 import org.symqle.sql.Dialect;
 
@@ -12,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author lvovich
@@ -48,14 +49,13 @@ abstract class AbstractQueryEngine implements QueryEngine {
     }
 
     @Override
-    public final SqlContext initialContext() {
-        UpdatableConfiguration configuration = new UpdatableConfiguration();
-        for (Option option : options) {
-            option.apply(configuration);
-        }
-        return new SqlContext.Builder().
-                put(Dialect.class, dialect).
-                put(Configuration.class, configuration).toSqlContext();
+    public Dialect getDialect() {
+        return dialect;
+    }
+
+    @Override
+    public List<Option> getOptions() {
+        return Collections.unmodifiableList(Arrays.asList(options));
     }
 
     protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final Option[] options) throws SQLException {
