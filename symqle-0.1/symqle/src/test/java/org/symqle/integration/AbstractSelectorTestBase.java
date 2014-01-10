@@ -44,5 +44,21 @@ public abstract class AbstractSelectorTestBase extends AbstractIntegrationTestBa
         public String toString() {
             return id + ": " + firstName + ' ' + lastName;
         }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public int getTotal() {
+            return total;
+        }
     }
 }

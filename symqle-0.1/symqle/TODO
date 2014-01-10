@@ -13,5 +13,5 @@ HSQL dialect (2.3.1) ?
 test transactions
 SpringEngine (transactions)
 
-SmartSelector: get(MapRow); map-like implementation of Row - key is Sql produced with DebugDialect/MockTableRegistry.
-MockTableRegistry returns table.toString for getCorrelationName (so subquiries beleive all tables are from top level scope).
+(done) SmartSelector: get(MapRow); map-like implementation of Row - key is Sql produced with DebugDialect/MockTableRegistry.
+MockTableRegistry returns table.toString for getCorrelationName (so subqueries beleive all tables are from top level scope).
