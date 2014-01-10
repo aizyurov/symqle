@@ -3,7 +3,7 @@ package org.symqle.integration;
 /**
  * @author lvovich
  */
-public class AbstractSelectorTest extends AbstractIntegrationTestBase {
+public abstract class AbstractSelectorTestBase extends AbstractIntegrationTestBase {
     protected static class EmployeeDTO {
         private final Integer id;
         private final String firstName;

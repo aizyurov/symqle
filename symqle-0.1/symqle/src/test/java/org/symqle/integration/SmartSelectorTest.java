@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author lvovich
  */
-public class SmartSelectorTest extends AbstractSelectorTest {
+public class SmartSelectorTest extends AbstractSelectorTestBase {
 
     public void testSimpleListAll() throws Exception {
         final Employee employee = new Employee();

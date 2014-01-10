@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * @author lvovich
  */
-public class SimpleSelectorTest extends AbstractSelectorTest {
+public class SimpleSelectorTest extends AbstractSelectorTestBase {
 
     public void testSimpleListAll() throws Exception {
         final Employee employee = new Employee();
