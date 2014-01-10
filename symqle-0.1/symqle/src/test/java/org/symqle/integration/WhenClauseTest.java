@@ -134,7 +134,8 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
         } catch (SQLException e) {
             //derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "Apache Derby");
+            //org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE cannot be applied to the nullable side of an outer join
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
 
     }
@@ -143,14 +144,8 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClause<String> whenClause =
                 createWhenClause(employee);
-        try {
             final List<String> list = whenClause.forReadOnly().list(getEngine());
             assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            // mysql: does not support FOR READ ONLY
-            expectSQLException(e, "MySQL");
-        }
-
     }
 
 

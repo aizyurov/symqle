@@ -273,7 +273,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
