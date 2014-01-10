@@ -22,7 +22,7 @@ public final class Symqle  {
 
     protected static SqlContext makeLearningContext(final SqlContext context) {
         return context.newBuilder().
-                put(Dialect.class, DebugDialect.get()).
+                put(Dialect.class, new DebugDialect()).
                 put(Configuration.class, getDebugConfiguration()).
                 put(UniqueNameProvider.class, new ColumnNameProvider()).toSqlContext();
     }
@@ -107,15 +107,9 @@ public class GenericDialect implements Dialect {
 }
 
 import org.symqle.common.Sql;
-class DebugDialect extends GenericDialect {
+public class DebugDialect extends GenericDialect {
 
-    private static final Dialect instance = new DebugDialect();
-
-    protected DebugDialect() {}
-
-    public static Dialect get() {
-        return instance;
-    }
+    public DebugDialect() {}
 
     @Override
     public String fallbackTableName() {

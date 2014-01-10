@@ -1,8 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Row;
-import org.symqle.common.RowMapper;
-import org.symqle.generic.AbstractSelector;
+import org.symqle.generic.SmartSelector;
 import org.symqle.integration.model.Employee;
 
 import java.sql.SQLException;
@@ -14,7 +12,7 @@ import java.util.Set;
 /**
  * @author lvovich
  */
-public class SimpleSelectorTest extends AbstractSelectorTest {
+public class SmartSelectorTest extends AbstractSelectorTest {
 
     public void testSimpleListAll() throws Exception {
         final Employee employee = new Employee();
@@ -57,27 +55,21 @@ public class SimpleSelectorTest extends AbstractSelectorTest {
     }
 
 
-    private class EmployeeSelector extends AbstractSelector<EmployeeDTO> {
-        private final RowMapper<Integer> id;
-        private final RowMapper<String> firstName;
-        private final RowMapper<String> lastName;
-        private final RowMapper<Integer> count;
+    private class EmployeeSelector extends SmartSelector<EmployeeDTO> {
+        private final Employee employee;
+        private final Employee other = new Employee();
 
         private EmployeeSelector(final Employee employee) {
-            id = map(employee.empId);
-            firstName = map(employee.firstName);
-            lastName = map(employee.lastName);
-            final Employee other = new Employee();
-            count = map(other.empId.count().queryValue());
+            this.employee = employee;
         }
 
         @Override
-        protected EmployeeDTO create(final Row row) throws SQLException {
+        protected EmployeeDTO create(final RowMap row) throws SQLException {
             return new EmployeeDTO(
-                    id.extract(row),
-                    firstName.extract(row),
-                    lastName.extract(row),
-                    count.extract(row)
+                    row.get(employee.empId),
+                    row.get(employee.firstName),
+                    row.get(employee.lastName),
+                    row.get(other.empId.count().queryValue())
             );
         }
     }
