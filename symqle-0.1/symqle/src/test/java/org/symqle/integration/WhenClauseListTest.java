@@ -6,6 +6,7 @@ import org.symqle.common.Pair;
 import org.symqle.generic.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractSearchedWhenClauseList;
+import org.symqle.sql.Label;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -447,10 +448,11 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
         try {
+            Label l = new Label();
             final List<String> list = createWhenClauseList(employee)
                     .collate("utf8_unicode_ci")
-                    .concat("+")
-                    .orderBy(employee.firstName)
+                    .concat("+").label(l)
+                    .orderBy(l)
                     .list(getEngine());
             assertEquals(Arrays.asList(
                     "Alex+",

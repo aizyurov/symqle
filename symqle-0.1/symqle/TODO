@@ -8,6 +8,7 @@ database-specific functions
 Postgresql dialect
 Oracle dialect
 Sybase dialect
+HSQL dialect (2.3.1) ?
 
 test transactions
 SpringEngine (transactions)

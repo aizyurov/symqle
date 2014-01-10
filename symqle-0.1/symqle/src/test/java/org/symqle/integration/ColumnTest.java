@@ -11,6 +11,7 @@ import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
+import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.sql.AbstractQueryExpression;
@@ -792,11 +793,14 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         if ("Apache Derby".equals(getDatabaseName())) {
             return;
         }
-        getEngine().execute(new CustomSql("delete from big_table"));
+        final Engine engine = getEngine();
+        engine.execute(new CustomSql("delete from big_table"));
+
+        engine.setBatchSize(1000);
 
         for (int i=0; i<2000000; i++) {
             final int value = i;
-            getEngine().execute(new Sql() {
+            engine.submit(new Sql() {
 
                 @Override
                 public void append(StringBuilder builder) {
@@ -809,11 +813,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
                 }
             });
         }
+        engine.flush();
+
         final BigTable bigTable = new BigTable();
         final long start = System.currentTimeMillis();
 
         try {
-            final List<Integer> list = bigTable.num.list(getEngine(), Option.setQueryTimeout(1));
+            final List<Integer> list = bigTable.num.list(engine, Option.setQueryTimeout(1));
             fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
         } catch (SQLException e) {
             System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
