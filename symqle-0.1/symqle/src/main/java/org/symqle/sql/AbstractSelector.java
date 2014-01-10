@@ -1,4 +1,4 @@
-package org.symqle.generic;
+package org.symqle.sql;
 
 import org.symqle.common.Query;
 import org.symqle.common.Row;

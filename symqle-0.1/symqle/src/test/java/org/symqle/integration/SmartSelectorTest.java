@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.generic.SmartSelector;
+import org.symqle.sql.SmartSelector;
 import org.symqle.integration.model.Employee;
 
 import java.sql.SQLException;
@@ -57,7 +57,6 @@ public class SmartSelectorTest extends AbstractSelectorTestBase {
 
     private class EmployeeSelector extends SmartSelector<EmployeeDTO> {
         private final Employee employee;
-        private final Employee other = new Employee();
 
         private EmployeeSelector(final Employee employee) {
             this.employee = employee;
@@ -69,7 +68,7 @@ public class SmartSelectorTest extends AbstractSelectorTestBase {
                     row.get(employee.empId),
                     row.get(employee.firstName),
                     row.get(employee.lastName),
-                    row.get(other.empId.count().queryValue())
+                    row.get(new Employee().empId.count().queryValue())
             );
         }
     }

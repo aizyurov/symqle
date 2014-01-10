@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
-import org.symqle.generic.AbstractSelector;
+import org.symqle.sql.AbstractSelector;
 import org.symqle.integration.model.Employee;
 
 import java.sql.SQLException;

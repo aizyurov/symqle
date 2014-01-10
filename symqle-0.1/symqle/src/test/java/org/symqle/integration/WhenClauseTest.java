@@ -3,7 +3,7 @@ package org.symqle.integration;
 import junit.framework.AssertionFailedError;
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
-import org.symqle.generic.Params;
+import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractSearchedWhenClause;
 

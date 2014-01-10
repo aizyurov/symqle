@@ -1,4 +1,4 @@
-package org.symqle.generic;
+package org.symqle.sql;
 
 import org.symqle.common.*;
 import org.symqle.jdbc.Configuration;
@@ -7,14 +7,12 @@ import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.UpdatableConfiguration;
 import org.symqle.querybuilder.ColumnNameProvider;
 import org.symqle.querybuilder.UniqueNameProvider;
-import org.symqle.sql.*;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -140,37 +138,10 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         crossJoins.apply(configuration);
         return new SqlContext.Builder()
                 .put(Dialect.class, new DebugDialect())
-                .put(TableRegistry.class, new ProbeTableRegistry())
+                .put(TableRegistry.class, new RootSelectTableRegistry())
                 .put(UniqueNameProvider.class, new ColumnNameProvider())
                 .put(Configuration.class, configuration)
                 .toSqlContext();
-    }
-
-    private static class ProbeTableRegistry implements SelectTableRegistry {
-        @Override
-        public List<TableOrView> getLocal() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public void lock() {
-            // do nothing
-        }
-
-        @Override
-        public void addAll(final Collection<TableOrView> tables) {
-            // do nothing
-        }
-
-        @Override
-        public String getCorrelationName(final TableOrView table) {
-            return "T"+System.identityHashCode(table);
-        }
-
-        @Override
-        public boolean nameInUse(final String name) {
-            return false;
-        }
     }
 
     private final static Row probeRow = new ProbeRow();

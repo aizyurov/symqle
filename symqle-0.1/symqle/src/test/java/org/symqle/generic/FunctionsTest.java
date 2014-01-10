@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.Functions;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
 

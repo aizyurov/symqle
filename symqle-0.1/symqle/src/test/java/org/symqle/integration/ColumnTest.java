@@ -5,7 +5,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
-import org.symqle.generic.Functions;
+import org.symqle.sql.Functions;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
@@ -32,18 +32,14 @@ import java.util.Set;
  */
 public class ColumnTest extends AbstractIntegrationTestBase {
 
-    private Integer usaCountryId;
-    private Integer devDeptId;
-
-    public ColumnTest() throws Exception {
-    }
-
     @Override
     public void onSetUp() throws Exception {
         final Country country = new Country();
-        usaCountryId = country.countryId.where(country.code.eq("USA")).list(getEngine()).get(0);
         final Department dept = new Department();
-        devDeptId = dept.deptId.where(dept.deptName.eq("DEV")).list(getEngine()).get(0);
+    }
+
+    public void testDialect() throws Exception {
+        assertEquals(getEngine().getDatabaseName(), getEngine().getDialect().getName());
     }
 
     public void testPair() throws Exception {

@@ -1,10 +1,6 @@
-package org.symqle.generic;
+package org.symqle.sql;
 
 import org.symqle.common.Mappers;
-import org.symqle.sql.AbstractRoutineInvocation;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.SqlFunction;
-import org.symqle.sql.ValueExpression;
 
 /**
  * These functions are supported by most dialects

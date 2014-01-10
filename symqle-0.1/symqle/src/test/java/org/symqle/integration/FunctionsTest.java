@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.symqle.generic.Functions.*;
+import static org.symqle.sql.Functions.*;
 
 /**
  * @author lvovich

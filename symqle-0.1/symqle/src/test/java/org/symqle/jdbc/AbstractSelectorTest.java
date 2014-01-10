@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.symqle.common.Mappers;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
-import org.symqle.generic.AbstractSelector;
+import org.symqle.sql.AbstractSelector;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;

@@ -2,7 +2,7 @@ package org.symqle.gate;
 
 import junit.framework.TestCase;
 import org.symqle.dialect.MySqlDialect;
-import org.symqle.generic.Params;
+import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.jdbc.Option;
 
