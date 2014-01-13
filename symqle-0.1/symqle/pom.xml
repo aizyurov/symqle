@@ -14,6 +14,7 @@
   <url>http://symqle.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <docbook.xsl.url>http://docbook.sourceforge.net/release/xsl/1.75.2/</docbook.xsl.url>
   </properties>
   <build>
   <plugins>
@@ -26,6 +27,34 @@
           <threadCount>10</threadCount>
         </configuration>
       </plugin>
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.1</version>
+          <executions>
+            <execution>
+            <id>design-html</id>
+            <phase>site</phase>
+              <goals>
+                <goal>java</goal>
+              </goals>
+          <configuration>
+            <executable>maven</executable>
+            <mainClass>org.apache.xalan.xslt.Process</mainClass>
+            <classpathScope>test</classpathScope>
+            <arguments>
+              <argument>-IN</argument>
+              <argument>${basedir}/src/main/site/docbook/guide.xml</argument>
+              <argument>-xsl</argument>
+              <!--argument>${basedir}/xsl/html/docbook.xsl</argument-->
+              <argument>${docbook.xsl.url}/html/docbook.xsl</argument>
+              <argument>-OUT</argument>
+              <argument>${basedir}/target/site/symqle-guide.html</argument>
+            </arguments>
+          </configuration>
+            </execution>
+          </executions>
+        </plugin>
   </plugins>
   </build>
   <dependencies>

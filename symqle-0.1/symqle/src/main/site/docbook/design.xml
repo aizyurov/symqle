@@ -2,13 +2,13 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <book>
     <bookinfo>
-        <title>Yur Developer Guide</title>
+        <title>Symqle inside</title>
           <author>
             <firstname>Alexander</firstname>
             <surname>Izyurov</surname>
           </author>
           <copyright>
-            <year>2009</year><holder>Alexander Izyurov</holder>
+            <year>2009-2013</year><holder>Alexander Izyurov</holder>
           </copyright>
     </bookinfo>
     <preface><title>Introduction</title>
