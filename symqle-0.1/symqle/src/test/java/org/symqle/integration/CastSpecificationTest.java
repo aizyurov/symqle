@@ -2,7 +2,6 @@ package org.symqle.integration;
 
 import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
-import org.symqle.dialect.DerbyDialect;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractCastSpecification;
 
@@ -310,8 +309,9 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
+
         try {
-            final List<String> list = employee.firstName.cast("CHAR(5)").map(Mappers.STRING).collate("utf8mb4_unicode_ci")
+            final List<String> list = employee.firstName.cast("CHAR(5)").map(Mappers.STRING).collate(validCollationNameForChar())
                     .where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
             assertEquals(Arrays.asList("James"), list);

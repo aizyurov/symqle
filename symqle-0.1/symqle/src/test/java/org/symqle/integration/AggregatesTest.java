@@ -114,7 +114,8 @@ public class AggregatesTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(5), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with aggregate functions
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 

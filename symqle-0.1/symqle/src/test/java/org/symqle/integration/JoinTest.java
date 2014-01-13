@@ -47,6 +47,7 @@ public class JoinTest extends AbstractIntegrationTestBase {
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "OUTER" at line 1, column 63.
             // mysql: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'OUTER JOIN
+            // org.postgresql.util.PSQLException: ERROR: syntax error at or near "OUTER"
             expectSQLException(e, "Apache Derby", "MySQL");
         }
     }

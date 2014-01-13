@@ -44,12 +44,13 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         final List<String> list = createVE(employee).map(Mappers.STRING).list(getEngine());
         Collections.sort(list);
-        try {
-            assertEquals(Arrays.asList("false", "true", "true", "true", "true"), list);
-        } catch (AssertionFailedError e) {
-            assertTrue(getDatabaseName(), getDatabaseName().equals("MySQL"));
-            assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
-        }
+            if (getDatabaseName().equals("MySQL")) {
+                assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
+            } else if (getDatabaseName().equals("PostgreSQL")) {
+                assertEquals(Arrays.asList("f", "t", "t", "t", "t"), list);
+            } else {
+                assertEquals(Arrays.asList("false", "true", "true", "true", "true"), list);
+            }
     }
 
     public void testAll() throws Exception {
@@ -223,8 +224,9 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
                     .list(getEngine());
             assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First")), list);
         } catch (SQLException e) {
-            // ERROR 42X37: The unary '-' operator is not allowed on the 'BOOLEAN' type.
-            expectSQLException(e, "Apache Derby");
+            // Apache Derby: ERROR 42X37: The unary '-' operator is not allowed on the 'BOOLEAN' type.
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: - boolean
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -240,7 +242,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(3001.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '+' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean + double precision
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
 
     }
@@ -257,7 +260,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(-2999.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '-' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean - double precision
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -273,6 +277,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean * double precision
             expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
@@ -289,7 +294,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean / double precision
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -305,7 +311,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(3.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '+' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean + numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
 
     }
@@ -322,7 +329,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.5, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '-' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean - numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -338,7 +346,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean * numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -354,7 +363,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean / numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -398,7 +408,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = createVE(employee)
-                    .collate("latin1_general_ci")
+                    .collate(validCollationNameForNumber())
                     .concat("-")
                     .where(employee.lastName.eq("Cooper"))
                     .orderBy(employee.lastName)
@@ -412,7 +422,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             }
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 34.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: collations are not supported by type boolean
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -625,7 +636,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             }
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean ~~ character varying
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -647,7 +659,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             }
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean !~~ character varying
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -664,15 +677,25 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
     }
 
     public void testMin() throws Exception {
-        final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).min().list(getEngine());
-        assertEquals(Arrays.asList(false), list);
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).min().list(getEngine());
+            assertEquals(Arrays.asList(false), list);
+        } catch (SQLException e) {
+            // org.postgresql.util.PSQLException: ERROR: function min(boolean) does not exist
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     public void testMax() throws Exception {
-        final Employee employee = new Employee();
-        final List<Boolean> list = createVE(employee).max().list(getEngine());
-        assertEquals(Arrays.asList(true), list);
+        try {
+            final Employee employee = new Employee();
+            final List<Boolean> list = createVE(employee).max().list(getEngine());
+            assertEquals(Arrays.asList(true), list);
+        } catch (SQLException e) {
+            // org.postgresql.util.PSQLException: ERROR: function max(boolean) does not exist
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     public void testSum() throws Exception {
@@ -683,7 +706,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(4.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate SUM cannot operate on type BOOLEAN.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: function sum(boolean) does not exist
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -696,7 +720,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(0.8, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate AVG cannot operate on type BOOLEAN.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: function avg(boolean) does not exist
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 }

@@ -39,7 +39,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
             final int affectedRows = insertTable.insertDefault().execute(getEngine());
             assertEquals(1, affectedRows);
             final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
-            assertEquals(Arrays.asList(Pair.make(1, "nothing")), rows);
+            assertEquals(Arrays.asList(Pair.make(0, "nothing")), rows);
         } catch (SQLException e) {
             // mysql: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'DEFAULT VALUES'
             // derby: ERROR 42X01: Syntax error: Encountered "DEFAULT" at line 1, column 25

@@ -1,2 +1,3 @@
 MySQL = org.symqle.dialect.MySqlDialect
 Apache\ Derby = org.symqle.dialect.DerbyDialect
+PostgreSQL = org.symqle.dialect.PostgreSQLDialect

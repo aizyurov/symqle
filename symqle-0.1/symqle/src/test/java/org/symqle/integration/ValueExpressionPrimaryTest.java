@@ -395,7 +395,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         try {
             final List<String> list = creatPrimary(department)
-                    .collate("utf8_unicode_ci")
+                    .collate(validCollationNameForVarchar())
                     .concat("-").concat(department.deptName)
                     .orderBy(department.deptName)
                     .list(getEngine());

@@ -521,7 +521,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = createWhenClause(employee)
-                    .collate("utf8_unicode_ci")
+                    .collate(validCollationNameForVarchar())
                     .concat("+")
                     .orderBy(employee.lastName)
                     .list(getEngine());

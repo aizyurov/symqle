@@ -97,7 +97,7 @@ public class BatchingTest extends AbstractIntegrationTestBase {
             final int affectedRows = insertTable.insert(insertTable.id.set(i), insertTable.text.set("a" + i)).submit(engine);
             assertTrue("i= " + i +", affectedRows= " + affectedRows, affectedRows == Engine.NOTHING_FLUSHED);
         }
-        final int affectedRows = insertTable.insert(insertTable.id.set(5), insertTable.text.set("a" + 5)).submit(engine, Option.setQueryTimeout(1));
+        final int affectedRows = insertTable.insert(insertTable.id.set(5), insertTable.text.set("a" + 5)).submit(engine, Option.setFetchSize(10));
         assertEquals(5, affectedRows);
         assertEquals(1, engine.flush());
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).orderBy(insertTable.id).list(engine);

@@ -39,27 +39,27 @@ insert into department (dept_id, dept_name, country_id) select 1, 'HR', country_
 
 insert into department (dept_id, dept_name, country_id) select 2, 'DEV', country_id from country c where c.code = 'RUS'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 0, 'Margaret', 'Redwood',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 1, 'Margaret', 'Redwood',
  'HR Manager', '2008-08-22', 3000, dept_id
   from department d where d.dept_name = 'HR'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 1, 'Bill', 'March',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 2, 'Bill', 'March',
  'HR Clerk', '2008-08-23', 2000, dept_id
   from department d where d.dept_name = 'HR'
 
 update department set manager_id = (select emp_id from employee where last_name='Redwood') where dept_name = 'HR'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 2, 'James', 'First',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 3, 'James', 'First',
  'Development manager', '2008-10-01', 3000, dept_id
   from department d where d.dept_name = 'DEV'
 
 update department set manager_id = (select emp_id from employee where last_name='First') where dept_name = 'DEV'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 3, 'Alex', 'Pedersen',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id) select 4, 'Alex', 'Pedersen',
  'guru', '2008-10-11', 2000, dept_id
   from department d where d.dept_name = 'DEV'
 
-insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id, is_retired) values (4, 'James', 'Cooper',
+insert into employee (emp_id, first_name, last_name, title, hire_date, salary, dept_id, is_retired) values (5, 'James', 'Cooper',
  'hacker', '2009-01-12', 1500, null , true)
 
 create table big_table (num integer)

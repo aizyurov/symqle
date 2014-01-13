@@ -5,6 +5,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
+import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.Functions;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
@@ -643,9 +644,11 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testCollate() throws Exception {
+
         final Employee employee = new Employee();
         try {
-            final List<String> list = employee.firstName.collate("utf8_unicode_ci").where(employee.lastName.eq("Redwood")).list(getEngine());
+            final AbstractQuerySpecificationScalar<String> querySpecificationScalar = employee.firstName.collate(validCollationNameForVarchar()).where(employee.lastName.eq("Redwood"));
+            final List<String> list = querySpecificationScalar.list(getEngine());
             assertEquals(Arrays.asList("Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 63
@@ -758,12 +761,17 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     }
 
     public void testFetchDirection() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(employee.lastName).list(getEngine(), Option.setFetchDirection(ResultSet.FETCH_REVERSE));
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.orderBy(employee.lastName).list(getEngine(), Option.setFetchDirection(ResultSet.FETCH_REVERSE));
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("March", "First", "Pedersen", "Redwood", "Cooper"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (SQLException e) {
+            // org.postgresql.util.PSQLException: Operation requires a scrollable ResultSet, but this ResultSet is FORWARD_ONLY
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     public void testMaxFieldSize() throws Exception {
@@ -785,8 +793,10 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testQueryTimeout() throws Exception {
         // derby: does not honor queryTimeout
+        // org.postgresql.util.PSQLException: Method org.postgresql.jdbc4.Jdbc4PreparedStatement.setQueryTimeout(int) is not yet implemented
         // skip this test
-        if ("Apache Derby".equals(getDatabaseName())) {
+        if ("Apache Derby".equals(getDatabaseName())
+                || "PostgreSQL".equals(getDatabaseName())) {
             return;
         }
         final Engine engine = getEngine();
@@ -819,7 +829,8 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             fail("No timeout in " + (System.currentTimeMillis() - start) + " millis");
         } catch (SQLException e) {
             System.out.println("Timeout in "+ (System.currentTimeMillis() - start) + " millis");
-            // fine: timeout
+            e.printStackTrace();
+            // fine: timeout or timeout not supported
         }
     }
 

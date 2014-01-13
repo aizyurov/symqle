@@ -7,6 +7,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
 import org.symqle.integration.model.One;
+import org.symqle.sql.AbstractQueryExpressionBasic;
 import org.symqle.sql.AbstractStringExpression;
 
 import java.sql.SQLException;
@@ -150,7 +151,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = stringExpression(employee).intersectAll(department.manager().firstName.concat(", my friend")).list(getEngine());
             Collections.sort(list);
-            assertEquals(Arrays.asList("James, my friend", "James, my friend", "Margaret, manager", "Margaret, my friend"), list);
+            System.out.println(list);
+            assertEquals(Arrays.asList("James, my friend", "Margaret, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
@@ -195,7 +197,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         try {
             final List<String> list = stringExpression(employee).exceptAll(department.manager().firstName.concat(", my friend")).list(getEngine());
             Collections.sort(list);
-            assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend"), list);
+            assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
@@ -379,9 +381,11 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
 
     public void testIsNull() throws Exception {
         final Employee employee = new Employee();
-            final List<String> list = employee.lastName
-                    .where(stringExpression(employee).isNull())
-                    .orderBy(employee.lastName)
+        final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.lastName
+                .where(stringExpression(employee).isNull())
+                .orderBy(employee.lastName);
+        System.out.println(queryExpressionBasic.show(getEngine().getDialect()));
+        final List<String> list = queryExpressionBasic
                     .list(getEngine());
             assertEquals(Arrays.asList(), list);
     }
@@ -478,7 +482,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(15, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: text + numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -490,7 +495,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(9, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: text - numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -502,7 +508,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(36, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: text * numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -514,7 +521,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(4, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: text / numeric
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -526,7 +534,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals("-12", list.get(0));
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: - text
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -622,7 +631,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = stringExpression(employee).collate("utf8_unicode_ci").orderBy(employee.firstName).list(getEngine());
+            final List<String> list = stringExpression(employee).collate(validCollationNameForVarchar()).orderBy(employee.firstName).list(getEngine());
             assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 28.
@@ -682,7 +691,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
             assertEquals(12, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: function avg(text) does not exist
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 }

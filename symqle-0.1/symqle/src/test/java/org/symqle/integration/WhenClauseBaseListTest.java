@@ -540,7 +540,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<Pair<String, String>> list = createWhenClauseBaseList(employee)
-                    .collate("utf8mb4_unicode_ci")
+                    .collate(validCollationNameForChar())
                     .concat("+")
                     .pair(employee.lastName)
                     .orderBy(employee.lastName)

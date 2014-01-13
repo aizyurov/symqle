@@ -450,7 +450,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase {
         try {
             Label l = new Label();
             final List<String> list = createWhenClauseList(employee)
-                    .collate("utf8_unicode_ci")
+                    .collate(validCollationNameForVarchar())
                     .concat("+").label(l)
                     .orderBy(l)
                     .list(getEngine());

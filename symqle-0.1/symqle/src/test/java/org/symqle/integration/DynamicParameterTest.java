@@ -538,7 +538,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName.orderBy(Params.p("James").nullsFirst()).list(getEngine());
-            assertEquals("Cooper", list.get(0));
+            assertEquals(new HashSet<String>(Arrays.asList("Pedersen", "March", "Cooper", "First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
@@ -550,7 +550,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName.orderBy(Params.p("James").nullsLast()).list(getEngine());
-            assertEquals("Cooper", list.get(list.size()-1));
+            assertEquals(new HashSet<String>(Arrays.asList("Pedersen", "March", "Cooper", "First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
@@ -737,7 +737,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = Params.p("Success").collate("utf8mb4_unicode_ci").where(employee.lastName.eq("Redwood")).list(getEngine());
+            final List<String> list = Params.p("Success").collate(validCollationNameForChar()).where(employee.lastName.eq("Redwood")).list(getEngine());
             assertEquals(Arrays.asList("Success"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 10.
@@ -851,21 +851,31 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
         // Note: this is a workaround for derbyERROR 42X35: It is not allowed for both operands of '=' to be ? parameters:
         // 'LIKE' accepts 2 '?'s
 
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(Params.p(11).like(11+"")).list(getEngine());
-        final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("First", "Cooper", "Redwood", "March", "Pedersen"));
-        Collections.sort(expected);
-        Collections.sort(list);
-        assertEquals(expected, list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(Params.p(11).like(11+"")).list(getEngine());
+            final ArrayList<String> expected = new ArrayList<String>(Arrays.asList("First", "Cooper", "Redwood", "March", "Pedersen"));
+            Collections.sort(expected);
+            Collections.sort(list);
+            assertEquals(expected, list);
+        } catch (SQLException e) {
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: integer ~~ character varying
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     public void testNotLikeWithNumericArguments() throws Exception {
         // Note: this is a workaround for derbyERROR 42X35: It is not allowed for both operands of '=' to be ? parameters:
         // 'LIKE' accepts 2 '?'s
 
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(Params.p(11).notLike(11 + "")).list(getEngine());
-        assertEquals(0, list.size());
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(Params.p(11).notLike(11 + "")).list(getEngine());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // org.postgresql.util.PSQLException: ERROR: operator does not exist: integer ~~ character varying
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     public void testNotLike() throws Exception {

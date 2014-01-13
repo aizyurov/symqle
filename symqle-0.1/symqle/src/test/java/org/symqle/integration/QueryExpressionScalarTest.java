@@ -157,7 +157,8 @@ public class QueryExpressionScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex", "Bill", "James", "James", "Margaret", "Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with UNION/INTERSECT/EXCEPT
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 

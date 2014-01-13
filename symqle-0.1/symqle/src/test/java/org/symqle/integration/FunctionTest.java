@@ -76,7 +76,8 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: Cannot convert types 'DOUBLE' to 'BOOLEAN'.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: argument of WHERE must be type boolean, not type double precision
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -385,13 +386,14 @@ public class FunctionTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
         try {
             final List<String> list = abs(employee.salary.opposite())
-                    .collate("latin1_general_ci")
+                    .collate(validCollationNameForNumber())
                     .concat(" marsian dollars")
                     .orderBy(employee.lastName).list(getEngine());
             assertEquals(Arrays.asList("1500 marsian dollars", "3000 marsian dollars", "2000 marsian dollars", "2000 marsian dollars", "3000 marsian dollars"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: collations are not supported by type double precision
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
 
     }
@@ -556,7 +558,8 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "Apache Derby");
+            // rg.postgresql.util.PSQLException: ERROR: operator does not exist: double precision ~~ character varying
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -569,7 +572,8 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "Apache Derby");
+            // rg.postgresql.util.PSQLException: ERROR: operator does not exist: double precision !~ character varying
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -582,7 +586,8 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("March", "Pedersen"), list);
         } catch (SQLException e) {
             // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "Apache Derby");
+            // rg.postgresql.util.PSQLException: ERROR: operator does not exist: double precision ~~ character varying
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -595,7 +600,8 @@ public class FunctionTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
         } catch (SQLException e) {
             // derby : No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
-            expectSQLException(e, "Apache Derby");
+            // rg.postgresql.util.PSQLException: ERROR: operator does not exist: double precision !~ character varying
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 

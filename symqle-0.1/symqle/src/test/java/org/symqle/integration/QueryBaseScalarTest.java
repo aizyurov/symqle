@@ -159,7 +159,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("James", "Bill", "Alex", "Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42879: The ORDER BY clause may not contain column 'LAST_NAME', since the query specifies DISTINCT and that column does not appear in the query result
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: for SELECT DISTINCT, ORDER BY expressions must appear in select list
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 
@@ -177,7 +178,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "Apache Derby");
+            // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with DISTINCT clause
+            expectSQLException(e, "Apache Derby", "PostgreSQL");
         }
     }
 

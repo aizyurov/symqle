@@ -78,4 +78,43 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
         return toListOfDouble(list, null);
     }
 
+    protected String validCollationNameForVarchar() {
+        final String collationName;
+        final String databaseName = getEngine().getDatabaseName();
+        if (databaseName.equals("MySQL")) {
+            collationName = "utf8_unicode_ci";
+        } else if (databaseName.equals("PostgreSQL")) {
+            collationName = "\"en_US.utf8\"";
+        } else {
+            collationName = "default";
+        }
+        return collationName;
+    }
+
+    protected String validCollationNameForChar() {
+        final String collationName;
+        final String databaseName = getEngine().getDatabaseName();
+        if (databaseName.equals("MySQL")) {
+            collationName = "utf8mb4_unicode_ci";
+        } else if (databaseName.equals("PostgreSQL")) {
+            collationName = "\"en_US.utf8\"";
+        } else {
+            collationName = "default";
+        }
+        return collationName;
+    }
+
+    protected String validCollationNameForNumber() {
+        final String collationName;
+        final String databaseName = getEngine().getDatabaseName();
+        if (databaseName.equals("MySQL")) {
+            collationName = "latin1_general_ci";
+        } else if (databaseName.equals("PostgreSQL")) {
+            collationName = "\"en_US\"";
+        } else {
+            collationName = "default";
+        }
+        return collationName;
+}
+
 }
