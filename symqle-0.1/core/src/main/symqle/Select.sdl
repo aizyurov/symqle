@@ -20,11 +20,9 @@ import org.symqle.jdbc.QueryEngine;
 ::
     /**
      * Executes a statement and calls callback for each returned row.
-     * @param statement provides the query and mapper.
      * @param engine gate to DB
      * @param callback will be called until it returns false or there are no more rows
-     * @param options will be applied to java.sql.Statement
-     * @param <T> the type of object passed to callback
+     * @param options to be applied to query builder and PreparedStatement
      * @return number of calls to callback
      * @throws SQLException from the underlying jdbc driver
      */
@@ -58,10 +56,8 @@ import org.symqle.jdbc.Option;
 ::
     /**
      * Executes a statement and returns the list of objects of type T.
-     * @param statement provides the query and mapper.
      * @param engine gate to DB
-     * @param options will be applied to java.sql.Statement
-     * @param <T> the type of objects to create from result set rows
+     * @param options to be applied to query builder and PreparedStatement
      * @return the list of objects
      * @throws SQLException from the underlying jdbc driver
      */
@@ -90,9 +86,8 @@ public <T> List<T> list(final SelectStatement<T> statement,
 ::
     /**
      * Formats a string, which would be passed to prepareStatement method by list() and scroll() methods.
-      * @param statement provides the query source in the form of {@link SelectStatement}
      * @param dialect the dialect to use
-     * @param options options to use
+     * @param options query builder options
      * @return the query string
      */
 public String show(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
@@ -149,15 +144,16 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 |
     /**
     * Creates select statement for read only.
-    * The locking of selected rows depends on transaction isolation.
-    * @param cspec the cursor specification to be selected in read only mode.
-    * @param <T> the type of objects, to which result set rows will be converted.
     * @return new select statement
     */
     qe:QueryExpression<T>  FOR READ ONLY ::
         import java.util.LinkedList;
         public AbstractSelectStatement<T> forReadOnly {}
 |
+    /**
+    * Creates select statement for update.
+    * @return new select statement
+    */
     qe:QueryExpression<T> FOR UPDATE
         :: public AbstractSelectStatement<T> forUpdate {}
 ;
@@ -201,11 +197,24 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 ;
 
 # public methods
-:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
+::
+    /**
+     * Creates an AbstractQueryExpression, which returns not more than {@code limit} number of rows.
+     * @param limit the row number limit
+     * @return new AbstractQueryExpression with row limit
+     */
+public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
     return limitOnly(qeb, new IntLiteral(limit));
 }
 
-:: public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
+::
+    /**
+     * Creates an AbstractQueryExpression, which skips {@code offset} number of rows and returns not more than {@code limit} number of rows.
+     * @param offset the number of rows to skip
+     * @param limit the row number limit
+     * @return new AbstractQueryExpression with offset and row limit
+     */
+public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
               return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
 }
 
@@ -222,7 +231,14 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
     body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
 ;
 
-::  public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+::
+    /**
+     * Applies SortSpecifications to {@code this}.
+     * @param sort first sort specification
+     * @param additionalSort sort specifications to apply if previous sort keys are equal
+     * @return new AbstractQueryExpressionBasic with sort specifications applied
+     */
+public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
     SortSpecificationList list = createSortSpecificationList(sort);
      for (SortSpecification add: additionalSort) {
          list = appendSortSpecification(list, add);

@@ -8,14 +8,24 @@ public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationSc
 <T> QuerySpecificationScalar<T> ::=
     qb:QueryBaseScalar<T> :: implicit {}
 |
-    qb:QueryBaseScalar<T> wc:WhereClause ::
+    /**
+    * Applies {@code whereClause} to {@code this}.
+    * @param whereClause the condition to apply
+    * @return new QuerySpecificationScalar
+    */
+    qb:QueryBaseScalar<T> whereClause:WhereClause ::
          public AbstractQuerySpecificationScalar<T> where {}
 ;
 
 <T> QuerySpecification<T> ::=
     qb:QueryBase<T> :: implicit {}
 |
-    qb:QueryBase<T> wc:WhereClause ::
+    /**
+    * Applies {@code whereClause} to {@code this}.
+    * @param whereClause the condition to apply
+    * @return new QuerySpecification
+    */
+    qb:QueryBase<T> whereClause:WhereClause ::
          public AbstractQuerySpecification<T> where {}
 ;
 
@@ -51,6 +61,10 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 |
     SELECT sl:SelectListScalar<T> fc:FromClause
 |
+    /**
+    * Creates a SELECT ALL clause from {@code this}.
+    * @return new AbstractQueryBaseScalar
+    */
     SELECT ALL sl:SelectListScalar<T>  :: AbstractQueryBaseScalar<T> selectAll  {
             public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
                 final Query<T> query = sl.z$sqlOfSelectListScalar(context);
@@ -65,6 +79,10 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 |
     SELECT ALL sl:SelectListScalar<T> fc:FromClause
 |
+    /**
+    * Creates a SELECT DISTINCT clause from {@code this}.
+    * @return new AbstractQueryBaseScalar
+    */
     SELECT DISTINCT sl:SelectListScalar<T>  :: AbstractQueryBaseScalar<T> distinct {
             public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
                 final Query<T> query = sl.z$sqlOfSelectListScalar(context);
@@ -97,6 +115,10 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 |
     SELECT sl:SelectList<T> fc:FromClause
 |
+    /**
+    * Creates a SELECT ALL clause from {@code this}.
+    * @return new AbstractQueryBase
+    */
     SELECT ALL sl:SelectList<T> :: public AbstractQueryBase<T> selectAll {
         public Query<T> z$sqlOfQueryBase(final SqlContext context) {
                 final Query<T> query = sl.z$sqlOfSelectList(context);
@@ -111,6 +133,10 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 |
     SELECT ALL sl:SelectList<T> fc:FromClause
 |
+    /**
+    * Creates a SELECT DISTINCT clause from {@code this}.
+    * @return new AbstractQueryBase
+    */
     SELECT DISTINCT sl:SelectList<T> :: AbstractQueryBase<T> distinct {
         public Query<T> z$sqlOfQueryBase(final SqlContext context) {
                 final Query<T> query = sl.z$sqlOfSelectList(context);

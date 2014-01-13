@@ -21,6 +21,11 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
 <T> QueryExpressionBodyScalar<T> ::=
     qt:QueryTerm<T> :: implicit {}
 |
+    /**
+     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} UNION ALL {@code qt}.
+     * @param qt second argument of UNION ALL
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qe:QueryExpressionBodyScalar<T> UNION ALL qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> unionAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
@@ -33,6 +38,11 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
             }
         }
 |
+    /**
+     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} UNION DISTINCT {@code qt}.
+     * @param qt second argument of UNION DISTINCT
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qe:QueryExpressionBodyScalar<T> UNION DISTINCT qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> unionDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
@@ -45,6 +55,11 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
             }
         }
 |
+    /**
+     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} UNION {@code qt}.
+     * @param qt second argument of UNION
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qe:QueryExpressionBodyScalar<T> UNION qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> union {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
@@ -57,6 +72,11 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
             }
         }
 |
+    /**
+     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} EXCEPT ALL {@code qt}.
+     * @param qt second argument of EXCEPT ALL
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qe:QueryExpressionBodyScalar<T> EXCEPT ALL qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> exceptAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
@@ -69,6 +89,11 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
             }
         }
 |
+    /**
+     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} EXCEPT DISTINCT {@code qt}.
+     * @param qt second argument of EXCEPT DISTINCT
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qe:QueryExpressionBodyScalar<T> EXCEPT DISTINCT qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> exceptDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
@@ -81,6 +106,11 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
             }
         }
 |
+    /**
+     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} EXCEPT {@code qt}.
+     * @param qt second argument of EXCEPT
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qe:QueryExpressionBodyScalar<T> EXCEPT qt:QueryTerm<T> ::
         public AbstractQueryExpressionBodyScalar<T> except {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
@@ -103,6 +133,11 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 <T> QueryTerm<T> ::=
     qp:QueryPrimary<T> :: implicit {}
 |
+    /**
+     * Creates a AbstractQueryTerm representing {@code this} INTERSECT ALL {@code qp}.
+     * @param qt second argument of INTERSECT ALL
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
         public AbstractQueryTerm<T> intersectAll {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
@@ -115,6 +150,11 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
             }
         }
 |
+    /**
+     * Creates a AbstractQueryTerm representing {@code this} INTERSECT DISTINCT {@code qp}.
+     * @param qt second argument of INTERSECT DISTINCT
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
@@ -127,6 +167,11 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
             }
           }
 |
+    /**
+     * Creates a AbstractQueryTerm representing {@code this} INTERSECT {@code qp}.
+     * @param qt second argument of INTERSECT
+     * @return new AbstractQueryExpressionBodyScalar
+     */
     qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
           public AbstractQueryTerm<T> intersect {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
