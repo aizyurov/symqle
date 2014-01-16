@@ -27,7 +27,17 @@ public class Person extends Table {
     }
     public Column&lt;Long&gt; id() { return createColumn(Mappers.LONG, "person_id"); }
     public Column&lt;String&gt; lastName() { return createColumn(Mappers.STRING, "last_name"); }
+    private Department departmentRef = new LazyReference() {
+            public Department create() {
+                Department department = new Department();
+                Person.this.leftJoin(department, departmentId().eq(department.departmentId());
+                return department;
+        };
+    public Department department() { return departmentRef.get(); }
     ...
+}
+public class Department extends Table  {
+...
 }
             </programlisting>
         </para>
@@ -43,21 +53,24 @@ Engine engine = new ConnectorEngine(dataSource);
             Symqle classes typically implement multiple interfaces, so construction of "more complex" objects can be
             implicit. For example, Column class implements SelectStatement interface, so it has list(Engine, Option...) method.
             <programlisting>
-                List&lt;String&gt; names = new Person().lastName().list(engine);
+List&lt;String&gt; names = new Person().lastName().list(engine);
             </programlisting>
-            would return what is expected: list of all last names from "person" table.
+            would return what is intuitively expected: list of all last names from "person" table.
         </para>
         <para>
             More complex example, which illustrates how Symqle methods are applied to construct queries:
             <programlisting>
-            Person person = new Person();
-            List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
-                .pair(person.name())
-                .where(person.name().like("J%"))
-                .orderBy(person.id())
-                .limit(10)
-                .list(engine);
+Person person = new Person();
+List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
+    .pair(person.lastName())
+    .where(person.lastName().like("J%").and(person.department().name().eq("R&amp;D"))
+    .orderBy(person.id())
+    .limit(10)
+    .list(engine);
             </programlisting>
+            It will execute SQL statement looking like
+            <programlisting>SELECT T0.id AS C0, T0.last_name AS C1 FROM person AS T0 LEFT JOIN department AS T1 WHERE T0.last_name LIKE ? AND T1.name = ?</programlisting>
+            provide proper parameters and convert result set rows to Pair&lt;Long, String&gt; objects.
         </para>
         <para>
             Returned values are not limited to simple types and Pairs, you can easily convert result sets to any Java objects.
@@ -65,9 +78,24 @@ Engine engine = new ConnectorEngine(dataSource);
         </para>
         <para>
             Symqle is not an Object-relation mapper. There are no objects, which correspond to database <emphasis>data</emphasis>.
-            The objects produced by Symqle are typically simple DataTransferObjects.
+            The objects produced by Symqle are typically simple DataTransferObjects. There is no notion of session and no caches.
+            You can add caches on top of Symqle if  you need them. If your main database tasks are CRUD operations you will probably prefer
+            ORM or non-SQL database. If you really need to exercise capabilities of relational database, Symqle may be better option.
         </para>
+        <para>
+            Symqle is designed to be efficient alternative to direct JDBC coding. It does not create any objects in the heap but a few short-living
+            query builder structures (and of course resulting DTOs). It is optimized for fast query building and data conversions.
+            See <link linkend="performance">Performance section</link>for comparison of Symqle and direct JDBC timings.
+        </para>
+        <para>
+            There is no hidden code in Symqle - no dynamic proxies, instrumentation etc. - just plain inheritance and polymorphism. Query building is expressed with
+            plain old java methods - enjoy auto-completion features of your favourite IDE.
+        </para>
+
     </preface>
+    <chapter><title>Symqle classes and interfaces</title>
+
+    </chapter>
     <chapter><title>Building SELECT clause</title>
         <sect1>
             <title>Primary value expressions</title>
@@ -89,6 +117,7 @@ Engine engine = new ConnectorEngine(dataSource);
         </sect1>
         <sect1>
             <title>Selectors</title>
+            TODO include code re-use here
         </sect1>
         <sect1>
             <title>Cast and map</title>
@@ -131,20 +160,18 @@ Engine engine = new ConnectorEngine(dataSource);
     </chapter>
     <chapter><title>Data change statements</title>
         <sect1>
+            <title>Update</title>
+        </sect1>
+        <sect1>
             <title>Insert</title>
         </sect1>
         <sect1>
-            <title>Update</title>
+            <title>Batching</title>
         </sect1>
-    </chapter>
-    <chapter><title>Collections</title>
     </chapter>
     <chapter><title>Symqle model</title>
         <sect1>
             <title>Using modeler</title>
-        </sect1>
-        <sect1>
-            <title>Adaptors and generic Selectors</title>
         </sect1>
         <sect1>
             <title>Derived tables</title>
@@ -165,7 +192,7 @@ Engine engine = new ConnectorEngine(dataSource);
             <title>TODO</title>
         </sect1>
     </chapter>
-    <chapter><title>Performance</title>
+    <chapter xreflabel="Performance" id="performance"><title>Performance</title>
         <sect1>
             <title>TODO</title>
         </sect1>
