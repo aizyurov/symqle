@@ -39,7 +39,6 @@
                 <goal>java</goal>
               </goals>
           <configuration>
-            <executable>maven</executable>
             <mainClass>org.apache.xalan.xslt.Process</mainClass>
             <classpathScope>test</classpathScope>
             <arguments>
