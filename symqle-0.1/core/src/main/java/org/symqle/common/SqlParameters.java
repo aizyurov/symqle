@@ -18,14 +18,14 @@ package org.symqle.common;
 
 /**
  * An abstraction of parameters of a PreparedStatement.
- * It is like iterator over SqlParameter object.
+ * It is like iterator over OutBox object.
  * Initially positioned at 1st parameter of the statement.
  */
 public interface SqlParameters {
     /**
-     * Returns SqlParameter in the current position and
+     * Returns OutBox in the current position and
      * advances position.
-     * @return current SqlParameter
+     * @return current OutBox
      */
-    SqlParameter next();
+    OutBox next();
 }

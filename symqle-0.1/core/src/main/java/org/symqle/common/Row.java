@@ -29,7 +29,7 @@ public interface Row {
      * @param label column label
      * @return the value slot
      */
-    Element getValue(String label);
+    InBox getValue(String label);
 
     /**
      * An engine to execute queries on the same connection.

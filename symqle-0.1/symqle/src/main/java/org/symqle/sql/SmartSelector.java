@@ -148,7 +148,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
     private static class ProbeRow implements Row {
         @Override
-        public Element getValue(final String label) {
+        public InBox getValue(final String label) {
             return new ProbeElement();
         }
 
@@ -158,7 +158,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         }
     }
 
-    private static class ProbeElement implements Element {
+    private static class ProbeElement implements InBox {
         @Override
         public Boolean getBoolean() throws SQLException {
             return Boolean.TRUE;

@@ -1,11 +1,9 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Callback;
-import org.symqle.common.Element;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.InBox;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
-import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractQueryBaseScalar;
 import org.symqle.sql.SelectStatement;
 
 import java.sql.SQLException;
@@ -37,13 +35,13 @@ public abstract class Scenario123<StatementType extends SelectStatement<Long>> e
     }
 
     @Override
-    List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+    List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
         return Collections.emptyList();
     }
 
     @Override
-    void elementCall(Element element) throws SQLException {
-        expect(element.getLong()).andReturn(123L);
+    void elementCall(InBox inBox) throws SQLException {
+        expect(inBox.getLong()).andReturn(123L);
     }
 
 }

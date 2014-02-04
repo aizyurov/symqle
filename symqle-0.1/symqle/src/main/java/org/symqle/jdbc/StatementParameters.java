@@ -16,7 +16,7 @@
 
 package org.symqle.jdbc;
 
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 
 import java.math.BigDecimal;
@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 
 /**
- * An implementation of SqlParameters, which is a proxy to a PreparedStatement.
+ * An implementation of OutBoxs, which is a proxy to a PreparedStatement.
  */
 public class StatementParameters implements SqlParameters {
     private final PreparedStatement statement;
@@ -43,11 +43,11 @@ public class StatementParameters implements SqlParameters {
     }
 
     @Override
-    public final SqlParameter next() {
+    public final OutBox next() {
         return new StatementParameter(++position);
     }
 
-    private class StatementParameter implements SqlParameter {
+    private class StatementParameter implements OutBox {
         private final int position;
 
         private StatementParameter(final int position) {

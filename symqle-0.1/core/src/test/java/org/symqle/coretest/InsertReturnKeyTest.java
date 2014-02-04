@@ -3,8 +3,8 @@ package org.symqle.coretest;
 import junit.framework.TestCase;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractInsertStatement;
@@ -28,7 +28,7 @@ public class InsertReturnKeyTest extends TestCase {
         final AbstractInsertStatement update = person.insert(person.subordinatesCount.set(people.id.count().queryValue()));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         replay(parameters, param);
         Long key = update.executeReturnKey(person.id,
                 new MockEngine(1, 123L, statementString, parameters, SqlContextUtil.allowNoTablesContext(), Option.allowNoTables(false)), Option.allowNoTables(false));

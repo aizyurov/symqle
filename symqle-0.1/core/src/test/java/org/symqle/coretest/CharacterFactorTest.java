@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.Mappers;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractCharacterFactor;
@@ -461,13 +461,13 @@ public class CharacterFactorTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
             return Collections.emptyList();
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getString()).andReturn("abc");
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getString()).andReturn("abc");
         }
     }
 

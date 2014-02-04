@@ -128,16 +128,16 @@ public class QueryPrimaryTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
-            final SqlParameter param =createMock(SqlParameter.class);
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final OutBox param =createMock(OutBox.class);
             expect(parameters.next()).andReturn(param);
             param.setString("A%");
             return Collections.singletonList(param);
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getInt()).andReturn(123);
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getInt()).andReturn(123);
         }
 
     }

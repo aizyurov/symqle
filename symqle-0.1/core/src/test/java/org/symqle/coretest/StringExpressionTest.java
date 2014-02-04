@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.Mappers;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.*;
@@ -478,16 +478,16 @@ public class StringExpressionTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
-            final SqlParameter param1 =createMock(SqlParameter.class);
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final OutBox param1 =createMock(OutBox.class);
             expect(parameters.next()).andReturn(param1);
             param1.setString("#");
             return Collections.singletonList(param1);
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getString()).andReturn("#1");
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getString()).andReturn("#1");
         }
     }
 

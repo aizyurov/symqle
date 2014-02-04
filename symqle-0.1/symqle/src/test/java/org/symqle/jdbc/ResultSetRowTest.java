@@ -1,9 +1,9 @@
 package org.symqle.jdbc;
 
 import junit.framework.TestCase;
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.Mappers;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -159,54 +159,54 @@ public class ResultSetRowTest extends TestCase {
     }
 
     public void testDateMapper() throws Exception {
-        final SqlParameter param = createMock(SqlParameter.class);
+        final OutBox param = createMock(OutBox.class);
         final Date date = new Date(System.currentTimeMillis());
         param.setDate(date);
         replay(param);
         Mappers.DATE.setValue(param, date);
         verify(param);
 
-        Element element = createMock(Element.class);
-        expect(element.getDate()).andReturn(date);
+        InBox InBox = createMock(InBox.class);
+        expect(InBox.getDate()).andReturn(date);
 
-        replay(element);
+        replay(InBox);
 
-        assertEquals(date, Mappers.DATE.value(element));
-        verify(element);
+        assertEquals(date, Mappers.DATE.value(InBox));
+        verify(InBox);
     }
 
     public void testTimestampMapper() throws Exception {
-        final SqlParameter param = createMock(SqlParameter.class);
+        final OutBox param = createMock(OutBox.class);
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         param.setTimestamp(timestamp);
         replay(param);
         Mappers.TIMESTAMP.setValue(param, timestamp);
         verify(param);
 
-        Element element = createMock(Element.class);
-        expect(element.getTimestamp()).andReturn(timestamp);
+        InBox InBox = createMock(InBox.class);
+        expect(InBox.getTimestamp()).andReturn(timestamp);
 
-        replay(element);
+        replay(InBox);
 
-        assertEquals(timestamp, Mappers.TIMESTAMP.value(element));
-        verify(element);
+        assertEquals(timestamp, Mappers.TIMESTAMP.value(InBox));
+        verify(InBox);
     }
 
     public void testTimeMapper() throws Exception {
-        final SqlParameter param = createMock(SqlParameter.class);
+        final OutBox param = createMock(OutBox.class);
         final Time time = new Time(System.currentTimeMillis());
         param.setTime(time);
         replay(param);
         Mappers.TIME.setValue(param, time);
         verify(param);
 
-        Element element = createMock(Element.class);
-        expect(element.getTime()).andReturn(time);
+        InBox InBox = createMock(InBox.class);
+        expect(InBox.getTime()).andReturn(time);
 
-        replay(element);
+        replay(InBox);
 
-        assertEquals(time, Mappers.TIME.value(element));
-        verify(element);
+        assertEquals(time, Mappers.TIME.value(InBox));
+        verify(InBox);
     }
 
     public void testTimestamp() throws Exception {
@@ -256,7 +256,7 @@ public class ResultSetRowTest extends TestCase {
 
         verify(resultSet);
 
-        final SqlParameter param = createMock(SqlParameter.class);
+        final OutBox param = createMock(OutBox.class);
         final Double d = 2.3e4;
         param.setDouble(d);
         replay(param);
@@ -264,12 +264,12 @@ public class ResultSetRowTest extends TestCase {
         Mappers.DOUBLE.setValue(param, d);
         verify(param);
 
-        final Element element = createMock(Element.class);
-        expect(element.getDouble()).andReturn(d);
-        replay(element);
+        final InBox InBox = createMock(InBox.class);
+        expect(InBox.getDouble()).andReturn(d);
+        replay(InBox);
 
-        assertEquals(d, Mappers.DOUBLE.value(element));
-        verify(element);
+        assertEquals(d, Mappers.DOUBLE.value(InBox));
+        verify(InBox);
     }
 
     public void testFloat() throws Exception {

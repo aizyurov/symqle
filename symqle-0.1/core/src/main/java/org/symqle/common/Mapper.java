@@ -19,25 +19,25 @@ package org.symqle.common;
 import java.sql.SQLException;
 
 /**
- * Mapper can extract a value from Element as Java object and
- * set a valut to am SqlParameter.
+ * Mapper can extract a value from InBox as Java object and
+ * set a value of the same type to an OutBox.
  * @author lvovich
  * @param <T> the type of extracted value
  */
 public interface Mapper<T> {
     /**
-     * Extracts value from an Element.
-     * @param element the element to extract value from
+     * Extracts value from an InBox.
+     * @param inBox the inBox to extract value from
      * @return the value
      * @throws SQLException the value is not convertible to type T.
      */
-    T value(Element element) throws SQLException;
+    T value(InBox inBox) throws SQLException;
 
     /**
-     * Sets give value to an SqlParameter.
+     * Sets give value to an OutBox.
      * @param param the parameter to set value to.
      * @param value the value to set
      * @throws SQLException the value of type T cannot be set to this parameter.
      */
-    void setValue(SqlParameter param, T value) throws SQLException;
+    void setValue(OutBox param, T value) throws SQLException;
 }

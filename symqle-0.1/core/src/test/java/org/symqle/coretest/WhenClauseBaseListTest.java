@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.Mappers;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractSearchedWhenClause;
@@ -489,9 +489,9 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
-            final SqlParameter param1 =createMock(SqlParameter.class);
-            final SqlParameter param2 =createMock(SqlParameter.class);
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final OutBox param1 =createMock(OutBox.class);
+            final OutBox param2 =createMock(OutBox.class);
             expect(parameters.next()).andReturn(param1);
             param1.setLong(20L);
             expect(parameters.next()).andReturn(param2);
@@ -500,8 +500,8 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getString()).andReturn("John");
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getString()).andReturn("John");
         }
     }
 

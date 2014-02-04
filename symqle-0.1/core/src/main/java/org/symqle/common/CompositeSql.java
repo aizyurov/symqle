@@ -47,8 +47,8 @@ public class CompositeSql extends Sql {
     }
 
     /**
-     * Sets SqlParameter by delegation to each member in turn.
-     * @param p SqlParameter interface to write parameter values into
+     * Sets OutBox by delegation to each member in turn.
+     * @param p OutBox interface to write parameter values into
      */
     public final void setParameters(final SqlParameters p) throws SQLException {
         first.setParameters(p);

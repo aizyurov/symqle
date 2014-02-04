@@ -2,8 +2,8 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractInsertStatement;
 import org.symqle.sql.Column;
@@ -106,7 +106,7 @@ public class InsertTest extends SqlTestCase {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
@@ -120,7 +120,7 @@ public class InsertTest extends SqlTestCase {
         final AbstractInsertStatement update = person.insert(person.name.set("John"));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
@@ -134,7 +134,7 @@ public class InsertTest extends SqlTestCase {
         final AbstractInsertStatement update = person.insert(person.name.set(Symqle.currentDate().map(Mappers.STRING)));
         final String statementString = update.show(new OracleLikeDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         replay(parameters, param);
         int rows = update.execute(
                 new MockEngine(3, null, statementString, parameters, SqlContextUtil.allowNoTablesContext()));

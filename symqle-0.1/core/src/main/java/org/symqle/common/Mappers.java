@@ -42,12 +42,12 @@ public final class Mappers {
      */
     public static final Mapper<Boolean> BOOLEAN = new Mapper<Boolean>() {
         @Override
-        public Boolean value(final Element element) throws SQLException {
-            return element.getBoolean();
+        public Boolean value(final InBox inBox) throws SQLException {
+            return inBox.getBoolean();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Boolean value) throws SQLException {
+        public void setValue(final OutBox param, final Boolean value) throws SQLException {
             param.setBoolean(value);
         }
     };
@@ -57,12 +57,12 @@ public final class Mappers {
      */
     public static  final Mapper<Number> NUMBER = new Mapper<Number>() {
         @Override
-        public Number value(final Element element) throws SQLException {
-            return element.getBigDecimal();
+        public Number value(final InBox inBox) throws SQLException {
+            return inBox.getBigDecimal();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Number value) throws SQLException {
+        public void setValue(final OutBox param, final Number value) throws SQLException {
             param.setBigDecimal(new BigDecimal(value.toString()));
         }
     };
@@ -72,12 +72,12 @@ public final class Mappers {
      */
     public static  final Mapper<Long> LONG = new Mapper<Long>() {
         @Override
-        public Long value(final Element element) throws SQLException {
-            return element.getLong();
+        public Long value(final InBox inBox) throws SQLException {
+            return inBox.getLong();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Long value) throws SQLException {
+        public void setValue(final OutBox param, final Long value) throws SQLException {
             param.setLong(value);
         }
     };
@@ -87,12 +87,12 @@ public final class Mappers {
      */
     public static  final Mapper<String> STRING = new Mapper<String>() {
         @Override
-        public String value(final Element element) throws SQLException {
-            return element.getString();
+        public String value(final InBox inBox) throws SQLException {
+            return inBox.getString();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final String value) throws SQLException {
+        public void setValue(final OutBox param, final String value) throws SQLException {
             param.setString(value);
         }
     };
@@ -102,12 +102,12 @@ public final class Mappers {
      */
     public static final Mapper<Integer> INTEGER = new Mapper<Integer>() {
         @Override
-        public Integer value(final Element element) throws SQLException {
-            return element.getInt();
+        public Integer value(final InBox inBox) throws SQLException {
+            return inBox.getInt();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Integer value) throws SQLException {
+        public void setValue(final OutBox param, final Integer value) throws SQLException {
             param.setInt(value);
         }
     };
@@ -117,12 +117,12 @@ public final class Mappers {
      */
     public static final Mapper<Date> DATE = new Mapper<Date>() {
         @Override
-        public Date value(final Element element) throws SQLException {
-            return element.getDate();
+        public Date value(final InBox inBox) throws SQLException {
+            return inBox.getDate();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Date value) throws SQLException {
+        public void setValue(final OutBox param, final Date value) throws SQLException {
             param.setDate(value);
         }
     };
@@ -132,12 +132,12 @@ public final class Mappers {
      */
     public static final Mapper<Time> TIME = new Mapper<Time>() {
         @Override
-        public Time value(final Element element) throws SQLException {
-            return element.getTime();
+        public Time value(final InBox inBox) throws SQLException {
+            return inBox.getTime();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Time value) throws SQLException {
+        public void setValue(final OutBox param, final Time value) throws SQLException {
             param.setTime(value);
         }
     };
@@ -147,12 +147,12 @@ public final class Mappers {
      */
     public static final Mapper<Timestamp> TIMESTAMP = new Mapper<Timestamp>() {
         @Override
-        public Timestamp value(final Element element) throws SQLException {
-            return element.getTimestamp();
+        public Timestamp value(final InBox inBox) throws SQLException {
+            return inBox.getTimestamp();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Timestamp value) throws SQLException {
+        public void setValue(final OutBox param, final Timestamp value) throws SQLException {
             param.setTimestamp(value);
         }
     };
@@ -163,12 +163,12 @@ public final class Mappers {
 
     public static final Mapper<Double> DOUBLE = new Mapper<Double>() {
         @Override
-        public Double value(final Element element) throws SQLException {
-            return element.getDouble();
+        public Double value(final InBox inBox) throws SQLException {
+            return inBox.getDouble();
         }
 
         @Override
-        public void setValue(final SqlParameter param, final Double value) throws SQLException {
+        public void setValue(final OutBox param, final Double value) throws SQLException {
             param.setDouble(value);
         }
     };

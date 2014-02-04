@@ -23,14 +23,14 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
-  * An abstraction of parameters of {@link java.sql.PreparedStatement}. It isolates
+ * An object, whcih can convert one of predefined java types to its internal representation.
+  * Example implementation is a parameter of {@link java.sql.PreparedStatement}. The abstraction isolates
   * the supplier of parameter value from other PreparedStatement methods and knowledge of parameter position
   * The methods for setting parameter value are basically the same as those of PreparedStatement
   * For convenience, primitive type arguments have been replaced with object type wrappers and
-  * setNull omitted. setXxx(null) calls setNull on the underlying PreparedStatement.
- * Each setXxx method sets parameter for current position.
+  * setNull omitted. setXxx(null) can be used instead..
  */
-public interface SqlParameter {
+public interface OutBox {
     // TODO add more supported types (Blob etc.)
 
     /**

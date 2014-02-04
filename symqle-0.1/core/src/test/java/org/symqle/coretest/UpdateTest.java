@@ -2,8 +2,8 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.AbstractUpdateStatement;
@@ -128,7 +128,7 @@ public class UpdateTest extends SqlTestCase {
         final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
@@ -142,7 +142,7 @@ public class UpdateTest extends SqlTestCase {
         final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
@@ -156,7 +156,7 @@ public class UpdateTest extends SqlTestCase {
         final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
@@ -170,8 +170,8 @@ public class UpdateTest extends SqlTestCase {
         final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        final SqlParameter param2 =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
+        final OutBox param2 =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         expect(parameters.next()).andReturn(param2);
@@ -187,8 +187,8 @@ public class UpdateTest extends SqlTestCase {
         final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        final SqlParameter param2 =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
+        final OutBox param2 =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         expect(parameters.next()).andReturn(param2);
@@ -204,8 +204,8 @@ public class UpdateTest extends SqlTestCase {
         final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param =createMock(SqlParameter.class);
-        final SqlParameter param2 =createMock(SqlParameter.class);
+        final OutBox param =createMock(OutBox.class);
+        final OutBox param2 =createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         expect(parameters.next()).andReturn(param2);

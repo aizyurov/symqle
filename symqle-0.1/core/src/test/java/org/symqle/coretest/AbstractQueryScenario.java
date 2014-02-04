@@ -1,9 +1,9 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.Row;
 import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
@@ -50,23 +50,23 @@ public abstract class AbstractQueryScenario<T, StatementType extends SelectState
 
     abstract void use(final StatementType query, final QueryEngine engine) throws SQLException;
 
-    abstract List<SqlParameter> parameterExpectations(final SqlParameters parameters) throws SQLException;
+    abstract List<OutBox> parameterExpectations(final SqlParameters parameters) throws SQLException;
 
-    abstract void elementCall(final Element element) throws SQLException ;
+    abstract void elementCall(final InBox inBox) throws SQLException ;
 
     public final void play() throws SQLException {
         final String queryString = Symqle.show(query, dialect, options);
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final List<SqlParameter> parameterList = parameterExpectations(parameters);
+        final List<OutBox> parameterList = parameterExpectations(parameters);
         final Row row = createMock(Row.class);
-        final Element element = createMock(Element.class);
-        expect(row.getValue(matches(columnNamePattern))).andReturn(element);
-        elementCall(element);
+        final InBox inBox = createMock(InBox.class);
+        expect(row.getValue(matches(columnNamePattern))).andReturn(inBox);
+        elementCall(inBox);
         final List<Object> mockList = new ArrayList<Object>();
         mockList.add(parameters);
         mockList.addAll(parameterList);
         mockList.add(row);
-        mockList.add(element);
+        mockList.add(inBox);
         final Object[] mocks = mockList.toArray(new Object[mockList.size()]);
         replay(mocks);
         final SqlContext context = new SqlContext.Builder().put(Dialect.class, dialect).toSqlContext();

@@ -70,13 +70,13 @@ public class QueryExpressionBasicTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
             return Collections.emptyList();
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getLong()).andReturn(123L);
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getLong()).andReturn(123L);
         }
     }
 

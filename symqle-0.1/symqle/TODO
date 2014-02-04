@@ -5,7 +5,7 @@ database-specific functions
 (done) Remove singletons -use no-arg constructor for dialects.
 (done) decouple dialect mappings and DataSourceGate (via symqle-dialect.properties).
 
-Postgresql dialect
+(done) Postgresql dialect
 Oracle dialect
 Sybase dialect
 HSQL dialect (2.3.1) ?

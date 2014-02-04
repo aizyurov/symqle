@@ -475,16 +475,16 @@ public class NumericExpressionTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
-            final SqlParameter param =createMock(SqlParameter.class);
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
+            final OutBox param =createMock(OutBox.class);
             expect(parameters.next()).andReturn(param);
             param.setBigDecimal(new BigDecimal("2"));
             return Collections.singletonList(param);
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getBigDecimal()).andReturn(new BigDecimal("123"));
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getBigDecimal()).andReturn(new BigDecimal("123"));
         }
     }
 

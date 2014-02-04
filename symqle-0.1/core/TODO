@@ -77,7 +77,7 @@ compiler: redirect stderr to log
 
 simplify insert/update: use SetClauseList directly and add explicit SetClauseList ::= AbstractSetClauseList COMMA SetClause :: SetClauseList also {}
 
-simplify OrderBy: SortSpecificationList ::= ... :: AbstractSortSpecificationList then(? - conflict with when-then)
+(ot needed) simplify OrderBy: SortSpecificationList ::= ... :: AbstractSortSpecificationList then(? - conflict with when-then)
 
 SelectStatement#countRows
 

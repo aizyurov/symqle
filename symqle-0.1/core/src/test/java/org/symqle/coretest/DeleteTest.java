@@ -2,8 +2,8 @@ package org.symqle.coretest;
 
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
-import org.symqle.common.SqlParameter;
 import org.symqle.common.SqlParameters;
 import org.symqle.sql.AbstractDeleteStatement;
 import org.symqle.sql.AbstractDeleteStatementBase;
@@ -86,7 +86,7 @@ public class DeleteTest extends SqlTestCase {
         final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param = createMock(SqlParameter.class);
+        final OutBox param = createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setLong(1L);
         replay(parameters, param);
@@ -100,7 +100,7 @@ public class DeleteTest extends SqlTestCase {
         final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
-        final SqlParameter param = createMock(SqlParameter.class);
+        final OutBox param = createMock(OutBox.class);
         expect(parameters.next()).andReturn(param);
         param.setLong(1L);
         replay(parameters, param);

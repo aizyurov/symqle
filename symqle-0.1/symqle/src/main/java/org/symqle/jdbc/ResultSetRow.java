@@ -16,7 +16,7 @@
 
 package org.symqle.jdbc;
 
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.Row;
 
 import java.math.BigDecimal;
@@ -52,12 +52,12 @@ class ResultSetRow implements Row {
     }
 
     @Override
-    public final Element getValue(String label) {
-        return new LabeledElement(label);
+    public final InBox getValue(String label) {
+        return new LabeledInBox(label);
     }
     
-    public final Element getValue(int position) {
-        return new PositionedElement(position);
+    public final InBox getValue(int position) {
+        return new PositionedInBox(position);
     }
 
     @Override
@@ -68,10 +68,10 @@ class ResultSetRow implements Row {
         return innerEngine;
     }
 
-    private class LabeledElement implements Element {
+    private class LabeledInBox implements InBox {
         private final String label;
 
-        private LabeledElement(final String label) {
+        private LabeledInBox(final String label) {
             this.label = label;
         }
 
@@ -143,10 +143,10 @@ class ResultSetRow implements Row {
         }
     }
     
-    private class PositionedElement implements Element {
+    private class PositionedInBox implements InBox {
         private final int position;
 
-        private PositionedElement(final int position) {
+        private PositionedInBox(final int position) {
             this.position = position;
         }
         

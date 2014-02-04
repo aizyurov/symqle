@@ -1,9 +1,9 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Element;
+import org.symqle.common.InBox;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mappers;
-import org.symqle.common.SqlParameter;
+import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
@@ -672,16 +672,16 @@ public class DynamicParameterTest extends SqlTestCase {
         }
 
         @Override
-        List<SqlParameter> parameterExpectations(SqlParameters parameters) throws SQLException {
-            SqlParameter parameter = createMock(SqlParameter.class);
+        List<OutBox> parameterExpectations(SqlParameters parameters) throws SQLException {
+            OutBox parameter = createMock(OutBox.class);
             expect(parameters.next()).andReturn(parameter);
             parameter.setLong(123L);
             return Collections.singletonList(parameter);
         }
 
         @Override
-        void elementCall(Element element) throws SQLException {
-            expect(element.getLong()).andReturn(123L);
+        void elementCall(InBox inBox) throws SQLException {
+            expect(inBox.getLong()).andReturn(123L);
         }
     }
 
