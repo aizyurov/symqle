@@ -30,7 +30,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.wasNull()).andReturn(true);
         expect(resultSet.getLong("C")).andThrow(new SQLException("unknown column: C"));
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(12L, row.getValue("A").getLong().longValue());
@@ -52,7 +54,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getInt("B")).andReturn(0);
         expect(resultSet.wasNull()).andReturn(true);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(12L, row.getValue("A").getInt().intValue());
@@ -68,7 +72,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getShort("B")).andReturn((short) 0);
         expect(resultSet.wasNull()).andReturn(true);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(12L, row.getValue("A").getShort().intValue());
@@ -85,7 +91,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getByte("B")).andReturn((byte) 0);
         expect(resultSet.wasNull()).andReturn(true);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(12L, row.getValue("A").getByte().intValue());
@@ -100,7 +108,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getBigDecimal("A")).andReturn(new BigDecimal(123.456));
         expect(resultSet.getBigDecimal("B")).andReturn(null);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(123.456, row.getValue("A").getBigDecimal().doubleValue());
@@ -117,7 +127,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getBoolean("B")).andReturn(false);
         expect(resultSet.wasNull()).andReturn(true);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(Boolean.TRUE, row.getValue("A").getBoolean());
@@ -132,7 +144,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getString("A")).andReturn("test");
         expect(resultSet.getString("B")).andReturn(null);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals("test", row.getValue("A").getString());
@@ -148,7 +162,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getDate("A")).andReturn(now);
         expect(resultSet.getDate("B")).andReturn(null);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(now, row.getValue("A").getDate());
@@ -215,7 +231,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getTimestamp("A")).andReturn(now);
         expect(resultSet.getTimestamp("B")).andReturn(null);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(now, row.getValue("A").getTimestamp());
@@ -231,7 +249,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getTime("A")).andReturn(now);
         expect(resultSet.getTime("B")).andReturn(null);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(now, row.getValue("A").getTime());
@@ -248,7 +268,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getDouble("B")).andReturn(0.0);
         expect(resultSet.wasNull()).andReturn(true);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals(123.456, row.getValue("A").getDouble());
@@ -279,7 +301,9 @@ public class ResultSetRowTest extends TestCase {
         expect(resultSet.getFloat("B")).andReturn((float) 0.0);
         expect(resultSet.wasNull()).andReturn(true);
 
-        final ResultSetRow row = new ResultSetRow(resultSet);
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
         replay(resultSet);
 
         assertEquals((float) 123.456, row.getValue("A").getFloat());

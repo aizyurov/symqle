@@ -93,8 +93,39 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
         </para>
 
     </preface>
-    <chapter><title>Symqle classes and interfaces</title>
+    <chapter><title>Building and executing statements</title>
+        <sect1><title>Symqle classes and interfaces</title>
+            <para>
+            There are two Symqle interfaces, which have methods for statement execution: SelectStatement and DataChangeStatement.
+            Other interfaces have factory methods, which build more complex objects from simpler ones. Applying these methods, you build
+            your statement.
+            </para>
+            <para>
+                Each symqle classes implements multiple interfaces. For example, Column class is a ValueExpression and so it has method <emphasis>add</emphasis>,
+                which constructs a new object, representing sum of <emphasis>this</emphasis> and its argument.
+                On the other hand, Column is also a SortOrderingSpecification and can be used as an argument of <emphasis>orderBy</emphasis> method.
+                Column is also a SelectStatement, so you can list values of column usnig its <emphasis>list</emphasis> method.
+            </para>
+            <para>
+                Factory methods of Symqle interfaces accept interfaces as their arguments and returm instances of Symqle classes. So, return value
+                implements multiple interfaces and  you have many options to continue building of statement.
+            </para>
+            <para>
+                Each Symqle interface also has a method starting with <emphasis>z$</emphasis>. It is used internally for query building. '$" stresses that is is 'technical' method
+                not intended to be called directly. 'z' is prepended to make sure that the method appears at the bottom of auto-completion list in your IDE.
+            </para>
+        </sect1>
+        <sect1><title>Tables and columns</title>
+            <para>
+                Most of Symqle objects are built using factory methods, but we have something to start with.
+                We need a model of our database. Symqle model contains of classes, which extend TableOrView or Table class.
+                The difference is that TableOrView has no methods for data change operations; Table has methods, which construct
+                DataChangeStatement, see <link linkend="datachange">Data change</link> chapter.
+            </para>
+            <para>
 
+            </para>
+        </sect1>
     </chapter>
     <chapter><title>Building SELECT clause</title>
         <sect1>
@@ -159,7 +190,7 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
     </chapter>
     <chapter><title>Collections</title>
     </chapter>
-    <chapter><title>Data change statements</title>
+    <chapter id="datachange"><title>Data change statements</title>
         <sect1>
             <title>Update</title>
         </sect1>
@@ -179,6 +210,11 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
         </sect1>
     </chapter>
     <chapter><title>Transactions</title>
+        <sect1>
+            <title>TODO</title>
+        </sect1>
+    </chapter>
+    <chapter><title>Exceptions</title>
         <sect1>
             <title>TODO</title>
         </sect1>

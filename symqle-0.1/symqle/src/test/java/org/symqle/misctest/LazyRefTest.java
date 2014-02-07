@@ -1,5 +1,6 @@
-package org.symqle;
+package org.symqle.misctest;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.symqle.util.LazyRef;
 
@@ -19,7 +20,7 @@ public class LazyRefTest extends TestCase {
 
         final Object object1 = ref.get();
         final Object object2 = ref.get();
-        assertEquals(object1, object2);
+        Assert.assertEquals(object1, object2);
     }
 
     public void testNull() throws Exception {
@@ -32,6 +33,6 @@ public class LazyRefTest extends TestCase {
 
         final Object object1 = ref.get();
         final Object object2 = ref.get();
-        assertEquals(object1, object2);
+        Assert.assertEquals(object1, object2);
     }
 }

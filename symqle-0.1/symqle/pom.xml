@@ -5,13 +5,10 @@
   <parent>
     <artifactId>symqle-parent</artifactId>
     <groupId>org.symqle</groupId>
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.symqle</groupId>
-  <artifactId>symqle-front</artifactId>
-  <version>0.1-SNAPSHOT</version>
-  <name>symqle-front</name>
-  <url>http://symqle.org</url>
+  <artifactId>symqle</artifactId>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <docbook.xsl.url>http://docbook.sourceforge.net/release/xsl/1.75.2/</docbook.xsl.url>
@@ -54,7 +51,7 @@
             </execution>
           </executions>
         </plugin>
-  </plugins>
+</plugins>
   </build>
   <dependencies>
       <dependency>

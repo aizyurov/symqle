@@ -4,9 +4,10 @@
   <groupId>org.symqle</groupId>
   <artifactId>symqle-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.1</version>
-  <name>symqle settings</name>
+  <version>0.1-SNAPSHOT</version>
+
   <url>http://symqle.org</url>
+
 
     <build>
        <plugins>
@@ -152,6 +153,7 @@
   </dependencies>
 
     <modules>
+        <module>common</module>
         <module>core</module>
         <module>symqle</module>
     </modules>

@@ -151,7 +151,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public int submit(final Sql statement, final Option... options) throws SQLException {
         int rowsAffected = NOTHING_FLUSHED;
         final StatementKey newKey = new StatementKey(statement, options);
-        if (queue.size() >= batchSize || !newKey.equals(currentKey)) {
+        if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
             rowsAffected = flush();
         }
         queue.add(statement);
@@ -168,24 +168,9 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
             this.options = options;
         }
 
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final StatementKey that = (StatementKey) o;
-
-            if (!statement.toString().equals(that.statement.toString())) return false;
-            if (!Arrays.equals(options, that.options)) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = statement.toString().hashCode();
-            result = 31 * result + Arrays.hashCode(options);
-            return result;
+        public boolean sameAs(final StatementKey other) {
+            return statement.toString().equals(other.statement.toString())
+                && Arrays.equals(options, other.options);
         }
     }
 }

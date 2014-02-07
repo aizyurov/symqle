@@ -4,15 +4,11 @@
   <parent>
         <groupId>org.symqle</groupId>
         <artifactId>symqle-parent</artifactId>
-        <version>0.1</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-  <groupId>org.symqle</groupId>
+        <version>0.1-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+  </parent>
+
   <artifactId>symqle-core</artifactId>
-  <packaging>jar</packaging>
-  <version>0.1-SNAPSHOT</version>
-  <name>symqle</name>
-  <url>http://symqle.org</url>
 
     <build>
        <plugins>
@@ -49,4 +45,14 @@
       </plugin>
       </plugins>
     </reporting>
+
+   <dependencies>
+     <dependency>
+       <groupId>org.symqle</groupId>
+       <artifactId>symqle-common</artifactId>
+       <version>0.1-SNAPSHOT</version>
+     </dependency>
+   </dependencies>
+
+
 </project>

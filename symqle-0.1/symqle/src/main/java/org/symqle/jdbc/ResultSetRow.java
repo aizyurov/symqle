@@ -42,15 +42,6 @@ class ResultSetRow implements Row {
         this.innerEngine = engine;
     }
 
-    /**
-     * Constructs for a given ResultSet.
-     * @param resultSet the result set to view
-     */
-    public ResultSetRow(ResultSet resultSet) {
-        this.resultSet = resultSet;
-        this.innerEngine = null;
-    }
-
     @Override
     public final InBox getValue(String label) {
         return new LabeledInBox(label);
@@ -62,9 +53,6 @@ class ResultSetRow implements Row {
 
     @Override
     public QueryEngine getQueryEngine() {
-        if (innerEngine == null) {
-            throw new IllegalStateException("getQueryEngine must not be called: this row created without engine");
-        }
         return innerEngine;
     }
 
