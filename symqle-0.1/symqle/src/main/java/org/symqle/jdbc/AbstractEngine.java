@@ -169,7 +169,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         }
 
         public boolean sameAs(final StatementKey other) {
-            return statement.toString().equals(other.statement.toString())
+            return other != null && statement.toString().equals(other.statement.toString())
                 && Arrays.equals(options, other.options);
         }
     }
