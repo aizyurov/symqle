@@ -83,4 +83,5 @@ SelectStatement#countRows
 
 ALL/ANY/SOME (future release)
 
-Core: move submit/flush/... to Batcher. new Batcher(Engine, int). Batcher is thread-safe and can be shared.
+Core: move submit/flush/... to Batcher. new Batcher(Engine, int). Batcher is thread-safe and can be shared. Each Batcher has its own queue.
+Implementation is inner class of AbstractEngine.
