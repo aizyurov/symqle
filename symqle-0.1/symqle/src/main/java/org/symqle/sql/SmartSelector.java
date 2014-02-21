@@ -31,8 +31,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         try {
             create(rowMap);
         } catch (SQLException e) {
-            // never expected
-            throw new RuntimeException("Internal error while preparing query", e);
+            // never expected from ProbeRowMap
+            Bug.reportException(e);
         }
         final Sql sql = result.z$sqlOfSelectList(context);
         return new Query<D>() {

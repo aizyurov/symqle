@@ -1,7 +1,8 @@
 package org.symqle.integration;
 
-import org.symqle.sql.SmartSelector;
 import org.symqle.integration.model.Employee;
+import org.symqle.sql.SelectStatement;
+import org.symqle.sql.SmartSelector;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -51,7 +52,33 @@ public class SmartSelectorTest extends AbstractSelectorTestBase {
                 new EmployeeDTO(1, "Margaret", "Redwood", 5)
         );
         assertEquals(expected, list);
+    }
 
+    public void testBad() throws Exception {
+        final Employee employee = new Employee();
+        final SelectStatement<EmployeeDTO> statement = new BadSelector(employee).
+                where(employee.salary.ge(2800.0)).
+                orderBy(employee.lastName);
+        try {
+            final List<EmployeeDTO> list = statement.
+                    list(getEngine());
+            fail("IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("http://symqle.org/bugs"));
+        }
+    }
+
+    private class BadSelector extends SmartSelector<EmployeeDTO> {
+        private final Employee employee;
+
+        private BadSelector(final Employee employee) {
+            this.employee = employee;
+        }
+
+        @Override
+        protected EmployeeDTO create(final RowMap rowMap) throws SQLException {
+            throw new SQLException("failed");
+        }
     }
 
 

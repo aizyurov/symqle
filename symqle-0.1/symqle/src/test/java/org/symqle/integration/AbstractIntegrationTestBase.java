@@ -1,16 +1,20 @@
 package org.symqle.integration;
 
 import junit.framework.TestCase;
-import org.symqle.common.MalformedStatementException;
 import org.symqle.integration.model.DerbyEnvironment;
 import org.symqle.integration.model.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
+import org.symqle.jdbc.ConnectorEngine;
 import org.symqle.jdbc.Engine;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Base class for integration tests.
@@ -27,16 +31,48 @@ import java.util.List;
  */
 public abstract class AbstractIntegrationTestBase extends TestCase {
 
-    private static TestEnvironment environment = createTestEnvironment();
+    private static DataSource dataSource;
 
 
-    public Engine getEngine() {
-        return environment.getEngine();
+    public final Engine getEngine() {
+        try {
+            if (dataSource == null) {
+                dataSource = prepareDataSource();
+            }
+            return createTestEngine(dataSource);
+        } catch (Exception e) {
+            throw new RuntimeException("Internal error", e);
+        }
     }
 
-    private static TestEnvironment createTestEnvironment() {
-        final String database = System.getProperty("org.symqle.integration.config");
-        return database == null ? DerbyEnvironment.getInstance() : ExternalDbEnvironment.getInstance(database);
+    protected Engine createTestEngine(final DataSource dataSource) throws SQLException {
+        return new ConnectorEngine(dataSource);
+    }
+
+    protected final DataSource prepareDataSource() throws Exception {
+        final String config = System.getProperty("org.symqle.integration.config");
+        if (config == null) {
+            return new DerbyEnvironment().prepareDataSource(new Properties());
+        } else {
+            Properties properties = new Properties();
+            final File propertiesFile = new File(config);
+            properties.load(new FileInputStream(propertiesFile));
+            final String environment = properties.getProperty("org.symqle.integration.environment");
+            if (environment == null) {
+                return new ExternalDbEnvironment().prepareDataSource(properties);
+            } else {
+                try {
+                    final TestEnvironment testEnvironment = (TestEnvironment) Class.forName(environment).newInstance();
+                    return testEnvironment.prepareDataSource(properties);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException("Misconfiguration error", e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Misconfiguration error", e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Misconfiguration error", e);
+                }
+            }
+        }
     }
 
     @Override
@@ -50,13 +86,6 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     protected final void expectSQLException(SQLException e, String... databaseNames) throws SQLException {
         if (Arrays.asList(databaseNames).contains(getDatabaseName())) {
-            return;
-        }
-        throw e;
-    }
-
-    protected final void expectMalformedStatementException(MalformedStatementException e, Class... dialects) {
-        if (Arrays.asList(dialects).contains(getEngine().getDialect().getClass())) {
             return;
         }
         throw e;

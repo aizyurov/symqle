@@ -46,7 +46,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
     public void testPair() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<String,String>> developers = employee.firstName.pair(employee.lastName).where(employee.department().deptName.eq("DEV")).list(getEngine());
-        System.out.println(developers);
+        assertEquals(new HashSet<Pair<String,String>>(Arrays.asList(Pair.make("James", "First"), Pair.make("Alex", "Pedersen"))), new HashSet<Pair<String,String>>(developers));
     }
 
     public void testSubqueryInSelect() throws Exception {

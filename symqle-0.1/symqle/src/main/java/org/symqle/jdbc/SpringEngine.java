@@ -13,11 +13,6 @@ public class SpringEngine extends AbstractEngine {
 
     private final Connector connector;
 
-    protected SpringEngine(final Connector connector, final Dialect dialect, final String databaseName, final Option[] options) {
-        super(dialect, databaseName, options);
-        this.connector = connector;
-    }
-
     protected SpringEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
         super(dialect, DatabaseUtils.getDatabaseName(dataSource), options);
         final Connector connector = new SpringConnector(dataSource);

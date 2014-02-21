@@ -1,10 +1,11 @@
 package org.symqle.integration.model;
 
-import org.symqle.jdbc.Engine;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * @author lvovich
  */
 public interface TestEnvironment {
-    Engine getEngine();
+    DataSource prepareDataSource(Properties properties) throws Exception;
 }

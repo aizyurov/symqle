@@ -37,7 +37,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
 
     protected abstract void releaseConnection(Connection connection) throws SQLException;
 
-    public int setBatchSize(final int batchSize) throws SQLException {
+    public int[] setBatchSize(final int batchSize) throws SQLException {
         if (batchSize <=0) {
             throw new IllegalArgumentException("batchSize should be positive, actual "+batchSize);
         }
@@ -45,7 +45,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         if (queue.size() >= batchSize) {
             return flush();
         } else {
-            return Engine.NOTHING_FLUSHED;
+            return new int[0];
         }
     }
 
@@ -107,7 +107,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int flush() throws SQLException {
+    public int[] flush() throws SQLException {
         final Connection connection = getConnection();
         try {
             return flush(connection);
@@ -116,9 +116,9 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         }
     }
 
-    private int flush(final Connection connection) throws SQLException {
+    private int[] flush(final Connection connection) throws SQLException {
         if (queue.size() == 0) {
-            return Engine.NOTHING_FLUSHED;
+            return new int[0];
         }
         try {
             final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statement.toString());
@@ -128,17 +128,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
                     queued.setParameters(new StatementParameters(preparedStatement));
                     preparedStatement.addBatch();
                 }
-                final int[] results = preparedStatement.executeBatch();
-                int total = 0;
-                for (int i = 0 ; i < results.length ; i++) {
-                    final int result = results[i];
-                    if (result <0) {
-                        return result;
-                    } else {
-                        total += result;
-                    }
-                }
-                return total;
+                return preparedStatement.executeBatch();
             } finally {
                 preparedStatement.close();
             }
@@ -148,8 +138,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int submit(final Sql statement, final Option... options) throws SQLException {
-        int rowsAffected = NOTHING_FLUSHED;
+    public int[] submit(final Sql statement, final Option... options) throws SQLException {
+        int[] rowsAffected = new int[0];
         final StatementKey newKey = new StatementKey(statement, options);
         if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
             rowsAffected = flush();
