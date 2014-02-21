@@ -6,7 +6,6 @@ package org.symqle.jdbc;
 import org.symqle.common.Sql;
 import org.symqle.sql.ColumnName;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 
@@ -34,12 +33,11 @@ public interface Engine extends QueryEngine {
 
     /**
      * flushes all pending updates to database
-     * @return if non-negative, number of affected rows. Else
-     * {@link java.sql.Statement#SUCCESS_NO_INFO} or {@link java.sql.Statement#EXECUTE_FAILED}
-     * {@link #NOTHING_FLUSHED} if queue was empty.
+     * @return same as {@link java.sql.PreparedStatement#executeBatch()},
+     * empty array if queue was empty.
      * @throws SQLException from jdbc driver
      */
-    int flush() throws SQLException;
+    int[] flush() throws SQLException;
 
     /**
      * Submits an sql statement for execution.
@@ -47,12 +45,11 @@ public interface Engine extends QueryEngine {
      * for example if number of pending updates exceeds batch size.
      * @param sql the SQL to submit
      * @param options statement options
-     * @return number of affected rows,{@link java.sql.Statement#SUCCESS_NO_INFO}
-     * or {@link java.sql.Statement#EXECUTE_FAILED} if flush occured.
-     * {@link #NOTHING_FLUSHED} if nothing flushed.
+     * @return same as {@link java.sql.PreparedStatement#executeBatch()}
+     * empty array if nothing flushed.
      * @throws SQLException
      */
-    int submit(Sql sql, Option... options) throws SQLException;
+    int[] submit(Sql sql, Option... options) throws SQLException;
 
     /**
      * Current max batch size.
@@ -67,8 +64,6 @@ public interface Engine extends QueryEngine {
      * @return same as {@link #flush()}
      * @throws SQLException from jdbc driver
      */
-    int setBatchSize(int batchSize) throws SQLException;
-
-    int NOTHING_FLUSHED = -100;
+    int[] setBatchSize(int batchSize) throws SQLException;
 
 }

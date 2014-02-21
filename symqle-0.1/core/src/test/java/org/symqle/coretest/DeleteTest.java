@@ -11,6 +11,8 @@ import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
 
+import java.util.Arrays;
+
 import static org.easymock.EasyMock.*;
 
 /**
@@ -76,9 +78,9 @@ public class DeleteTest extends SqlTestCase {
         final String statementString = update.show(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
         replay(parameters);
-        final int affectedRows = update.submit(
+        final int[] rows = update.submit(
                 new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
-        assertEquals(2, affectedRows);
+        assertTrue(Arrays.toString(rows), Arrays.equals(new int[]{1, 1}, rows));
         verify(parameters);
     }
 
@@ -104,9 +106,9 @@ public class DeleteTest extends SqlTestCase {
         expect(parameters.next()).andReturn(param);
         param.setLong(1L);
         replay(parameters, param);
-        final int affectedRows = update.submit(
+        final int[] rows = update.submit(
                 new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
-        assertEquals(2, affectedRows);
+        assertTrue(Arrays.toString(rows), Arrays.equals(new int[]{1, 1}, rows));
         verify(parameters, param);
     }
 

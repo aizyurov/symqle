@@ -12,6 +12,8 @@ import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Symqle;
 import org.symqle.sql.Table;
 
+import java.util.Arrays;
+
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -124,9 +126,9 @@ public class InsertTest extends SqlTestCase {
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
-        int rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
-        assertEquals(3, rows);
+        int[] rows = update.submit(
+                new MockEngine(1, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+        assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1}, rows));
         verify(parameters, param);
     }
 

@@ -12,6 +12,8 @@ import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
 
+import java.util.Arrays;
+
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -146,9 +148,9 @@ public class UpdateTest extends SqlTestCase {
         expect(parameters.next()).andReturn(param);
         param.setString("John");
         replay(parameters, param);
-        int rows = update.submit(
+        int[] rows = update.submit(
                 new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
-        assertEquals(3, rows);
+        assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1,1,1}, rows));
         verify(parameters, param);
     }
 
@@ -194,9 +196,9 @@ public class UpdateTest extends SqlTestCase {
         expect(parameters.next()).andReturn(param2);
         param2.setLong(1L);
         replay(parameters, param, param2);
-        int rows = update.submit(
+        int[] rows = update.submit(
                 new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
-        assertEquals(3, rows);
+        assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1,1,1}, rows));
         verify(parameters, param, param2);
     }
 

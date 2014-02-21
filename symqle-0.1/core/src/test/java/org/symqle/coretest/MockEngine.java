@@ -1,11 +1,16 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.Callback;
+import org.symqle.common.Row;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.ColumnName;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 /**
  * @author lvovich
@@ -52,14 +57,18 @@ public class MockEngine extends AbstractMockEngine implements Engine {
     }
 
     @Override
-    public int flush() throws SQLException {
-        return affectedRows;
+    public int[] flush() throws SQLException {
+        final int[] result = new int[affectedRows];
+        Arrays.fill(result, 1);
+        return result;
     }
 
     @Override
-    public int submit(final Sql sql, final Option... options) throws SQLException {
+    public int[] submit(final Sql sql, final Option... options) throws SQLException {
         verify(sql, options);
-        return affectedRows;
+        final int[] result = new int[affectedRows];
+        Arrays.fill(result, 1);
+        return result;
     }
 
     @Override
@@ -69,7 +78,7 @@ public class MockEngine extends AbstractMockEngine implements Engine {
     }
 
     @Override
-    public int setBatchSize(final int batchSize) throws SQLException {
+    public int[] setBatchSize(final int batchSize) throws SQLException {
         // TODO implement
         throw new RuntimeException("Not implemented");
     }

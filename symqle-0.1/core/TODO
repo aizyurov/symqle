@@ -83,3 +83,4 @@ SelectStatement#countRows
 
 ALL/ANY/SOME (future release)
 
+Core: move submit/flush/... to Batcher. new Batcher(Engine, int). Batcher is thread-safe and can be shared.
