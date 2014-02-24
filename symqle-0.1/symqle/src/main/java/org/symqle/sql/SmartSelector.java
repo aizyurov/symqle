@@ -13,7 +13,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -228,12 +228,12 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     private static class ProbeQueryEngine implements QueryEngine {
         @Override
         public Dialect getDialect() {
-            return new GenericDialect();
+            return new DebugDialect();
         }
 
         @Override
         public List<Option> getOptions() {
-            return Collections.emptyList();
+            return Arrays.<Option>asList(Option.allowImplicitCrossJoins(true), Option.allowNoTables(true));
         }
 
         @Override

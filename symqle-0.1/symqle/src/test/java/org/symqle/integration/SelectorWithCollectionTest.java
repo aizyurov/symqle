@@ -1,13 +1,13 @@
 package org.symqle.integration;
 
-import junit.framework.Assert;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
+import org.symqle.integration.model.Department;
+import org.symqle.integration.model.Employee;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractSelector;
 import org.symqle.sql.SmartSelector;
-import org.symqle.integration.model.Department;
-import org.symqle.integration.model.Employee;
+import org.symqle.sql.DebugDialect;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -83,9 +83,7 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
         @Override
         protected DepartmentWithEmployeesDTO create(final RowMap rowMap) throws SQLException {
             final QueryEngine queryEngine = rowMap.getQueryEngine();
-            Assert.assertEquals(getEngine().getDatabaseName(), queryEngine.getDatabaseName());
-            Assert.assertEquals(getEngine().getDialect(), queryEngine.getDialect());
-            Assert.assertEquals(getEngine().getOptions(), queryEngine.getOptions());
+            assertTrue(queryEngine.getDialect().getClass().equals(DebugDialect.class) || queryEngine.getDatabaseName().equals(getDatabaseName()));
             final Integer id = rowMap.get(department.deptId);
             final Employee employee = new Employee();
             final List<EmployeeDTO> employees = new EmployeeSelector(employee)
