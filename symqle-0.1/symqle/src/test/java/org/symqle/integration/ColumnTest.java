@@ -5,6 +5,7 @@ import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
+import org.symqle.jdbc.Batcher;
 import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.Functions;
 import org.symqle.integration.model.BigTable;
@@ -802,11 +803,11 @@ public class ColumnTest extends AbstractIntegrationTestBase {
         final Engine engine = getEngine();
         engine.execute(new CustomSql("delete from big_table"));
 
-        engine.setBatchSize(1000);
+        final Batcher batcher = engine.newBatcher(1000);
 
         for (int i=0; i<2000000; i++) {
             final int value = i;
-            engine.submit(new Sql() {
+            batcher.submit(new Sql() {
 
                 @Override
                 public void append(StringBuilder builder) {
@@ -819,7 +820,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
                 }
             });
         }
-        engine.flush();
+        batcher.flush();
 
         final BigTable bigTable = new BigTable();
         final long start = System.currentTimeMillis();

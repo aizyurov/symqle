@@ -5,12 +5,15 @@ import org.symqle.common.Row;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
+import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
 import org.symqle.sql.ColumnName;
+import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author lvovich
@@ -56,32 +59,36 @@ public class MockEngine extends AbstractMockEngine implements Engine {
         return (R) returnedKey;
     }
 
-    @Override
-    public int[] flush() throws SQLException {
-        final int[] result = new int[affectedRows];
-        Arrays.fill(result, 1);
-        return result;
+    public Batcher newBatcher(int ignored) {
+        return new Batcher() {
+            @Override
+            public int[] submit(final Sql sql, final Option... options) throws SQLException {
+                verify(sql, options);
+                final int[] result = new int[affectedRows];
+                Arrays.fill(result, 1);
+                return result;
+            }
+
+            @Override
+            public int[] flush() throws SQLException {
+                final int[] result = new int[affectedRows];
+                Arrays.fill(result, 1);
+                return result;
+            }
+
+            @Override
+            public Dialect getDialect() {
+                return MockEngine.this.getDialect();
+            }
+
+            @Override
+            public List<Option> getOptions() {
+                return MockEngine.this.getOptions();
+            }
+        };
     }
 
-    @Override
-    public int[] submit(final Sql sql, final Option... options) throws SQLException {
-        verify(sql, options);
-        final int[] result = new int[affectedRows];
-        Arrays.fill(result, 1);
-        return result;
-    }
 
-    @Override
-    public int getBatchSize() {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
-    public int[] setBatchSize(final int batchSize) throws SQLException {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
-    }
 
     @Override
     public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {

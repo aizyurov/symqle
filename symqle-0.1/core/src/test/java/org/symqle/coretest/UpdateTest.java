@@ -149,7 +149,7 @@ public class UpdateTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int[] rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1,1,1}, rows));
         verify(parameters, param);
     }
@@ -197,7 +197,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int[] rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1,1,1}, rows));
         verify(parameters, param, param2);
     }

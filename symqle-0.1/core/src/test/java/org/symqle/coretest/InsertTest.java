@@ -127,7 +127,7 @@ public class InsertTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int[] rows = update.submit(
-                new MockEngine(1, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(1, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1}, rows));
         verify(parameters, param);
     }

@@ -32,38 +32,11 @@ public interface Engine extends QueryEngine {
     <T> T executeReturnKey(Sql sql, ColumnName<T> keyColumn, Option... options) throws SQLException;
 
     /**
-     * flushes all pending updates to database
-     * @return same as {@link java.sql.PreparedStatement#executeBatch()},
-     * empty array if queue was empty.
-     * @throws SQLException from jdbc driver
+     * Creates a new Batcher.
+     * The batcher inherits dialect and options from {@code this}
+     * @param batchSizeLimit max number of pending statements in the batcher queue.
+     * @return new Batcher.
      */
-    int[] flush() throws SQLException;
-
-    /**
-     * Submits an sql statement for execution.
-     * May cause flush of pending updates at its discretion,
-     * for example if number of pending updates exceeds batch size.
-     * @param sql the SQL to submit
-     * @param options statement options
-     * @return same as {@link java.sql.PreparedStatement#executeBatch()}
-     * empty array if nothing flushed.
-     * @throws SQLException
-     */
-    int[] submit(Sql sql, Option... options) throws SQLException;
-
-    /**
-     * Current max batch size.
-     * @return batch size
-     */
-    int getBatchSize();
-
-    /**
-     * Sets new batch size. If new batch size is less than number of pending updates,
-     * flush is called first.
-     * @param batchSize new maximum batch size
-     * @return same as {@link #flush()}
-     * @throws SQLException from jdbc driver
-     */
-    int[] setBatchSize(int batchSize) throws SQLException;
+    Batcher newBatcher(int batchSizeLimit);
 
 }

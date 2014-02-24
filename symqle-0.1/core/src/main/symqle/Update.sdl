@@ -31,6 +31,7 @@
 import java.sql.SQLException;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
+import org.symqle.jdbc.Batcher;
 public interface DataChangeStatement : Sql {}
 
 :: private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final ColumnName<?> keyColumn, final List<Option> options) {
@@ -79,14 +80,16 @@ import java.sql.SQLException;
      return engine.execute(sql, options);
 }
 
-:: public int[] submit(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
-     final Dialect dialect = engine.getDialect();
-     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
-     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
-     allOptions.addAll(Arrays.asList(options));
-     final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
-     return engine.submit(sql, options);
-}
+
+import org.symqle.jdbc.Batcher;
+:: public static int[] submit(final DataChangeStatement statement, final Batcher batcher, final Option... options) throws SQLException {
+        final Dialect dialect = batcher.getDialect();
+        final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
+        List<Option> allOptions = new ArrayList<Option>(batcher.getOptions());
+        allOptions.addAll(Arrays.asList(options));
+        final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
+        return batcher.submit(sql, options);
+   }
 
 DataChangeStatement ::=
     s:UpdateStatement :: implicit {}

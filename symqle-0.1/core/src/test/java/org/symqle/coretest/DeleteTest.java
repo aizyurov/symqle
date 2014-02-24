@@ -79,7 +79,7 @@ public class DeleteTest extends SqlTestCase {
         final SqlParameters parameters = createMock(SqlParameters.class);
         replay(parameters);
         final int[] rows = update.submit(
-                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[]{1, 1}, rows));
         verify(parameters);
     }
@@ -107,7 +107,7 @@ public class DeleteTest extends SqlTestCase {
         param.setLong(1L);
         replay(parameters, param);
         final int[] rows = update.submit(
-                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[]{1, 1}, rows));
         verify(parameters, param);
     }

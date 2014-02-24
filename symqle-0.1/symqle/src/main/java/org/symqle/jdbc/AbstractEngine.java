@@ -17,9 +17,6 @@ import java.util.List;
  * @author lvovich
  */
 public abstract class AbstractEngine extends AbstractQueryEngine implements Engine {
-    private int batchSize = 100;
-    private final List<Sql> queue = new ArrayList<Sql>(batchSize);
-    private volatile StatementKey currentKey = null;
 
     public AbstractEngine(final Dialect dialect, final String databaseName, final Option[] options) {
         super(dialect, databaseName, options);
@@ -29,31 +26,14 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         super(databaseName, options);
     }
 
-    public int getBatchSize() {
-        return batchSize;
-    }
-
     protected abstract Connection getConnection() throws SQLException;
 
     protected abstract void releaseConnection(Connection connection) throws SQLException;
-
-    public int[] setBatchSize(final int batchSize) throws SQLException {
-        if (batchSize <=0) {
-            throw new IllegalArgumentException("batchSize should be positive, actual "+batchSize);
-        }
-        this.batchSize = batchSize;
-        if (queue.size() >= batchSize) {
-            return flush();
-        } else {
-            return new int[0];
-        }
-    }
 
     @Override
     public int execute(final Sql statement, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            flush(connection);
             final PreparedStatement preparedStatement = connection.prepareStatement(statement.toString());
             try {
                 setupStatement(preparedStatement, statement, options);
@@ -71,7 +51,6 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public <T> T executeReturnKey(final Sql statement, final ColumnName<T> keyColumn, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            flush(connection);
             final PreparedStatement preparedStatement = connection.prepareStatement(statement.toString(), Statement.RETURN_GENERATED_KEYS);
             try {
                 setupStatement(preparedStatement, statement, options);
@@ -99,7 +78,6 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            flush(connection);
             return scroll(connection, query, callback, options);
         } finally {
             releaseConnection(connection);
@@ -107,46 +85,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int[] flush() throws SQLException {
-        final Connection connection = getConnection();
-        try {
-            return flush(connection);
-        } finally {
-            releaseConnection(connection);
-        }
-    }
-
-    private int[] flush(final Connection connection) throws SQLException {
-        if (queue.size() == 0) {
-            return new int[0];
-        }
-        try {
-            final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statement.toString());
-            try {
-                setupStatement(preparedStatement, currentKey.statement, currentKey.options);
-                for (Sql queued : queue) {
-                    queued.setParameters(new StatementParameters(preparedStatement));
-                    preparedStatement.addBatch();
-                }
-                return preparedStatement.executeBatch();
-            } finally {
-                preparedStatement.close();
-            }
-        } finally {
-            queue.clear();
-        }
-    }
-
-    @Override
-    public int[] submit(final Sql statement, final Option... options) throws SQLException {
-        int[] rowsAffected = new int[0];
-        final StatementKey newKey = new StatementKey(statement, options);
-        if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
-            rowsAffected = flush();
-        }
-        queue.add(statement);
-        currentKey = newKey;
-        return rowsAffected;
+    public Batcher newBatcher(final int batchSizeLimit) {
+        return new BatcherImpl(batchSizeLimit);
     }
 
     private static class StatementKey {
@@ -161,6 +101,70 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         public boolean sameAs(final StatementKey other) {
             return other != null && statement.toString().equals(other.statement.toString())
                 && Arrays.equals(options, other.options);
+        }
+    }
+
+    private class BatcherImpl implements Batcher {
+        private final int batchSize;
+        private final List<Sql> queue;
+        private volatile StatementKey currentKey = null;
+
+        private BatcherImpl(final int batchSize) {
+            this.batchSize = batchSize;
+            this.queue = new ArrayList<Sql>(batchSize);
+        }
+
+        @Override
+        public synchronized int[] submit(final Sql sql, final Option... options) throws SQLException {
+            int[] rowsAffected = new int[0];
+            final StatementKey newKey = new StatementKey(sql, options);
+            if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
+                rowsAffected = flush();
+            }
+            queue.add(sql);
+            currentKey = newKey;
+            return rowsAffected;
+        }
+
+        @Override
+        public synchronized int[] flush() throws SQLException {
+            final Connection connection = getConnection();
+            try {
+                return flush(connection);
+            } finally {
+                releaseConnection(connection);
+            }
+        }
+
+        private int[] flush(final Connection connection) throws SQLException {
+            if (queue.size() == 0) {
+                return new int[0];
+            }
+            try {
+                final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statement.toString());
+                try {
+                    setupStatement(preparedStatement, currentKey.statement, currentKey.options);
+                    for (Sql queued : queue) {
+                        queued.setParameters(new StatementParameters(preparedStatement));
+                        preparedStatement.addBatch();
+                    }
+                    return preparedStatement.executeBatch();
+                } finally {
+                    preparedStatement.close();
+                }
+            } finally {
+                queue.clear();
+            }
+        }
+
+        @Override
+        public Dialect getDialect() {
+            return AbstractEngine.this.getDialect();
+        }
+
+        @Override
+        public List<Option> getOptions() {
+            return AbstractEngine.this.getOptions();
         }
     }
 }
