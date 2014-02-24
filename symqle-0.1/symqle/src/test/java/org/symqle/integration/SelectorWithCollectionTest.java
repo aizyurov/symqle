@@ -1,7 +1,9 @@
 package org.symqle.integration;
 
+import junit.framework.Assert;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
+import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractSelector;
 import org.symqle.sql.SmartSelector;
 import org.symqle.integration.model.Department;
@@ -71,7 +73,7 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
         }
     }
 
-    private static class SmartDepartmentSelector extends SmartSelector<DepartmentWithEmployeesDTO> {
+    private class SmartDepartmentSelector extends SmartSelector<DepartmentWithEmployeesDTO> {
         private final Department department;
 
         private SmartDepartmentSelector(final Department department) {
@@ -80,13 +82,16 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
 
         @Override
         protected DepartmentWithEmployeesDTO create(final RowMap rowMap) throws SQLException {
-            rowMap.getQueryEngine();
+            final QueryEngine queryEngine = rowMap.getQueryEngine();
+            Assert.assertEquals(getEngine().getDatabaseName(), queryEngine.getDatabaseName());
+            Assert.assertEquals(getEngine().getDialect(), queryEngine.getDialect());
+            Assert.assertEquals(getEngine().getOptions(), queryEngine.getOptions());
             final Integer id = rowMap.get(department.deptId);
             final Employee employee = new Employee();
             final List<EmployeeDTO> employees = new EmployeeSelector(employee)
                     .where(employee.deptId.eq(id))
                     .orderBy(employee.lastName)
-                    .list(rowMap.getQueryEngine());
+                    .list(queryEngine);
             return new DepartmentWithEmployeesDTO(id, rowMap.get(department.deptName), employees);
         }
     }

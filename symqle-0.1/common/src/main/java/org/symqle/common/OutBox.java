@@ -117,4 +117,11 @@ public interface OutBox {
      */
     void setTimestamp(Timestamp x) throws SQLException;
 
+    /**
+     * Sets byte array value to parameter.
+     * @param x the value, null is OK
+     * @throws SQLException if a database access error occurs
+     */
+    void setBytes(byte[] x) throws SQLException;
+
 }

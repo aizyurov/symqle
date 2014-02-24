@@ -116,4 +116,11 @@ public interface InBox {
      */
     Timestamp getTimestamp() throws SQLException;
 
+    /**
+     * gets the value of InBox as byte array.
+     * @return the value; <code>null</code> if the column value was SQL <code>NULL</code>
+     * @throws SQLException the value is not convertible to byte array
+     */
+    byte[] getBytes() throws SQLException;
+
 }
