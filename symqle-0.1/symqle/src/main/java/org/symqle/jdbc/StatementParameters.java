@@ -141,6 +141,11 @@ public class StatementParameters implements SqlParameters {
         public void setTimestamp(final Timestamp x) throws SQLException {
             statement.setTimestamp(position, x);
         }
+
+        @Override
+        public void setBytes(final byte[] x) throws SQLException {
+            statement.setBytes(position, x);
+        }
     }
 }
 

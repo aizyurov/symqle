@@ -129,6 +129,11 @@ class ResultSetRow implements Row {
         public Timestamp getTimestamp() throws SQLException {
             return resultSet.getTimestamp(label);
         }
+
+        @Override
+        public byte[] getBytes() throws SQLException {
+            return resultSet.getBytes(label);
+        }
     }
     
     private class PositionedInBox implements InBox {
@@ -203,6 +208,11 @@ class ResultSetRow implements Row {
         @Override
         public Timestamp getTimestamp() throws SQLException {
             return resultSet.getTimestamp(position);
+        }
+
+        @Override
+        public byte[] getBytes() throws SQLException {
+            return resultSet.getBytes(position);
         }
     }
 

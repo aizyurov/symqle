@@ -218,6 +218,11 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         public Timestamp getTimestamp() throws SQLException {
             return new Timestamp(System.currentTimeMillis());
         }
+
+        @Override
+        public byte[] getBytes() throws SQLException {
+            return new byte[] {(byte) 0};
+        }
     }
 
     private static class ProbeQueryEngine implements QueryEngine {

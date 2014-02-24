@@ -16,7 +16,7 @@ public abstract class AbstractTestEnvironment implements TestEnvironment {
     try {
         final StringBuilder builder = new StringBuilder();
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                if (line.equals("")) {
+                if (line.trim().equals("")) {
                     final String sql = builder.toString();
                     builder.setLength(0);
                     if (sql.trim().length()>0) {
@@ -34,6 +34,18 @@ public abstract class AbstractTestEnvironment implements TestEnvironment {
                     builder.append(" ").append(line);
                 }
             }
+        final String sql = builder.toString();
+        if (sql.trim().length()>0) {
+            System.out.println(sql);
+            final PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            try {
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw e;
+            }
+            preparedStatement.close();
+        }
     } finally {
         reader.close();
     }

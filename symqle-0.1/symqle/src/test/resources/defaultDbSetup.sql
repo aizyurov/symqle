@@ -92,3 +92,33 @@ create table arithmetics (leftInt integer, rightInt integer, leftDouble double, 
 
 insert into arithmetics (leftInt, rightInt, leftDouble, rightDouble) values (7, 3, 11.0, 2.0)
 
+create table all_types (
+  t_BIT bigint,
+  t_TINYINT smallint,
+  t_SMALLINT smallint,
+  t_INTEGER integer,
+  t_BIGINT bigint,
+  t_FLOAT float(23),
+  t_REAL real,
+  t_DOUBLE double,
+  t_NUMERIC numeric(10,3),
+  t_DECIMAL decimal(10,3),
+  t_CHAR char(10),
+  t_VARCHAR varchar(20),
+  t_LONGVARCHAR long varchar,
+  t_DATE date,
+  t_TIME time,
+  t_TIMESTAMP timestamp,
+  t_DATETIME timestamp,
+  t_BINARY CHAR (4) FOR BIT DATA,
+  t_VARBINARY VARCHAR (1000) FOR BIT DATA,
+  t_LONGVARBINARY LONG VARCHAR FOR BIT DATA,
+  t_BLOB blob,
+  t_CLOB clob,
+  t_BOOLEAN boolean,
+  t_NCHAR char(10),
+  t_NVARCHAR varchar(20),
+  t_LONGNVARCHAR long varchar,
+  t_NCLOB clob
+)
+
