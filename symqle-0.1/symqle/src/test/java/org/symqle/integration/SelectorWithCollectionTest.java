@@ -83,7 +83,7 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
         @Override
         protected DepartmentWithEmployeesDTO create(final RowMap rowMap) throws SQLException {
             final QueryEngine queryEngine = rowMap.getQueryEngine();
-            assertTrue(queryEngine.getDialect().getClass().equals(DebugDialect.class) || queryEngine.getDatabaseName().equals(getDatabaseName()));
+            assertTrue(queryEngine.getDatabaseName().equals(getDatabaseName()) || queryEngine.getDialect().getClass().equals(DebugDialect.class));
             final Integer id = rowMap.get(department.deptId);
             final Employee employee = new Employee();
             final List<EmployeeDTO> employees = new EmployeeSelector(employee)

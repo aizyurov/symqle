@@ -85,7 +85,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
         @Override
         public QueryEngine getQueryEngine() {
-            return new ProbeQueryEngine();
+            return probeRow.getQueryEngine();
         }
     }
 
@@ -226,6 +226,11 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     }
 
     private static class ProbeQueryEngine implements QueryEngine {
+
+        private ProbeQueryEngine() {
+            System.out.println("ProbeQueryEngine constructor");
+        }
+
         @Override
         public Dialect getDialect() {
             return new DebugDialect();
@@ -243,6 +248,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
         @Override
         public String getDatabaseName() {
+            System.out.println("getDatabaseName called: " + getDialect().getName());
             return getDialect().getName();
         }
     }
