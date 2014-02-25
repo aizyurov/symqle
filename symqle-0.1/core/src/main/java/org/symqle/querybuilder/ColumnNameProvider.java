@@ -19,7 +19,7 @@ package org.symqle.querybuilder;
 /**
  * Provides unique column name formed as "C0", "C1" etc.
  */
-public class ColumnNameProvider implements UniqueNameProvider {
+public class ColumnNameProvider implements ColumnNameGenerator {
 
     private int counter = 0;
 

@@ -14,7 +14,7 @@
 #         SqlContext fakeContext = new SqlContext();
 #         fakeContext.set(SqlFactory.class, context.get(SqlFactory.class));
 #         fakeContext.set(FromClause.class, context.get(FromClause.class));
-#         fakeContext.set(UniqueNameProvider.class, new NullColumnNameProvider());
+#         fakeContext.set(ColumnNameGenerator.class, new NullColumnNameProvider());
 #         return this.selectList.z$sqlOfzSelectList(fakeContext);
 #     }
 # 

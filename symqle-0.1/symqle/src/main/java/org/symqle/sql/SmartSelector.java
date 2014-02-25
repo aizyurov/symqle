@@ -6,7 +6,7 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.UpdatableConfiguration;
 import org.symqle.querybuilder.ColumnNameProvider;
-import org.symqle.querybuilder.UniqueNameProvider;
+import org.symqle.querybuilder.ColumnNameGenerator;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -150,7 +150,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         return new SqlContext.Builder()
                 .put(Dialect.class, new DebugDialect())
                 .put(TableRegistry.class, new RootSelectTableRegistry())
-                .put(UniqueNameProvider.class, new ColumnNameProvider())
+                .put(ColumnNameGenerator.class, new ColumnNameProvider())
                 .put(Configuration.class, configuration)
                 .toSqlContext();
     }

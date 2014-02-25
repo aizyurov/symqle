@@ -2,7 +2,7 @@ import org.symqle.common.Query;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
 import org.symqle.querybuilder.ScalarNameProvider;
-import org.symqle.querybuilder.UniqueNameProvider;
+import org.symqle.querybuilder.ColumnNameGenerator;
 
 /**
  * @author lvovich
@@ -11,11 +11,11 @@ public abstract class SetOperationBuilder<T> {
     public abstract Query<T> build(SqlContext context);
 
     protected final SqlContext createInnerContext(final SqlContext context) {
-        final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
-        final UniqueNameProvider innerNameProvider = nameProvider == null ? null : new ScalarNameProvider();
+        final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
+        final ColumnNameGenerator innerNameProvider = nameProvider == null ? null : new ScalarNameProvider();
         return context.newBuilder()
                         .put(TableRegistry.class, new ChildSelectTableRegistry(context.get(TableRegistry.class)))
-                        .put(UniqueNameProvider.class, innerNameProvider)
+                        .put(ColumnNameGenerator.class, innerNameProvider)
                         .toSqlContext();
     }
 }

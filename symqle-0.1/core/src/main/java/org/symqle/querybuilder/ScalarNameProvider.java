@@ -20,7 +20,7 @@ package org.symqle.querybuilder;
  * Implementation of UniqueNameProvider, which ensured uniqueness by allowing to get the name only once.
  * If called second time, throws an IllegalStateException.
  */
-public class ScalarNameProvider implements UniqueNameProvider {
+public class ScalarNameProvider implements ColumnNameGenerator {
 
     @Override
     public final String getUniqueName() {

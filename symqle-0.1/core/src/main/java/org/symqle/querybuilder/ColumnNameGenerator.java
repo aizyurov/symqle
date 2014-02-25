@@ -20,7 +20,7 @@ package org.symqle.querybuilder;
  * Provides a unique string each time when called.
  * @author lvovich
  */
-public interface UniqueNameProvider {
+public interface ColumnNameGenerator {
     /**
      * Get a unique string.
      * @return the unique string.

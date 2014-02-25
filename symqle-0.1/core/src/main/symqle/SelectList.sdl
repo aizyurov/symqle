@@ -57,7 +57,7 @@ public interface Identifier : Sql {}
             * @return query conforming to <code>this</code> syntax
             */
             public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
-                final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
                 final Sql veSql = ve.z$sqlOfValueExpression(context);
                 if (nameProvider == null) {
                     return new ComplexQuery<T>(new NullRowMapper<T>(),
@@ -88,7 +88,7 @@ public interface Identifier : Sql {}
 public <T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Label label) {
   return new AbstractSelectSublist<T>() {
           public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
-              final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+              final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
               final Sql veSql = ve.z$sqlOfValueExpression(context);
               if (nameProvider == null) {
                   throw new MalformedStatementException("Label cannot be used in this context");
@@ -120,7 +120,7 @@ public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
             * @return query conforming to <code>this</code> syntax
             */
             public Query<T> z$sqlOfAggregateSelectSublist(final SqlContext context) {
-                final UniqueNameProvider nameProvider = context.get(UniqueNameProvider.class);
+                final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
                 final Sql aggrSql = aggr.z$sqlOfAggregateFunction(context);
                 if (nameProvider == null) {
                     return new ComplexQuery<T>(new NullRowMapper<T>(),
