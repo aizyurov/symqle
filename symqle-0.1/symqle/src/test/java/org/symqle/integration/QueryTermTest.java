@@ -3,6 +3,7 @@ package org.symqle.integration;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.jdbc.Option;
+import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.AbstractQueryTerm;
 
 import java.sql.SQLException;
@@ -183,7 +184,9 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         final Employee manager = new Employee();
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(manager.lastName.where(manager.empId.eq(department.manager().empId).and(department.deptName.eq("HR"))));
-        final List<Integer> list2 = department.deptId.where(subquery2.exists()).list(getEngine());
+        final AbstractQuerySpecificationScalar<Integer> querySpec = department.deptId.where(subquery2.exists());
+        System.out.println(querySpec.show(getEngine().getDialect()));
+        final List<Integer> list2 = querySpec.list(getEngine());
         assertEquals(0, list2.size());
     }
 

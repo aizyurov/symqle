@@ -25,7 +25,6 @@ public final class Symqle  {
                 put(Dialect.class, new DebugDialect()).
                 put(Configuration.class, getDebugConfiguration()).
                 put(ColumnNameGenerator.class, new UniqueColumnNameGenerator()).
-                put(TableNameGenerator.class, new TableNameGenerator()).
                 toSqlContext();
     }
 

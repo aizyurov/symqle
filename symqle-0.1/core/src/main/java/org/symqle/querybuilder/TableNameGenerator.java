@@ -21,7 +21,7 @@ public class TableNameGenerator {
         int i=0;
         String name = shortPrefix + i;
         while (used.contains(name)) {
-            name = shortPrefix + i++;
+            name = shortPrefix + (++i);
 
         }
         used.add(name);
