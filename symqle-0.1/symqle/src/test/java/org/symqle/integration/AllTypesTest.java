@@ -133,35 +133,35 @@ public class AllTypesTest extends AbstractIntegrationTestBase  {
         }
 
         @Override
-        protected AllTypesDTO create(final RowMap rowMap) throws SQLException {
+        protected AllTypesDTO create() throws SQLException {
             final AllTypesDTO dto = new AllTypesDTO();
-            dto.tBit = rowMap.get(allTypes.tBit());
-            dto.tTinyint = rowMap.get(allTypes.tTinyint());
-            dto.tSmallint = rowMap.get(allTypes.tSmallint());
-            dto.tInteger = rowMap.get(allTypes.tInteger());
-            dto.tBigint = rowMap.get(allTypes.tBigint());
-            dto.tFloat = rowMap.get(allTypes.tFloat());
-            dto.tDouble =  rowMap.get(allTypes.tDouble());
-            dto.tReal = rowMap.get(allTypes.tReal());
-            dto.tNumeric = rowMap.get(allTypes.tNumeric());
-            dto.tDecimal = rowMap.get(allTypes.tDecimal());
-            dto.tChar =  rowMap.get(allTypes.tChar());
-            dto.tVarchar = rowMap.get(allTypes.tVarchar());
-            dto.tLongvarchar = rowMap.get(allTypes.tLongvarchar());
-            dto.tDate = rowMap.get(allTypes.tDate());
-            dto.tTime = rowMap.get(allTypes.tTime());
-            dto.tTimestamp = rowMap.get(allTypes.tTimestamp());
-            dto.tDatetime = rowMap.get(allTypes.tDatetime());
-            dto.tBinary = rowMap.get(allTypes.tBinary());
-            dto.tVarbinary = rowMap.get(allTypes.tVarbinary());
-            dto.tLongvarbinary = rowMap.get(allTypes.tLongvarbinary());
-            dto.tBlob = rowMap.get(allTypes.tBlob());
-            dto.tBoolean = rowMap.get(allTypes.tBoolean());
-            dto.tClob = rowMap.get(allTypes.tClob());
-            dto.tNchar = rowMap.get(allTypes.tNchar());
-            dto.tNvarchar = rowMap.get(allTypes.tNvarchar());
-            dto.tLongnvarchar = rowMap.get(allTypes.tLongnvarchar());
-            dto.tNclob = rowMap.get(allTypes.tNclob());
+            dto.tBit = get(allTypes.tBit());
+            dto.tTinyint = get(allTypes.tTinyint());
+            dto.tSmallint = get(allTypes.tSmallint());
+            dto.tInteger = get(allTypes.tInteger());
+            dto.tBigint = get(allTypes.tBigint());
+            dto.tFloat = get(allTypes.tFloat());
+            dto.tDouble =  get(allTypes.tDouble());
+            dto.tReal = get(allTypes.tReal());
+            dto.tNumeric = get(allTypes.tNumeric());
+            dto.tDecimal = get(allTypes.tDecimal());
+            dto.tChar =  get(allTypes.tChar());
+            dto.tVarchar = get(allTypes.tVarchar());
+            dto.tLongvarchar = get(allTypes.tLongvarchar());
+            dto.tDate = get(allTypes.tDate());
+            dto.tTime = get(allTypes.tTime());
+            dto.tTimestamp = get(allTypes.tTimestamp());
+            dto.tDatetime = get(allTypes.tDatetime());
+            dto.tBinary = get(allTypes.tBinary());
+            dto.tVarbinary = get(allTypes.tVarbinary());
+            dto.tLongvarbinary = get(allTypes.tLongvarbinary());
+            dto.tBlob = get(allTypes.tBlob());
+            dto.tBoolean = get(allTypes.tBoolean());
+            dto.tClob = get(allTypes.tClob());
+            dto.tNchar = get(allTypes.tNchar());
+            dto.tNvarchar = get(allTypes.tNvarchar());
+            dto.tLongnvarchar = get(allTypes.tLongnvarchar());
+            dto.tNclob = get(allTypes.tNclob());
             return dto;
         }
     }

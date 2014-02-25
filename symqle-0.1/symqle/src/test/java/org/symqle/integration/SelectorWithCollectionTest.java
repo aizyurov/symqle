@@ -81,16 +81,16 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
         }
 
         @Override
-        protected DepartmentWithEmployeesDTO create(final RowMap rowMap) throws SQLException {
-            final QueryEngine queryEngine = rowMap.getQueryEngine();
+        protected DepartmentWithEmployeesDTO create() throws SQLException {
+            final QueryEngine queryEngine = getQueryEngine();
             assertTrue(queryEngine.getDatabaseName().equals(getDatabaseName()) || queryEngine.getDialect().getClass().equals(DebugDialect.class));
-            final Integer id = rowMap.get(department.deptId);
+            final Integer id = get(department.deptId);
             final Employee employee = new Employee();
             final List<EmployeeDTO> employees = new EmployeeSelector(employee)
                     .where(employee.deptId.eq(id))
                     .orderBy(employee.lastName)
                     .list(queryEngine);
-            return new DepartmentWithEmployeesDTO(id, rowMap.get(department.deptName), employees);
+            return new DepartmentWithEmployeesDTO(id, get(department.deptName), employees);
         }
     }
 

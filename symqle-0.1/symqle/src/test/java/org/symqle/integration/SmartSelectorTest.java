@@ -76,7 +76,7 @@ public class SmartSelectorTest extends AbstractSelectorTestBase {
         }
 
         @Override
-        protected EmployeeDTO create(final RowMap rowMap) throws SQLException {
+        protected EmployeeDTO create() throws SQLException {
             throw new SQLException("failed");
         }
     }
@@ -90,12 +90,12 @@ public class SmartSelectorTest extends AbstractSelectorTestBase {
         }
 
         @Override
-        protected EmployeeDTO create(final RowMap row) throws SQLException {
+        protected EmployeeDTO create() throws SQLException {
             return new EmployeeDTO(
-                    row.get(employee.empId),
-                    row.get(employee.firstName),
-                    row.get(employee.lastName),
-                    row.get(new Employee().empId.count().queryValue())
+                    get(employee.empId),
+                    get(employee.firstName),
+                    get(employee.lastName),
+                    get(new Employee().empId.count().queryValue())
             );
         }
     }

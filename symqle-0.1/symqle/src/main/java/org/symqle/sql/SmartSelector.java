@@ -23,13 +23,21 @@ import java.util.Map;
  */
 public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
-    protected abstract D create(RowMap rowMap) throws SQLException;
+    protected abstract D create() throws SQLException;
+
+    protected final <T> T get(SelectList<T> selectList) throws SQLException {
+        return currentRowMap.get(selectList);
+    }
+
+    protected final QueryEngine getQueryEngine() {
+        return currentRowMap.getQueryEngine();
+    }
 
     @Override
     public Query<D> z$sqlOfSelectList(final SqlContext context) {
-        RowMap rowMap = new ProbeRowMap(context);
+        currentRowMap = new ProbeRowMap(context);
         try {
-            create(rowMap);
+            create();
         } catch (SQLException e) {
             // never expected from ProbeRowMap
             Bug.reportException(e);
@@ -38,7 +46,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         return new Query<D>() {
             @Override
             public D extract(final Row row) throws SQLException {
-                return create(new ResultSetRowMap(row));
+                currentRowMap = new ResultSetRowMap(row);
+                return create();
             }
 
             @Override
@@ -52,6 +61,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
             }
         };
     }
+
+    private RowMap currentRowMap;
 
     public interface RowMap {
         <T> T get(SelectList<T> selectList) throws SQLException;
