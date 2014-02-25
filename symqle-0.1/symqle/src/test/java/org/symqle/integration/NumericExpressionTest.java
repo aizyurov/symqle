@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.Params;
 import org.symqle.integration.model.Department;
@@ -41,7 +41,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createExpression(employee).map(Mappers.DOUBLE).list(getEngine());
+        final List<Double> list = createExpression(employee).map(CoreMappers.DOUBLE).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1600.0, 2100.0, 2100.0, 3100.0, 3100.0), list);
     }

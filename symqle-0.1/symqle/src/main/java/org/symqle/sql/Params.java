@@ -1,6 +1,6 @@
 package org.symqle.sql;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 
 /**
  * @author lvovich
@@ -15,23 +15,23 @@ public class Params {
     }
 
     public static DynamicParameter<Boolean> p(boolean b) {
-        return DynamicParameter.create(Mappers.BOOLEAN, b);
+        return DynamicParameter.create(CoreMappers.BOOLEAN, b);
     }
 
     public static DynamicParameter<Integer> p(int x) {
-        return DynamicParameter.create(Mappers.INTEGER, x);
+        return DynamicParameter.create(CoreMappers.INTEGER, x);
     }
 
     public static DynamicParameter<Long> p(long x) {
-        return DynamicParameter.create(Mappers.LONG, x);
+        return DynamicParameter.create(CoreMappers.LONG, x);
     }
 
     public static DynamicParameter<String> p(String x) {
-        return DynamicParameter.create(Mappers.STRING, x);
+        return DynamicParameter.create(CoreMappers.STRING, x);
     }
 
     public static DynamicParameter<Double> p(double x) {
-        return DynamicParameter.create(Mappers.DOUBLE, x);
+        return DynamicParameter.create(CoreMappers.DOUBLE, x);
     }
 
 }

@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -44,10 +44,10 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final AbstractValueExpression<String> remapped = createValueExpression().map(Mappers.STRING);
+        final AbstractValueExpression<String> remapped = createValueExpression().map(CoreMappers.STRING);
         final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, remapped.getMapper());
+        assertEquals(CoreMappers.STRING, remapped.getMapper());
 
     }
 
@@ -401,17 +401,17 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testElse() throws Exception {
-        final String sql = person.name.isNull().then(DynamicParameter.create(Mappers.BOOLEAN, false)).orElse(person.name.eq("John").asValue()).show(new GenericDialect());
+        final String sql = person.name.isNull().then(DynamicParameter.create(CoreMappers.BOOLEAN, false)).orElse(person.name.eq("John").asValue()).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.name IS NULL THEN ? ELSE T0.name = ? END AS C0 FROM person AS T0", sql);
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(createValueExpression().like(DynamicParameter.create(Mappers.STRING, "true"))).show(new GenericDialect());
+        final String sql = person.id.where(createValueExpression().like(DynamicParameter.create(CoreMappers.STRING, "true"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(createValueExpression().notLike(DynamicParameter.create(Mappers.STRING, "true"))).show(new GenericDialect());
+        final String sql = person.id.where(createValueExpression().notLike(DynamicParameter.create(CoreMappers.STRING, "true"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name = T0.nick NOT LIKE ?", sql);
     }
 
@@ -505,19 +505,19 @@ public class ValueExpressionTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<String> nickName = defineColumn(Mappers.STRING, "nick");
-        public Column<Boolean> married = defineColumn(Mappers.BOOLEAN, "married");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<String> nickName = defineColumn(CoreMappers.STRING, "nick");
+        public Column<Boolean> married = defineColumn(CoreMappers.BOOLEAN, "married");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Boolean> remote = defineColumn(Mappers.BOOLEAN, "remote");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Boolean> remote = defineColumn(CoreMappers.BOOLEAN, "remote");
     }
 
     private static Person person = new Person();

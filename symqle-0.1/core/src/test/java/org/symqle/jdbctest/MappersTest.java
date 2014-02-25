@@ -1,8 +1,8 @@
 package org.symqle.jdbctest;
 
 import junit.framework.TestCase;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 
 import java.math.BigDecimal;
@@ -26,13 +26,13 @@ public class MappersTest extends TestCase {
         final Date now = new Date(System.currentTimeMillis());
         expect(inBox.getDate()).andReturn(now);
         replay(inBox);
-        assertEquals(now, Mappers.DATE.value(inBox));
+        assertEquals(now, CoreMappers.DATE.value(inBox));
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setDate(now);
         replay(parameter);
-        Mappers.DATE.setValue(parameter, now);
+        CoreMappers.DATE.setValue(parameter, now);
         verify(parameter);
     }
 
@@ -41,13 +41,13 @@ public class MappersTest extends TestCase {
         final Time now = new Time(1000);
         expect(inBox.getTime()).andReturn(now);
         replay(inBox);
-        assertEquals(now, Mappers.TIME.value(inBox));
+        assertEquals(now, CoreMappers.TIME.value(inBox));
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setTime(now);
         replay(parameter);
-        Mappers.TIME.setValue(parameter, now);
+        CoreMappers.TIME.setValue(parameter, now);
         verify(parameter);
     }
 
@@ -56,13 +56,13 @@ public class MappersTest extends TestCase {
         final Timestamp now = new Timestamp(System.currentTimeMillis());
         expect(inBox.getTimestamp()).andReturn(now);
         replay(inBox);
-        assertEquals(now, Mappers.TIMESTAMP.value(inBox));
+        assertEquals(now, CoreMappers.TIMESTAMP.value(inBox));
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setTimestamp(now);
         replay(parameter);
-        Mappers.TIMESTAMP.setValue(parameter, now);
+        CoreMappers.TIMESTAMP.setValue(parameter, now);
         verify(parameter);
     }
 
@@ -70,13 +70,13 @@ public class MappersTest extends TestCase {
         InBox inBox = createMock(InBox.class);
         expect(inBox.getBoolean()).andReturn(true);
         replay(inBox);
-        assertEquals(Boolean.TRUE, Mappers.BOOLEAN.value(inBox));
+        assertEquals(Boolean.TRUE, CoreMappers.BOOLEAN.value(inBox));
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setBoolean(true);
         replay(parameter);
-        Mappers.BOOLEAN.setValue(parameter, true);
+        CoreMappers.BOOLEAN.setValue(parameter, true);
         verify(parameter);
     }
 
@@ -84,13 +84,13 @@ public class MappersTest extends TestCase {
         InBox inBox = createMock(InBox.class);
         expect(inBox.getBigDecimal()).andReturn(new BigDecimal(123));
         replay(inBox);
-        assertEquals(123, Mappers.NUMBER.value(inBox).intValue());
+        assertEquals(123, CoreMappers.NUMBER.value(inBox).intValue());
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setBigDecimal(new BigDecimal(123));
         replay(parameter);
-        Mappers.NUMBER.setValue(parameter, 123);
+        CoreMappers.NUMBER.setValue(parameter, 123);
         verify(parameter);
     }
 
@@ -98,13 +98,13 @@ public class MappersTest extends TestCase {
         InBox inBox = createMock(InBox.class);
         expect(inBox.getInt()).andReturn(123);
         replay(inBox);
-        assertEquals(123, Mappers.INTEGER.value(inBox).intValue());
+        assertEquals(123, CoreMappers.INTEGER.value(inBox).intValue());
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setInt(123);
         replay(parameter);
-        Mappers.INTEGER.setValue(parameter, 123);
+        CoreMappers.INTEGER.setValue(parameter, 123);
         verify(parameter);
     }
 
@@ -112,13 +112,13 @@ public class MappersTest extends TestCase {
         InBox inBox = createMock(InBox.class);
         expect(inBox.getDouble()).andReturn(123.456);
         replay(inBox);
-        assertEquals(123.456, Mappers.DOUBLE.value(inBox));
+        assertEquals(123.456, CoreMappers.DOUBLE.value(inBox));
         verify(inBox);
 
         OutBox parameter = createMock(OutBox.class);
         parameter.setDouble(123.456);
         replay(parameter);
-        Mappers.DOUBLE.setValue(parameter, 123.456);
+        CoreMappers.DOUBLE.setValue(parameter, 123.456);
         verify(parameter);
     }
 

@@ -1,8 +1,8 @@
 package org.symqle.jdbc;
 
 import junit.framework.TestCase;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 
 import java.math.BigDecimal;
@@ -179,7 +179,7 @@ public class ResultSetRowTest extends TestCase {
         final Date date = new Date(System.currentTimeMillis());
         param.setDate(date);
         replay(param);
-        Mappers.DATE.setValue(param, date);
+        CoreMappers.DATE.setValue(param, date);
         verify(param);
 
         InBox InBox = createMock(InBox.class);
@@ -187,7 +187,7 @@ public class ResultSetRowTest extends TestCase {
 
         replay(InBox);
 
-        assertEquals(date, Mappers.DATE.value(InBox));
+        assertEquals(date, CoreMappers.DATE.value(InBox));
         verify(InBox);
     }
 
@@ -196,7 +196,7 @@ public class ResultSetRowTest extends TestCase {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         param.setTimestamp(timestamp);
         replay(param);
-        Mappers.TIMESTAMP.setValue(param, timestamp);
+        CoreMappers.TIMESTAMP.setValue(param, timestamp);
         verify(param);
 
         InBox InBox = createMock(InBox.class);
@@ -204,7 +204,7 @@ public class ResultSetRowTest extends TestCase {
 
         replay(InBox);
 
-        assertEquals(timestamp, Mappers.TIMESTAMP.value(InBox));
+        assertEquals(timestamp, CoreMappers.TIMESTAMP.value(InBox));
         verify(InBox);
     }
 
@@ -213,7 +213,7 @@ public class ResultSetRowTest extends TestCase {
         final Time time = new Time(System.currentTimeMillis());
         param.setTime(time);
         replay(param);
-        Mappers.TIME.setValue(param, time);
+        CoreMappers.TIME.setValue(param, time);
         verify(param);
 
         InBox InBox = createMock(InBox.class);
@@ -221,7 +221,7 @@ public class ResultSetRowTest extends TestCase {
 
         replay(InBox);
 
-        assertEquals(time, Mappers.TIME.value(InBox));
+        assertEquals(time, CoreMappers.TIME.value(InBox));
         verify(InBox);
     }
 
@@ -283,14 +283,14 @@ public class ResultSetRowTest extends TestCase {
         param.setDouble(d);
         replay(param);
 
-        Mappers.DOUBLE.setValue(param, d);
+        CoreMappers.DOUBLE.setValue(param, d);
         verify(param);
 
         final InBox InBox = createMock(InBox.class);
         expect(InBox.getDouble()).andReturn(d);
         replay(InBox);
 
-        assertEquals(d, Mappers.DOUBLE.value(InBox));
+        assertEquals(d, CoreMappers.DOUBLE.value(InBox));
         verify(InBox);
     }
 

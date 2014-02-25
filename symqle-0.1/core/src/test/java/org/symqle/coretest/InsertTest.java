@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
@@ -25,14 +25,14 @@ import static org.easymock.EasyMock.verify;
 public class InsertTest extends SqlTestCase {
 
     public void testOneColumn() throws Exception {
-        final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)));
+        final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L)));
         final String sql = insert.show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id) VALUES(?)", sql);
         assertSimilar(sql, insert.show(new GenericDialect()));
     }
 
     public void testAdapt() throws Exception {
-        final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)));
+        final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L)));
         final AbstractInsertStatement adaptor = AbstractInsertStatement.adapt(insert);
         assertEquals(insert.show(new GenericDialect()), adaptor.show(new GenericDialect()));
     }
@@ -53,12 +53,12 @@ public class InsertTest extends SqlTestCase {
     }
 
     public void testSetOverrideType() throws Exception {
-        final String sql = person.insert(person.id.set(DynamicParameter.create(Mappers.STRING, "1").map(Mappers.LONG))).show(new GenericDialect());
+        final String sql = person.insert(person.id.set(DynamicParameter.create(CoreMappers.STRING, "1").map(CoreMappers.LONG))).show(new GenericDialect());
         assertSimilar("INSERT INTO person(id) VALUES(?)", sql);
     }
 
     public void testMultipleColumns() throws Exception {
-        final String sql = person.insert(person.parentId.set(DynamicParameter.create(Mappers.LONG, 1L)), person.name.set("John Doe")).show(new GenericDialect());
+        final String sql = person.insert(person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L)), person.name.set("John Doe")).show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id, name) VALUES(?, ?)", sql);
     }
 
@@ -69,7 +69,7 @@ public class InsertTest extends SqlTestCase {
     }
 
     public void testSystemConstant() throws Exception {
-        final String sql = person.insert(person.id.set(Symqle.currentTimestamp().map(Mappers.LONG))).show(new GenericDialect());
+        final String sql = person.insert(person.id.set(Symqle.currentTimestamp().map(CoreMappers.LONG))).show(new GenericDialect());
         assertEquals("INSERT INTO person(id) VALUES(CURRENT_TIMESTAMP)", sql);
     }
 
@@ -133,7 +133,7 @@ public class InsertTest extends SqlTestCase {
     }
 
     public void testExecuteWithNoTables() throws Exception {
-        final AbstractInsertStatement update = person.insert(person.name.set(Symqle.currentDate().map(Mappers.STRING)));
+        final AbstractInsertStatement update = person.insert(person.name.set(Symqle.currentDate().map(CoreMappers.STRING)));
         final String statementString = update.show(new OracleLikeDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
         final OutBox param =createMock(OutBox.class);
@@ -148,10 +148,10 @@ public class InsertTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();

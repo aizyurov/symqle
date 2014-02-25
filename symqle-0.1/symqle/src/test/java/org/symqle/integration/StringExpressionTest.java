@@ -1,7 +1,7 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
@@ -51,7 +51,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = stringExpression(employee).map(Mappers.STRING).list(getEngine());
+        final List<String> list = stringExpression(employee).map(CoreMappers.STRING).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"), list);
     }

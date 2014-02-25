@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
 
@@ -14,11 +14,11 @@ public class GeneratedKeys extends Table {
     }
 
     public Column<Integer> id() {
-        return defineColumn(Mappers.INTEGER, "id");
+        return defineColumn(CoreMappers.INTEGER, "id");
     }
 
     public Column<String> text() {
-        return defineColumn(Mappers.STRING, "text");
+        return defineColumn(CoreMappers.STRING, "text");
     }
 
 }

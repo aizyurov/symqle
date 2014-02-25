@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Label;
@@ -92,18 +92,18 @@ public class LabelTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();

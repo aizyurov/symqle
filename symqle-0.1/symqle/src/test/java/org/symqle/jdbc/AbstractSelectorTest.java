@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
 import junit.framework.TestCase;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
 import org.symqle.sql.AbstractSelector;
@@ -168,8 +168,8 @@ public class AbstractSelectorTest extends TestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
 }

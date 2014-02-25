@@ -1,5 +1,6 @@
 package org.symqle.sql;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
 import org.symqle.common.Mapper;
 import org.symqle.common.OutBox;
@@ -9,13 +10,10 @@ import java.sql.SQLException;
 /**
  * @author lvovich
  */
-public class MoreMappers {
-
-    private MoreMappers() {
-    }
+public class Mappers implements CoreMappers {
 
     static {
-        new MoreMappers();
+        new Mappers();
     }
 
     public final static Mapper<Short> SHORT = new Mapper<Short>() {

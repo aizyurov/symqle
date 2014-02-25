@@ -185,24 +185,24 @@ public class QueryTermTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static class Manager extends TableOrView {
         private Manager() {
             super("manager");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();
@@ -213,6 +213,6 @@ public class QueryTermTest extends SqlTestCase {
 
     private static Person person2 = new Person();
 
-    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
 }

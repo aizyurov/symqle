@@ -29,7 +29,7 @@ public class QueryPrimaryTest extends SqlTestCase {
     }
 
     public void testInArgument() throws Exception {
-        final String sql = new Employee().name.where(DynamicParameter.create(Mappers.INTEGER, 1).in(queryPrimary)).show(new GenericDialect());
+        final String sql = new Employee().name.where(DynamicParameter.create(CoreMappers.INTEGER, 1).in(queryPrimary)).show(new GenericDialect());
         assertSimilar("SELECT T2.name AS C2 FROM employee AS T2 WHERE ? IN(SELECT COUNT(T1.id) FROM employee AS T1 WHERE T1.name LIKE ?)", sql);
     }
 
@@ -146,8 +146,8 @@ public class QueryPrimaryTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static final Employee employee = new Employee();

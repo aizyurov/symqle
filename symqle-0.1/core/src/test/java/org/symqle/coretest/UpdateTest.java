@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
@@ -59,7 +59,7 @@ public class UpdateTest extends SqlTestCase {
     }
 
     public void testSetOverrideType() throws Exception {
-        final String sql = person.update(person.id.set(person.id.add(1).map(Mappers.LONG))).show(new GenericDialect());
+        final String sql = person.update(person.id.set(person.id.add(1).map(CoreMappers.LONG))).show(new GenericDialect());
         assertSimilar("UPDATE person SET id = person.id + ?", sql);
     }
 
@@ -224,10 +224,10 @@ public class UpdateTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();

@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.TableOrView;
 
@@ -13,5 +13,5 @@ public class BigTable extends TableOrView {
         super("big_table");
     }
 
-    public final Column<Integer> num = defineColumn(Mappers.INTEGER, "num");
+    public final Column<Integer> num = defineColumn(CoreMappers.INTEGER, "num");
 }

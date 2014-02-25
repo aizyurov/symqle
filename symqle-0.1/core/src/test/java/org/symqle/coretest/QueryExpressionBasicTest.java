@@ -86,7 +86,7 @@ public class QueryExpressionBasicTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
     }
 
     private static Person person = new Person();

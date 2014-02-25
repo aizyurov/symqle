@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.Column;
@@ -143,8 +143,8 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();
@@ -153,12 +153,12 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Employee employee = new Employee();
 
-    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
 }

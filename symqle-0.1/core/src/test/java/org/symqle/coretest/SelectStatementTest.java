@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractSelectStatement;
 import org.symqle.sql.Column;
@@ -51,7 +51,7 @@ public class SelectStatementTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
     }
 
     private static Person person = new Person();

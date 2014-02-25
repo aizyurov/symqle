@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -49,10 +49,10 @@ public class StringExpressionTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final AbstractStringExpression<String> remapped = createStringExpression().map(Mappers.STRING);
+        final AbstractStringExpression<String> remapped = createStringExpression().map(CoreMappers.STRING);
         final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, remapped.getMapper());
+        assertEquals(CoreMappers.STRING, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {
@@ -239,42 +239,42 @@ public class StringExpressionTest extends SqlTestCase {
         final AbstractStringExpression<String> substring = createStringExpression().substring(person.id);
         String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM T0.id) AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, substring.getMapper());
+        assertEquals(CoreMappers.STRING, substring.getMapper());
     }
 
     public void testSubstring2() throws Exception {
         final AbstractStringExpression<String> substring = createStringExpression().substring(person.id, person.id.div(2));
         String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, substring.getMapper());
+        assertEquals(CoreMappers.STRING, substring.getMapper());
     }
 
     public void testSubstringParam() throws Exception {
         final AbstractStringExpression<String> substring = createStringExpression().substring(2);
         String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM ?) AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, substring.getMapper());
+        assertEquals(CoreMappers.STRING, substring.getMapper());
     }
 
     public void testSubstringParam2() throws Exception {
         final AbstractStringExpression<String> substring = createStringExpression().substring(2, 5);
         String sql = substring.show(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? || T0.id FROM ? FOR ?) AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, substring.getMapper());
+        assertEquals(CoreMappers.STRING, substring.getMapper());
     }
 
     public void testPosition() throws Exception {
         final AbstractNumericExpression<Integer> pos = createStringExpression().positionOf(person.id);
         String sql = pos.show(new GenericDialect());
         assertSimilar("SELECT POSITION(T0.id IN ? || T0.id) AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.INTEGER, pos.getMapper());
+        assertEquals(CoreMappers.INTEGER, pos.getMapper());
     }
 
     public void testPositionParam() throws Exception {
         final AbstractNumericExpression<Integer> pos = createStringExpression().positionOf("A");
         String sql = pos.show(new GenericDialect());
         assertSimilar("SELECT POSITION(? IN ? || T0.id) AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.INTEGER, pos.getMapper());
+        assertEquals(CoreMappers.INTEGER, pos.getMapper());
     }
 
 
@@ -495,11 +495,11 @@ public class StringExpressionTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
     
-    private static DynamicParameter<String> numberSign = DynamicParameter.create(Mappers.STRING, "#");
+    private static DynamicParameter<String> numberSign = DynamicParameter.create(CoreMappers.STRING, "#");
 
     private static Person person = new Person();
     private static Person person2 = new Person();

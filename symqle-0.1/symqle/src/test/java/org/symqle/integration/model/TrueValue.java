@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.TableOrView;
 
@@ -13,5 +13,5 @@ public class TrueValue extends TableOrView {
         super("true_value");
     }
 
-    public Column<Boolean> value = defineColumn(Mappers.BOOLEAN, "value");
+    public Column<Boolean> value = defineColumn(CoreMappers.BOOLEAN, "value");
 }

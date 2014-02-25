@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Employee;
 import org.symqle.sql.AbstractCastSpecification;
@@ -256,7 +256,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testAdd() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).add(100).map(Mappers.DOUBLE)
+        final List<Double> list = createCast(employee).add(100).map(CoreMappers.DOUBLE)
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList(1600.0, 3100.0, 2100.0, 2100.0, 3100.0), list);
@@ -264,7 +264,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
 
     public void testSub() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).sub(100).map(Mappers.DOUBLE)
+        final List<Double> list = createCast(employee).sub(100).map(CoreMappers.DOUBLE)
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList(1400.0, 2900.0, 1900.0, 1900.0, 2900.0), list);
@@ -311,7 +311,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase {
         final Employee employee = new Employee();
 
         try {
-            final List<String> list = employee.firstName.cast("CHAR(5)").map(Mappers.STRING).collate(validCollationNameForChar())
+            final List<String> list = employee.firstName.cast("CHAR(5)").map(CoreMappers.STRING).collate(validCollationNameForChar())
                     .where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
             assertEquals(Arrays.asList("James"), list);

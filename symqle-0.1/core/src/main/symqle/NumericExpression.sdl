@@ -12,14 +12,14 @@ NumericExpression<Number> ::=
     e:NumericExpression<?> PLUS t:Term<?>
          :: public AbstractNumericExpression<Number> add {
             public Mapper<Number> getMapper() {
-                    return Mappers.NUMBER;
+                    return CoreMappers.NUMBER;
             }
          }
 |
     e:NumericExpression<?> MINUS t:Term<?>
          :: public AbstractNumericExpression<Number> sub {
             public Mapper<Number> getMapper() {
-                    return Mappers.NUMBER;
+                    return CoreMappers.NUMBER;
             }
          }
 ;
@@ -39,11 +39,11 @@ NumericExpression<Number> ::=
 }
 
 :: public AbstractNumericExpression<Number> add(final NumericExpression<?> e, final Number n) {
-    return add(e, DynamicParameter.create(Mappers.NUMBER, n));
+    return add(e, DynamicParameter.create(CoreMappers.NUMBER, n));
 }
 
 :: public AbstractNumericExpression<Number> sub(final NumericExpression<?> e, final Number n) {
-    return sub(e,  DynamicParameter.create(Mappers.NUMBER, n));
+    return sub(e,  DynamicParameter.create(CoreMappers.NUMBER, n));
 }
 
 
@@ -58,24 +58,24 @@ Term<Number> ::=
     t:Term<?> ASTERISK f:Factor<?>
         :: public AbstractTerm<Number> mult {
             public Mapper<Number> getMapper() {
-                    return Mappers.NUMBER;
+                    return CoreMappers.NUMBER;
             }
         }
 |
     t:Term<?> SOLIDUS f:Factor<?>
         :: public AbstractTerm<Number> div {
             public Mapper<Number> getMapper() {
-                    return Mappers.NUMBER;
+                    return CoreMappers.NUMBER;
             }
         }
 ;
 
 :: public AbstractTerm<Number> mult(final Term<?> t, final Number n) {
-    return mult(t, DynamicParameter.create(Mappers.NUMBER, n));
+    return mult(t, DynamicParameter.create(CoreMappers.NUMBER, n));
  }
 
 :: public AbstractTerm<Number> div(final Term<?> t, final Number n) {
-    return div(t, DynamicParameter.create(Mappers.NUMBER, n));
+    return div(t, DynamicParameter.create(CoreMappers.NUMBER, n));
  }
 
 :: public <T> AbstractTerm<T> map(final Term<?> e, final Mapper<T> mapper) {

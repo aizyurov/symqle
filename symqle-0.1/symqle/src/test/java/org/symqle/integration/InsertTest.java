@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
@@ -105,7 +105,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final One one = new One();
         final Employee employee = new Employee();
         final int affectedRows = insertTable.insert(
-                insertTable.id.set(one.id.queryValue().add(2).map(Mappers.INTEGER)),
+                insertTable.id.set(one.id.queryValue().add(2).map(CoreMappers.INTEGER)),
                 insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
                 .execute(getEngine());
         assertEquals(1, affectedRows);

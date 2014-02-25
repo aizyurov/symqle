@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
@@ -56,14 +56,14 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         final AbstractValueExpressionPrimary<Number> adaptor = AbstractValueExpressionPrimary.adapt(person.id.mult(2));
         final String sql = adaptor.show(new GenericDialect());
         assertSimilar("SELECT(T1.id * ?) AS C1 FROM person AS T1", sql);
-        assertEquals(Mappers.NUMBER, adaptor.getMapper());
+        assertEquals(CoreMappers.NUMBER, adaptor.getMapper());
     }
 
     public void testMap() throws Exception {
-        final AbstractValueExpressionPrimary<String> remapped = createValueExpressionPrimary().map(Mappers.STRING);
+        final AbstractValueExpressionPrimary<String> remapped = createValueExpressionPrimary().map(CoreMappers.STRING);
         final String sql = remapped.orderBy(employee.name).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
-        assertEquals(Mappers.STRING, remapped.getMapper());
+        assertEquals(CoreMappers.STRING, remapped.getMapper());
     }
 
     public void testAll() throws Exception {
@@ -473,12 +473,12 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().like(DynamicParameter.create(Mappers.STRING, "true"))).show(new GenericDialect());
+        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().like(DynamicParameter.create(CoreMappers.STRING, "true"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().notLike(DynamicParameter.create(Mappers.STRING, "true"))).show(new GenericDialect());
+        final String sql = person.id.where(employee.name.where(employee.id.eq(person.id)).queryValue().notLike(DynamicParameter.create(CoreMappers.STRING, "true"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.name FROM employee AS T1 WHERE T1.id = T0.id) NOT LIKE ?", sql);
     }
 
@@ -563,16 +563,16 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();

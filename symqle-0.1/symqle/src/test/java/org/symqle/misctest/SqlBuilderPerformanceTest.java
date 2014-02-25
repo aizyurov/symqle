@@ -1,7 +1,7 @@
 package org.symqle.misctest;
 
 import junit.framework.TestCase;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.dialect.FastGenericDialect;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
@@ -52,19 +52,19 @@ public class SqlBuilderPerformanceTest extends TestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> managerId = defineColumn(Mappers.LONG, "manager_id");
-        public Column<Long> departmentId = defineColumn(Mappers.LONG, "department_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> managerId = defineColumn(CoreMappers.LONG, "manager_id");
+        public Column<Long> departmentId = defineColumn(CoreMappers.LONG, "department_id");
     }
 
     private static class Department extends Table {
         private Department() {
             super("department");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> managerId = defineColumn(Mappers.LONG, "manager_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> managerId = defineColumn(CoreMappers.LONG, "manager_id");
     }
 
     public static void main(String[] args) {

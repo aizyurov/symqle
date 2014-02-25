@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
 import org.symqle.util.LazyRef;
@@ -16,15 +16,15 @@ public class Employee extends Table {
         super("employee");
     }
 
-    public final Column<Integer> empId = defineColumn(Mappers.INTEGER, "emp_id");
-    public final Column<String> firstName = defineColumn(Mappers.STRING, "first_name");
-    public final Column<String> lastName = defineColumn(Mappers.STRING, "last_name");
-    public final Column<String> title = defineColumn(Mappers.STRING, "title");
-    public final Column<Date> hireDate = defineColumn(Mappers.DATE, "hire_date");
-    public final Column<Boolean> retired = defineColumn(Mappers.BOOLEAN, "is_retired");
-    public final Column<Double> salary = defineColumn(Mappers.DOUBLE, "salary");
+    public final Column<Integer> empId = defineColumn(CoreMappers.INTEGER, "emp_id");
+    public final Column<String> firstName = defineColumn(CoreMappers.STRING, "first_name");
+    public final Column<String> lastName = defineColumn(CoreMappers.STRING, "last_name");
+    public final Column<String> title = defineColumn(CoreMappers.STRING, "title");
+    public final Column<Date> hireDate = defineColumn(CoreMappers.DATE, "hire_date");
+    public final Column<Boolean> retired = defineColumn(CoreMappers.BOOLEAN, "is_retired");
+    public final Column<Double> salary = defineColumn(CoreMappers.DOUBLE, "salary");
 
-    public final Column<Integer> deptId = defineColumn(Mappers.INTEGER, "dept_id");
+    public final Column<Integer> deptId = defineColumn(CoreMappers.INTEGER, "dept_id");
 
     private LazyRef<Department> deptRef = new LazyRef<Department>() {
         @Override

@@ -25,17 +25,7 @@ import java.sql.Timestamp;
 /**
  * A collection of most common {@link Mapper}s.
  */
-public final class Mappers {
-
-    /**
-     * Utility class; no public constructor
-     */
-    private Mappers() {
-    }
-
-    static {
-        new Mappers();
-    }
+public interface CoreMappers {
 
     /**
      * Mapper to Boolean.

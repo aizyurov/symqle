@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -38,7 +38,7 @@ public class WhenClauseTest extends SqlTestCase {
 
     public void testMap() throws Exception {
         final AbstractSearchedWhenClause<String> whenClause = createWhenClause();
-        final String sql = whenClause.map(Mappers.STRING).show(new GenericDialect());
+        final String sql = whenClause.map(CoreMappers.STRING).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0", sql);
     }
     public void testElse() throws Exception {
@@ -47,12 +47,12 @@ public class WhenClauseTest extends SqlTestCase {
     }
 
     public void testDynamicParameterElse() throws Exception {
-        final String sql = createWhenClause().orElse(DynamicParameter.create(Mappers.STRING, "do not care")).show(new GenericDialect());
+        final String sql = createWhenClause().orElse(DynamicParameter.create(CoreMappers.STRING, "do not care")).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE ? END AS C0 FROM person AS T0", sql);
     }
 
     public void testFunctionElse() throws Exception {
-        final String sql = createWhenClause().orElse(SqlFunction.create("to_upper", Mappers.STRING).apply(person.nick)).show(new GenericDialect());
+        final String sql = createWhenClause().orElse(SqlFunction.create("to_upper", CoreMappers.STRING).apply(person.nick)).show(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name ELSE to_upper(T0.nick) END AS C0 FROM person AS T0", sql);
     }
 
@@ -423,12 +423,12 @@ public class WhenClauseTest extends SqlTestCase {
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(createWhenClause().like(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClause().like(DynamicParameter.create(CoreMappers.STRING, "J%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(createWhenClause().notLike(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
+        final String sql = person.id.where(createWhenClause().notLike(DynamicParameter.create(CoreMappers.STRING, "J%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END NOT LIKE ?", sql);
     }
 
@@ -514,13 +514,13 @@ public class WhenClauseTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<String> nick = defineColumn(Mappers.STRING, "nick");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<String> nick = defineColumn(CoreMappers.STRING, "nick");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
     }
     
-    private static DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private static DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
     private static Person person = new Person();
     private static Person person2 = new Person();
@@ -529,8 +529,8 @@ public class WhenClauseTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Employee employee = new Employee();

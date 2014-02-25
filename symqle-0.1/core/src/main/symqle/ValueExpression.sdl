@@ -35,7 +35,7 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
 # see BooleanValueExpression.sdl
 ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpression<Boolean> asValue {
                 public Mapper<Boolean> getMapper() {
-                    return Mappers.BOOLEAN;
+                    return CoreMappers.BOOLEAN;
                 }
     }
 ;
@@ -70,7 +70,7 @@ StringExpression<String> ::=
     s:StringExpression<?> CONCAT e:CharacterFactor<?>
         :: public AbstractStringExpression<String> concat {
                 public Mapper<String> getMapper() {
-                    return Mappers.STRING;
+                    return CoreMappers.STRING;
                 }
         }
 ;
@@ -81,28 +81,28 @@ StringExpression<String> ::=
     SUBSTRING LEFT_PAREN s:StringExpression<?> FROM start:NumericExpression<?> RIGHT_PAREN
         :: public AbstractStringExpression<String> substring {
                 public Mapper<String> getMapper() {
-                    return Mappers.STRING;
+                    return CoreMappers.STRING;
                 }
         }
 |
     SUBSTRING LEFT_PAREN s:StringExpression<?> FROM start:NumericExpression<?> FOR len:NumericExpression<?> RIGHT_PAREN
         :: public AbstractStringExpression<String> substring {
                 public Mapper<String> getMapper() {
-                    return Mappers.STRING;
+                    return CoreMappers.STRING;
                 }
         }
 ;
 
 :: public AbstractStringExpression<String> substring(StringExpression<?> source, int start) {
-    return substring(source, DynamicParameter.create(Mappers.INTEGER, start));
+    return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start));
 }
 
 :: public AbstractStringExpression<String> substring(StringExpression<?> source, int start, int len) {
-    return substring(source, DynamicParameter.create(Mappers.INTEGER, start), DynamicParameter.create(Mappers.INTEGER, len));
+    return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start), DynamicParameter.create(CoreMappers.INTEGER, len));
 }
 
 :: public AbstractStringExpression<String> concat(final StringExpression<?> e, final String s) {
-    return concat(e,  DynamicParameter.create(Mappers.STRING, s));
+    return concat(e,  DynamicParameter.create(CoreMappers.STRING, s));
 }
 
 public interface CharacterFactor<T> extends Scalar<T> : Sql {}
@@ -131,7 +131,7 @@ public interface CollationName : Sql {}
 NumericExpression<Integer> ::= POSITION  LEFT_PAREN pattern:StringExpression<?> IN source:StringExpression<?> RIGHT_PAREN
     :: private AbstractNumericExpression<Integer> pos {
                 public Mapper<Integer> getMapper() {
-                    return Mappers.INTEGER;
+                    return CoreMappers.INTEGER;
                 }
     }
 ;
@@ -141,7 +141,7 @@ NumericExpression<Integer> ::= POSITION  LEFT_PAREN pattern:StringExpression<?> 
 }
 
 :: public AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, String pattern) {
-    return pos(DynamicParameter.create(Mappers.STRING, pattern), source);
+    return pos(DynamicParameter.create(CoreMappers.STRING, pattern), source);
 }
 
 

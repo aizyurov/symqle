@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.AbstractQuerySpecification;
@@ -83,9 +83,9 @@ public class QuerySpecificationTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
     }
 
     private static Person person = new Person();

@@ -1,7 +1,7 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.Params;
 import org.symqle.integration.model.Department;
@@ -32,7 +32,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testCast() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createVE(employee).cast("CHAR(5)").map(Mappers.STRING).list(getEngine());
+        final List<String> list = createVE(employee).cast("CHAR(5)").map(CoreMappers.STRING).list(getEngine());
         Collections.sort(list);
         final List<String> expected = "MySQL".equals(getDatabaseName()) ?
                 Arrays.asList("0", "1", "1", "1", "1") :
@@ -42,7 +42,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createVE(employee).map(Mappers.STRING).list(getEngine());
+        final List<String> list = createVE(employee).map(CoreMappers.STRING).list(getEngine());
         Collections.sort(list);
             if (getDatabaseName().equals("MySQL")) {
                 assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);

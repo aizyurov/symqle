@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
 
@@ -13,7 +13,7 @@ public class DeleteDetail extends Table {
         super("delete_detail");
     }
 
-    public Column<Integer> detailId = defineColumn(Mappers.INTEGER, "detail_id");
-    public Column<String> detail = defineColumn(Mappers.STRING, "detail");
-    public Column<Integer> masterId = defineColumn(Mappers.INTEGER, "master_id");
+    public Column<Integer> detailId = defineColumn(CoreMappers.INTEGER, "detail_id");
+    public Column<String> detail = defineColumn(CoreMappers.STRING, "detail");
+    public Column<Integer> masterId = defineColumn(CoreMappers.INTEGER, "master_id");
 }

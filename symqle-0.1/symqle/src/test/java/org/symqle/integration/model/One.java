@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.TableOrView;
 
@@ -13,5 +13,5 @@ public class One extends TableOrView {
         super("one");
     }
 
-    public final Column<Integer> id = defineColumn(Mappers.INTEGER, "id");
+    public final Column<Integer> id = defineColumn(CoreMappers.INTEGER, "id");
 }

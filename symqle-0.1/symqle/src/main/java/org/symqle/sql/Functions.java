@@ -1,6 +1,6 @@
 package org.symqle.sql;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 
 /**
  * These functions are supported by most dialects
@@ -22,22 +22,22 @@ public class Functions {
 
     public static AbstractRoutineInvocation<Number> mod(
             final ValueExpression<?> dividend, final ValueExpression<?> divisor) {
-        return SqlFunction.create("MOD", Mappers.NUMBER).apply(dividend,  divisor);
+        return SqlFunction.create("MOD", CoreMappers.NUMBER).apply(dividend,  divisor);
     }
 
     public static AbstractRoutineInvocation<Number> ln(
             final ValueExpression<?> arg) {
-        return SqlFunction.create("LN", Mappers.NUMBER).apply(arg);
+        return SqlFunction.create("LN", CoreMappers.NUMBER).apply(arg);
     }
 
     public static AbstractRoutineInvocation<Number> exp(
             final ValueExpression<?> arg) {
-        return SqlFunction.create("EXP", Mappers.NUMBER).apply(arg);
+        return SqlFunction.create("EXP", CoreMappers.NUMBER).apply(arg);
     }
 
     public static AbstractRoutineInvocation<Number> sqrt(
             final ValueExpression<?> arg) {
-        return SqlFunction.create("SQRT", Mappers.NUMBER).apply(arg);
+        return SqlFunction.create("SQRT", CoreMappers.NUMBER).apply(arg);
     }
 
     public static <T> AbstractRoutineInvocation<T> floor(
@@ -53,12 +53,12 @@ public class Functions {
 
     public static AbstractRoutineInvocation<Number> power(
             final ValueExpression<?> base, final ValueExpression<?> exponent) {
-        return SqlFunction.create("POWER", Mappers.NUMBER).apply(base,  exponent);
+        return SqlFunction.create("POWER", CoreMappers.NUMBER).apply(base,  exponent);
     }
 
     public static AbstractRoutineInvocation<Number> power(
             final ValueExpression<?> base, final Number exponent) {
-        return power(base, DynamicParameter.create(Mappers.NUMBER, exponent));
+        return power(base, DynamicParameter.create(CoreMappers.NUMBER, exponent));
     }
 
 }

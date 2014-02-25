@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
@@ -201,24 +201,24 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static class Manager extends TableOrView {
         private Manager() {
             super("manager");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Manager manager = new Manager();
@@ -229,6 +229,6 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
 
     private static Employee employee = new Employee();
 
-    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
 }

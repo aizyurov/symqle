@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.integration.model.Arithmetics;
 import org.symqle.integration.model.Employee;
 
@@ -18,7 +18,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
     public void testAbs() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = abs(employee.salary.opposite())
-                .map(Mappers.DOUBLE)
+                .map(CoreMappers.DOUBLE)
                 .where(employee.lastName.eq("Redwood"))
                 .list(getEngine());
         assertEquals(Arrays.asList(3000.0), list);
@@ -52,7 +52,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
     public void testFloor() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
         final List<Integer> list = floor(arithmetics.leftDouble().div(arithmetics.rightDouble()))
-                .map(Mappers.INTEGER)
+                .map(CoreMappers.INTEGER)
                 .list(getEngine());
         assertEquals(Arrays.asList(5), list);
 
@@ -61,7 +61,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
     public void testCeil() throws Exception {
         final Arithmetics arithmetics = new Arithmetics();
         final List<Integer> list = ceil(arithmetics.leftDouble().div(arithmetics.rightDouble()))
-                .map(Mappers.INTEGER)
+                .map(CoreMappers.INTEGER)
                 .list(getEngine());
         assertEquals(Arrays.asList(6), list);
     }
@@ -70,7 +70,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         final Arithmetics arithmetics = new Arithmetics();
         try {
             final List<Double> list = power(arithmetics.leftDouble(), arithmetics.rightDouble())
-                    .map(Mappers.DOUBLE)
+                    .map(CoreMappers.DOUBLE)
                     .list(getEngine());
             assertEquals(Arrays.asList(121.0), list);
         } catch (SQLException e) {
@@ -83,7 +83,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
         final Arithmetics arithmetics = new Arithmetics();
         try {
             final List<Double> list = power(arithmetics.leftDouble(), 3)
-                    .map(Mappers.DOUBLE)
+                    .map(CoreMappers.DOUBLE)
                     .list(getEngine());
             assertEquals(Arrays.asList(1331.0), list);
         } catch (SQLException e) {

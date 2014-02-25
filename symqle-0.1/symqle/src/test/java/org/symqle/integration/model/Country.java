@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
 
@@ -13,9 +13,9 @@ public class Country extends Table {
         super("country");
     }
 
-    public final Column<Integer> countryId = defineColumn(Mappers.INTEGER, "country_id");
-    public final Column<String> name = defineColumn(Mappers.STRING, "name");
-    public final Column<String> code = defineColumn(Mappers.STRING, "code");
+    public final Column<Integer> countryId = defineColumn(CoreMappers.INTEGER, "country_id");
+    public final Column<String> name = defineColumn(CoreMappers.STRING, "name");
+    public final Column<String> code = defineColumn(CoreMappers.STRING, "code");
 
 
 }

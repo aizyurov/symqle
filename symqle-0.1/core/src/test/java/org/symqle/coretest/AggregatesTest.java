@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -142,7 +142,7 @@ public class AggregatesTest extends SqlTestCase  {
     public void testIn() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();
-        final String sql = parent.name.where(DynamicParameter.create(Mappers.INTEGER, 1).in(child.id.count())).show(new GenericDialect());
+        final String sql = parent.name.where(DynamicParameter.create(CoreMappers.INTEGER, 1).in(child.id.count())).show(new GenericDialect());
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE ? IN(SELECT COUNT(T2.id) FROM person AS T2)", sql);
     }
 
@@ -194,10 +194,10 @@ public class AggregatesTest extends SqlTestCase  {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
     }
 
     private static Person person = new Person();

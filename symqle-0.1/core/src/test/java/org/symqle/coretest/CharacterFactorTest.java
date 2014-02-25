@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -58,7 +58,7 @@ public class CharacterFactorTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final String sql = characterFactor.map(Mappers.STRING).show(new GenericDialect());
+        final String sql = characterFactor.map(CoreMappers.STRING).show(new GenericDialect());
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
     }
 
@@ -475,8 +475,8 @@ public class CharacterFactorTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static final Person person = new Person();

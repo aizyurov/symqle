@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.TableOrView;
 
@@ -13,5 +13,5 @@ public class MyDual extends TableOrView {
         super("my_dual");
     }
 
-    public final Column<String> dummy = defineColumn(Mappers.STRING, "dummy");
+    public final Column<String> dummy = defineColumn(CoreMappers.STRING, "dummy");
 }

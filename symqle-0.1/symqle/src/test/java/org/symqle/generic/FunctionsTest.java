@@ -1,7 +1,7 @@
 package org.symqle.generic;
 
 import junit.framework.TestCase;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Functions;
@@ -44,12 +44,12 @@ public class FunctionsTest extends TestCase {
     }
 
     public void testMod() throws Exception {
-        final String sql = Functions.mod(person.id, DynamicParameter.create(Mappers.INTEGER, 2)).show(new GenericDialect());
+        final String sql = Functions.mod(person.id, DynamicParameter.create(CoreMappers.INTEGER, 2)).show(new GenericDialect());
         assertEquals("SELECT MOD(T0.id, ?) AS C0 FROM person AS T0", sql);
     }
 
     public void testPower() throws Exception {
-        final String sql = Functions.power(person.id, DynamicParameter.create(Mappers.INTEGER, 2)).show(new GenericDialect());
+        final String sql = Functions.power(person.id, DynamicParameter.create(CoreMappers.INTEGER, 2)).show(new GenericDialect());
         assertEquals("SELECT POWER(T0.id, ?) AS C0 FROM person AS T0", sql);
     }
 
@@ -60,8 +60,8 @@ public class FunctionsTest extends TestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Person person = new Person();

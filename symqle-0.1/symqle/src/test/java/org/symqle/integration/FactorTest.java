@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.AbstractQueryExpressionBasic;
 import org.symqle.sql.Params;
@@ -42,7 +42,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = createFactor(employee).map(Mappers.INTEGER).list(getEngine());
+        final List<Integer> list = createFactor(employee).map(CoreMappers.INTEGER).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000, -3000, -2000, -2000, -1500), list);
     }
@@ -379,7 +379,7 @@ public class FactorTest extends AbstractIntegrationTestBase {
     public void testCollate() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = createFactor(employee).map(Mappers.STRING).collate(validCollationNameForNumber())
+            final List<String> list = createFactor(employee).map(CoreMappers.STRING).collate(validCollationNameForNumber())
                     .concat(" marsian $")
                     .orderBy(employee.lastName)
                     .list(getEngine());

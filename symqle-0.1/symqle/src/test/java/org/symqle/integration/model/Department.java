@@ -1,6 +1,6 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
 import org.symqle.util.LazyRef;
@@ -14,9 +14,9 @@ public class Department extends Table {
         super("department");
     }
 
-    public final Column<Integer> deptId = defineColumn(Mappers.INTEGER, "dept_id");
-    public final Column<String> deptName = defineColumn(Mappers.STRING, "dept_name");
-    public final Column<Integer> countryId = defineColumn(Mappers.INTEGER, "country_id");
+    public final Column<Integer> deptId = defineColumn(CoreMappers.INTEGER, "dept_id");
+    public final Column<String> deptName = defineColumn(CoreMappers.STRING, "dept_name");
+    public final Column<Integer> countryId = defineColumn(CoreMappers.INTEGER, "country_id");
 
     private final LazyRef<Country> countryRef = new LazyRef<Country>() {
         @Override
@@ -31,7 +31,7 @@ public class Department extends Table {
         return countryRef.get();
     }
 
-    public final Column<Integer> managerId = defineColumn(Mappers.INTEGER, "manager_id");
+    public final Column<Integer> managerId = defineColumn(CoreMappers.INTEGER, "manager_id");
 
     private final LazyRef<Employee> managerRef = new LazyRef<Employee>() {
         @Override

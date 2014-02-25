@@ -32,7 +32,7 @@ public class NumericExpressionTest extends SqlTestCase {
     }
 
     public void testInValueList() throws Exception {
-        final String sql = person.name.where(person.id.map(Mappers.NUMBER).in(createNumericExpression().asInValueList().append(person.id.mult(2)))).show(new GenericDialect());
+        final String sql = person.name.where(person.id.map(CoreMappers.NUMBER).in(createNumericExpression().asInValueList().append(person.id.mult(2)))).show(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(T0.id + ?, T0.id * ?)", sql);
     }
 
@@ -62,10 +62,10 @@ public class NumericExpressionTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final AbstractNumericExpression<Integer> reMapped = createNumericExpression().map(Mappers.INTEGER);
+        final AbstractNumericExpression<Integer> reMapped = createNumericExpression().map(CoreMappers.INTEGER);
         final String sql = reMapped.show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.INTEGER, reMapped.getMapper());
+        assertEquals(CoreMappers.INTEGER, reMapped.getMapper());
 
     }
 
@@ -387,12 +387,12 @@ public class NumericExpressionTest extends SqlTestCase {
 
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(person.id.add(1).like(DynamicParameter.create(Mappers.STRING, "12%"))).show(new GenericDialect());
+        final String sql = person.id.where(person.id.add(1).like(DynamicParameter.create(CoreMappers.STRING, "12%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.id.add(1).notLike(DynamicParameter.create(Mappers.STRING, "12%"))).show(new GenericDialect());
+        final String sql = person.id.where(person.id.add(1).notLike(DynamicParameter.create(CoreMappers.STRING, "12%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? NOT LIKE ?", sql);
     }
 
@@ -492,8 +492,8 @@ public class NumericExpressionTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
     
     private static Person person = new Person();
@@ -503,12 +503,12 @@ public class NumericExpressionTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Employee employee = new Employee();
     
-    private static DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private static DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
 }

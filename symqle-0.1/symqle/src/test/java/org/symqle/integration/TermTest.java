@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.Params;
 import org.symqle.integration.model.Department;
@@ -42,7 +42,7 @@ public class TermTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createTerm(employee).map(Mappers.DOUBLE).list(getEngine());
+        final List<Double> list = createTerm(employee).map(CoreMappers.DOUBLE).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
     }

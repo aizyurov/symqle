@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.One;
@@ -87,7 +87,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.id.set(updateTable.id.add(1).map(Mappers.INTEGER))).execute(getEngine());
+        updateTable.update(updateTable.id.set(updateTable.id.add(1).map(CoreMappers.INTEGER))).execute(getEngine());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "wow")), newRows);
     }

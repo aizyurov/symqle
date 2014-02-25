@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -36,7 +36,7 @@ public class ColumnTest extends SqlTestCase {
 
     public void testMap() throws Exception {
         final Column<Long> col = person.id;
-        assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.map(Mappers.LONG).show(new GenericDialect()));
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1", col.map(CoreMappers.LONG).show(new GenericDialect()));
     }
 
     public void testSelectStatementFunctionality() throws Exception {
@@ -60,13 +60,13 @@ public class ColumnTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = SqlFunction.create("abs", Mappers.LONG).apply(person.id).show(new GenericDialect());
+        final String sql = SqlFunction.create("abs", CoreMappers.LONG).apply(person.id).show(new GenericDialect());
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", sql);
     }
 
     public void testAsFunctionMultipleArguments() throws Exception {
         final Column<Long> column = person.id;
-        final String sql = SqlFunction.create("max", Mappers.LONG).apply(column, column).show(new GenericDialect());
+        final String sql = SqlFunction.create("max", CoreMappers.LONG).apply(column, column).show(new GenericDialect());
         assertSimilar("SELECT max(T0.id, T0.id) AS C0 FROM person AS T0", sql);
     }
 
@@ -378,7 +378,7 @@ public class ColumnTest extends SqlTestCase {
     public void testFunction() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        SqlFunction<Long> sumOf = SqlFunction.create("SUM_OF", Mappers.LONG);
+        SqlFunction<Long> sumOf = SqlFunction.create("SUM_OF", CoreMappers.LONG);
         String sql = sumOf.apply(id, age).show(new GenericDialect());
         assertSimilar("SELECT SUM_OF(T0.id, T0.age) AS C0 FROM person AS T0", sql);
     }
@@ -574,7 +574,7 @@ public class ColumnTest extends SqlTestCase {
 
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.name.notLike(DynamicParameter.create(Mappers.STRING, "John%"))).show(new GenericDialect());
+        final String sql = person.id.where(person.name.notLike(DynamicParameter.create(CoreMappers.STRING, "John%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name NOT LIKE ?", sql);
     }
 
@@ -624,17 +624,17 @@ public class ColumnTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
     }
 
     private static Person person = new Person();

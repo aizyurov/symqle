@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
 import junit.framework.TestCase;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
@@ -56,9 +56,9 @@ public class InsertReturnKeyTest extends TestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Integer> subordinatesCount = defineColumn(Mappers.INTEGER, "total");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Integer> subordinatesCount = defineColumn(CoreMappers.INTEGER, "total");
     }
 
     private static Person person = new Person();

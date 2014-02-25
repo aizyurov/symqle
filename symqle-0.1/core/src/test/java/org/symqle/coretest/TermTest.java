@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.InBox;
-import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
@@ -50,11 +50,11 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testMap() throws Exception {
-        final AbstractTerm<Integer> remapped = person.id.mult(two).map(Mappers.INTEGER);
+        final AbstractTerm<Integer> remapped = person.id.mult(two).map(CoreMappers.INTEGER);
         final String sql = remapped.show(new GenericDialect());
         assertSimilar("SELECT T0.id * ? AS C0 FROM person AS T0", sql);
         assertSimilar(sql, person.id.mult(two).show(new GenericDialect()));
-        assertEquals(Mappers.INTEGER, remapped.getMapper());
+        assertEquals(CoreMappers.INTEGER, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {
@@ -392,12 +392,12 @@ public class TermTest extends SqlTestCase {
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(person.id.mult(1).like(DynamicParameter.create(Mappers.STRING, "12%"))).show(new GenericDialect());
+        final String sql = person.id.where(person.id.mult(1).like(DynamicParameter.create(CoreMappers.STRING, "12%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(person.id.mult(1).notLike(DynamicParameter.create(Mappers.STRING, "12%"))).show(new GenericDialect());
+        final String sql = person.id.where(person.id.mult(1).notLike(DynamicParameter.create(CoreMappers.STRING, "12%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? NOT LIKE ?", sql);
     }
 
@@ -496,11 +496,11 @@ public class TermTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
     
-    private static DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private static DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
     private static Person person = new Person();
     private static Person person2 = new Person();
@@ -509,8 +509,8 @@ public class TermTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static Employee employee = new Employee();

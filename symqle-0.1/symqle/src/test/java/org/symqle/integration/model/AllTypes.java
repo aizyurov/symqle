@@ -1,8 +1,8 @@
 package org.symqle.integration.model;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
-import org.symqle.sql.MoreMappers;
+import org.symqle.sql.Mappers;
 import org.symqle.sql.Table;
 
 import java.sql.Date;
@@ -19,111 +19,111 @@ public class AllTypes extends Table {
     }
 
     public Column<Long> tBit() {
-        return defineColumn(Mappers.LONG, "t_BIT");
+        return defineColumn(CoreMappers.LONG, "t_BIT");
     }
 
     public Column<Byte> tTinyint() {
-        return defineColumn(MoreMappers.BYTE, "t_TINYINT");
+        return defineColumn(Mappers.BYTE, "t_TINYINT");
     }
 
     public Column<Short> tSmallint() {
-        return defineColumn(MoreMappers.SHORT, "t_SMALLINT");
+        return defineColumn(Mappers.SHORT, "t_SMALLINT");
     }
 
     public Column<Integer> tInteger() {
-        return defineColumn(Mappers.INTEGER, "t_INTEGER");
+        return defineColumn(CoreMappers.INTEGER, "t_INTEGER");
     }
 
     public Column<Long> tBigint() {
-        return defineColumn(Mappers.LONG, "t_BIGINT");
+        return defineColumn(CoreMappers.LONG, "t_BIGINT");
     }
 
     public Column<Float> tFloat() {
-        return defineColumn(MoreMappers.FLOAT, "t_FLOAT");
+        return defineColumn(Mappers.FLOAT, "t_FLOAT");
     }
 
     public Column<Double> tDouble() {
-        return defineColumn(Mappers.DOUBLE, "t_DOUBLE");
+        return defineColumn(CoreMappers.DOUBLE, "t_DOUBLE");
     }
 
     public Column<Float> tReal() {
-        return defineColumn(MoreMappers.FLOAT, "t_REAL");
+        return defineColumn(Mappers.FLOAT, "t_REAL");
     }
 
     public Column<Number> tNumeric() {
-        return defineColumn(Mappers.NUMBER, "t_NUMERIC");
+        return defineColumn(CoreMappers.NUMBER, "t_NUMERIC");
     }
 
     public Column<Number> tDecimal() {
-        return defineColumn(Mappers.NUMBER, "t_DECIMAL");
+        return defineColumn(CoreMappers.NUMBER, "t_DECIMAL");
     }
 
     public Column<String> tChar() {
-        return defineColumn(Mappers.STRING, "t_CHAR");
+        return defineColumn(CoreMappers.STRING, "t_CHAR");
     }
 
     public Column<String> tVarchar() {
-        return defineColumn(Mappers.STRING, "t_VARCHAR");
+        return defineColumn(CoreMappers.STRING, "t_VARCHAR");
     }
 
     public Column<String> tLongvarchar() {
-        return defineColumn(Mappers.STRING, "t_LONGVARCHAR");
+        return defineColumn(CoreMappers.STRING, "t_LONGVARCHAR");
     }
 
     public Column<Date> tDate() {
-        return defineColumn(Mappers.DATE, "t_DATE");
+        return defineColumn(CoreMappers.DATE, "t_DATE");
     }
 
     public Column<Time> tTime() {
-        return defineColumn(Mappers.TIME, "t_TIME");
+        return defineColumn(CoreMappers.TIME, "t_TIME");
     }
 
     public Column<Timestamp> tTimestamp() {
-        return defineColumn(Mappers.TIMESTAMP, "t_TIMESTAMP");
+        return defineColumn(CoreMappers.TIMESTAMP, "t_TIMESTAMP");
     }
 
     public Column<Timestamp> tDatetime() {
-        return defineColumn(Mappers.TIMESTAMP, "t_DATETIME");
+        return defineColumn(CoreMappers.TIMESTAMP, "t_DATETIME");
     }
 
     public Column<byte[]> tBinary() {
-        return defineColumn(MoreMappers.BYTES, "t_BINARY");
+        return defineColumn(Mappers.BYTES, "t_BINARY");
     }
 
     public Column<byte[]> tVarbinary() {
-        return defineColumn(MoreMappers.BYTES, "t_VARBINARY");
+        return defineColumn(Mappers.BYTES, "t_VARBINARY");
     }
 
     public Column<byte[]> tLongvarbinary() {
-        return defineColumn(MoreMappers.BYTES, "t_LONGVARBINARY");
+        return defineColumn(Mappers.BYTES, "t_LONGVARBINARY");
     }
 
     public Column<byte[]> tBlob() {
-        return defineColumn(MoreMappers.BYTES, "t_BLOB");
+        return defineColumn(Mappers.BYTES, "t_BLOB");
     }
 
     public Column<String> tClob() {
-        return defineColumn(Mappers.STRING, "t_CLOB");
+        return defineColumn(CoreMappers.STRING, "t_CLOB");
     }
 
     public Column<Boolean> tBoolean() {
-        return defineColumn(Mappers.BOOLEAN, "t_BOOLEAN");
+        return defineColumn(CoreMappers.BOOLEAN, "t_BOOLEAN");
     }
 
     public Column<String> tNchar() {
-        return defineColumn(Mappers.STRING, "t_NCHAR");
+        return defineColumn(CoreMappers.STRING, "t_NCHAR");
     }
 
     public Column<String> tNvarchar() {
-        return defineColumn(Mappers.STRING, "t_NVARCHAR");
+        return defineColumn(CoreMappers.STRING, "t_NVARCHAR");
     }
 
     public Column<String> tLongnvarchar() {
-        return defineColumn(Mappers.STRING, "t_LONGNVARCHAR");
+        return defineColumn(CoreMappers.STRING, "t_LONGNVARCHAR");
     }
 
     public Column<String> tNclob() {
-        return defineColumn(Mappers.STRING, "t_NCLOB");
+        return defineColumn(CoreMappers.STRING, "t_NCLOB");
     }
 
 }

@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
@@ -39,7 +39,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testSelect() throws Exception {
         try {
-            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).list(getEngine(), Option.allowNoTables(true));
+            final List<Integer> list = DynamicParameter.create(CoreMappers.INTEGER, 1).list(getEngine(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
@@ -49,7 +49,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testCast() throws Exception {
         try {
-            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).cast("DECIMAL(2)").list(getEngine(), Option.allowNoTables(true));
+            final List<Integer> list = DynamicParameter.create(CoreMappers.INTEGER, 1).cast("DECIMAL(2)").list(getEngine(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
@@ -59,7 +59,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         try {
-            final List<Long> list = DynamicParameter.create(Mappers.INTEGER, 1).map(Mappers.LONG).list(getEngine(), Option.allowNoTables(true));
+            final List<Long> list = DynamicParameter.create(CoreMappers.INTEGER, 1).map(CoreMappers.LONG).list(getEngine(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1L), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
@@ -69,7 +69,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testSelectAll() throws Exception {
         try {
-            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).selectAll().list(getEngine(), Option.allowNoTables(true));
+            final List<Integer> list = DynamicParameter.create(CoreMappers.INTEGER, 1).selectAll().list(getEngine(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
@@ -79,7 +79,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase {
 
     public void testSelectDistinct() throws Exception {
         try {
-            final List<Integer> list = DynamicParameter.create(Mappers.INTEGER, 1).selectAll().list(getEngine(), Option.allowNoTables(true));
+            final List<Integer> list = DynamicParameter.create(CoreMappers.INTEGER, 1).selectAll().list(getEngine(), Option.allowNoTables(true));
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.

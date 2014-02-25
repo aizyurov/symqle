@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.AbstractInValueList;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
@@ -20,9 +20,9 @@ public class InValueListTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<String> nick = defineColumn(Mappers.STRING, "nick");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<String> nick = defineColumn(CoreMappers.STRING, "nick");
     }
 
     private static Person person = new Person();

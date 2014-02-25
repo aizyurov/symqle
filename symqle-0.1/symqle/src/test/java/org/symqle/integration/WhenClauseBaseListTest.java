@@ -1,7 +1,7 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
@@ -89,7 +89,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createWhenClauseBaseList(employee).map(Mappers.STRING)
+        final List<String> list = createWhenClauseBaseList(employee).map(CoreMappers.STRING)
                 .list(getEngine());
 
         assertEquals(Arrays.asList("(null)", "(null)", "high", "high", "low"), replaceNullsAndSort(list));

@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
+import org.symqle.common.CoreMappers;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mappers;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.*;
 
@@ -24,7 +24,7 @@ public class SelectSublistTest extends SqlTestCase {
         final AbstractSelectSublist<Long> adaptor = AbstractSelectSublist.adapt(person.id);
         final String sql = adaptor.show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
-        assertEquals(Mappers.LONG, adaptor.getMapper());
+        assertEquals(CoreMappers.LONG, adaptor.getMapper());
     }
 
     public void testSelectAll() throws Exception {
@@ -203,16 +203,16 @@ public class SelectSublistTest extends SqlTestCase {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
     private static class Manager extends TableOrView {
         private Manager() {
             super("manager");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
     }
 
 
@@ -220,9 +220,9 @@ public class SelectSublistTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
     }
 
     private static Person person = new Person();
@@ -232,6 +232,6 @@ public class SelectSublistTest extends SqlTestCase {
 
     private static Manager manager = new Manager();
 
-    private DynamicParameter<Long> two = DynamicParameter.create(Mappers.LONG, 2L);
+    private DynamicParameter<Long> two = DynamicParameter.create(CoreMappers.LONG, 2L);
 
 }

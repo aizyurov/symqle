@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.sql.Params;
 import org.symqle.integration.model.Department;
@@ -41,7 +41,7 @@ public class FunctionTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = abs(employee.salary.opposite()).map(Mappers.INTEGER).list(getEngine());
+        final List<Integer> list = abs(employee.salary.opposite()).map(CoreMappers.INTEGER).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500, 2000, 2000, 3000, 3000), list);
     }

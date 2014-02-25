@@ -17,12 +17,12 @@ import static org.easymock.EasyMock.*;
 public class FunctionTest extends SqlTestCase {
 
     private AbstractRoutineInvocation<String> currentUser() {
-        return SqlFunction.create("user", Mappers.STRING).apply();
+        return SqlFunction.create("user", CoreMappers.STRING).apply();
     }
 
     private static AbstractRoutineInvocation<Long> abs(ValueExpression<Long> e) {
 
-        return SqlFunction.create("abs", Mappers.LONG).apply(e);
+        return SqlFunction.create("abs", CoreMappers.LONG).apply(e);
     }
 
     public void testShow() throws Exception {
@@ -49,10 +49,10 @@ public class FunctionTest extends SqlTestCase {
 
     public void testMap() throws Exception {
         final Column<Long> col = person.id;
-        final AbstractValueExpressionPrimary<Long> remapped = abs(col).map(Mappers.LONG);
+        final AbstractValueExpressionPrimary<Long> remapped = abs(col).map(CoreMappers.LONG);
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", remapped.show(new GenericDialect()));
         assertSimilar(abs(col).show(new GenericDialect()), abs(col).show(new GenericDialect()));
-        assertEquals(Mappers.LONG, remapped.getMapper());
+        assertEquals(CoreMappers.LONG, remapped.getMapper());
     }
 
     public void testSelectAll() throws Exception {
@@ -67,7 +67,7 @@ public class FunctionTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = SqlFunction.create("abs", Mappers.LONG) .apply(abs(person.id)).show(new GenericDialect());
+        final String sql = SqlFunction.create("abs", CoreMappers.LONG) .apply(abs(person.id)).show(new GenericDialect());
         assertSimilar("SELECT abs(abs(T0.id)) AS C0 FROM person AS T0", sql);
     }
 
@@ -294,7 +294,7 @@ public class FunctionTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         String sql = currentUser().pair(id).show(new GenericDialect());
         assertSimilar("SELECT user() AS C0, T0.id AS C1 FROM person AS T0", sql);
-        assertEquals(Mappers.STRING, currentUser().getMapper());
+        assertEquals(CoreMappers.STRING, currentUser().getMapper());
     }
 
     public void testAdd() throws Exception {
@@ -468,22 +468,22 @@ public class FunctionTest extends SqlTestCase {
     }
 
     public void testLike() throws Exception {
-        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).like(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
+        final String sql = person.id.where(SqlFunction.create("to_upper", CoreMappers.STRING).apply(person.name).like(DynamicParameter.create(CoreMappers.STRING, "J%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) LIKE ?", sql);
     }
 
     public void testNotLike() throws Exception {
-        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).notLike(DynamicParameter.create(Mappers.STRING, "J%"))).show(new GenericDialect());
+        final String sql = person.id.where(SqlFunction.create("to_upper", CoreMappers.STRING).apply(person.name).notLike(DynamicParameter.create(CoreMappers.STRING, "J%"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) NOT LIKE ?", sql);
     }
 
     public void testLikeString() throws Exception {
-        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).like("J%")).show(new GenericDialect());
+        final String sql = person.id.where(SqlFunction.create("to_upper", CoreMappers.STRING).apply(person.name).like("J%")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) LIKE ?", sql);
     }
 
     public void testNotLikeString() throws Exception {
-        final String sql = person.id.where(SqlFunction.create("to_upper", Mappers.STRING).apply(person.name).notLike("J%")).show(new GenericDialect());
+        final String sql = person.id.where(SqlFunction.create("to_upper", CoreMappers.STRING).apply(person.name).notLike("J%")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE to_upper(T0.name) NOT LIKE ?", sql);
     }
 
@@ -557,17 +557,17 @@ public class FunctionTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Long> age = defineColumn(Mappers.LONG, "age");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Long> age = defineColumn(CoreMappers.LONG, "age");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
     }
 
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
     }
 
     private static Person person = new Person();

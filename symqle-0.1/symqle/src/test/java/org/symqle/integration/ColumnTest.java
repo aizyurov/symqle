@@ -1,7 +1,7 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
@@ -104,7 +104,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
     public void testMap() throws Exception {
         final Employee employee = new Employee();
-        final List<Integer> list = employee.salary.map(Mappers.INTEGER).orderBy(employee.lastName).list(getEngine());
+        final List<Integer> list = employee.salary.map(CoreMappers.INTEGER).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList(1500, 3000, 2000, 2000, 3000), list);
     }
 

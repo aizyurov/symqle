@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.AbstractPredicate;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
@@ -83,11 +83,11 @@ public class PredicateTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<Boolean> alive = defineColumn(Mappers.BOOLEAN, "alive");
-        public Column<Boolean> smart = defineColumn(Mappers.BOOLEAN, "smart");
-        public Column<Boolean> cute = defineColumn(Mappers.BOOLEAN, "cute");
-        public Column<Boolean> friendly = defineColumn(Mappers.BOOLEAN, "friendly");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<Boolean> alive = defineColumn(CoreMappers.BOOLEAN, "alive");
+        public Column<Boolean> smart = defineColumn(CoreMappers.BOOLEAN, "smart");
+        public Column<Boolean> cute = defineColumn(CoreMappers.BOOLEAN, "cute");
+        public Column<Boolean> friendly = defineColumn(CoreMappers.BOOLEAN, "friendly");
     }
 
     private static Person person = new Person();

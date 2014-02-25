@@ -1,6 +1,6 @@
 package org.symqle.coretest;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.sql.AbstractLikePredicateBase;
 import org.symqle.sql.Column;
 import org.symqle.sql.DynamicParameter;
@@ -29,7 +29,7 @@ public class LikePredicateBaseTest extends SqlTestCase {
     }
 
     public void testEscape() throws Exception {
-        final String sql = person.id.where(createLikePredicateBase().escape(DynamicParameter.create(Mappers.STRING, "\\"))).show(new GenericDialect());
+        final String sql = person.id.where(createLikePredicateBase().escape(DynamicParameter.create(CoreMappers.STRING, "\\"))).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name LIKE T0.nick ESCAPE ?", sql);
     }
 
@@ -104,11 +104,11 @@ public class LikePredicateBaseTest extends SqlTestCase {
         private Person() {
             super("person");
         }
-        public Column<Long> id = defineColumn(Mappers.LONG, "id");
-        public Column<String> name = defineColumn(Mappers.STRING, "name");
-        public Column<String> nick = defineColumn(Mappers.STRING, "nick");
-        public Column<Boolean> alive = defineColumn(Mappers.BOOLEAN, "alive");
-        public Column<Long> parentId = defineColumn(Mappers.LONG, "parent_id");
+        public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
+        public Column<String> name = defineColumn(CoreMappers.STRING, "name");
+        public Column<String> nick = defineColumn(CoreMappers.STRING, "nick");
+        public Column<Boolean> alive = defineColumn(CoreMappers.BOOLEAN, "alive");
+        public Column<Long> parentId = defineColumn(CoreMappers.LONG, "parent_id");
     }
 
     private static Person person = new Person();

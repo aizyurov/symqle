@@ -150,7 +150,7 @@ Predicate ::=
 ;
 
 :: public AbstractPredicate escape(final LikePredicateBase base, final char escapeCharacter) {
-    return escape(base, DynamicParameter.create(Mappers.STRING, new String(new char[] {escapeCharacter})));
+    return escape(base, DynamicParameter.create(CoreMappers.STRING, new String(new char[] {escapeCharacter})));
 }
 
 public interface LikePredicateBase : Sql {}
@@ -163,9 +163,9 @@ LikePredicateBase ::=
 ;
 
 :: public AbstractLikePredicateBase like(ValueExpression<?> expr, String pattern) {
-      return like(expr, DynamicParameter.create(Mappers.STRING, pattern));
+      return like(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
 }
 
 :: public AbstractLikePredicateBase notLike(ValueExpression<?> expr, String pattern) {
-      return notLike(expr, DynamicParameter.create(Mappers.STRING, pattern));
+      return notLike(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
 }

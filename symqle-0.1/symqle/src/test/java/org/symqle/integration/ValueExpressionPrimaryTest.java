@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.Mappers;
+import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
@@ -48,7 +48,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase {
     public void testMap() throws Exception {
         // GenericDialect does not support Option.allowNoTables(true)
         final One one = new One();
-        final AbstractValueExpressionPrimary<String> primary = one.id.map(Mappers.STRING).queryValue();
+        final AbstractValueExpressionPrimary<String> primary = one.id.map(CoreMappers.STRING).queryValue();
         final List<String> list = primary.list(getEngine(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("1"), list);
     }
