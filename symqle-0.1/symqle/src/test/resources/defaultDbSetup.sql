@@ -96,6 +96,7 @@ create table all_types (
   t_BIT bigint,
   t_TINYINT smallint,
   t_SMALLINT smallint,
+  t_MEDIUMINT integer,
   t_INTEGER integer,
   t_BIGINT bigint,
   t_FLOAT float(23),

@@ -15,3 +15,5 @@ SpringEngine (transactions)
 
 (done) SmartSelector: get(MapRow); map-like implementation of Row - key is Sql produced with DebugDialect/MockTableRegistry.
 MockTableRegistry returns table.toString for getCorrelationName (so subqueries beleive all tables are from top level scope).
+
+CompiledStatement and refactoring of DynamicParameter

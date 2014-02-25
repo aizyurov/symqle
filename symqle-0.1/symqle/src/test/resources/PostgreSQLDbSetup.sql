@@ -110,3 +110,34 @@ create table arithmetics (leftInt integer, rightInt integer, leftDouble double p
 
 insert into arithmetics (leftInt, rightInt, leftDouble, rightDouble) values (7, 3, 11.0, 2.0)
 
+drop table if exists all_types
+
+create table all_types (t_BIT bigint,
+  t_TINYINT smallint,
+  t_SMALLINT smallint,
+  t_MEDIUMINT integer,
+  t_INTEGER integer,
+  t_BIGINT bigint,
+  t_FLOAT real,
+  t_REAL real,
+  t_DOUBLE double precision,
+  t_NUMERIC numeric(10,3),
+  t_DECIMAL numeric(10,3),
+  t_CHAR char(10),
+  t_VARCHAR varchar(20),
+  t_LONGVARCHAR text,
+  t_DATE date,
+  t_TIME time,
+  t_TIMESTAMP timestamp,
+  t_DATETIME timestamp,
+  t_BINARY bytea,
+  t_VARBINARY bytea,
+  t_LONGVARBINARY bytea,
+  t_BLOB bytea,
+  t_CLOB text,
+  t_BOOLEAN boolean,
+  t_NCHAR char(10),
+  t_NVARCHAR varchar(20),
+  t_LONGNVARCHAR text,
+  t_NCLOB text
+)

@@ -313,4 +313,21 @@ public class PositionedResultSetRowTest extends TestCase {
 
     }
 
+    public void testBytes() throws Exception {
+        final ResultSet resultSet = createMock(ResultSet.class);
+        expect(resultSet.getBytes(1)).andReturn(new byte[] {123} );
+
+        final QueryEngine queryEngine = createMock(QueryEngine.class);
+
+        final ResultSetRow row = new ResultSetRow(resultSet, queryEngine);
+        replay(resultSet);
+
+        final byte[] bytes = row.getValue(1).getBytes();
+        assertEquals(1, bytes.length);
+        assertEquals(123, bytes[0]);
+
+        verify(resultSet);
+
+    }
+
 }

@@ -21,7 +21,8 @@ public class AllTypesTest extends AbstractIntegrationTestBase  {
     public void testInsertAndSelect() throws Exception {
         final AllTypes allTypes = new AllTypes();
         allTypes.delete().execute(getEngine());
-        final long now = System.currentTimeMillis();
+        // some databases do not support millisecond precision (MySql,...)
+        final long now = System.currentTimeMillis() / 1000 * 1000;
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -85,7 +86,7 @@ public class AllTypesTest extends AbstractIntegrationTestBase  {
         assertBytesEqual(new byte[] {(byte) 40, (byte) 41, (byte)42, (byte)43, (byte) 44 }, dto.tBlob);
         assertEquals(Boolean.TRUE, dto.tBoolean);
         assertEquals("clob clob clob clob clob", dto.tClob);
-        assertEquals("nchar     ", dto.tNchar);
+        assertEquals("nchar", dto.tNchar.trim()); // database-dependent: some strip trailing spaces, some do not
         assertEquals("nvarchar", dto.tNvarchar);
         assertEquals("longnvarchar", dto.tLongnvarchar);
         assertEquals("nclob", dto.tNclob);

@@ -33,14 +33,21 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
 
     private static DataSource dataSource;
 
-
-    public final Engine getEngine() {
+    protected final DataSource getDataSource() {
         try {
             if (dataSource == null) {
                 dataSource = prepareDataSource();
             }
-            return createTestEngine(dataSource);
+            return dataSource;
         } catch (Exception e) {
+            throw new RuntimeException("Internal error", e);
+        }
+    }
+
+    public final Engine getEngine() {
+        try {
+            return createTestEngine(getDataSource());
+        } catch (SQLException e) {
             throw new RuntimeException("Internal error", e);
         }
     }

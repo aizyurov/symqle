@@ -26,6 +26,7 @@ public class MySqlConnectorTest extends TestCase {
 
     public void testPipesAsConcatSession() throws Exception {
         checkSessionSettingsWithPipesAsConcat("REAL_AS_FLOAT,ANSI_QUOTES");
+        checkSessionSettingsWithPipesAsConcat("");
     }
 
     private void checkSessionSettingsWithPipesAsConcat(String sqlMode) throws SQLException {
@@ -45,7 +46,7 @@ public class MySqlConnectorTest extends TestCase {
         statement1.close();
         final PreparedStatement statement2 = createMock(PreparedStatement.class);
         expect(connection1.prepareStatement("set session sql_mode=?")).andReturn(statement2);
-        final String sessionMode = sqlMode + ",PIPES_AS_CONCAT";
+        final String sessionMode = "".equals(sqlMode) ? "PIPES_AS_CONCAT" : sqlMode + ",PIPES_AS_CONCAT";
         statement2.setString(1, sessionMode);
         expect(statement2.executeUpdate()).andReturn(0);
         statement2.close();
