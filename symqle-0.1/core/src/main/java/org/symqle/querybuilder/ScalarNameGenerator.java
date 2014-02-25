@@ -17,14 +17,13 @@
 package org.symqle.querybuilder;
 
 /**
- * Provides unique column name formed as "C0", "C1" etc.
+ * Implementation of UniqueNameProvider, which ensured uniqueness by allowing to get the name only once.
+ * If called second time, throws an IllegalStateException.
  */
-public class ColumnNameProvider implements ColumnNameGenerator {
-
-    private int counter = 0;
+public class ScalarNameGenerator implements ColumnNameGenerator {
 
     @Override
-    public String getUniqueName() {
-        return "C" + (counter++);
+    public final String getUniqueName() {
+        return "C0";
     }
 }

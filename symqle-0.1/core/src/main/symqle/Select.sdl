@@ -103,7 +103,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
     final SelectTableRegistry tableRegistry = new RootSelectTableRegistry();
     final SqlContext context = new SqlContext.Builder().
-            put(ColumnNameGenerator.class, new ColumnNameProvider()).
+            put(ColumnNameGenerator.class, new UniqueColumnNameGenerator()).
             put(TableRegistry.class, tableRegistry).
             put(Dialect.class, dialect).
             put(Configuration.class, configuration).toSqlContext();
