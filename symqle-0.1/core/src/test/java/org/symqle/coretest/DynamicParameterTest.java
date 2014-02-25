@@ -668,7 +668,7 @@ public class DynamicParameterTest extends SqlTestCase {
     private static abstract class Scenario extends AbstractQueryScenario<Long, DynamicParameter<Long>> {
 
         private Scenario(DynamicParameter<Long> query) {
-            super(query, "C[0-9]", new MysqlLikeDialect(), Option.allowNoTables(true));
+            super(query, "C[0-9]", new OracleLikeDialect(), Option.allowNoTables(true));
         }
 
         @Override

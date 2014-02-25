@@ -23,7 +23,7 @@ package org.symqle.common;
  */
 public class SqlContext {
 
-    private static final int LENGTH = 4;
+    private static final int LENGTH = 5;
 
     private SqlContext(final Class[] keys, final Object[] values) {
         System.arraycopy(keys, 0, this.keys, 0, LENGTH);

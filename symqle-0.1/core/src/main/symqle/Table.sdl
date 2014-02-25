@@ -6,14 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.symqle.common.*;
-import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Mapper;
-import org.symqle.common.Sql;
-import org.symqle.common.SqlContext;
 import org.symqle.querybuilder.CustomSql;
-
-
-
+import org.symqle.querybuilder.TableNameGenerator;
 
 public class TableOrView implements TablePrimary,
                                                             TableName,
@@ -93,7 +87,7 @@ public class TableOrView implements TablePrimary,
         for (name = context.get(TableRegistry.class).getCorrelationName(this);
                 name == null;
                 name = context.get(TableRegistry.class).getCorrelationName(this)) {
-            context.get(TableRegistry.class).addAll(joinedTableParticipants());
+            context.get(TableRegistry.class).addAll(joinedTableParticipants(), context.get(TableNameGenerator.class));
         }
         return name;
     }

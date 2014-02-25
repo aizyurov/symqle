@@ -79,12 +79,12 @@ public class WhenClauseTest extends SqlTestCase {
 
     public void testLimit() throws Exception {
         final String sql = createWhenClause().limit(20).show(new GenericDialect());
-        assertEquals("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testLimit2() throws Exception {
         final String sql = createWhenClause().limit(10, 20).show(new GenericDialect());
-        assertEquals("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testAdapt() throws Exception {

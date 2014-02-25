@@ -1,12 +1,12 @@
 import java.util.Collection;
 import java.util.List;
+import org.symqle.querybuilder.TableNameGenerator;
 public interface TableRegistry {
 
-    void addAll(Collection<TableOrView> tables);
+    void addAll(Collection<TableOrView> tables, final TableNameGenerator generator);
 
     String getCorrelationName(TableOrView table);
 
-    boolean nameInUse(final String name);
 }
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ import org.symqle.common.MalformedStatementException;
     private boolean locked = false;
 
 
-    public void addAll(Collection<TableOrView> tables) {
+    public void addAll(Collection<TableOrView> tables, final TableNameGenerator generator) {
         if (locked) {
             throw new MalformedStatementException("Illegal in this context: " + tables);
         }
@@ -40,27 +40,15 @@ import org.symqle.common.MalformedStatementException;
         // had been registered yet
         for (TableOrView table : tables) {
             Bug.reportIfNotNull(getCorrelationName(table));
-            addToLocalTables(table);
+            addToLocalTables(table, generator);
         }
     }
 
 
-    private void addToLocalTables(TableOrView table) {
-            final String newName = generateUniqueName();
+    private void addToLocalTables(TableOrView table, final TableNameGenerator generator) {
+            final String newName = generator.generate(table.getName());
             localTables.put(table, newName);
     }
-
-
-
-    public String generateUniqueName() {
-        int i=0;
-        String name = "T"+i;
-        while(nameInUse(name)) {
-            name = "T" + (++i);
-        }
-        return name;
-    }
-
 
     public String getCorrelationName(final TableOrView table) {
         return localTables.get(table);
@@ -71,10 +59,6 @@ import org.symqle.common.MalformedStatementException;
         return new ArrayList<TableOrView>(localTables.keySet());
     }
 
-
-    public boolean nameInUse(final String name) {
-        return localTables.values().contains(name);
-    }
 
      @Override
      public void lock() {
@@ -96,9 +80,6 @@ class ChildSelectTableRegistry extends RootSelectTableRegistry {
         return parentName != null ? parentName : super.getCorrelationName(table);
     }
 
-    public boolean nameInUse(final String name) {
-        return parent.nameInUse(name) || super.nameInUse(name);
-    }
 }
 
 
@@ -109,7 +90,7 @@ class DataChangeTableRegistry implements TableRegistry {
 
     TableOrView targetTable;
 
-    public void addAll(final Collection<TableOrView> tables) {
+    public void addAll(final Collection<TableOrView> tables, final TableNameGenerator generator) {
         Bug.reportIf(tables.isEmpty());
         Set<TableOrView> illegalTables = new HashSet<TableOrView>(tables);
         if (targetTable != null) {
@@ -138,11 +119,6 @@ class DataChangeTableRegistry implements TableRegistry {
         }
     }
 
-
-    public boolean nameInUse(final String name) {
-        return targetTable.getName().equals(name);
-    }
-
 }
 
 import java.util.Collections;
@@ -155,7 +131,7 @@ class NoTablesRegistry implements TableRegistry {
      }
 
 
-     public void addAll(Collection<TableOrView> tables) {
+     public void addAll(Collection<TableOrView> tables, final TableNameGenerator generator) {
         throw new MalformedStatementException("Illegal in this context: " + tables);
     }
 
@@ -164,10 +140,6 @@ class NoTablesRegistry implements TableRegistry {
             throw new MalformedStatementException("Illegal in this context: " + table);
         }
         return null;
-    }
-
-    public boolean nameInUse(final String name) {
-        return parent.nameInUse(name);
     }
 
 }

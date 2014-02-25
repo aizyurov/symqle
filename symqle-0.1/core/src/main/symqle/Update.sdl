@@ -42,6 +42,7 @@ public interface DataChangeStatement : Sql {}
         final SqlContext context = contextBuilder
                 .put(Configuration.class, configuration)
                 .put(TableRegistry.class, new DataChangeTableRegistry())
+                .put(TableNameGenerator.class, new TableNameGenerator())
                 .toSqlContext();
         final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
         if (keyColumn != null) {
@@ -187,7 +188,7 @@ public class Table extends TableOrView implements TargetTable {
     }
 
     public Sql z$sqlOfTargetTable(final SqlContext context) {
-        context.get(TableRegistry.class).addAll(Collections.<TableOrView>singleton(this));
+        context.get(TableRegistry.class).addAll(Collections.<TableOrView>singleton(this), context.get(TableNameGenerator.class));
         return new CustomSql(getName());
     }
 }
@@ -228,8 +229,10 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
             * @return constructed Sql
             */
             public Sql z$sqlOfFromConstructor(final SqlContext context) {
-                final SqlContext innerContext = context.newBuilder().put(TableRegistry.class,
-                        new NoTablesRegistry(context.get(TableRegistry.class))).toSqlContext();
+                final SqlContext innerContext = context.newBuilder()
+                        .put(TableRegistry.class, new NoTablesRegistry(context.get(TableRegistry.class)))
+                        .put(TableNameGenerator.class, new TableNameGenerator())
+                        .toSqlContext();
                 return context.get(Dialect.class)
                   .FromConstructor_is_LEFT_PAREN_InsertColumnList_RIGHT_PAREN_TableValueConstructor(
                         l.z$sqlOfInsertColumnList(context), t.z$sqlOfTableValueConstructor(innerContext));

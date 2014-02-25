@@ -106,6 +106,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
             put(ColumnNameGenerator.class, new UniqueColumnNameGenerator()).
             put(TableRegistry.class, tableRegistry).
             put(Dialect.class, dialect).
+            put(TableNameGenerator.class, new TableNameGenerator()).
             put(Configuration.class, configuration).toSqlContext();
 
     statement.z$sqlOfSelectStatement(makeLearningContext(context));

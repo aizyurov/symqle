@@ -3,6 +3,7 @@ import org.symqle.common.*;
 import org.symqle.jdbc.Configuration;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.querybuilder.SqlTerm;
+import org.symqle.querybuilder.TableNameGenerator;
 
 import java.util.*;
 class FromClauseBuilder {
@@ -51,7 +52,7 @@ class FromClauseBuilder {
               SqlTerm.FROM.toSql(),
               new CustomSql(fallbackTableName),
               SqlTerm.AS.toSql(),
-              new CustomSql("D" + System.identityHashCode(this)));
+              new CustomSql(context.get(TableNameGenerator.class).generate("DUMMY")));
         }
     }
 }
