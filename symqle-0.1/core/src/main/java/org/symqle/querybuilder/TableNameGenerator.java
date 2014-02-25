@@ -1,5 +1,7 @@
 package org.symqle.querybuilder;
 
+import org.symqle.common.Bug;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,5 +26,10 @@ public class TableNameGenerator {
         }
         used.add(name);
         return name;
+    }
+
+    public void force(final String name) {
+        Bug.reportIf(used.contains(name));
+        used.add(name);
     }
 }

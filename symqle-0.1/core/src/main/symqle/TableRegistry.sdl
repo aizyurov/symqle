@@ -102,6 +102,7 @@ class DataChangeTableRegistry implements TableRegistry {
             final TableOrView table = tables.iterator().next();
             if (targetTable == null) {
                 targetTable = table;
+                generator.force(targetTable.getName());
             } else {
                 Bug.reportIf(table.equals(targetTable));
                 // table can be added only once

@@ -5,6 +5,7 @@ import org.symqle.jdbc.Configuration;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.UpdatableConfiguration;
+import org.symqle.querybuilder.TableNameGenerator;
 import org.symqle.querybuilder.UniqueColumnNameGenerator;
 import org.symqle.querybuilder.ColumnNameGenerator;
 
@@ -152,6 +153,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
                 .put(TableRegistry.class, new RootSelectTableRegistry())
                 .put(ColumnNameGenerator.class, new UniqueColumnNameGenerator())
                 .put(Configuration.class, configuration)
+                .put(TableNameGenerator.class, new TableNameGenerator())
                 .toSqlContext();
     }
 
