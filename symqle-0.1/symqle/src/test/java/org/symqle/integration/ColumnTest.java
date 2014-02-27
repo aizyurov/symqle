@@ -34,6 +34,8 @@ import java.util.Set;
  */
 public class ColumnTest extends AbstractIntegrationTestBase {
 
+    private final static List<Option> NO_OPTIONS = Collections.<Option>emptyList();
+
     @Override
     public void onSetUp() throws Exception {
         final Country country = new Country();
@@ -801,7 +803,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             return;
         }
         final Engine engine = getEngine();
-        engine.execute(new CustomSql("delete from big_table"));
+        engine.execute(new CustomSql("delete from big_table"), NO_OPTIONS);
 
         final Batcher batcher = engine.newBatcher(1000);
 
@@ -818,7 +820,7 @@ public class ColumnTest extends AbstractIntegrationTestBase {
                 public void setParameters(SqlParameters p) throws SQLException {
                     p.next().setInt(value);
                 }
-            });
+            }, NO_OPTIONS);
         }
         batcher.flush();
 

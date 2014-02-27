@@ -47,6 +47,7 @@ class ResultSetRow implements Row {
         return new LabeledInBox(label);
     }
     
+    @Override
     public final InBox getValue(int position) {
         return new PositionedInBox(position);
     }

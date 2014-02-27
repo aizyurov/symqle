@@ -32,9 +32,10 @@ import java.sql.SQLException;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Batcher;
+import org.symqle.jdbc.PreparedUpdate;
 public interface DataChangeStatement : Sql {}
 
-:: private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final ColumnName<?> keyColumn, final List<Option> options) {
+:: private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final List<Option> options) {
         final UpdatableConfiguration configuration = new UpdatableConfiguration();
         for (final Option option : options) {
            option.apply(configuration);
@@ -45,9 +46,6 @@ public interface DataChangeStatement : Sql {}
                 .put(TableNameGenerator.class, new TableNameGenerator())
                 .toSqlContext();
         final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
-        if (keyColumn != null) {
-            keyColumn.z$sqlOfColumnName(context);
-        }
         return new Sql() {
             @Override
             public void append(final StringBuilder builder) {
@@ -66,7 +64,7 @@ import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
      final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
      final StringBuilder sqlBuilder = new StringBuilder();
-     prepareUpdate(statement, contextBuilder, null, Arrays.asList(options)).append(sqlBuilder);
+     prepareUpdate(statement, contextBuilder, Arrays.asList(options)).append(sqlBuilder);
     return sqlBuilder.toString();
 }
 
@@ -74,22 +72,22 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 import java.sql.SQLException;
 :: public int execute(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
+     return compileUpdate(statement, engine, options).execute();
+}
+
+import org.symqle.jdbc.PreparedUpdate;
+:: public PreparedUpdate compileUpdate(final DataChangeStatement statement, final Engine engine, final Option... options) {
      final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
      List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
      allOptions.addAll(Arrays.asList(options));
-     final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
-     return engine.execute(sql, allOptions);
+     final Sql sql = prepareUpdate(statement, contextBuilder, allOptions);
+     return new PreparedUpdate(engine, sql, allOptions, null);
 }
 
 
 import org.symqle.jdbc.Batcher;
-:: public static int[] submit(final DataChangeStatement statement, final Batcher batcher, final Option... options) throws SQLException {
-        final Dialect dialect = batcher.getDialect();
-        final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
-        List<Option> allOptions = new ArrayList<Option>(batcher.getOptions());
-        allOptions.addAll(Arrays.asList(options));
-        final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
-        return batcher.submit(sql, allOptions);
+:: public int[] submit(final DataChangeStatement statement, final Batcher batcher, final Option... options) throws SQLException {
+        return compileUpdate(statement, batcher.getEngine(), options).submit(batcher);
    }
 
 DataChangeStatement ::=
@@ -197,6 +195,8 @@ public class Table extends TableOrView implements TargetTable {
 import java.sql.SQLException;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
+import org.symqle.jdbc.GeneratedKeys;
+import org.symqle.jdbc.PreparedUpdate;
 public interface InsertStatement : Sql {}
 public class AbstractInsertStatement implements InsertStatement {}
 
@@ -296,7 +296,13 @@ public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {}
 ;
 
-:: public static <T> T executeReturnKey(final InsertStatement statement, final ColumnName<T> keyColumn, final Engine engine, final Option... options) throws SQLException {
+import org.symqle.jdbc.GeneratedKeys;
+:: public int execute(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
+       return compileUpdate(statement, generatedKeys, engine, options).execute();
+}
+
+
+:: public PreparedUpdate compileUpdate(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
      final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
      List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
      allOptions.addAll(Arrays.asList(options));
@@ -306,10 +312,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
                return statement.z$sqlOfInsertStatement(context);
            }
        };
-       final Sql sql = prepareUpdate(dataChange, contextBuilder, keyColumn, allOptions);
-       return engine.executeReturnKey(sql, keyColumn, allOptions);
-      }
-
-
-
+      final Sql sql = prepareUpdate(dataChange, contextBuilder, allOptions);
+      return new PreparedUpdate(engine, sql, allOptions, generatedKeys);
+}
 

@@ -7,9 +7,9 @@ import org.symqle.sql.Table;
 /**
  * @author lvovich
  */
-public class GeneratedKeys extends Table {
+public class GeneratedKeysTable extends Table {
 
-    public GeneratedKeys() {
+    public GeneratedKeysTable() {
         super("generated_keys");
     }
 

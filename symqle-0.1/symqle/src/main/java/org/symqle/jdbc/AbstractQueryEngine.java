@@ -58,7 +58,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
         return Collections.unmodifiableList(Arrays.asList(options));
     }
 
-    protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final Option[] options) throws SQLException {
+    protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         StringBuilder stringBuilder = new StringBuilder();
         query.append(stringBuilder);
         final PreparedStatement preparedStatement = connection.prepareStatement(stringBuilder.toString());
@@ -84,10 +84,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
         }
     }
 
-    protected final void setupStatement(final PreparedStatement preparedStatement, final Sql sql, final Option[] options) throws SQLException {
-        for (Option option : this.options) {
-            option.apply(preparedStatement);
-        }
+    protected final void setupStatement(final PreparedStatement preparedStatement, final Sql sql, final List<Option> options) throws SQLException {
         for (Option option : options) {
             option.apply(preparedStatement);
         }

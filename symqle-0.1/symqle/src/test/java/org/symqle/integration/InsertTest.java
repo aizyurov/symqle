@@ -2,11 +2,12 @@ package org.symqle.integration;
 
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
-import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
-import org.symqle.integration.model.GeneratedKeys;
+import org.symqle.integration.model.GeneratedKeysTable;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.integration.model.One;
+import org.symqle.jdbc.GeneratedKeys;
+import org.symqle.sql.Params;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -115,11 +116,14 @@ public class InsertTest extends AbstractIntegrationTestBase {
     }
 
     public void testGeneratedKeys() throws Exception {
-        final GeneratedKeys generatedKeys = new GeneratedKeys();
-        final Integer bimId = generatedKeys.insert(generatedKeys.text().set("Bim")).executeReturnKey(generatedKeys.id(), getEngine());
-        final Integer bomId = generatedKeys.insert(generatedKeys.text().set("Bom")).executeReturnKey(generatedKeys.id(), getEngine());
-        assertTrue("actual bomId:"+bomId+", bimId:"+bimId, bomId > bimId);
-        final List<String> bimList = generatedKeys.text().where(generatedKeys.id().eq(bimId)).list(getEngine());
+        final GeneratedKeysTable generatedKeysTable = new GeneratedKeysTable();
+        final GeneratedKeys<Integer> generatedKeys = GeneratedKeys.create(generatedKeysTable.id().getMapper());
+        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bim")).execute(generatedKeys, getEngine()));
+        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bom")).execute(generatedKeys, getEngine()));
+        final List<Integer> allKeys = generatedKeys.all();
+        assertEquals(2, allKeys.size());
+        assertTrue(allKeys.get(1) > allKeys.get(0));
+        final List<String> bimList = generatedKeysTable.text().where(generatedKeysTable.id().eq(allKeys.get(0))).list(getEngine());
         assertEquals(Arrays.asList("Bim"), bimList);
 
     }

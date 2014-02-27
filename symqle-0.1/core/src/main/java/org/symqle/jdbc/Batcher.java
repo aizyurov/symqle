@@ -1,7 +1,6 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Sql;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -31,8 +30,6 @@ public interface Batcher {
      */
     int[] flush() throws SQLException;
 
-    Dialect getDialect();
-
-    List<Option> getOptions();
+    Engine getEngine();
 
 }

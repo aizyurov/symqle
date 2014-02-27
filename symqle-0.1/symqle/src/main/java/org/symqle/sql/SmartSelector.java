@@ -169,6 +169,11 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         public QueryEngine getQueryEngine() {
             return new ProbeQueryEngine();
         }
+
+        @Override
+        public InBox getValue(final int position) {
+            throw new IllegalStateException("Unexpected call");
+        }
     }
 
     private static class ProbeElement implements InBox {
@@ -255,7 +260,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {
+        public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
             return 0;
         }
 

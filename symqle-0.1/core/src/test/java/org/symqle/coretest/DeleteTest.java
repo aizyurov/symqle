@@ -11,6 +11,7 @@ import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import static org.easymock.EasyMock.*;
@@ -68,7 +69,18 @@ public class DeleteTest extends SqlTestCase {
         final SqlParameters parameters = createMock(SqlParameters.class);
         replay(parameters);
         final int affectedRows = update.execute(
-                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+        assertEquals(2, affectedRows);
+        verify(parameters);
+    }
+
+    public void testCompile() throws Exception {
+        final AbstractDeleteStatementBase update = person.delete();
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final int affectedRows = update.compileUpdate(
+                new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext())).execute();
         assertEquals(2, affectedRows);
         verify(parameters);
     }
@@ -79,8 +91,24 @@ public class DeleteTest extends SqlTestCase {
         final SqlParameters parameters = createMock(SqlParameters.class);
         replay(parameters);
         final int[] rows = update.submit(
-                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
+                new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[]{1, 1}, rows));
+        verify(parameters);
+    }
+
+    public void testSubmitToWrongBatcher() throws Exception {
+        final AbstractDeleteStatementBase update = person.delete();
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        replay(parameters);
+        final MockEngine engine1 = new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext());
+        final MockEngine engine2 = new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext());
+        try {
+            update.compileUpdate(engine1).submit(engine2.newBatcher(1));
+            fail("Incompatible batcher accepted submit");
+        } catch (IllegalArgumentException e) {
+            // fine
+        }
         verify(parameters);
     }
 
@@ -93,7 +121,21 @@ public class DeleteTest extends SqlTestCase {
         param.setLong(1L);
         replay(parameters, param);
         final int affectedRows = update.execute(
-                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+        assertEquals(2, affectedRows);
+        verify(parameters, param);
+    }
+
+    public void testCompileSearched() throws Exception {
+        final AbstractDeleteStatement update = person.delete().where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final OutBox param = createMock(OutBox.class);
+        expect(parameters.next()).andReturn(param);
+        param.setLong(1L);
+        replay(parameters, param);
+        final int affectedRows = update.compileUpdate(
+                new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext())).execute();
         assertEquals(2, affectedRows);
         verify(parameters, param);
     }
@@ -107,7 +149,7 @@ public class DeleteTest extends SqlTestCase {
         param.setLong(1L);
         replay(parameters, param);
         final int[] rows = update.submit(
-                new MockEngine(2, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
+                new MockEngine(2, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[]{1, 1}, rows));
         verify(parameters, param);
     }

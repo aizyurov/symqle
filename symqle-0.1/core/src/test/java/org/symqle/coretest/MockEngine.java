@@ -7,9 +7,8 @@ import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Engine;
+import org.symqle.jdbc.GeneratedKeys;
 import org.symqle.jdbc.Option;
-import org.symqle.sql.ColumnName;
-import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -22,25 +21,22 @@ import java.util.List;
 public class MockEngine extends AbstractMockEngine implements Engine {
 
     final int affectedRows;
-    final Object returnedKey;
 
     /**
      *
      * @param affectedRows return value for execute and submit
-     * @param returnedKey return value for executeReturnKey
      * @param statement expected statement
      * @param parameters mock object for parameters to call
      * @param sqlContext initial context
      * @param options expected execute/submit options
      */
-    public MockEngine(final int affectedRows, final Object returnedKey, final String statement, final SqlParameters parameters, final SqlContext sqlContext, final List<Option> options) {
+    public MockEngine(final int affectedRows, final String statement, final SqlParameters parameters, final SqlContext sqlContext, final List<Option> options) {
         super(statement, parameters, sqlContext, options);
         this.affectedRows = affectedRows;
-        this.returnedKey = returnedKey;
     }
 
-    public MockEngine(final int affectedRows, final Object returnedKey, final String statement, final SqlParameters parameters, final SqlContext sqlContext) {
-        this(affectedRows, returnedKey, statement, parameters, sqlContext, Collections.<Option>emptyList());
+    public MockEngine(final int affectedRows, final String statement, final SqlParameters parameters, final SqlContext sqlContext) {
+        this(affectedRows, statement, parameters, sqlContext, Collections.<Option>emptyList());
     }
 
     @Override
@@ -49,19 +45,10 @@ public class MockEngine extends AbstractMockEngine implements Engine {
         return affectedRows;
     }
 
-    /**
-     * Returns the first element of the list provided in the constructor
-     * @param sql the SQL to execute
-     * @param keyColumn the column, for which key is generated
-     * @param options  statement options
-     * @param <R>
-     * @return
-     * @throws SQLException
-     */
     @Override
-    public <R> R executeReturnKey(final Sql sql, final ColumnName<R> keyColumn, final List<Option> options) throws SQLException {
+    public int execute(final Sql sql, final GeneratedKeys<?> keys, final List<Option> options) throws SQLException {
         verify(sql, options);
-        return (R) returnedKey;
+        return affectedRows;
     }
 
     public Batcher newBatcher(int ignored) {
@@ -82,13 +69,8 @@ public class MockEngine extends AbstractMockEngine implements Engine {
             }
 
             @Override
-            public Dialect getDialect() {
-                return MockEngine.this.getDialect();
-            }
-
-            @Override
-            public List<Option> getOptions() {
-                return MockEngine.this.getOptions();
+            public Engine getEngine() {
+                return MockEngine.this;
             }
         };
     }

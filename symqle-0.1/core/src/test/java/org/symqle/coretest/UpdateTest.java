@@ -136,7 +136,21 @@ public class UpdateTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
+    }
+
+    public void testCompile() throws Exception {
+        final AbstractUpdateStatementBase update = person.update(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final OutBox param =createMock(OutBox.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.compileUpdate(
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext())).execute();
         assertEquals(3, rows);
         verify(parameters, param);
     }
@@ -150,7 +164,7 @@ public class UpdateTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int[] rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1,1,1}, rows));
         verify(parameters, param);
     }
@@ -164,7 +178,7 @@ public class UpdateTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, SqlContextUtil.allowNoTablesContext()));
+                new MockEngine(3, statementString, parameters, SqlContextUtil.allowNoTablesContext()));
         assertEquals(3, rows);
         verify(parameters, param);
     }
@@ -181,7 +195,24 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param, param2);
+    }
+
+    public void testCompileSearched() throws Exception {
+        final AbstractUpdateStatement update = person.update(person.name.set("John")).where(person.id.eq(1L));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final OutBox param =createMock(OutBox.class);
+        final OutBox param2 =createMock(OutBox.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        expect(parameters.next()).andReturn(param2);
+        param2.setLong(1L);
+        replay(parameters, param, param2);
+        int rows = update.compileUpdate(
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext())).execute();
         assertEquals(3, rows);
         verify(parameters, param, param2);
     }
@@ -198,7 +229,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int[] rows = update.submit(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1,1,1}, rows));
         verify(parameters, param, param2);
     }
@@ -215,7 +246,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext(), Collections.<Option>singletonList(Option.setQueryTimeout(20))),
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext(), Collections.<Option>singletonList(Option.setQueryTimeout(20))),
                 Option.setQueryTimeout(20));
         assertEquals(3, rows);
         verify(parameters, param, param2);

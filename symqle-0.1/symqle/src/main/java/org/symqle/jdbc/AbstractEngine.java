@@ -1,7 +1,8 @@
 package org.symqle.jdbc;
 
-import org.symqle.common.*;
-import org.symqle.sql.ColumnName;
+import org.symqle.common.Callback;
+import org.symqle.common.Row;
+import org.symqle.common.Sql;
 import org.symqle.sql.Dialect;
 
 import java.sql.Connection;
@@ -10,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,40 +31,32 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     protected abstract void releaseConnection(Connection connection) throws SQLException;
 
     @Override
-    public int execute(final Sql statement, final Option... options) throws SQLException {
-        final Connection connection = getConnection();
-        try {
-            final PreparedStatement preparedStatement = connection.prepareStatement(statement.toString());
-            try {
-                setupStatement(preparedStatement, statement, options);
-                statement.setParameters(new StatementParameters(preparedStatement));
-                return preparedStatement.executeUpdate();
-            } finally {
-                preparedStatement.close();
-            }
-        } finally {
-            releaseConnection(connection);
-        }
+    public int execute(final Sql statement, final List<Option> options) throws SQLException {
+        return execute(statement, null, options);
     }
 
     @Override
-    public <T> T executeReturnKey(final Sql statement, final ColumnName<T> keyColumn, final Option... options) throws SQLException {
+    public int execute(final Sql statement, final GeneratedKeys<?> keyHolder, final List<Option> options) throws SQLException {
         final Connection connection = getConnection();
         try {
-            final PreparedStatement preparedStatement = connection.prepareStatement(statement.toString(), Statement.RETURN_GENERATED_KEYS);
+            final PreparedStatement preparedStatement = keyHolder != null ?
+                    connection.prepareStatement(statement.toString(), Statement.RETURN_GENERATED_KEYS)
+                    : connection.prepareStatement(statement.toString());
             try {
                 setupStatement(preparedStatement, statement, options);
                 statement.setParameters(new StatementParameters(preparedStatement));
-                preparedStatement.executeUpdate();
-                final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                try {
-                    generatedKeys.next();
-                    final ResultSetRow row = new ResultSetRow(generatedKeys, new InnerQueryEngine(this, connection));
-                    final Mapper<T> mapper = keyColumn.getMapper();
-                    return mapper.value(row.getValue(1));
-                } finally {
-                    generatedKeys.close();
+                int affectedRows = preparedStatement.executeUpdate();
+                if (keyHolder != null) {
+                    final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    try {
+                        generatedKeys.next();
+                        final ResultSetRow row = new ResultSetRow(generatedKeys, new InnerQueryEngine(this, connection));
+                        keyHolder.read(row);
+                    } finally {
+                        generatedKeys.close();
+                    }
                 }
+                return affectedRows;
             } finally {
                 preparedStatement.close();
             }
@@ -75,7 +67,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         final Connection connection = getConnection();
         try {
             return scroll(connection, query, callback, options);
@@ -91,16 +83,16 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
 
     private static class StatementKey {
         private final Sql statement;
-        private final Option[] options;
+        private final List<Option> options;
 
-        private StatementKey(final Sql statement, final Option[] options) {
+        private StatementKey(final Sql statement, final List<Option> options) {
             this.statement = statement;
             this.options = options;
         }
 
         public boolean sameAs(final StatementKey other) {
             return other != null && statement.toString().equals(other.statement.toString())
-                && Arrays.equals(options, other.options);
+                && options.equals(other.options);
         }
     }
 
@@ -115,7 +107,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         }
 
         @Override
-        public synchronized int[] submit(final Sql sql, final Option... options) throws SQLException {
+        public synchronized int[] submit(final Sql sql, final List<Option> options) throws SQLException {
             int[] rowsAffected = new int[0];
             final StatementKey newKey = new StatementKey(sql, options);
             if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
@@ -158,13 +150,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         }
 
         @Override
-        public Dialect getDialect() {
-            return AbstractEngine.this.getDialect();
-        }
-
-        @Override
-        public List<Option> getOptions() {
-            return AbstractEngine.this.getOptions();
+        public Engine getEngine() {
+            return AbstractEngine.this;
         }
     }
 }

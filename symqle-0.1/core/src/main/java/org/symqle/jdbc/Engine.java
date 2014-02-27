@@ -4,7 +4,6 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Sql;
-import org.symqle.sql.ColumnName;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,15 +21,14 @@ public interface Engine extends QueryEngine {
     int execute(Sql sql, List<Option> options) throws SQLException;
 
     /**
-     * Executes an sql (insert) and returns generated key.
+     * Executes an sql and reads generated keys.
      * @param sql the SQL to execute
-     * @param keyColumn the column, for which key is generated
-     * @param options  statement options
-     * @param <T> type of generated key
-     * @return value of generated key
+     * @param keys generated keys holder
+     * @param options statement options
+     * @return number of affected rows
      * @throws SQLException from jdbc driver
      */
-    <T> T executeReturnKey(Sql sql, ColumnName<T> keyColumn, List<Option> options) throws SQLException;
+    int execute(Sql sql, GeneratedKeys<?> keys, List<Option> options) throws SQLException;
 
     /**
      * Creates a new Batcher.

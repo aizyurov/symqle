@@ -113,7 +113,21 @@ public class InsertTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext()));
+        assertEquals(3, rows);
+        verify(parameters, param);
+    }
+
+    public void testCompile() throws Exception {
+        final AbstractInsertStatement update = person.insert(person.name.set("John"));
+        final String statementString = update.show(new GenericDialect());
+        final SqlParameters parameters = createMock(SqlParameters.class);
+        final OutBox param =createMock(OutBox.class);
+        expect(parameters.next()).andReturn(param);
+        param.setString("John");
+        replay(parameters, param);
+        int rows = update.compileUpdate(
+                new MockEngine(3, statementString, parameters, new SqlContext.Builder().toSqlContext())).execute();
         assertEquals(3, rows);
         verify(parameters, param);
     }
@@ -127,7 +141,7 @@ public class InsertTest extends SqlTestCase {
         param.setString("John");
         replay(parameters, param);
         int[] rows = update.submit(
-                new MockEngine(1, null, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
+                new MockEngine(1, statementString, parameters, new SqlContext.Builder().toSqlContext()).newBatcher(1));
         assertTrue(Arrays.toString(rows), Arrays.equals(new int[] {1}, rows));
         verify(parameters, param);
     }
@@ -139,7 +153,7 @@ public class InsertTest extends SqlTestCase {
         final OutBox param =createMock(OutBox.class);
         replay(parameters, param);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, SqlContextUtil.allowNoTablesContext()));
+                new MockEngine(3, statementString, parameters, SqlContextUtil.allowNoTablesContext()));
         assertEquals(3, rows);
         verify(parameters, param);
     }
