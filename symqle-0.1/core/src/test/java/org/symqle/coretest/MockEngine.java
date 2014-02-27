@@ -13,6 +13,7 @@ import org.symqle.sql.Dialect;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,14 +33,18 @@ public class MockEngine extends AbstractMockEngine implements Engine {
      * @param sqlContext initial context
      * @param options expected execute/submit options
      */
-    public MockEngine(final int affectedRows, final Object returnedKey, final String statement, final SqlParameters parameters, final SqlContext sqlContext, final Option... options) {
+    public MockEngine(final int affectedRows, final Object returnedKey, final String statement, final SqlParameters parameters, final SqlContext sqlContext, final List<Option> options) {
         super(statement, parameters, sqlContext, options);
         this.affectedRows = affectedRows;
         this.returnedKey = returnedKey;
     }
 
+    public MockEngine(final int affectedRows, final Object returnedKey, final String statement, final SqlParameters parameters, final SqlContext sqlContext) {
+        this(affectedRows, returnedKey, statement, parameters, sqlContext, Collections.<Option>emptyList());
+    }
+
     @Override
-    public int execute(final Sql sql, final Option... options) throws SQLException {
+    public int execute(final Sql sql, final List<Option> options) throws SQLException {
         verify(sql, options);
         return affectedRows;
     }
@@ -54,7 +59,7 @@ public class MockEngine extends AbstractMockEngine implements Engine {
      * @throws SQLException
      */
     @Override
-    public <R> R executeReturnKey(final Sql sql, final ColumnName<R> keyColumn, final Option... options) throws SQLException {
+    public <R> R executeReturnKey(final Sql sql, final ColumnName<R> keyColumn, final List<Option> options) throws SQLException {
         verify(sql, options);
         return (R) returnedKey;
     }
@@ -62,7 +67,7 @@ public class MockEngine extends AbstractMockEngine implements Engine {
     public Batcher newBatcher(int ignored) {
         return new Batcher() {
             @Override
-            public int[] submit(final Sql sql, final Option... options) throws SQLException {
+            public int[] submit(final Sql sql, final List<Option> options) throws SQLException {
                 verify(sql, options);
                 final int[] result = new int[affectedRows];
                 Arrays.fill(result, 1);
@@ -91,7 +96,7 @@ public class MockEngine extends AbstractMockEngine implements Engine {
 
 
     @Override
-    public int scroll(final Sql query, final Callback<Row> callback, final Option... options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         // TODO implement
         throw new RuntimeException("Not implemented");
     }

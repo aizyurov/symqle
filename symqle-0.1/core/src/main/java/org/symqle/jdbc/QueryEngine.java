@@ -18,7 +18,7 @@ public interface QueryEngine  {
 
     List<Option> getOptions();
 
-    int scroll(Sql query, Callback<Row> callback, Option... options) throws SQLException;
+    int scroll(Sql query, Callback<Row> callback, List<Option> options) throws SQLException;
 
     String getDatabaseName();
 }

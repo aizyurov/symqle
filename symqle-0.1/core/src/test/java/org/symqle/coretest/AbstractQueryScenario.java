@@ -1,9 +1,9 @@
 package org.symqle.coretest;
 
 import org.symqle.common.InBox;
+import org.symqle.common.OutBox;
 import org.symqle.common.Row;
 import org.symqle.common.SqlContext;
-import org.symqle.common.OutBox;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
@@ -14,6 +14,7 @@ import org.symqle.sql.Symqle;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public abstract class AbstractQueryScenario<T, StatementType extends SelectState
         final Object[] mocks = mockList.toArray(new Object[mockList.size()]);
         replay(mocks);
         final SqlContext context = new SqlContext.Builder().put(Dialect.class, dialect).toSqlContext();
-        final MockQueryEngine engine = new MockQueryEngine(context, Collections.singletonList(row), queryString, parameters, options);
+        final MockQueryEngine engine = new MockQueryEngine(context, Collections.singletonList(row), queryString, parameters, Arrays.asList(options));
 
         use(query, engine);
 

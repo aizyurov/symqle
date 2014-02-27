@@ -21,7 +21,7 @@ public interface Batcher {
      * empty array if nothing flushed.
      * @throws SQLException
      */
-    int[] submit(Sql sql, Option... options) throws SQLException;
+    int[] submit(Sql sql, List<Option> options) throws SQLException;
 
     /**
      * flushes all pending updates to database

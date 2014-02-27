@@ -13,6 +13,7 @@ import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
@@ -31,7 +32,7 @@ public class InsertReturnKeyTest extends TestCase {
         final OutBox param =createMock(OutBox.class);
         replay(parameters, param);
         Long key = update.executeReturnKey(person.id,
-                new MockEngine(1, 123L, statementString, parameters, SqlContextUtil.allowNoTablesContext(), Option.allowNoTables(false)), Option.allowNoTables(false));
+                new MockEngine(1, 123L, statementString, parameters, SqlContextUtil.allowNoTablesContext(), Collections.<Option>singletonList(Option.allowNoTables(false))), Option.allowNoTables(false));
         assertEquals(123L, key.longValue());
         verify(parameters, param);
     }
@@ -43,7 +44,7 @@ public class InsertReturnKeyTest extends TestCase {
         replay(parameters);
         try {
             Long key = update.executeReturnKey(another.id,
-                    new MockEngine(1, Arrays.asList(123L), statementString, parameters, new SqlContext.Builder().toSqlContext()));
+                    new MockEngine(1, Arrays.asList(123L), statementString, parameters, new SqlContext.Builder().toSqlContext(), Collections.<Option>emptyList()));
             assertEquals(123L, key.longValue());
             fail("MalformedStatementException expected");
         } catch (MalformedStatementException e) {

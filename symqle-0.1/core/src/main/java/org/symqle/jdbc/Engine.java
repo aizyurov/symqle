@@ -7,6 +7,7 @@ import org.symqle.common.Sql;
 import org.symqle.sql.ColumnName;
 
 import java.sql.SQLException;
+import java.util.List;
 
 
 public interface Engine extends QueryEngine {
@@ -18,7 +19,7 @@ public interface Engine extends QueryEngine {
      * @return number of affected rows
      * @throws SQLException from jdbc driver
      */
-    int execute(Sql sql, Option... options) throws SQLException;
+    int execute(Sql sql, List<Option> options) throws SQLException;
 
     /**
      * Executes an sql (insert) and returns generated key.
@@ -29,7 +30,7 @@ public interface Engine extends QueryEngine {
      * @return value of generated key
      * @throws SQLException from jdbc driver
      */
-    <T> T executeReturnKey(Sql sql, ColumnName<T> keyColumn, Option... options) throws SQLException;
+    <T> T executeReturnKey(Sql sql, ColumnName<T> keyColumn, List<Option> options) throws SQLException;
 
     /**
      * Creates a new Batcher.

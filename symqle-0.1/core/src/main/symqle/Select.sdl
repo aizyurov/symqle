@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
+import org.symqle.jdbc.PreparedQuery;
 public interface SelectStatement<T> : Query<T> {
 }
 
@@ -27,10 +28,22 @@ import org.symqle.jdbc.QueryEngine;
      * @throws SQLException from the underlying jdbc driver
      */
 public <T> int scroll(final SelectStatement<T> statement,
-                          final QueryEngine engine,
-                          final Callback<T> callback,
-                          final Option... options
-                          ) throws SQLException {
+                     final QueryEngine engine,
+                     final Callback<T> callback,
+                     final Option... options) throws SQLException {
+    return compileQuery(statement, engine, options).scroll(callback);
+}
+
+import java.sql.SQLException;
+import org.symqle.jdbc.Option;
+import org.symqle.jdbc.QueryEngine;
+import org.symqle.jdbc.PreparedQuery;
+::
+public <T> PreparedQuery<T> compileQuery(final SelectStatement<T> statement,
+                                                               final QueryEngine engine,
+                                                               final Option... options
+                                                               ) {
+
     final Dialect dialect = engine.getDialect();
     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
@@ -40,14 +53,7 @@ public <T> int scroll(final SelectStatement<T> statement,
         option.apply(configuration);
     }
     final Query<T> query = prepareQuery(statement, dialect, configuration);
-    return engine.scroll(query,
-            new Callback<Row>() {
-                @Override
-                public boolean iterate(Row row) throws SQLException {
-                    return callback.iterate(query.extract(row));
-                }
-            },
-            options);
+    return new PreparedQuery<T>(engine, query, allOptions);
 }
 
 import java.sql.SQLException;
@@ -65,15 +71,7 @@ public <T> List<T> list(final SelectStatement<T> statement,
                           final QueryEngine engine,
                           final Option... options
                         ) throws SQLException {
-        final List<T> result = new LinkedList<T>();
-        scroll(statement,  engine,
-            new Callback<T>() {
-                public boolean iterate(T arg) {
-                    result.add(arg);
-                    return true;
-                }
-             }, options);
-        return result;
+    return compileQuery(statement, engine, options).list();
     }
 
 :: private Configuration getDebugConfiguration() {

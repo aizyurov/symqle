@@ -13,6 +13,7 @@ import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -214,7 +215,7 @@ public class UpdateTest extends SqlTestCase {
         param2.setLong(1L);
         replay(parameters, param, param2);
         int rows = update.execute(
-                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext(), Option.setQueryTimeout(20)),
+                new MockEngine(3, null, statementString, parameters, new SqlContext.Builder().toSqlContext(), Collections.<Option>singletonList(Option.setQueryTimeout(20))),
                 Option.setQueryTimeout(20));
         assertEquals(3, rows);
         verify(parameters, param, param2);

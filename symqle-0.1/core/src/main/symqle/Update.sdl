@@ -78,7 +78,7 @@ import java.sql.SQLException;
      List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
      allOptions.addAll(Arrays.asList(options));
      final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
-     return engine.execute(sql, options);
+     return engine.execute(sql, allOptions);
 }
 
 
@@ -89,7 +89,7 @@ import org.symqle.jdbc.Batcher;
         List<Option> allOptions = new ArrayList<Option>(batcher.getOptions());
         allOptions.addAll(Arrays.asList(options));
         final Sql sql = prepareUpdate(statement, contextBuilder, null, allOptions);
-        return batcher.submit(sql, options);
+        return batcher.submit(sql, allOptions);
    }
 
 DataChangeStatement ::=
@@ -307,7 +307,7 @@ DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatem
            }
        };
        final Sql sql = prepareUpdate(dataChange, contextBuilder, keyColumn, allOptions);
-       return engine.executeReturnKey(sql, keyColumn, options);
+       return engine.executeReturnKey(sql, keyColumn, allOptions);
       }
 
 
