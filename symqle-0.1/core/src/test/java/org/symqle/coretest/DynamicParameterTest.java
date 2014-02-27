@@ -665,6 +665,15 @@ public class DynamicParameterTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(DynamicParameter.create(CoreMappers.LONG, 123L)) {
+            @Override
+            void use(DynamicParameter<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine, Option.allowNoTables(true)).scroll(new TestCallback<Long>(123L)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, DynamicParameter<Long>> {
 
         private Scenario(DynamicParameter<Long> query) {

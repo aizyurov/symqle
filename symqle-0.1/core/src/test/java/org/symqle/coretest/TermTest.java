@@ -473,6 +473,15 @@ public class TermTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(person.id.mult(2)) {
+            @Override
+            void use(AbstractTerm<Number> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new NumberTestCallback()));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Number, AbstractTerm<Number>> {
 
         private Scenario(AbstractTerm<Number> query) {

@@ -164,6 +164,15 @@ public class QueryTermTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(createQueryTerm()) {
+            @Override
+            void use(AbstractQueryTerm<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Long>(123L)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryTerm<Long>> {
         protected Scenario(AbstractQueryTerm<Long> query) {
             super(query, "C0");

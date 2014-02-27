@@ -602,6 +602,15 @@ public class ColumnTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(person.id) {
+            @Override
+            void use(Column<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Long>(123L)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, Column<Long>> {
 
         private Scenario(Column<Long> query) {

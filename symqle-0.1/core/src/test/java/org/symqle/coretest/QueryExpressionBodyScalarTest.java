@@ -181,6 +181,15 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(createQueryExpressionBodyScalar()) {
+            @Override
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Long>(123L)));
+           }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractQueryExpressionBodyScalar<Long>> {
         protected Scenario(AbstractQueryExpressionBodyScalar<Long> query) {
             super(query, "C0");

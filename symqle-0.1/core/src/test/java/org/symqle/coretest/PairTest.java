@@ -139,6 +139,16 @@ public class PairTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new PairScenario<AbstractSelectList<Pair<Long, String>>>(createSelectList()) {
+            @Override
+            protected void use(AbstractSelectList<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                final List<Pair<Long, String>> expected = Arrays.asList(Pair.make(123L, "John"));
+                assertEquals(expected, query.compileQuery(engine).list());
+            }
+        }.play();
+    }
+
 
     public void testToString() throws Exception {
         assertEquals("(1, John)", Pair.make(1, "John").toString());

@@ -81,6 +81,15 @@ public class QueryBaseTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new PairScenario<AbstractQueryBase<Pair<Long, String>>>(createQueryBase()) {
+            @Override
+            protected void use(AbstractQueryBase<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Pair<Long,String>>(Pair.make(123L, "John"))));
+            }
+        }.play();
+    }
+
 
     private static class Person extends TableOrView {
         private Person() {

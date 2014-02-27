@@ -199,6 +199,17 @@ public class SelectSublistTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        final Label l = new Label();
+        final AbstractSelectSublist<Long> selectSublist = person.id.label(l);
+        new Scenario123<AbstractSelectSublist<Long>>(selectSublist){
+            @Override
+            void use(final AbstractSelectSublist<Long> query, final QueryEngine engine) throws SQLException {
+                query.compileQuery(engine).scroll(new TestCallback<Long>(123L));
+            }
+        }.play();
+    }
+
     private static class Employee extends TableOrView {
         private Employee() {
             super("employee");

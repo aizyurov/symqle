@@ -468,6 +468,15 @@ public class WhenClauseListTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(createWhenClauseList()) {
+            @Override
+            void use(AbstractSearchedWhenClauseList<String> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<String>("John")));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<String, AbstractSearchedWhenClauseList<String>> {
         protected Scenario(AbstractSearchedWhenClauseList<String> query) {
             super(query);

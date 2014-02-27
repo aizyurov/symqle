@@ -121,6 +121,17 @@ public class QueryPrimaryTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(queryPrimary) {
+            @Override
+            void use(AbstractQuerySpecificationScalar<Integer> query, QueryEngine engine) throws SQLException {
+                int rows = queryPrimary.compileQuery(engine).scroll(
+                    new TestCallback<Integer>(123));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
     private abstract class Scenario extends AbstractQueryScenario<Integer, AbstractQuerySpecificationScalar<Integer>> {
 
         protected Scenario(AbstractQuerySpecificationScalar<Integer> query) {

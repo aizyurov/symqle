@@ -453,6 +453,15 @@ public class FactorTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(person.id.opposite()) {
+            @Override
+            void use(AbstractFactor<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Long>(-123L)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractFactor<Long>> {
 
         private Scenario(AbstractFactor<Long> query) {

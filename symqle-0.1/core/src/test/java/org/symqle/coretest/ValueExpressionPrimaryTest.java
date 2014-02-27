@@ -511,6 +511,15 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(person.id.queryValue()) {
+            @Override
+            void use(AbstractValueExpressionPrimary<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine, Option.allowNoTables(true)).scroll(new TestCallback<Long>(123L)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractValueExpressionPrimary<Long>> {
         private Scenario(AbstractValueExpressionPrimary<Long> query) {
             super(query, "C[0-9]", new MysqlLikeDialect(), Option.allowNoTables(true));

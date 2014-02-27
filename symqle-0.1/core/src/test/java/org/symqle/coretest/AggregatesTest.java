@@ -173,6 +173,16 @@ public class AggregatesTest extends SqlTestCase  {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(person.id.count()) {
+            @Override
+            void use(AbstractAggregateFunction<Integer> query, QueryEngine engine) throws SQLException {
+                int rows = query.compileQuery(engine).scroll(new TestCallback<Integer>(123));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
     public static abstract class Scenario extends AbstractQueryScenario<Integer,AbstractAggregateFunction<Integer>> {
 
         protected Scenario(AbstractAggregateFunction<Integer> query) {

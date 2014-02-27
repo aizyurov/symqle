@@ -598,6 +598,17 @@ public class CastSpecificationTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(createCast()) {
+            @Override
+            void use(AbstractCastSpecification<Long> query, QueryEngine engine) throws SQLException {
+                int rows = query.compileQuery(engine).scroll(
+                    new TestCallback<Long>(123L));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
     private abstract class Scenario extends AbstractQueryScenario<Long, AbstractCastSpecification<Long>> {
 
         protected Scenario(AbstractCastSpecification<Long> query) {

@@ -454,6 +454,16 @@ public class CharacterFactorTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(characterFactor) {
+            @Override
+            void use(AbstractCharacterFactor<String> query, QueryEngine engine) throws SQLException {
+                int rows = query.compileQuery(engine).scroll(new TestCallback<String>("abc"));
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<String, AbstractCharacterFactor<String>> {
 
         private Scenario(AbstractCharacterFactor<String> query) {

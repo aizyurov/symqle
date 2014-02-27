@@ -61,6 +61,17 @@ public class QueryExpressionTest extends SqlTestCase {
         
     }
 
+    public void testCompile() throws Exception {
+        new PairScenario<AbstractQueryExpression<Pair<Long, String>>>(createQueryExpression()) {
+            @Override
+            protected void use(AbstractQueryExpression<Pair<Long, String>> query, QueryEngine engine) throws SQLException {
+                final int processedRows = query.compileQuery(engine).scroll(new TestCallback<Pair<Long, String>>(Pair.make(123L, "John")));
+                assertEquals(1, processedRows);
+            }
+        }.play();
+
+    }
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");

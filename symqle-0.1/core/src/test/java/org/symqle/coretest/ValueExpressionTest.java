@@ -485,6 +485,15 @@ public class ValueExpressionTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(createValueExpression()) {
+            @Override
+            void use(AbstractValueExpression<Boolean> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Boolean>(true)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Boolean, AbstractValueExpression<Boolean>> {
         protected Scenario(AbstractValueExpression<Boolean> query) {
             super(query);

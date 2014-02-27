@@ -536,6 +536,15 @@ public class FunctionTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(abs(person.id)) {
+            @Override
+            void use(AbstractRoutineInvocation<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Long>(123L)));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractRoutineInvocation<Long>> {
 
         private Scenario(AbstractRoutineInvocation<Long> query) {

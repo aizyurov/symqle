@@ -173,6 +173,15 @@ public class QueryBaseScalarTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario123<AbstractQueryBaseScalar<Long>>(createQueryBaseScalar()) {
+            @Override
+            void use(AbstractQueryBaseScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(getCallback()));
+            }
+        }.play();
+    }
+
     private static class Person extends TableOrView {
         private Person() {
             super("person");

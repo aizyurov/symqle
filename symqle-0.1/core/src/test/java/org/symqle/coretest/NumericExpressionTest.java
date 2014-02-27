@@ -468,6 +468,16 @@ public class NumericExpressionTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(person.id.add(2)) {
+            @Override
+            void use(AbstractNumericExpression<Number> query, QueryEngine engine) throws SQLException {
+                final int rows = query.compileQuery(engine).scroll(new NumberTestCallback());
+                assertEquals(1, rows);
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<Number, AbstractNumericExpression<Number>> {
 
         private Scenario(AbstractNumericExpression<Number> query) {

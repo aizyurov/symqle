@@ -472,6 +472,15 @@ public class StringExpressionTest extends SqlTestCase {
         }.play();
     }
 
+    public void testCompile() throws Exception {
+        new Scenario(createStringExpression()) {
+            @Override
+            void use(AbstractStringExpression<String> query, QueryEngine engine) throws SQLException {
+                assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<String>("#1")));
+            }
+        }.play();
+    }
+
     private static abstract class Scenario extends AbstractQueryScenario<String, AbstractStringExpression<String>> {
         protected Scenario(AbstractStringExpression<String> query) {
             super(query);
