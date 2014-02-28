@@ -21,28 +21,24 @@ import java.sql.SQLException;
 /**
  * This interface represents text of a syntax element of SQL language, which may contain dynamic parameters.
  * The interface also provides values for the parameters.
- * T
+ * For better performance the access tp SQL text is provided by {@link #appendTo}.
+ * It is expected that all implementations are consistent: {@code this.appendTo(builder)} has the same result as
+ * {@code this.toString().appendTo(builder)}. If possible, implementing classes should inherit from
  */
-public abstract class Sql {
+public interface Sql {
 
     /**
      * Appends the text of this Sql to an SqlBuilder.
      * The text may contain dynamic parameters (?).
       * @return the text
      */
-    public abstract void append(StringBuilder builder);
+    void appendTo(StringBuilder builder);
 
     /**
      * Provide values for dynamic parameters.
      * @param p SqlParameters to write parameter values into
      * @throws SQLException if jdbc driver cannot set parameters
      */
-    public abstract void setParameters(SqlParameters p) throws SQLException;
-
-    public final String toString() {
-        final StringBuilder builder = new StringBuilder();
-        this.append(builder);
-        return builder.toString();
-    }
+    void setParameters(SqlParameters p) throws SQLException;
 
 }

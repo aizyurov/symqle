@@ -52,8 +52,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
             }
 
             @Override
-            public void append(final StringBuilder builder) {
-                sql.append(builder);
+            public void appendTo(final StringBuilder builder) {
+                sql.appendTo(builder);
             }
 
             @Override

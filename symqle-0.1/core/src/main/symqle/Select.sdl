@@ -94,7 +94,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
          option.apply(configuration);
      }
      final StringBuilder sqlBuilder = new StringBuilder();
-     prepareQuery(statement, dialect, configuration).append(sqlBuilder);
+     prepareQuery(statement, dialect, configuration).appendTo(sqlBuilder);
     return sqlBuilder.toString();
     }
 
@@ -116,7 +116,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
         }
 
         @Override
-        public void append(final StringBuilder builder) {
+        public void appendTo(final StringBuilder builder) {
             builder.append(dialect.formatSql(query.toString()));
         }
 

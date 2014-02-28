@@ -26,5 +26,5 @@ package org.symqle.common;
  * @version 0.1
  * @param <JavaType> the type of associated Java objects
  */
-public abstract class Query<JavaType> extends Sql implements RowMapper<JavaType> {
+public abstract class Query<JavaType> extends ConsistentSql implements RowMapper<JavaType> {
 }

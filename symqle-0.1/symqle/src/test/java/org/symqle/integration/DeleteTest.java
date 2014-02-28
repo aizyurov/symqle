@@ -1,5 +1,6 @@
 package org.symqle.integration;
 
+import org.symqle.common.ConsistentSql;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
 import org.symqle.integration.model.DeleteDetail;
@@ -25,11 +26,11 @@ public class DeleteTest extends AbstractIntegrationTestBase {
         getEngine().execute(new CustomSql("DELETE FROM delete_master"), NO_OPTIONS);
     }
 
-    private final Sql createInsertIntoDeleteMaster(final int id, final String description) {
-        return new Sql() {
+    private Sql createInsertIntoDeleteMaster(final int id, final String description) {
+        return new ConsistentSql() {
 
             @Override
-            public void append(StringBuilder builder) {
+            public void appendTo(StringBuilder builder) {
                 builder.append("INSERT INTO delete_master (master_id, description) values (?, ?)");
             }
 
@@ -41,11 +42,11 @@ public class DeleteTest extends AbstractIntegrationTestBase {
         };
     }
 
-    private final Sql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
-        return new Sql() {
+    private Sql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
+        return new ConsistentSql() {
 
             @Override
-            public void append(StringBuilder builder) {
+            public void appendTo(StringBuilder builder) {
                 builder.append("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)");
             }
 
@@ -60,8 +61,11 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     public void testDeleteAll() throws Exception {
         final DeleteMaster master = new DeleteMaster();
+        System.out.println(master.delete().show(getEngine().getDialect()));
         assertEquals(0, master.delete().execute(getEngine()));
-        getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
+        final Sql one = createInsertIntoDeleteMaster(1, "one");
+        System.out.println(one);
+        getEngine().execute(one, NO_OPTIONS);
         getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
         assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
         assertEquals(2, master.delete().execute(getEngine()));

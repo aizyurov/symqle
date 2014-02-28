@@ -36,7 +36,7 @@ public class ComplexQuery<T> extends Query<T> {
     /**
      * Constructs from components.
      * @param rowMapper RowMapper to use for {@link #extract(org.symqle.common.Row)}
-     * @param sql provides {@link #sql()} and {@link #setParameters(org.symqle.common.SqlParameters)}
+     * @param sql provides SQL text and {@link #setParameters(org.symqle.common.SqlParameters)}
      */
     public ComplexQuery(final RowMapper<T> rowMapper, final Sql sql) {
         this.extractor = rowMapper;
@@ -49,8 +49,8 @@ public class ComplexQuery<T> extends Query<T> {
     }
 
     @Override
-    public void append(final StringBuilder builder) {
-       sql.append(builder);
+    public void appendTo(final StringBuilder builder) {
+       sql.appendTo(builder);
     }
 
     @Override

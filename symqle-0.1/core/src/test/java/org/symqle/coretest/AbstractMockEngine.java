@@ -39,7 +39,7 @@ public class AbstractMockEngine extends Assert {
     protected final void verify(final Sql query, final List<Option> options)
             throws SQLException {
         StringBuilder builder = new StringBuilder();
-        query.append(builder);
+        query.appendTo(builder);
         assertEquals(statement, builder.toString());
         assertEquals(this.options, options);
         query.setParameters(parameters);

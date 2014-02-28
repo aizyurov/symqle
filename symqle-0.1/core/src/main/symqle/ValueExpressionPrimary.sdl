@@ -57,9 +57,9 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
             * @return sql conforming to <code>this</code> syntax
             */
             public final Sql z$sqlOfDynamicParameterSpecification(SqlContext context) {
-                return new Sql() {
+                return new ConsistentSql() {
                     @Override
-                    public void append(final StringBuilder builder) {
+                    public void appendTo(final StringBuilder builder) {
                         builder.append("?");
                     }
 

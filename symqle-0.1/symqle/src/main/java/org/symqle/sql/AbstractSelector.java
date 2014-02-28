@@ -5,8 +5,6 @@ import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
-import org.symqle.sql.AbstractSelectList;
-import org.symqle.sql.SelectList;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -86,8 +84,8 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public void append(final StringBuilder builder) {
-            query.append(builder);
+        public void appendTo(final StringBuilder builder) {
+            query.appendTo(builder);
         }
 
         @Override

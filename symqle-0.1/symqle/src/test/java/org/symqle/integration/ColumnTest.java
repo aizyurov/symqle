@@ -1,23 +1,23 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
+import org.symqle.common.ConsistentSql;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
-import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
-import org.symqle.jdbc.Batcher;
-import org.symqle.sql.AbstractQuerySpecificationScalar;
-import org.symqle.sql.Functions;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.MyDual;
+import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.sql.AbstractQueryExpression;
+import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.AbstractSelectList;
+import org.symqle.sql.Functions;
 import org.symqle.sql.Label;
 
 import java.sql.ResultSet;
@@ -809,10 +809,10 @@ public class ColumnTest extends AbstractIntegrationTestBase {
 
         for (int i=0; i<2000000; i++) {
             final int value = i;
-            batcher.submit(new Sql() {
+            batcher.submit(new ConsistentSql() {
 
                 @Override
-                public void append(StringBuilder builder) {
+                public void appendTo(StringBuilder builder) {
                     builder.append("insert into big_table (num) values(?)");
                 }
 

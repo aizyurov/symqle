@@ -60,7 +60,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
 
     protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         StringBuilder stringBuilder = new StringBuilder();
-        query.append(stringBuilder);
+        query.appendTo(stringBuilder);
         final PreparedStatement preparedStatement = connection.prepareStatement(stringBuilder.toString());
         try {
             setupStatement(preparedStatement, query, options);
