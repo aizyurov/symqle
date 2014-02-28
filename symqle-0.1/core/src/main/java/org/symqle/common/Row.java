@@ -39,5 +39,4 @@ public interface Row {
      */
     QueryEngine getQueryEngine();
 
-    InBox getValue(int position);
 }

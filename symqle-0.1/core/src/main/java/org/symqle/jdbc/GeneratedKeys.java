@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
+import org.symqle.common.InBox;
 import org.symqle.common.Mapper;
-import org.symqle.common.Row;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ public class GeneratedKeys<T> {
         return new GeneratedKeys<T>(mapper);
     }
 
-    void read(Row row) throws SQLException {
-        keys.add(mapper.value(row.getValue(1)));
+    void read(InBox inBox) throws SQLException {
+        keys.add(mapper.value(inBox));
     }
 
     public List<T> all() {

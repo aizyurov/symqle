@@ -51,7 +51,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
                     try {
                         generatedKeys.next();
                         final ResultSetRow row = new ResultSetRow(generatedKeys, new InnerQueryEngine(this, connection));
-                        keyHolder.read(row);
+                        keyHolder.read(row.getValue(1));
                     } finally {
                         generatedKeys.close();
                     }

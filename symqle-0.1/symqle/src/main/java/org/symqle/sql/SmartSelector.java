@@ -169,11 +169,6 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         public QueryEngine getQueryEngine() {
             return new ProbeQueryEngine();
         }
-
-        @Override
-        public InBox getValue(final int position) {
-            throw new IllegalStateException("Unexpected call");
-        }
     }
 
     private static class ProbeElement implements InBox {
