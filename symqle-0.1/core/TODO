@@ -83,3 +83,6 @@ ALL/ANY/SOME (future release)
 
 (done) Core: move submit/flush/... to Batcher. new Batcher(Engine, int). Batcher is thread-safe and can be shared. Each Batcher has its own queue.
 Implementation is inner class of AbstractEngine.
+
+Core: no ConsistentSql. CompositeSql formats on the fly - add firstChar() method (removes "my, own  table" problem. CustomSql is not formatted. Engine accepts String,
+Parameterizer (extract from Sql).
