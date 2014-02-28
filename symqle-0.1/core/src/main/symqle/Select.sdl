@@ -93,9 +93,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
      for (Option option : options) {
          option.apply(configuration);
      }
-     final StringBuilder sqlBuilder = new StringBuilder();
-     prepareQuery(statement, dialect, configuration).appendTo(sqlBuilder);
-    return sqlBuilder.toString();
+    return SqlFormatter.formatText(prepareQuery(statement, dialect, configuration));
     }
 
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
@@ -108,23 +106,7 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
             put(Configuration.class, configuration).toSqlContext();
 
     statement.z$sqlOfSelectStatement(makeLearningContext(context));
-    final Query<T> query = statement.z$sqlOfSelectStatement(context);
-    return new Query<T>() {
-        @Override
-        public T extract(final Row row) throws SQLException {
-            return query.extract(row);
-        }
-
-        @Override
-        public void appendTo(final StringBuilder builder) {
-            builder.append(dialect.formatSql(query.toString()));
-        }
-
-        @Override
-        public void setParameters(final SqlParameters p) throws SQLException {
-            query.setParameters(p);
-        }
-    };
+    return statement.z$sqlOfSelectStatement(context);
 }
 
 ###### SelectStatement Construction methods #####

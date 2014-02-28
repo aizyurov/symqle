@@ -45,17 +45,7 @@ public interface DataChangeStatement : Sql {}
                 .put(TableRegistry.class, new DataChangeTableRegistry())
                 .put(TableNameGenerator.class, new TableNameGenerator())
                 .toSqlContext();
-        final Sql rawSql = statement.z$sqlOfDataChangeStatement(context);
-        return new ConsistentSql() {
-            @Override
-            public void appendTo(final StringBuilder builder) {
-                builder.append(context.get(Dialect.class).formatSql(rawSql.toString()));
-            }
-            @Override
-            public void setParameters(final SqlParameters p) throws SQLException {
-                rawSql.setParameters(p);
-            }
-        };
+        return statement.z$sqlOfDataChangeStatement(context);
     }
 
 
@@ -64,8 +54,7 @@ import org.symqle.jdbc.Option;
 :: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
      final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
      final StringBuilder sqlBuilder = new StringBuilder();
-     prepareUpdate(statement, contextBuilder, Arrays.asList(options)).appendTo(sqlBuilder);
-    return sqlBuilder.toString();
+     return SqlFormatter.formatText(prepareUpdate(statement, contextBuilder, Arrays.asList(options)));
 }
 
 import org.symqle.jdbc.Option;
