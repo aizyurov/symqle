@@ -35,16 +35,16 @@ public class MySqlDialect extends GenericDialect {
         // mysql dialect misunderstands usage of BooleanExpression where ValueExpression is required in construction
         // WHERE T.x IS NOT NULL LIKE '0'
         // surrounding with parentheses to avoid it
-        return concat(SqlTerm.LEFT_PAREN.toSql(), bve, SqlTerm.RIGHT_PAREN.toSql());
+        return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
     }
 
     @Override
     public Sql QueryExpression_is_QueryExpressionBasic_FETCH_FIRST_Literal_ROWS_ONLY(final Sql qe, final Sql limit) {
-        return concat(qe, SqlTerm.LIMIT.toSql(), new CustomSql("0"), SqlTerm.COMMA.toSql(), limit);
+        return concat(qe, SqlTerm.LIMIT, new CustomSql("0"), SqlTerm.COMMA, limit);
     }
 
     @Override
     public Sql QueryExpression_is_QueryExpressionBasic_OFFSET_Literal_ROWS_FETCH_FIRST_Literal_ROWS_ONLY(final Sql qe, final Sql offset, final Sql limit) {
-        return concat(qe, SqlTerm.LIMIT.toSql(), offset, SqlTerm.COMMA.toSql(), limit);
+        return concat(qe, SqlTerm.LIMIT, offset, SqlTerm.COMMA, limit);
     }
 }

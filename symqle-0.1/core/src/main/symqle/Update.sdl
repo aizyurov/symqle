@@ -147,7 +147,7 @@ public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElemen
 SetClause ::=
     c:ColumnName<?> EQ NULL :: public SetClause setNull {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
-                return SqlTerm.NULL.toSql();
+                return SqlTerm.NULL;
             }
             public Sql z$sqlOfInsertColumn(final SqlContext context) {
                 return c.z$sqlOfColumnName(context);
@@ -156,7 +156,7 @@ SetClause ::=
 |
     c:ColumnName<?> EQ DEFAULT :: public SetClause setDefault {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
-                return SqlTerm.DEFAULT.toSql();
+                return SqlTerm.DEFAULT;
             }
             public Sql z$sqlOfInsertColumn(final SqlContext context) {
                 return c.z$sqlOfColumnName(context);

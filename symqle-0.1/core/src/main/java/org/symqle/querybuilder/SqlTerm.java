@@ -19,12 +19,14 @@ package org.symqle.querybuilder;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
 
+import java.sql.SQLException;
+
 /**
  * Enumerates terminal symbols of SQL grammar.
  *
  * @author Alexander Izyurov
  */
-public enum SqlTerm {
+public enum SqlTerm implements Sql {
 
     /**************************
      * Special characters
@@ -1483,8 +1485,12 @@ public enum SqlTerm {
         this.s = s;
     }
 
-    public Sql toSql() {
-        return new CustomSql(s);
+    @Override
+    public void appendTo(StringBuilder builder) {
+        builder.append(s);
     }
 
+    @Override
+    public final void setParameters(SqlParameters p) throws SQLException {
+    }
 }

@@ -49,9 +49,9 @@ class FromClauseBuilder {
         } else {
             // need a unique correlation name for fallback table
             return new CompositeSql(
-              SqlTerm.FROM.toSql(),
+              SqlTerm.FROM,
               new CustomSql(fallbackTableName),
-              SqlTerm.AS.toSql(),
+              SqlTerm.AS,
               new CustomSql(context.get(TableNameGenerator.class).generate("DUMMY")));
         }
     }
