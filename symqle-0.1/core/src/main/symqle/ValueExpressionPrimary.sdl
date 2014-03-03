@@ -40,7 +40,7 @@ public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 import org.symqle.common.*;
 public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
     private final Mapper<T> mapper;
-    private final T value;
+    private T value;
 
     private DynamicParameter(final Mapper<T> mapper, T value) {
         this.mapper = mapper;
@@ -49,6 +49,14 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
 
      public static <T> DynamicParameter<T> create(final Mapper<T> mapper, final T value) {
         return new DynamicParameter<T>(mapper, value); 
+     }
+
+     public static <T> DynamicParameter<T> create(final Mapper<T> mapper) {
+        return new DynamicParameter<T>(mapper, null);
+     }
+
+     public void setValue(T value) {
+        this.value = value;
      }
 
             /**

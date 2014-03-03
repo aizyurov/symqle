@@ -343,6 +343,20 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final Column<Long> id  =  person.id;
+        final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
+        final String sql = param.add(param.param(2L)).add(id).show(new GenericDialect());
+        assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final Column<Long> id  =  person.id;
+        final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
+        final String sql = param.add(param.param()).add(id).show(new GenericDialect());
+        assertSimilar("SELECT ? + ? + T0.id AS C0 FROM person AS T0", sql);
+    }
+
     public void testSub() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);

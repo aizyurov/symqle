@@ -207,6 +207,18 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(T0.name = T0.nick) + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final AbstractValueExpression<Boolean> valueExpression = createValueExpression();
+        final String sql = valueExpression.add(valueExpression.param(true)).show(new GenericDialect());
+        assertSimilar("SELECT(T0.name = T0.nick) + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final AbstractValueExpression<Boolean> valueExpression = createValueExpression();
+        final String sql = valueExpression.add(valueExpression.param()).show(new GenericDialect());
+        assertSimilar("SELECT(T0.name = T0.nick) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testSubNumber() throws Exception {
         final String sql = createValueExpression().sub(2).show(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) - ? AS C0 FROM person AS T0", sql);

@@ -251,6 +251,18 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final AbstractSearchedWhenClauseBaseList<Long> whenClauseBaseList = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age));
+        String sql = whenClauseBaseList.add(whenClauseBaseList.param(2L)).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final AbstractSearchedWhenClauseBaseList<Long> whenClauseBaseList = person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age));
+        String sql = whenClauseBaseList.add(whenClauseBaseList.param()).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END", sql);

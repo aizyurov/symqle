@@ -409,6 +409,20 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final Column<Long> id  =  person.id;
+        final AbstractCastSpecification<Long> cast = id.cast("NUMBER(12,0)");
+        String sql = cast.add(cast.param(1L)).show(new GenericDialect());
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithNoValue() throws Exception {
+        final Column<Long> id  =  person.id;
+        final AbstractCastSpecification<Long> cast = id.cast("NUMBER(12,0)");
+        String sql = cast.add(cast.param()).show(new GenericDialect());
+        assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testSub() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;

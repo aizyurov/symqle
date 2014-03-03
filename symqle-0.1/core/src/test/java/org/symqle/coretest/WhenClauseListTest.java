@@ -235,6 +235,18 @@ public class WhenClauseListTest extends SqlTestCase {
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id ELSE T0.age END + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final AbstractSearchedWhenClauseList<Long> whenClauseList = person.age.gt(20L).then(person.id).orElse(person.age);
+        String sql = whenClauseList.add(whenClauseList.param(2L)).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id ELSE T0.age END + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final AbstractSearchedWhenClauseList<Long> whenClauseList = person.age.gt(20L).then(person.id).orElse(person.age);
+        String sql = whenClauseList.add(whenClauseList.param()).show(new GenericDialect());
+        assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.id ELSE T0.age END + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(person.age.gt(20L).then(person.id).orElse(person.age).asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.id ELSE T0.age END", sql);

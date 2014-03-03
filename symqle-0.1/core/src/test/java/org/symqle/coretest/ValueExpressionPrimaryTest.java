@@ -176,6 +176,18 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) + ? + T1.id AS C0 FROM employee AS T1", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = createValueExpressionPrimary();
+        final String sql = valueExpressionPrimary.add(valueExpressionPrimary.param(2L)).add(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) + ? + T1.id AS C0 FROM employee AS T1", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = createValueExpressionPrimary();
+        final String sql = valueExpressionPrimary.add(valueExpressionPrimary.param()).add(employee.id).show(new GenericDialect());
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) + ? + T1.id AS C0 FROM employee AS T1", sql);
+    }
+
     public void testSubNumber() throws Exception {
         final String sql = createValueExpressionPrimary().sub(2).add(employee.id).show(new GenericDialect());
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) - ? + T1.id AS C0 FROM employee AS T1", sql);

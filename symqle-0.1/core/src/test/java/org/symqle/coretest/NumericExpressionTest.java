@@ -212,6 +212,17 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id + ? +(T0.id + ?) AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() {
+        final AbstractNumericExpression<Number> numericExpression = createNumericExpression();
+        String sql = numericExpression.add(numericExpression.param(1)).show(new GenericDialect());
+        assertSimilar("SELECT T0.id + ? + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithNoValue() {
+        final AbstractNumericExpression<Number> numericExpression = createNumericExpression();
+        String sql = numericExpression.add(numericExpression.param()).show(new GenericDialect());
+        assertSimilar("SELECT T0.id + ? + ? AS C0 FROM person AS T0", sql);
+    }
     public void testPair() throws Exception {
         String sql = createNumericExpression().pair(person.name).show(new GenericDialect());
         assertSimilar("SELECT T0.id + ? AS C0, T0.name AS C1 FROM person AS T0", sql);

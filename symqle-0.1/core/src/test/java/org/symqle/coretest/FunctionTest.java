@@ -310,6 +310,20 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final Column<Long> id  =  person.id;
+        final AbstractRoutineInvocation<Long> abs = abs(id);
+        String sql = abs.add(abs.param(1L)).show(new GenericDialect());
+        assertSimilar("SELECT abs(T0.id) + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final Column<Long> id  =  person.id;
+        final AbstractRoutineInvocation<Long> abs = abs(id);
+        String sql = abs.add(abs.param()).show(new GenericDialect());
+        assertSimilar("SELECT abs(T0.id) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testSub() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;

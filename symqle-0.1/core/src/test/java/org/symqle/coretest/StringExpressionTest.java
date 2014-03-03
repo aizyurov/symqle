@@ -283,6 +283,18 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT(? || T0.id) + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final AbstractStringExpression<String> stringExpression = createStringExpression();
+        String sql = stringExpression.add(stringExpression.param("2")).show(new GenericDialect());
+        assertSimilar("SELECT(? || T0.id) + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithNoValue() throws Exception {
+        final AbstractStringExpression<String> stringExpression = createStringExpression();
+        String sql = stringExpression.add(stringExpression.param()).show(new GenericDialect());
+        assertSimilar("SELECT(? || T0.id) + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testSubNumber() throws Exception {
         String sql = createStringExpression().sub(2).show(new GenericDialect());
         assertSimilar("SELECT(? || T0.id) - ? AS C0 FROM person AS T0", sql);

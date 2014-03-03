@@ -288,6 +288,16 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT(T1.name COLLATE latin1_general_ci) + ? AS C1 FROM person AS T1", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final String sql = characterFactor.add(characterFactor.param("2")).show(new GenericDialect());
+        assertSimilar("SELECT(T1.name COLLATE latin1_general_ci) + ? AS C1 FROM person AS T1", sql);
+    }
+
+    public void testParamWithNoValue() throws Exception {
+        final String sql = characterFactor.add(characterFactor.param()).show(new GenericDialect());
+        assertSimilar("SELECT(T1.name COLLATE latin1_general_ci) + ? AS C1 FROM person AS T1", sql);
+    }
+
     public void testMult() throws Exception {
         final String sql = characterFactor.mult(person.id).show(new GenericDialect());
         assertSimilar("SELECT(T1.name COLLATE latin1_general_ci) * T1.id AS C1 FROM person AS T1", sql);

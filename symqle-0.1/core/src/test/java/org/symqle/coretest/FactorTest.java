@@ -191,6 +191,18 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT - T0.id + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParamWithValue() throws Exception {
+        final AbstractFactor<Long> factor = person.id.opposite();
+        String sql = factor.add(factor.param(2L)).show(new GenericDialect());
+        assertSimilar("SELECT - T0.id + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final AbstractFactor<Long> factor = person.id.opposite();
+        String sql = factor.add(factor.param()).show(new GenericDialect());
+        assertSimilar("SELECT - T0.id + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(person.id.opposite().asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(- T0.id)", sql);

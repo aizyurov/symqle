@@ -215,6 +215,18 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id * ? + ? AS C0 FROM person AS T0", sql);
     }
 
+    public void testParam() throws Exception {
+        final AbstractTerm<Number> term = person.id.mult(two);
+        String sql = term.add(term.param(2)).show(new GenericDialect());
+        assertSimilar("SELECT T0.id * ? + ? AS C0 FROM person AS T0", sql);
+    }
+
+    public void testParamWithoutValue() throws Exception {
+        final AbstractTerm<Number> term = person.id.mult(two);
+        String sql = term.add(term.param()).show(new GenericDialect());
+        assertSimilar("SELECT T0.id * ? + ? AS C0 FROM person AS T0", sql);
+    }
+
     public void testBooleanValue() throws Exception {
         String sql = person.id.where(person.id.mult(two).asPredicate()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id * ?)", sql);

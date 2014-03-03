@@ -23,6 +23,13 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
     };
 }
 
+:: public <T> DynamicParameter<T> param(final ValueExpression<T> e, T value) {
+    return DynamicParameter.create(e.getMapper(), value);
+}
+
+:: public <T> DynamicParameter<T> param(final ValueExpression<T> e) {
+    return DynamicParameter.create(e.getMapper());
+}
 
 <T> ValueExpression<T> ::=
     e:NumericExpression<T> :: implicit {}
