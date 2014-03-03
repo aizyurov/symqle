@@ -37,6 +37,11 @@
                        <branchRate>100</branchRate>
                        <lineRate>100</lineRate>
                    </check>
+                  <instrumentation>
+                    <excludes>
+                      <exclude>org/symqle/common/FormattingRules.class</exclude>
+                    </excludes>
+                  </instrumentation>
                </configuration>
                <executions>
                    <execution>

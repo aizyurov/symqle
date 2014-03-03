@@ -3,7 +3,7 @@
 
 package org.symqle.jdbc;
 
-import org.symqle.common.Sql;
+import org.symqle.common.CompiledSql;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,7 +18,7 @@ public interface Engine extends QueryEngine {
      * @return number of affected rows
      * @throws SQLException from jdbc driver
      */
-    int execute(Sql sql, List<Option> options) throws SQLException;
+    int execute(CompiledSql sql, List<Option> options) throws SQLException;
 
     /**
      * Executes an sql and reads generated keys.
@@ -28,7 +28,7 @@ public interface Engine extends QueryEngine {
      * @return number of affected rows
      * @throws SQLException from jdbc driver
      */
-    int execute(Sql sql, GeneratedKeys<?> keys, List<Option> options) throws SQLException;
+    int execute(CompiledSql sql, GeneratedKeys<?> keys, List<Option> options) throws SQLException;
 
     /**
      * Creates a new Batcher.

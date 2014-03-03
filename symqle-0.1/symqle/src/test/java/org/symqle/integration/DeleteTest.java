@@ -1,7 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.ConsistentSql;
-import org.symqle.common.Sql;
+import org.symqle.common.CompiledSql;
 import org.symqle.common.SqlParameters;
 import org.symqle.integration.model.DeleteDetail;
 import org.symqle.integration.model.DeleteMaster;
@@ -22,33 +21,23 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     @Override
     protected void onSetUp() throws Exception {
-        getEngine().execute(new CustomSql("DELETE FROM delete_detail"), NO_OPTIONS);
-        getEngine().execute(new CustomSql("DELETE FROM delete_master"), NO_OPTIONS);
+        getEngine().execute(new CompiledSql(new CustomSql("DELETE FROM delete_detail")), NO_OPTIONS);
+        getEngine().execute(new CompiledSql(new CustomSql("DELETE FROM delete_master")), NO_OPTIONS);
     }
 
-    private Sql createInsertIntoDeleteMaster(final int id, final String description) {
-        return new ConsistentSql() {
-
-            @Override
-            public void appendTo(StringBuilder builder) {
-                builder.append("INSERT INTO delete_master (master_id, description) values (?, ?)");
-            }
+    private CompiledSql createInsertIntoDeleteMaster(final int id, final String description) {
+        return new CompiledSql(new CustomSql("INSERT INTO delete_master (master_id, description) values (?, ?)") {
 
             @Override
             public void setParameters(SqlParameters p) throws SQLException {
                 p.next().setInt(id);
                 p.next().setString(description);
             }
-        };
+        });
     }
 
-    private Sql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
-        return new ConsistentSql() {
-
-            @Override
-            public void appendTo(StringBuilder builder) {
-                builder.append("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)");
-            }
+    private CompiledSql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
+        return new CompiledSql(new CustomSql("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)") {
 
             @Override
             public void setParameters(SqlParameters p) throws SQLException {
@@ -56,14 +45,14 @@ public class DeleteTest extends AbstractIntegrationTestBase {
                 p.next().setInt(masterId);
                 p.next().setString(description);
             }
-        };
+        });
     }
 
     public void testDeleteAll() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         System.out.println(master.delete().show(getEngine().getDialect()));
         assertEquals(0, master.delete().execute(getEngine()));
-        final Sql one = createInsertIntoDeleteMaster(1, "one");
+        final CompiledSql one = createInsertIntoDeleteMaster(1, "one");
         System.out.println(one);
         getEngine().execute(one, NO_OPTIONS);
         getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);

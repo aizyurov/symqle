@@ -81,7 +81,7 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testAsFunctionArgument() throws Exception {
-        final String sql = SqlFunction.create("abs", CoreMappers.LONG).apply(person.id.cast("NUMBER (12,0)")).show(new GenericDialect());
+        final String sql = SqlFunction.create("abs", CoreMappers.LONG).apply(person.id.cast("NUMBER(12,0)")).show(new GenericDialect());
         assertSimilar("SELECT abs(CAST(T0.id AS NUMBER(12,0))) AS C0 FROM person AS T0", sql);
     }
 
@@ -270,7 +270,7 @@ public class CastSpecificationTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
         final Column<Long> id2 = employee.id;
-        String sql = id.where(id.cast("NUMBER (12,0)").in(id2)).show(new GenericDialect());
+        String sql = id.where(id.cast("NUMBER(12,0)").in(id2)).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE CAST(T1.id AS NUMBER(12,0)) IN(SELECT T2.id FROM employee AS T2)", sql);
     }
 
@@ -278,7 +278,7 @@ public class CastSpecificationTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
         final Column<Long> id2 = employee.id;
-        String sql = id.where(id.in(id2.cast("NUMBER (12,0)"))).show(new GenericDialect());
+        String sql = id.where(id.in(id2.cast("NUMBER(12,0)"))).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.id IN(SELECT CAST(T2.id AS NUMBER(12,0)) FROM employee AS T2)", sql);
     }
 
@@ -286,7 +286,7 @@ public class CastSpecificationTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
         final Column<Long> id2 = employee.id;
-        String sql = id.where(id.cast("NUMBER (12,0)").notIn(id2)).show(new GenericDialect());
+        String sql = id.where(id.cast("NUMBER(12,0)").notIn(id2)).show(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE CAST(T1.id AS NUMBER(12,0)) NOT IN(SELECT T2.id FROM employee AS T2)", sql);
     }
 
@@ -294,7 +294,7 @@ public class CastSpecificationTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
 
-        String sql = id.where(id.cast("NUMBER (12,0)").in(1L, 2L, 3L)).show(new GenericDialect());
+        String sql = id.where(id.cast("NUMBER(12,0)").in(1L, 2L, 3L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) IN(?, ?, ?)", sql);
    }
 
@@ -302,74 +302,74 @@ public class CastSpecificationTest extends SqlTestCase {
         final Column<Long> id  =  person.id;
         // find all but the most old
 
-        String sql = id.where(id.cast("NUMBER (12,0)").notIn(1L, 2L, 3L)).show(new GenericDialect());
+        String sql = id.where(id.cast("NUMBER(12,0)").notIn(1L, 2L, 3L)).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) NOT IN(?, ?, ?)", sql);
    }
 
     public void testIsNull() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.where(age.cast("NUMBER (12,0)").isNull()).show(new GenericDialect());
+        String sql = id.where(age.cast("NUMBER(12,0)").isNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.age AS NUMBER(12,0)) IS NULL", sql);
    }
 
     public void testIsNotNull() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.where(age.cast("NUMBER (12,0)").isNotNull()).show(new GenericDialect());
+        String sql = id.where(age.cast("NUMBER(12,0)").isNotNull()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.age AS NUMBER(12,0)) IS NOT NULL", sql);
    }
 
     public void testLabel() throws Exception {
         Label l = new Label();
-        String sql = person.id.cast("NUMBER (12,0)").label(l).orderBy(l).show(new GenericDialect());
+        String sql = person.id.cast("NUMBER(12,0)").label(l).orderBy(l).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY C0", sql);
     }
 
 
     public void testOrderBy() throws Exception {
         final Column<Long> age = person.age;
-        String sql = person.id.cast("NUMBER (12,0)").orderBy(age).show(new GenericDialect());
+        String sql = person.id.cast("NUMBER(12,0)").orderBy(age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 ORDER BY T0.age", sql);
     }
 
     public void testOrderByNullsFirst() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.orderBy(age.cast("NUMBER (12,0)").nullsFirst()).show(new GenericDialect());
+        String sql = id.orderBy(age.cast("NUMBER(12,0)").nullsFirst()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0)) NULLS FIRST", sql);
     }
 
     public void testOrderByNullsLast() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.orderBy(age.cast("NUMBER (12,0)").nullsLast()).show(new GenericDialect());
+        String sql = id.orderBy(age.cast("NUMBER(12,0)").nullsLast()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0)) NULLS LAST", sql);
     }
 
     public void testOrderByDesc() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.orderBy(age.cast("NUMBER (12,0)").desc()).show(new GenericDialect());
+        String sql = id.orderBy(age.cast("NUMBER(12,0)").desc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0)) DESC", sql);
     }
 
     public void testOrderByAsc() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.orderBy(age.cast("NUMBER (12,0)").asc()).show(new GenericDialect());
+        String sql = id.orderBy(age.cast("NUMBER(12,0)").asc()).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0)) ASC", sql);
     }
 
     public void testSortSpecification() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.orderBy(age.cast("NUMBER (12,0)")).show(new GenericDialect());
+        String sql = id.orderBy(age.cast("NUMBER(12,0)")).show(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY CAST(T0.age AS NUMBER(12,0))", sql);
     }
 
     public void testMult() throws Exception {
-        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER (12,0)");
+        final AbstractCastSpecification<Long> id = person.id.cast("NUMBER(12,0)");
         final Column<Long> age = person.age;
         String sql = id.mult(age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) * T0.age AS C0 FROM person AS T0", sql);
@@ -378,7 +378,7 @@ public class CastSpecificationTest extends SqlTestCase {
     public void testPair() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;
-        String sql = id.cast("NUMBER (12,0)").pair(age).show(new GenericDialect());
+        String sql = id.cast("NUMBER(12,0)").pair(age).show(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0, T0.age AS C1 FROM person AS T0", sql);
     }
 

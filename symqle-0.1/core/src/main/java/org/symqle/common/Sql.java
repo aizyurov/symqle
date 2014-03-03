@@ -16,8 +16,6 @@
 
 package org.symqle.common;
 
-import java.sql.SQLException;
-
 /**
  * This interface represents text of a syntax element of SQL language, which may contain dynamic parameters.
  * The interface also provides values for the parameters.
@@ -25,7 +23,7 @@ import java.sql.SQLException;
  * It is expected that all implementations are consistent: {@code this.appendTo(builder)} has the same result as
  * {@code this.toString().appendTo(builder)}. If possible, implementing classes should inherit from
  */
-public interface Sql {
+public interface Sql extends Parameterizer {
 
     /**
      * Appends the text of this Sql to an SqlBuilder.
@@ -35,10 +33,9 @@ public interface Sql {
     void appendTo(StringBuilder builder);
 
     /**
-     * Provide values for dynamic parameters.
-     * @param p SqlParameters to write parameter values into
-     * @throws SQLException if jdbc driver cannot set parameters
+     * The first character of (@code this} text
+     * @return the first character
      */
-    void setParameters(SqlParameters p) throws SQLException;
+    char firstChar();
 
 }

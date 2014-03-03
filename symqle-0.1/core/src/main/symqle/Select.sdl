@@ -93,7 +93,9 @@ public String show(final SelectStatement<?> statement, final Dialect dialect, fi
      for (Option option : options) {
          option.apply(configuration);
      }
-    return SqlFormatter.formatText(prepareQuery(statement, dialect, configuration));
+    final StringBuilder stringBuilder = new StringBuilder();
+    prepareQuery(statement, dialect, configuration).appendTo(stringBuilder);
+    return stringBuilder.toString();
     }
 
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {

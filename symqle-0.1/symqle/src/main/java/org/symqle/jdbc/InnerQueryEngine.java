@@ -1,8 +1,8 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
+import org.symqle.common.CompiledSql;
 import org.symqle.common.Row;
-import org.symqle.common.Sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ class InnerQueryEngine extends AbstractQueryEngine {
     }
 
     @Override
-    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         return scroll(connection, query, callback, options);
     }
 }

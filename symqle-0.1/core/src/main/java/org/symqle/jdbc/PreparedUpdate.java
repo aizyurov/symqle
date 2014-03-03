@@ -1,8 +1,7 @@
 package org.symqle.jdbc;
 
+import org.symqle.common.CompiledSql;
 import org.symqle.common.Sql;
-import org.symqle.common.SqlParameters;
-import org.symqle.querybuilder.SqlFormatter;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,30 +12,16 @@ import java.util.List;
 public class PreparedUpdate {
 
     private final Engine engine;
-    private final Sql update;
+    private final CompiledSql update;
     private final List<Option> options;
     private final GeneratedKeys<?> generatedKeys;
 
     public PreparedUpdate(final Engine engine, final Sql update, final List<Option> options, final GeneratedKeys<?> generatedKeys) {
         this.engine = engine;
-        this.update = new Sql() {
-            private final String text = SqlFormatter.formatText(update);
+        final StringBuilder sourceSql = new StringBuilder();
+        update.appendTo(sourceSql);
 
-            @Override
-            public String toString() {
-                return text;
-            }
-
-            @Override
-            public void appendTo(final StringBuilder builder) {
-                builder.append(text);
-            }
-
-            @Override
-            public void setParameters(final SqlParameters p) throws SQLException {
-                update.setParameters(p);
-            }
-        };
+        this.update = new CompiledSql(update);
         this.options = options;
         this.generatedKeys = generatedKeys;
     }

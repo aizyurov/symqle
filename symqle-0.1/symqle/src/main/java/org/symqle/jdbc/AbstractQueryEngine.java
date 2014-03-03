@@ -1,8 +1,9 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
+import org.symqle.common.CompiledSql;
+import org.symqle.common.Parameterizer;
 import org.symqle.common.Row;
-import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
 import org.symqle.sql.Dialect;
 
@@ -58,10 +59,8 @@ abstract class AbstractQueryEngine implements QueryEngine {
         return Collections.unmodifiableList(Arrays.asList(options));
     }
 
-    protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
-        StringBuilder stringBuilder = new StringBuilder();
-        query.appendTo(stringBuilder);
-        final PreparedStatement preparedStatement = connection.prepareStatement(stringBuilder.toString());
+    protected final  int scroll(final Connection connection, final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+        final PreparedStatement preparedStatement = connection.prepareStatement(query.text());
         try {
             setupStatement(preparedStatement, query, options);
             final ResultSet resultSet = preparedStatement.executeQuery();
@@ -84,12 +83,12 @@ abstract class AbstractQueryEngine implements QueryEngine {
         }
     }
 
-    protected final void setupStatement(final PreparedStatement preparedStatement, final Sql sql, final List<Option> options) throws SQLException {
+    protected final void setupStatement(final PreparedStatement preparedStatement, final Parameterizer parameterizer, final List<Option> options) throws SQLException {
         for (Option option : options) {
             option.apply(preparedStatement);
         }
         SqlParameters parameters = new StatementParameters(preparedStatement);
-        sql.setParameters(parameters);
+        parameterizer.setParameters(parameters);
     }
 
 }

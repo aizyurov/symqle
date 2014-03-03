@@ -1,11 +1,10 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
+import org.symqle.common.CompiledSql;
 import org.symqle.common.Query;
 import org.symqle.common.Row;
-import org.symqle.common.Sql;
-import org.symqle.common.SqlParameters;
-import org.symqle.querybuilder.SqlFormatter;
+import org.symqle.common.RowMapper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,34 +16,14 @@ import java.util.List;
 public class PreparedQuery<T> {
 
     private final QueryEngine engine;
-    private final Sql compiledSql;
-    private final Query<T> query;
+    private final CompiledSql compiledSql;
+    private final RowMapper<T> rowMapper;
     private final List<Option> options;
 
     public PreparedQuery(final QueryEngine engine, final Query<T> query, final List<Option> options) {
         this.engine = engine;
-        // new Sql(), not ConsistentSql - take care about consistency
-        this.compiledSql = new Sql() {
-            private final String text = SqlFormatter.formatText(query);
-
-            @Override
-            public String toString() {
-                return text;
-            }
-
-            @Override
-            public void appendTo(final StringBuilder builder) {
-                builder.append(text);
-            }
-
-            @Override
-            public void setParameters(final SqlParameters p) throws SQLException {
-                query.setParameters(p);
-            }
-
-
-        };
-        this.query = query;
+        this.compiledSql = new CompiledSql(query);
+        this.rowMapper = query;
         this.options = options;
     }
 
@@ -64,7 +43,7 @@ public class PreparedQuery<T> {
         return engine.scroll(compiledSql, new Callback<Row>() {
             @Override
             public boolean iterate(final Row row) throws SQLException {
-                return callback.iterate(query.extract(row));
+                return callback.iterate(rowMapper.extract(row));
             }
         }, options);
     }

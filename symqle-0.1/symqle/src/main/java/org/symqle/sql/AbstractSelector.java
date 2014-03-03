@@ -92,5 +92,10 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         public void setParameters(final SqlParameters sqlParameters) throws SQLException {
             query.setParameters(sqlParameters);
         }
+
+        @Override
+        public char firstChar() {
+            return query.firstChar();
+        }
     }
 }

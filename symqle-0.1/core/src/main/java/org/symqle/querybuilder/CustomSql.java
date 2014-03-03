@@ -16,14 +16,16 @@
 
 package org.symqle.querybuilder;
 
-import org.symqle.common.ConsistentSql;
+import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
+
+import java.sql.SQLException;
 
 /**
  * Text-only Sql, no parameters,
  * The  text is provided in the constructor.
  */
-public class CustomSql extends ConsistentSql {
+public class CustomSql implements Sql {
     private final String text;
 
     /**
@@ -40,7 +42,12 @@ public class CustomSql extends ConsistentSql {
     }
 
     @Override
-    public final void setParameters(final SqlParameters p) {
+    public void setParameters(final SqlParameters p) throws SQLException {
         // do nothing
+    }
+
+    @Override
+    public char firstChar() {
+        return text.charAt(0);
     }
 }

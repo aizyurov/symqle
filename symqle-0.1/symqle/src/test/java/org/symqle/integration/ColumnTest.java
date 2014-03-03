@@ -1,7 +1,7 @@
 package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
-import org.symqle.common.ConsistentSql;
+import org.symqle.common.CompiledSql;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.common.SqlParameters;
@@ -803,24 +803,19 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             return;
         }
         final Engine engine = getEngine();
-        engine.execute(new CustomSql("delete from big_table"), NO_OPTIONS);
+        engine.execute(new CompiledSql(new CustomSql("delete from big_table")), NO_OPTIONS);
 
         final Batcher batcher = engine.newBatcher(1000);
 
         for (int i=0; i<2000000; i++) {
             final int value = i;
-            batcher.submit(new ConsistentSql() {
-
-                @Override
-                public void appendTo(StringBuilder builder) {
-                    builder.append("insert into big_table (num) values(?)");
-                }
+            batcher.submit(new CompiledSql(new CustomSql("insert into big_table (num) values(?)") {
 
                 @Override
                 public void setParameters(SqlParameters p) throws SQLException {
                     p.next().setInt(value);
                 }
-            }, NO_OPTIONS);
+            }), NO_OPTIONS);
         }
         batcher.flush();
 

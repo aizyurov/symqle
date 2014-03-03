@@ -57,4 +57,9 @@ public class ComplexQuery<T> extends Query<T> {
     public void setParameters(final SqlParameters p) throws SQLException {
         sql.setParameters(p);
     }
+
+    @Override
+    public char firstChar() {
+        return sql.firstChar();
+    }
 }

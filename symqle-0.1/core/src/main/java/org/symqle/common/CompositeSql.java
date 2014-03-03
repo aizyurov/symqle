@@ -20,10 +20,10 @@ import java.sql.SQLException;
 
 /**
  * Represents an Sql element composed from a list of sub-elements.
- * Provides implementation of {@link #sql()} and {@link #setParameters(SqlParameters)}
+ * Provides implementation of {@link #appendTo(StringBuilder)} ()} and {@link #setParameters(SqlParameters)}
  * @author Alexander Izyurov
  */
-public class CompositeSql extends ConsistentSql {
+public class CompositeSql implements Sql {
     private final Sql first;
     private final Sql[] other;
 
@@ -41,7 +41,20 @@ public class CompositeSql extends ConsistentSql {
     public void appendTo(final StringBuilder builder) {
         first.appendTo(builder);
         for (Sql element: other) {
-            builder.append(' ');
+            final char lastChar = builder.charAt(builder.length() - 1);
+            final char nextChar = element.firstChar();
+//            if (lastChar != '(' &&
+//                    lastChar != '.' &&
+//                    nextChar != ')' &&
+//                    nextChar != '(' &&
+//                    nextChar != '.' &&
+//                    nextChar != ',') {
+//                builder.append(' ');
+//            }
+//            element.appendTo(builder);
+            if (FormattingRules.needSpaceBetween(lastChar, nextChar)) {
+                builder.append(' ');
+            }
             element.appendTo(builder);
         }
     }
@@ -57,4 +70,8 @@ public class CompositeSql extends ConsistentSql {
         }
     }
 
+    @Override
+    public char firstChar() {
+        return first.firstChar();
+    }
 }

@@ -60,6 +60,11 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
             public void setParameters(final SqlParameters p) throws SQLException {
                 sql.setParameters(p);
             }
+
+            @Override
+            public char firstChar() {
+                return sql.firstChar();
+            }
         };
     }
 
@@ -139,7 +144,10 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     private final Map<String, RowMapper<?>> mappers = new HashMap<String, RowMapper<?>>();
 
     private String key(final SelectList<?> selectList) {
-        return selectList.z$sqlOfSelectList(probeContext()).toString();
+        final Query<?> query = selectList.z$sqlOfSelectList(probeContext());
+        final StringBuilder builder = new StringBuilder();
+        query.appendTo(builder);
+        return builder.toString();
     }
 
     private SqlContext probeContext() {
@@ -255,7 +263,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+        public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
             return 0;
         }
 

@@ -1493,4 +1493,11 @@ public enum SqlTerm implements Sql {
     @Override
     public final void setParameters(SqlParameters p) throws SQLException {
     }
+
+    @Override
+    public char firstChar() {
+        return s.charAt(0);
+    }
+
+
 }

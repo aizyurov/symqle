@@ -57,7 +57,7 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
             * @return sql conforming to <code>this</code> syntax
             */
             public final Sql z$sqlOfDynamicParameterSpecification(SqlContext context) {
-                return new ConsistentSql() {
+                return new Sql() {
                     @Override
                     public void appendTo(final StringBuilder builder) {
                         builder.append("?");
@@ -66,6 +66,11 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
                     @Override
                     public void setParameters(final SqlParameters p) throws SQLException {
                         mapper.setValue(p.next(), value);
+                    }
+
+                    @Override
+                    public char firstChar() {
+                        return '?';
                     }
                 };
             }

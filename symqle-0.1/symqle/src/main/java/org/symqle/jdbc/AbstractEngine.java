@@ -1,8 +1,9 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
+import org.symqle.common.CompiledSql;
+import org.symqle.common.Parameterizer;
 import org.symqle.common.Row;
-import org.symqle.common.Sql;
 import org.symqle.sql.Dialect;
 
 import java.sql.Connection;
@@ -31,17 +32,17 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     protected abstract void releaseConnection(Connection connection) throws SQLException;
 
     @Override
-    public int execute(final Sql statement, final List<Option> options) throws SQLException {
+    public int execute(final CompiledSql statement, final List<Option> options) throws SQLException {
         return execute(statement, null, options);
     }
 
     @Override
-    public int execute(final Sql statement, final GeneratedKeys<?> keyHolder, final List<Option> options) throws SQLException {
+    public int execute(final CompiledSql statement, final GeneratedKeys<?> keyHolder, final List<Option> options) throws SQLException {
         final Connection connection = getConnection();
         try {
             final PreparedStatement preparedStatement = keyHolder != null ?
-                    connection.prepareStatement(statement.toString(), Statement.RETURN_GENERATED_KEYS)
-                    : connection.prepareStatement(statement.toString());
+                    connection.prepareStatement(statement.text(), Statement.RETURN_GENERATED_KEYS)
+                    : connection.prepareStatement(statement.text());
             try {
                 setupStatement(preparedStatement, statement, options);
                 statement.setParameters(new StatementParameters(preparedStatement));
@@ -67,7 +68,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         final Connection connection = getConnection();
         try {
             return scroll(connection, query, callback, options);
@@ -82,37 +83,39 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     private static class StatementKey {
-        private final Sql statement;
+        private final String statementText;
         private final List<Option> options;
 
-        private StatementKey(final Sql statement, final List<Option> options) {
-            this.statement = statement;
+        private StatementKey(final String statementText, final List<Option> options) {
+            this.statementText = statementText;
             this.options = options;
         }
 
         public boolean sameAs(final StatementKey other) {
-            return other != null && statement.toString().equals(other.statement.toString())
+            return other != null && statementText.equals(other.statementText)
                 && options.equals(other.options);
         }
     }
 
     private class BatcherImpl implements Batcher {
         private final int batchSize;
-        private final List<Sql> queue;
+        private final List<Parameterizer> queue;
         private volatile StatementKey currentKey = null;
 
         private BatcherImpl(final int batchSize) {
             this.batchSize = batchSize;
-            this.queue = new ArrayList<Sql>(batchSize);
+            this.queue = new ArrayList<Parameterizer>(batchSize);
         }
 
         @Override
-        public synchronized int[] submit(final Sql sql, final List<Option> options) throws SQLException {
+        public synchronized int[] submit(final CompiledSql sql, final List<Option> options) throws SQLException {
             int[] rowsAffected = new int[0];
-            final StatementKey newKey = new StatementKey(sql, options);
+
+            final StatementKey newKey = new StatementKey(sql.text(), options);
             if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
                 rowsAffected = flush();
             }
+            // TODO add copy of original Parameterizer
             queue.add(sql);
             currentKey = newKey;
             return rowsAffected;
@@ -133,10 +136,12 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
                 return new int[0];
             }
             try {
-                final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statement.toString());
+                final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statementText.toString());
                 try {
-                    setupStatement(preparedStatement, currentKey.statement, currentKey.options);
-                    for (Sql queued : queue) {
+                    for (Option option : currentKey.options) {
+                        option.apply(preparedStatement);
+                    }
+                    for (Parameterizer queued : queue) {
                         queued.setParameters(new StatementParameters(preparedStatement));
                         preparedStatement.addBatch();
                     }
