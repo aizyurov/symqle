@@ -9,8 +9,9 @@ import org.symqle.sql.Table;
  */
 public class DeleteDetail extends Table {
 
-    public DeleteDetail() {
-        super("delete_detail");
+    @Override
+    public String getTableName() {
+        return "delete_detail";
     }
 
     public Column<Integer> detailId = defineColumn(CoreMappers.INTEGER, "detail_id");

@@ -80,8 +80,9 @@ public class PredicateTest extends SqlTestCase {
 
 
     private static class Person extends TableOrView {
-        private Person() {
-            super("person");
+        @Override
+        public String getTableName() {
+            return "person";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<Boolean> alive = defineColumn(CoreMappers.BOOLEAN, "alive");

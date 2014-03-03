@@ -9,8 +9,9 @@ import org.symqle.sql.TableOrView;
  */
 public class Arithmetics extends TableOrView {
 
-    public Arithmetics() {
-        super("arithmetics");
+    @Override
+    public String getTableName() {
+        return "arithmetics";
     }
 
     public Column<Integer> leftInt() {

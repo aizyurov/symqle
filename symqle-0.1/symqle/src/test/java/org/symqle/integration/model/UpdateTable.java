@@ -9,8 +9,9 @@ import org.symqle.sql.Table;
  */
 public class UpdateTable extends Table {
 
-    public UpdateTable() {
-        super("insert_test");
+    @Override
+    public String getTableName() {
+        return "insert_test";
     }
 
     public final Column<Integer> id = defineColumn(CoreMappers.INTEGER, "id");

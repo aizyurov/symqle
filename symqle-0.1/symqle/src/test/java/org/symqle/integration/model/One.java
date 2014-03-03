@@ -9,8 +9,9 @@ import org.symqle.sql.TableOrView;
  */
 public class One extends TableOrView {
 
-    public One() {
-        super("one");
+    @Override
+    public String getTableName() {
+        return "one";
     }
 
     public final Column<Integer> id = defineColumn(CoreMappers.INTEGER, "id");

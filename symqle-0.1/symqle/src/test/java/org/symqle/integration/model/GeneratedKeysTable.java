@@ -9,8 +9,9 @@ import org.symqle.sql.Table;
  */
 public class GeneratedKeysTable extends Table {
 
-    public GeneratedKeysTable() {
-        super("generated_keys");
+    @Override
+    public String getTableName() {
+        return "generated_keys";
     }
 
     public Column<Integer> id() {

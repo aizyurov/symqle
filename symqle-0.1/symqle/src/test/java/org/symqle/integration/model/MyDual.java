@@ -9,8 +9,9 @@ import org.symqle.sql.TableOrView;
  */
 public class MyDual extends TableOrView {
 
-    public MyDual() {
-        super("my_dual");
+    @Override
+    public String getTableName() {
+        return "my_dual";
     }
 
     public final Column<String> dummy = defineColumn(CoreMappers.STRING, "dummy");

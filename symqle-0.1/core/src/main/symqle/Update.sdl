@@ -107,9 +107,7 @@ UpdateStatementBase ::=
     UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {}
 ;
 
-public interface TargetTable : Sql {
-    public String getName();
-}
+public interface TargetTable : Sql {}
 
 public interface SetClauseList : Sql {}
 
@@ -170,14 +168,11 @@ public interface ColumnName<T> extends Scalar<T> : Sql {}
 
 
 import java.util.Collections;
-public class Table extends TableOrView implements TargetTable {
-    public Table(String name) {
-        super(name);
-    }
+public abstract class Table extends TableOrView implements TargetTable {
 
     public Sql z$sqlOfTargetTable(final SqlContext context) {
         context.get(TableRegistry.class).addAll(Collections.<TableOrView>singleton(this), context.get(TableNameGenerator.class));
-        return new CustomSql(getName());
+        return new CustomSql(getTableName());
     }
 }
 

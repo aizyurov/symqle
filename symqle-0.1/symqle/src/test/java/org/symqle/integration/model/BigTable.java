@@ -9,8 +9,9 @@ import org.symqle.sql.TableOrView;
  */
 public class BigTable extends TableOrView {
 
-    public BigTable() {
-        super("big_table");
+    @Override
+    public String getTableName() {
+        return "big_table";
     }
 
     public final Column<Integer> num = defineColumn(CoreMappers.INTEGER, "num");

@@ -9,26 +9,15 @@ import org.symqle.common.*;
 import org.symqle.querybuilder.CustomSql;
 import org.symqle.querybuilder.TableNameGenerator;
 
-public class TableOrView implements TablePrimary,
+public abstract class TableOrView implements TablePrimary,
                                                             TableName,
                                                             TableReference {
 
 
-    private final String name;
-
-
-
     private TableOrView referral = null;
+    private final Map<TableOrView, JoinInfo> referents = new LinkedHashMap<TableOrView, JoinInfo>();
 
-
-
-    private Map<TableOrView, JoinInfo> referents = new LinkedHashMap<TableOrView, JoinInfo>();
-
-
-
-    protected TableOrView(final String name) {
-        this.name = name;
-    }
+    public abstract String getTableName();
 
     private final int LEFT_JOIN = 1;
     private final int RIGHT_JOIN = 2;
@@ -74,13 +63,9 @@ public class TableOrView implements TablePrimary,
         // OK, came to the root
     }
 
-
-
-    public <T> Column<T> defineColumn(final Mapper<T> mapper, final String name) {
+    protected final <T> Column<T> defineColumn(final Mapper<T> mapper, final String name) {
         return new Column<T>(mapper, name, this);
     }
-
-
 
     public String getCorrelationName(SqlContext context) {
         String name;
@@ -92,20 +77,11 @@ public class TableOrView implements TablePrimary,
         return name;
     }
 
-
-
-    public String getName() {
-        return name;
-    }
-
-
-
     public void innerJoin(TableOrView other, BooleanExpression condition) {
         checkJoin(other);
         other.referral = this;
         referents.put(other, new JoinInfo(INNER_JOIN, condition));
     }
-
 
     public Set<TableOrView> joinedTableParticipants() {
         if (referral != null) {
@@ -118,13 +94,9 @@ public class TableOrView implements TablePrimary,
         }
     }
 
-
-
     public TableOrView joinedTableRoot() {
         return referral == null ? this : referral.joinedTableRoot();
     }
-
-
 
     public void leftJoin(TableOrView other, BooleanExpression condition) {
         checkJoin(other);
@@ -132,15 +104,11 @@ public class TableOrView implements TablePrimary,
         referents.put(other, new JoinInfo(LEFT_JOIN, condition));
     }
 
-
-
     public void outerJoin(TableOrView other, BooleanExpression condition) {
         checkJoin(other);
         other.referral = this;
         referents.put(other, new JoinInfo(OUTER_JOIN, condition));
     }
-
-
 
     public void rightJoin(TableOrView other, BooleanExpression condition) {
         checkJoin(other);
@@ -148,17 +116,14 @@ public class TableOrView implements TablePrimary,
         referents.put(other, new JoinInfo(RIGHT_JOIN, condition));
     }
 
-
-
     /**
     * Creates an Sql representing <code>this</code>
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
     public Sql z$sqlOfTableName(SqlContext context) {
-        return new CustomSql(name);
+        return new CustomSql(getTableName());
     }
-
 
     /**
     * Creates an Sql representing <code>this</code>
@@ -169,7 +134,6 @@ public class TableOrView implements TablePrimary,
         return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
                 new CustomSql(getCorrelationName(context)));
     }
-
 
     /**
     * Creates an Sql representing <code>this</code>

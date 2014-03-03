@@ -9,8 +9,9 @@ import org.symqle.sql.Table;
  */
 public class Country extends Table {
 
-    public Country() {
-        super("country");
+    @Override
+    public String getTableName() {
+        return "country";
     }
 
     public final Column<Integer> countryId = defineColumn(CoreMappers.INTEGER, "country_id");

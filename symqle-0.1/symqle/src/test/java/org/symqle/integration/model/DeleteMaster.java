@@ -9,8 +9,9 @@ import org.symqle.sql.Table;
  */
 public class DeleteMaster extends Table {
 
-    public DeleteMaster() {
-        super("delete_master");
+    @Override
+    public String getTableName() {
+        return "delete_master";
     }
 
     public Column<Integer> masterId = defineColumn(CoreMappers.INTEGER, "master_id");

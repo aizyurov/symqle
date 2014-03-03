@@ -10,8 +10,10 @@ import org.symqle.util.LazyRef;
  */
 public class Department extends Table {
 
-    public Department() {
-        super("department");
+
+    @Override
+    public String getTableName() {
+        return"department";
     }
 
     public final Column<Integer> deptId = defineColumn(CoreMappers.INTEGER, "dept_id");

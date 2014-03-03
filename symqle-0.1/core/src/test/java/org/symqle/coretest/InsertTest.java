@@ -159,8 +159,9 @@ public class InsertTest extends SqlTestCase {
     }
 
     private static class Person extends Table {
-        private Person() {
-            super("person");
+        @Override
+        public String getTableName() {
+            return "person";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<Long> age = defineColumn(CoreMappers.LONG, "age");

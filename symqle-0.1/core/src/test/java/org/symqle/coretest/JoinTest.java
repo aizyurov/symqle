@@ -120,8 +120,9 @@ public class JoinTest extends SqlTestCase {
     }
 
     private static class Person extends Table {
-        private Person() {
-            super("person");
+        @Override
+        public String getTableName() {
+            return "person";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<String> name = defineColumn(CoreMappers.STRING, "name");
@@ -130,8 +131,9 @@ public class JoinTest extends SqlTestCase {
     }
 
     private static class Department extends Table {
-        private Department() {
-            super("department");
+        @Override
+        public String getTableName() {
+            return "department";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<String> name = defineColumn(CoreMappers.STRING, "name");

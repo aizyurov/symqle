@@ -12,8 +12,9 @@ import java.sql.Date;
  */
 public class Employee extends Table {
 
-    public Employee() {
-        super("employee");
+    @Override
+    public String getTableName() {
+        return "employee";
     }
 
     public final Column<Integer> empId = defineColumn(CoreMappers.INTEGER, "emp_id");

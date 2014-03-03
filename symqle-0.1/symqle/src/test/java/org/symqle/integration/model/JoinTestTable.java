@@ -7,11 +7,7 @@ import org.symqle.sql.TableOrView;
 /**
  * @author lvovich
  */
-public class JoinTestTable extends TableOrView {
-
-    public JoinTestTable(final String name) {
-        super(name);
-    }
+public abstract class JoinTestTable extends TableOrView {
 
     public Column<Integer> id() {
         return defineColumn(CoreMappers.INTEGER, "id");

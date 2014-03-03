@@ -154,8 +154,9 @@ public class QueryPrimaryTest extends SqlTestCase {
     }
 
     private static class Employee extends TableOrView {
-        private Employee() {
-            super("employee");
+        @Override
+        public String getTableName() {
+            return "employee";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<String> name = defineColumn(CoreMappers.STRING, "name");

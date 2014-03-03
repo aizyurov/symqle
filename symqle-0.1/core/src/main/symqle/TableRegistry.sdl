@@ -46,7 +46,7 @@ import org.symqle.common.MalformedStatementException;
 
 
     private void addToLocalTables(TableOrView table, final TableNameGenerator generator) {
-            final String newName = generator.generate(table.getName());
+            final String newName = generator.generate(table.getTableName());
             localTables.put(table, newName);
     }
 
@@ -102,7 +102,7 @@ class DataChangeTableRegistry implements TableRegistry {
             final TableOrView table = tables.iterator().next();
             if (targetTable == null) {
                 targetTable = table;
-                generator.force(targetTable.getName());
+                generator.force(targetTable.getTableName());
             } else {
                 Bug.reportIf(table.equals(targetTable));
                 // table can be added only once
@@ -114,7 +114,7 @@ class DataChangeTableRegistry implements TableRegistry {
 
     public String getCorrelationName(TableOrView table) {
         if (table.equals(targetTable)) {
-            return targetTable.getName();
+            return targetTable.getTableName();
         } else {
             return null;
         }

@@ -14,8 +14,9 @@ import java.sql.Timestamp;
  */
 public class AllTypes extends Table {
 
-    public AllTypes() {
-        super("all_types");
+    @Override
+    public String getTableName() {
+        return "all_types";
     }
 
     public Column<Long> tBit() {

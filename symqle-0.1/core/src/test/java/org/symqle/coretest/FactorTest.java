@@ -492,8 +492,9 @@ public class FactorTest extends SqlTestCase {
     }
 
     private static class Person extends TableOrView {
-        private Person() {
-            super("person");
+        @Override
+        public String getTableName() {
+            return "person";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<String> name = defineColumn(CoreMappers.STRING, "name");
@@ -501,8 +502,9 @@ public class FactorTest extends SqlTestCase {
     }
 
     private static class Employee extends TableOrView {
-        private Employee() {
-            super("employee");
+        @Override
+        public String getTableName() {
+            return "employee";
         }
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<String> name = defineColumn(CoreMappers.STRING, "name");

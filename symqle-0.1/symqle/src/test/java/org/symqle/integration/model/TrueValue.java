@@ -9,8 +9,9 @@ import org.symqle.sql.TableOrView;
  */
 public class TrueValue extends TableOrView {
 
-    public TrueValue() {
-        super("true_value");
+    @Override
+    public String getTableName() {
+        return "true_value";
     }
 
     public Column<Boolean> value = defineColumn(CoreMappers.BOOLEAN, "value");
