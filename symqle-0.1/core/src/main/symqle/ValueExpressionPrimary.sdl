@@ -98,7 +98,7 @@ public interface ColumnReference<T> extends Scalar<T> : Sql {}
     tableRef:Identifier PERIOD columnName:ColumnName<T>
 ;
 
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.common.Mapper;
 public class Column<T> implements ColumnReference<T>, ColumnName<T> {
@@ -114,7 +114,7 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
 
     public Sql z$sqlOfColumnReference(SqlContext context) {
         final String correlationName = owner.getCorrelationName(context);
-        return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new CustomSql(correlationName),
+        return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new StringSql(correlationName),
                 z$sqlOfColumnName(context));
     }
 
@@ -122,7 +122,7 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
         // make sure that owner is valid in the context
         // by getting correlation name; the result is not used
         owner.getCorrelationName(context);
-        return new CustomSql(columnName);
+        return new StringSql(columnName);
     }
 
     public final Mapper<T> getMapper() {
@@ -169,7 +169,7 @@ ArgumentList ::=
         :: protected ArgumentList appendArgument {}
 ;
 
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 public class SqlFunction<T> implements RoutineName<T> {
     private final String name;
     private final Mapper<T> mapper;
@@ -180,7 +180,7 @@ public class SqlFunction<T> implements RoutineName<T> {
     }
 
     public Sql z$sqlOfRoutineName(SqlContext context) {
-        return new CustomSql(name);
+        return new StringSql(name);
     }
 
     public Mapper<T> getMapper() {
@@ -260,7 +260,7 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
      return cast(e, new CastTarget() {
          @Override
          public Sql z$sqlOfCastTarget(final SqlContext context) {
-             return new CustomSql(castTarget);
+             return new StringSql(castTarget);
          }
      });
 }

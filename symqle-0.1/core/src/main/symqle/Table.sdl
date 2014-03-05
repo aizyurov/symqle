@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.symqle.common.*;
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.TableNameGenerator;
 
 public abstract class TableOrView implements TablePrimary,
@@ -122,7 +122,7 @@ public abstract class TableOrView implements TablePrimary,
     * @return sql conforming to <code>this</code> syntax
     */
     public Sql z$sqlOfTableName(SqlContext context) {
-        return new CustomSql(getTableName());
+        return new StringSql(getTableName());
     }
 
     /**
@@ -132,7 +132,7 @@ public abstract class TableOrView implements TablePrimary,
     */
     public Sql z$sqlOfTablePrimary(SqlContext context) {
         return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
-                new CustomSql(getCorrelationName(context)));
+                new StringSql(getCorrelationName(context)));
     }
 
     /**

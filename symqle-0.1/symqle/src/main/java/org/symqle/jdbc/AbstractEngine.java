@@ -115,14 +115,16 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
             if (queue.size() >= batchSize || !newKey.sameAs(currentKey)) {
                 rowsAffected = flush();
             }
-            // TODO add copy of original Parameterizer
-            queue.add(sql);
+            queue.add(new SavedParameterizer(sql));
             currentKey = newKey;
             return rowsAffected;
         }
 
         @Override
         public synchronized int[] flush() throws SQLException {
+            if (queue.size() == 0) {
+                return new int[0];
+            }
             final Connection connection = getConnection();
             try {
                 return flush(connection);
@@ -132,11 +134,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         }
 
         private int[] flush(final Connection connection) throws SQLException {
-            if (queue.size() == 0) {
-                return new int[0];
-            }
             try {
-                final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statementText.toString());
+                final PreparedStatement preparedStatement = connection.prepareStatement(currentKey.statementText);
                 try {
                     for (Option option : currentKey.options) {
                         option.apply(preparedStatement);

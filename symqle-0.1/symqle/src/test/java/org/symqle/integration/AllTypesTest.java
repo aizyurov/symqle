@@ -30,33 +30,33 @@ public class AllTypesTest extends AbstractIntegrationTestBase  {
         calendar.set(Calendar.MILLISECOND, 0);
         final Date today = new Date(calendar.getTimeInMillis());
         allTypes.insert(
-                allTypes.tBit().set(1L),
-                allTypes.tTinyint().set((byte) 123),
-                allTypes.tSmallint().set((short) 10000),
-                allTypes.tInteger().set(200000),
-                allTypes.tBigint().set(30000000L),
-                allTypes.tFloat().set(1.1f),
-                allTypes.tDouble().set(2.2),
-                allTypes.tReal().set(3.3f),
-                allTypes.tNumeric().set(new BigDecimal("123.456")),
-                allTypes.tDecimal().set(new BigDecimal("654.321")),
-                allTypes.tChar().set("abcdefghij"),
-                allTypes.tVarchar().set("this is a varchar"),
-                allTypes.tLongvarchar().set("longvarchar sample"),
-                allTypes.tDate().set(today),
-                allTypes.tTime().set(new Time(7200000)),
-                allTypes.tTimestamp().set(new Timestamp(now)),
-                allTypes.tDatetime().set(new Timestamp(now)),
-                allTypes.tBinary().set(new byte[] {(byte) 0, (byte) 1, (byte)2, (byte)3 }),
-                allTypes.tVarbinary().set(new byte[] {(byte) 100, (byte) 101, (byte) 102}),
-                allTypes.tLongvarbinary().set(new byte[] {(byte) 50, (byte) 51, (byte)52, (byte)53, (byte) 54 }),
-                allTypes.tClob().set("clob clob clob clob clob"),
-                allTypes.tBlob().set(new byte[] {(byte) 40, (byte) 41, (byte)42, (byte)43, (byte) 44 }),
-                allTypes.tBoolean().set(true),
-                allTypes.tNchar().set("nchar"),
-                allTypes.tNvarchar().set("nvarchar") ,
-                allTypes.tLongnvarchar().set("longnvarchar"),
-                allTypes.tNclob().set("nclob")
+                allTypes.tBit().set(1L).also(
+                allTypes.tTinyint().set((byte) 123)).also(
+                allTypes.tSmallint().set((short) 10000)).also(
+                allTypes.tInteger().set(200000)).also(
+                allTypes.tBigint().set(30000000L)).also(
+                allTypes.tFloat().set(1.1f)).also(
+                allTypes.tDouble().set(2.2)).also(
+                allTypes.tReal().set(3.3f)).also(
+                allTypes.tNumeric().set(new BigDecimal("123.456"))).also(
+                allTypes.tDecimal().set(new BigDecimal("654.321"))).also(
+                allTypes.tChar().set("abcdefghij")).also(
+                allTypes.tVarchar().set("this is a varchar")).also(
+                allTypes.tLongvarchar().set("longvarchar sample")).also(
+                allTypes.tDate().set(today)).also(
+                allTypes.tTime().set(new Time(7200000))).also(
+                allTypes.tTimestamp().set(new Timestamp(now))).also(
+                allTypes.tDatetime().set(new Timestamp(now))).also(
+                allTypes.tBinary().set(new byte[] {(byte) 0, (byte) 1, (byte)2, (byte)3 })).also(
+                allTypes.tVarbinary().set(new byte[] {(byte) 100, (byte) 101, (byte) 102})).also(
+                allTypes.tLongvarbinary().set(new byte[] {(byte) 50, (byte) 51, (byte)52, (byte)53, (byte) 54 })).also(
+                allTypes.tClob().set("clob clob clob clob clob")).also(
+                allTypes.tBlob().set(new byte[] {(byte) 40, (byte) 41, (byte)42, (byte)43, (byte) 44 })).also(
+                allTypes.tBoolean().set(true)).also(
+                allTypes.tNchar().set("nchar")).also(
+                allTypes.tNvarchar().set("nvarchar") ).also(
+                allTypes.tLongnvarchar().set("longnvarchar")).also(
+                allTypes.tNclob().set("nclob"))
         ).execute(getEngine());
 
         final List<AllTypesDTO> list = new AllTypesSelector(allTypes, now).list(getEngine());

@@ -104,35 +104,55 @@ public interface UpdateStatementBase : Sql {}
 public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 
 UpdateStatementBase ::=
-    UPDATE t:TargetTable SET l:SetClauseList :: protected AbstractUpdateStatementBase createUpdate {}
+    UPDATE t:TargetTable SET l:SetClauseList :: AbstractUpdateStatementBase update {}
 ;
 
 public interface TargetTable : Sql {}
 
-public interface SetClauseList : Sql {}
+public interface SetClauseList extends InsertColumnList, ContextuallyTypedRowValueList : Sql {}
 
 SetClauseList ::=
-    c:SetClause :: protected SetClauseList initSetList {}
+    c:SetClause :: implicit {}
 |
-    l:SetClauseList COMMA c:SetClause :: protected SetClauseList appendSetList {}
-;
-
-:: public AbstractUpdateStatementBase update(final TargetTable t, final SetClause first, final SetClause... other) {
-    SetClauseList l = initSetList(first);
-    for (SetClause c: other) {
-        l = appendSetList(l, c);
+    l:SetClauseList COMMA c:SetClauseList :: SetClauseList also {
+            /**
+            * Creates an Sql representing ContextuallyTypedRowValueList.
+            * @param context the Sql construction context
+            * @return constructed Sql
+            */
+            public Sql z$sqlOfContextuallyTypedRowValueList(final SqlContext context) {
+                return combineRowValueLists(l, c).z$sqlOfContextuallyTypedRowValueList(context);
+            }
+            /**
+            * Creates an Sql representing InsertColumnList.
+            * @param context the Sql construction context
+            * @return constructed Sql
+            */
+            public Sql z$sqlOfInsertColumnList(final SqlContext context) {
+                return combineInsertColumnLists(l, c).z$sqlOfInsertColumnList(context);
+            }
     }
-    return createUpdate(t, l);
-}
+;
 
 public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElement : Sql {}
 
-:: public <T> SetClause set(final ColumnName<T> column, final T value) {
+public class AbstractSetClause implements SetClause {
+              /**
+              * Creates an Sql representing InsertColumnList.
+              * @param context the Sql construction context
+              * @return constructed Sql
+              */
+              public final Sql z$sqlOfInsertColumnList(final SqlContext context) {
+                  return Symqle.z$InsertColumnList$from$InsertColumn(this).z$sqlOfInsertColumnList(context);
+              }
+}
+
+:: public <T> AbstractSetClause set(final ColumnName<T> column, final T value) {
     return set(column, DynamicParameter.create(column.getMapper(), value));
 }
 
 <T> SetClause ::=
-    c:ColumnName<T> EQ e:ValueExpression<T> :: public SetClause set {
+    c:ColumnName<T> EQ e:ValueExpression<T> :: public AbstractSetClause set {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return e.z$sqlOfValueExpression(context);
             }
@@ -144,7 +164,7 @@ public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElemen
 ;
 
 SetClause ::=
-    c:ColumnName<?> EQ NULL :: public SetClause setNull {
+    c:ColumnName<?> EQ NULL :: public AbstractSetClause setNull {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.NULL;
             }
@@ -153,7 +173,7 @@ SetClause ::=
             }
     }
 |
-    c:ColumnName<?> EQ DEFAULT :: public SetClause setDefault {
+    c:ColumnName<?> EQ DEFAULT :: public AbstractSetClause setDefault {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.DEFAULT;
             }
@@ -172,7 +192,7 @@ public abstract class Table extends TableOrView implements TargetTable {
 
     public Sql z$sqlOfTargetTable(final SqlContext context) {
         context.get(TableRegistry.class).addAll(Collections.<TableOrView>singleton(this), context.get(TableNameGenerator.class));
-        return new CustomSql(getTableName());
+        return new StringSql(getTableName());
     }
 }
 
@@ -192,11 +212,15 @@ InsertStatement ::=
 #        :: protected AbstractInsertStatement fromSubquery {}
 #|
     INSERT INTO t:TargetTable s:FromConstructor
-        :: protected AbstractInsertStatement fromConstructor {}
+        :: private AbstractInsertStatement insert {}
 |
     INSERT INTO t:TargetTable DEFAULT VALUES
         :: public AbstractInsertStatement insertDefault {}
 ;
+
+:: public AbstractInsertStatement insert(final TargetTable targetTable, final SetClauseList list) {
+    return insert(targetTable, createFromConstructor(list, createTableValueConstructor(list)));
+}
 
 # interface FromSubquery : Sql {}
 
@@ -206,8 +230,9 @@ interface FromConstructor : Sql {}
 #         :: protected FromSubquery createFromSubquery {}
 # ;
 
+
 FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstructor
-         :: protected FromConstructor createFromConstructor {
+         :: private FromConstructor createFromConstructor {
             /**
             * Creates an Sql representing FromConstructor.
             * @param context the Sql construction context
@@ -226,10 +251,11 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
 ;
 
 interface InsertColumnList : Sql {}
+
 InsertColumnList ::=
-    c:InsertColumn :: protected InsertColumnList initColumnList {}
+    c:InsertColumn :: implicit {}
 |
-    l:InsertColumnList COMMA c:InsertColumn :: protected InsertColumnList appendColumnList {}
+    l:InsertColumnList COMMA c:InsertColumnList :: private InsertColumnList combineInsertColumnLists {}
 ;
 
 public interface InsertColumn : Sql {}
@@ -238,32 +264,22 @@ interface TableValueConstructor : Sql {}
 
 # only one row is supported so far. The syntax is not that of SQL-2011, but is supported by all major databases
 # (standard define
-TableValueConstructor ::= VALUES LEFT_PAREN l:ContextuallyTypedRowValueList RIGHT_PAREN :: protected TableValueConstructor createTableValueConstructor {}
+TableValueConstructor ::= VALUES LEFT_PAREN l:ContextuallyTypedRowValueList RIGHT_PAREN :: private TableValueConstructor createTableValueConstructor {
+
+}
 ;
 
 interface ContextuallyTypedRowValueList : Sql {}
 
 ContextuallyTypedRowValueList ::=
     e:ContextuallyTypedRowValueElement
-        :: protected ContextuallyTypedRowValueList initRowValueList {}
+        :: implicit {}
 |
-    l:ContextuallyTypedRowValueList COMMA d:ContextuallyTypedRowValueElement
-        :: protected ContextuallyTypedRowValueList appendRowValueList {}
+    l:ContextuallyTypedRowValueList COMMA d:ContextuallyTypedRowValueList
+        :: private ContextuallyTypedRowValueList combineRowValueLists {}
 ;
 
 public interface ContextuallyTypedRowValueElement : Sql {}
-
-:: public AbstractInsertStatement insert(TargetTable targetTable, SetClause first, SetClause... other) {
-    InsertColumnList columnList = initColumnList(first);
-    ContextuallyTypedRowValueList valueList = initRowValueList(first);
-    for (SetClause next: other) {
-        columnList = appendColumnList(columnList, next);
-        valueList = appendRowValueList(valueList, next);
-    }
-    return fromConstructor(targetTable,
-        createFromConstructor(columnList, createTableValueConstructor(valueList)));
-}
-
 
 public interface DeleteStatement : Sql {}
 

@@ -1,7 +1,7 @@
 package org.symqle.dialect;
 
 import org.symqle.common.Sql;
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.GenericDialect;
 
@@ -34,16 +34,16 @@ public class DerbyDialect extends GenericDialect {
 
     @Override
     public Sql StringExpression_is_SUBSTRING_LEFT_PAREN_StringExpression_FROM_NumericExpression_FOR_NumericExpression_RIGHT_PAREN(final Sql s, final Sql start, final Sql len) {
-        return concat(new CustomSql("SUBSTR"), SqlTerm.LEFT_PAREN, s, SqlTerm.COMMA, start, SqlTerm.COMMA, len, SqlTerm.RIGHT_PAREN);
+        return concat(new StringSql("SUBSTR"), SqlTerm.LEFT_PAREN, s, SqlTerm.COMMA, start, SqlTerm.COMMA, len, SqlTerm.RIGHT_PAREN);
     }
 
     @Override
     public Sql StringExpression_is_SUBSTRING_LEFT_PAREN_StringExpression_FROM_NumericExpression_RIGHT_PAREN(final Sql s, final Sql start) {
-        return concat(new CustomSql("SUBSTR"), SqlTerm.LEFT_PAREN, s, SqlTerm.COMMA, start, SqlTerm.RIGHT_PAREN);
+        return concat(new StringSql("SUBSTR"), SqlTerm.LEFT_PAREN, s, SqlTerm.COMMA, start, SqlTerm.RIGHT_PAREN);
     }
 
     @Override
     public Sql NumericExpression_is_POSITION_LEFT_PAREN_StringExpression_IN_StringExpression_RIGHT_PAREN(final Sql pattern, final Sql source) {
-        return concat(new CustomSql("LOCATE"), SqlTerm.LEFT_PAREN, pattern, SqlTerm.COMMA, source, SqlTerm.RIGHT_PAREN);
+        return concat(new StringSql("LOCATE"), SqlTerm.LEFT_PAREN, pattern, SqlTerm.COMMA, source, SqlTerm.RIGHT_PAREN);
     }
 }

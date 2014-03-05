@@ -21,7 +21,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
     public void testInsert() throws Exception {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
-                .insert(insertTable.id.set(2), insertTable.text.set("wow"))
+                .insert(insertTable.id.set(2).also(insertTable.text.set("wow")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
@@ -61,7 +61,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
     public void testSetNull() throws Exception {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
-                .insert(insertTable.id.set(2), insertTable.text.setNull())
+                .insert(insertTable.id.set(2).also(insertTable.text.setNull()))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
@@ -71,7 +71,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
     public void testSetDefault() throws Exception {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
-                .insert(insertTable.id.set(3), insertTable.text.setDefault())
+                .insert(insertTable.id.set(3).also(insertTable.text.setDefault()))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
@@ -81,7 +81,7 @@ public class InsertTest extends AbstractIntegrationTestBase {
     public void testSetIgnoreType() throws Exception {
         final InsertTable insertTable = clean();
         final int affectedRows = insertTable
-                .insert(insertTable.id.set(Params.p(3)), insertTable.text.set("three"))
+                .insert(insertTable.id.set(Params.p(3)).also(insertTable.text.set("three")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
@@ -93,8 +93,8 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final One one = new One();
         final Employee employee = new Employee();
         final int affectedRows = insertTable.insert(
-                insertTable.id.set(one.id.queryValue()),
-                insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
+                insertTable.id.set(one.id.queryValue()).also(
+                insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue())))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
@@ -106,8 +106,8 @@ public class InsertTest extends AbstractIntegrationTestBase {
         final One one = new One();
         final Employee employee = new Employee();
         final int affectedRows = insertTable.insert(
-                insertTable.id.set(one.id.queryValue().add(2).map(CoreMappers.INTEGER)),
-                insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
+                insertTable.id.set(one.id.queryValue().add(2).map(CoreMappers.INTEGER)).also(
+                insertTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue())))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());

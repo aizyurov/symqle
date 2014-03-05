@@ -21,7 +21,7 @@ public class BatchingTest extends AbstractIntegrationTestBase {
         insertTable.delete().execute(engine);
         final Batcher batcher = engine.newBatcher(5);
         for (int i =0; i<10; i++) {
-            final int[] affectedRows = insertTable.insert(insertTable.id.set(i), insertTable.text.set("a" + i)).submit(batcher);
+            final int[] affectedRows = insertTable.insert(insertTable.id.set(i).also(insertTable.text.set("a" + i))).submit(batcher);
             if (i == 5) {
                 assertTrue(Arrays.toString(affectedRows), Arrays.equals(new int[] {1,1,1,1,1}, affectedRows));
             } else {
@@ -51,7 +51,7 @@ public class BatchingTest extends AbstractIntegrationTestBase {
         insertTable.delete().execute(engine);
         final Batcher batcher = engine.newBatcher(10);
         for (int i =0; i<5; i++) {
-            final int[] affectedRows = insertTable.insert(insertTable.id.set(i), insertTable.text.set("a" + i)).submit(batcher);
+            final int[] affectedRows = insertTable.insert(insertTable.id.set(i).also(insertTable.text.set("a" + i))).submit(batcher);
             assertEquals(0, affectedRows.length);
         }
         int[] affectedRows = insertTable.insert(insertTable.id.set(5)).submit(batcher);
@@ -74,10 +74,10 @@ public class BatchingTest extends AbstractIntegrationTestBase {
         insertTable.delete().execute(engine);
         final Batcher batcher = engine.newBatcher(10);
         for (int i =0; i<5; i++) {
-            final int[] affectedRows = insertTable.insert(insertTable.id.set(i), insertTable.text.set("a" + i)).submit(batcher);
+            final int[] affectedRows = insertTable.insert(insertTable.id.set(i).also(insertTable.text.set("a" + i))).submit(batcher);
             assertEquals(0, affectedRows.length);
         }
-        final int[] affectedRows = insertTable.insert(insertTable.id.set(5), insertTable.text.set("a" + 5)).submit(batcher, Option.setFetchSize(10));
+        final int[] affectedRows = insertTable.insert(insertTable.id.set(5).also(insertTable.text.set("a" + 5))).submit(batcher, Option.setFetchSize(10));
         assertTrue(Arrays.toString(affectedRows), Arrays.equals(new int[] {1,1,1,1,1}, affectedRows));
         final int[] flush = batcher.flush();
         assertEquals(1, flush.length);

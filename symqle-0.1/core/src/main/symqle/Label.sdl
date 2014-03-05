@@ -2,7 +2,7 @@ import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mapper;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 
 /**
  * @author lvovich
@@ -25,7 +25,7 @@ public class Label implements SortKey {
         if (owner == null) {
             throw new MalformedStatementException("Unassigned label: " + this);
         }
-        return new CustomSql(name);
+        return new StringSql(name);
     }
 
 }

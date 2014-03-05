@@ -69,7 +69,7 @@ public interface Identifier : Sql {}
                                 public T extract(Row row) throws SQLException {
                                     return ve.getMapper().value(row.getValue(name));
                                 }
-                            }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new CustomSql(name)));
+                            }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSql(name)));
                 }           
             }
     }
@@ -100,7 +100,7 @@ public <T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Lab
                               public T extract(Row row) throws SQLException {
                                   return ve.getMapper().value(row.getValue(name));
                               }
-                          }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new CustomSql(name)));
+                          }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSql(name)));
               }
           }
         @Override
@@ -132,7 +132,7 @@ public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
                                 public T extract(Row row) throws SQLException {
                                     return aggr.getMapper().value(row.getValue(name));
                                 }
-                            }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new CustomSql(name)));
+                            }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new StringSql(name)));
                 }
             }
     }

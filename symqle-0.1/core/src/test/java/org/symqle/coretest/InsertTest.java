@@ -5,12 +5,7 @@ import org.symqle.common.MalformedStatementException;
 import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
-import org.symqle.sql.AbstractInsertStatement;
-import org.symqle.sql.Column;
-import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.GenericDialect;
-import org.symqle.sql.Symqle;
-import org.symqle.sql.Table;
+import org.symqle.sql.*;
 
 import java.util.Arrays;
 
@@ -26,6 +21,14 @@ public class InsertTest extends SqlTestCase {
 
     public void testOneColumn() throws Exception {
         final AbstractInsertStatement insert = person.insert(person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L)));
+        final String sql = insert.show(new GenericDialect());
+        assertSimilar("INSERT INTO person(parent_id) VALUES(?)", sql);
+        assertSimilar(sql, insert.show(new GenericDialect()));
+    }
+
+    public void testAdaptSetClause() throws Exception {
+        final SetClause setClause = person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L));
+        final AbstractInsertStatement insert = person.insert(AbstractSetClause.adapt(setClause));
         final String sql = insert.show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id) VALUES(?)", sql);
         assertSimilar(sql, insert.show(new GenericDialect()));
@@ -58,7 +61,7 @@ public class InsertTest extends SqlTestCase {
     }
 
     public void testMultipleColumns() throws Exception {
-        final String sql = person.insert(person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L)), person.name.set("John Doe")).show(new GenericDialect());
+        final String sql = person.insert(person.parentId.set(DynamicParameter.create(CoreMappers.LONG, 1L)).also(person.name.set("John Doe"))).show(new GenericDialect());
         assertSimilar("INSERT INTO person(parent_id, name) VALUES(?, ?)", sql);
     }
 

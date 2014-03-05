@@ -128,7 +128,7 @@ public interface CollationName : Sql {}
      return collate(e, new CollationName() {
          @Override
          public Sql z$sqlOfCollationName(final SqlContext context) {
-             return new CustomSql(collationName);
+             return new StringSql(collationName);
          }
      });
 }

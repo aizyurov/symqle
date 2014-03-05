@@ -1,7 +1,7 @@
 package org.symqle.dialect;
 
 import org.symqle.common.Sql;
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.GenericDialect;
 
@@ -40,7 +40,7 @@ public class MySqlDialect extends GenericDialect {
 
     @Override
     public Sql QueryExpression_is_QueryExpressionBasic_FETCH_FIRST_Literal_ROWS_ONLY(final Sql qe, final Sql limit) {
-        return concat(qe, SqlTerm.LIMIT, new CustomSql("0"), SqlTerm.COMMA, limit);
+        return concat(qe, SqlTerm.LIMIT, new StringSql("0"), SqlTerm.COMMA, limit);
     }
 
     @Override

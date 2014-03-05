@@ -13,7 +13,7 @@ import org.symqle.integration.model.MyDual;
 import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 import org.symqle.sql.AbstractQueryExpression;
 import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.AbstractSelectList;
@@ -803,13 +803,13 @@ public class ColumnTest extends AbstractIntegrationTestBase {
             return;
         }
         final Engine engine = getEngine();
-        engine.execute(new CompiledSql(new CustomSql("delete from big_table")), NO_OPTIONS);
+        engine.execute(new CompiledSql(new StringSql("delete from big_table")), NO_OPTIONS);
 
         final Batcher batcher = engine.newBatcher(1000);
 
         for (int i=0; i<2000000; i++) {
             final int value = i;
-            batcher.submit(new CompiledSql(new CustomSql("insert into big_table (num) values(?)") {
+            batcher.submit(new CompiledSql(new StringSql("insert into big_table (num) values(?)") {
 
                 @Override
                 public void setParameters(SqlParameters p) throws SQLException {

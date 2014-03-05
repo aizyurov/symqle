@@ -236,7 +236,7 @@ public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> 
 # we cannot select Literals
 public interface Literal : Sql {}
 
-import org.symqle.querybuilder.CustomSql;
+import org.symqle.querybuilder.StringSql;
 public class IntLiteral implements Literal {
     private final int value;
 
@@ -250,7 +250,7 @@ public class IntLiteral implements Literal {
     * @return constructed Sql
     */
     public Sql z$sqlOfLiteral(SqlContext context) {
-        return new CustomSql(String.valueOf(value));
+        return new StringSql(String.valueOf(value));
     }
 
 }

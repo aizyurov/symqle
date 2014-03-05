@@ -6,10 +6,12 @@ import org.symqle.common.OutBox;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
+import org.symqle.sql.AbstractSetClause;
 import org.symqle.sql.AbstractUpdateStatement;
 import org.symqle.sql.AbstractUpdateStatementBase;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
+import org.symqle.sql.SetClause;
 import org.symqle.sql.Table;
 
 import java.util.Arrays;
@@ -27,6 +29,15 @@ public class UpdateTest extends SqlTestCase {
 
     public void testOneColumn() throws Exception {
         final AbstractUpdateStatementBase update = person.update(person.parentId.set(person.id));
+        final String sql = update.show(new GenericDialect());
+        assertSimilar("UPDATE person SET parent_id = person.id", sql);
+        final String sql2 = person.update(person.parentId.set(person.id)).show(new GenericDialect());
+        assertSimilar(sql, sql2);
+    }
+
+    public void testAdaptSetClause() throws Exception {
+        final SetClause setClause = person.parentId.set(person.id);
+        final AbstractUpdateStatementBase update = person.update(AbstractSetClause.adapt(setClause));
         final String sql = update.show(new GenericDialect());
         assertSimilar("UPDATE person SET parent_id = person.id", sql);
         final String sql2 = person.update(person.parentId.set(person.id)).show(new GenericDialect());
@@ -65,12 +76,13 @@ public class UpdateTest extends SqlTestCase {
     }
 
     public void testMultipleColumns() throws Exception {
-        final String sql = person.update(person.parentId.set(person.id), person.name.set("John")).show(new GenericDialect());
-        assertSimilar("UPDATE person SET parent_id = person.id, name = ?", sql);
+        final String sql = person.update(person.parentId.set(person.id).also(person.name.set("John")).
+        also(person.age.set(28L))).show(new GenericDialect());
+        assertSimilar("UPDATE person SET parent_id = person.id, name = ?, age = ?", sql);
     }
 
     public void testWhere() throws Exception {
-        final AbstractUpdateStatement updateStatement = person.update(person.parentId.set(person.id), person.name.set("John")).where(person.id.eq(1L));
+        final AbstractUpdateStatement updateStatement = person.update(person.parentId.set(person.id).also(person.name.set("John"))).where(person.id.eq(1L));
         final String sql = updateStatement.show(new GenericDialect());
         assertSimilar("UPDATE person SET parent_id = person.id, name = ? WHERE person.id = ?", sql);
         final String sql2 = updateStatement.show(new GenericDialect());

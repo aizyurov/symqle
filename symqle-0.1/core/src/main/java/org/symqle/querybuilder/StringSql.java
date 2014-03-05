@@ -25,14 +25,14 @@ import java.sql.SQLException;
  * Text-only Sql, no parameters,
  * The  text is provided in the constructor.
  */
-public class CustomSql implements Sql {
+public class StringSql implements Sql {
     private final String text;
 
     /**
      * Constructs from a given text.
      * @param text the Sql text
      */
-    public CustomSql(String text) {
+    public StringSql(String text) {
         this.text = text;
     }
 

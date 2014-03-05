@@ -18,13 +18,13 @@ public class UpdateTest extends AbstractIntegrationTestBase {
     public void testUpdate() throws Exception {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
-                .insert(updateTable.id.set(2), updateTable.text.set("wow"))
+                .insert(updateTable.id.set(2).also(updateTable.text.set("wow")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
-        updateTable.update(updateTable.id.set(3), updateTable.text.set("changed")).execute(getEngine());
+        updateTable.update(updateTable.id.set(3).also(updateTable.text.set("changed"))).execute(getEngine());
         final List<Pair<Integer,String>> newRows = updateTable.id.pair(updateTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "changed")), newRows);
     }
@@ -52,7 +52,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
     public void testSetNull() throws Exception {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
-                .insert(updateTable.id.set(2), updateTable.text.set("wow"))
+                .insert(updateTable.id.set(2).also(updateTable.text.set("wow")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
@@ -67,7 +67,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
     public void testSetDefault() throws Exception {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
-                .insert(updateTable.id.set(2), updateTable.text.set("wow"))
+                .insert(updateTable.id.set(2).also(updateTable.text.set("wow")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
@@ -81,7 +81,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
     public void testSetIgnoreType() throws Exception {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
-                .insert(updateTable.id.set(2), updateTable.text.set("wow"))
+                .insert(updateTable.id.set(2).also(updateTable.text.set("wow")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
@@ -95,7 +95,7 @@ public class UpdateTest extends AbstractIntegrationTestBase {
     public void testSetSubquery() throws Exception {
         final UpdateTable updateTable = clean();
         final int affectedRows = updateTable
-                .insert(updateTable.id.set(2), updateTable.text.set("wow"))
+                .insert(updateTable.id.set(2).also(updateTable.text.set("wow")))
                 .execute(getEngine());
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = updateTable.id.pair(updateTable.text).list(getEngine());
@@ -104,8 +104,8 @@ public class UpdateTest extends AbstractIntegrationTestBase {
         final One one = new One();
         final Employee employee = new Employee();
         final int updatedRowsCount = updateTable.update(
-                updateTable.id.set(one.id.queryValue()),
-                updateTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue()))
+                updateTable.id.set(one.id.queryValue()).also(
+                updateTable.text.set(employee.firstName.where(employee.lastName.eq("Redwood")).queryValue())))
                 .execute(getEngine());
         assertEquals(1, updatedRowsCount);
         final List<Pair<Integer,String>> updatedRows = updateTable.id.pair(updateTable.text).list(getEngine());
