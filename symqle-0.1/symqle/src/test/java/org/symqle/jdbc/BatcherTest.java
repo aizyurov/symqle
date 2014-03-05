@@ -38,7 +38,7 @@ public class BatcherTest extends TestCase {
         final DynamicParameter<Long> idParam = person.id.param();
         final DynamicParameter<String> nameParam = person.name.param();
 
-        final PreparedUpdate preparedUpdate = person.insert(person.id.set(idParam), person.name.set(nameParam)).compileUpdate(engine);
+        final PreparedUpdate preparedUpdate = person.insert(person.id.set(idParam).also(person.name.set(nameParam))).compileUpdate(engine);
         final Batcher batcher = engine.newBatcher(10);
 
         verify(dataSource, connection, preparedStatement, metaData);
