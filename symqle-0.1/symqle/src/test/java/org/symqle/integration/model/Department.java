@@ -3,7 +3,7 @@ package org.symqle.integration.model;
 import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
-import org.symqle.util.LazyRef;
+import org.symqle.util.OnDemand;
 
 /**
  * @author lvovich
@@ -20,9 +20,9 @@ public class Department extends Table {
     public final Column<String> deptName = defineColumn(CoreMappers.STRING, "dept_name");
     public final Column<Integer> countryId = defineColumn(CoreMappers.INTEGER, "country_id");
 
-    private final LazyRef<Country> countryRef = new LazyRef<Country>() {
+    private final OnDemand<Country> countryRef = new OnDemand<Country>() {
         @Override
-        protected Country create() {
+        protected Country init() {
             final Country country = new Country();
             leftJoin(country, country.countryId.eq(countryId));
             return country;
@@ -35,9 +35,9 @@ public class Department extends Table {
 
     public final Column<Integer> managerId = defineColumn(CoreMappers.INTEGER, "manager_id");
 
-    private final LazyRef<Employee> managerRef = new LazyRef<Employee>() {
+    private final OnDemand<Employee> managerRef = new OnDemand<Employee>() {
         @Override
-        protected Employee create() {
+        protected Employee init() {
             final Employee manager = new Employee();
             leftJoin(manager, manager.empId.eq(managerId));
             return manager;

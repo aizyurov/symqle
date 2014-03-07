@@ -5,18 +5,18 @@ package org.symqle.util;
  * Referent can be null.
  * @param <T> referent type
  */
-public abstract class LazyRef<T> {
+public abstract class OnDemand<T> {
     private T referent;
     private boolean initialized;
 
     /**
      * Returns the referent.
      * The referent is created at the first call to this method.
-     * @return the referent (may be null if {@link #create()} returns null)
+     * @return the referent (may be null if {@link #init} returns null)
      */
     public final T get() {
         if (!initialized) {
-            referent = create();
+            referent = init();
             initialized = true;
         }
         return referent;
@@ -27,5 +27,5 @@ public abstract class LazyRef<T> {
      * Subclasses must implement this method.
      * @return the created object
      */
-    protected abstract T create();
+    protected abstract T init();
 }

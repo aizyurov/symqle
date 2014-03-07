@@ -3,7 +3,7 @@ package org.symqle.integration.model;
 import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
-import org.symqle.util.LazyRef;
+import org.symqle.util.OnDemand;
 
 import java.sql.Date;
 
@@ -27,9 +27,9 @@ public class Employee extends Table {
 
     public final Column<Integer> deptId = defineColumn(CoreMappers.INTEGER, "dept_id");
 
-    private LazyRef<Department> deptRef = new LazyRef<Department>() {
+    private OnDemand<Department> deptRef = new OnDemand<Department>() {
         @Override
-        protected Department create() {
+        protected Department init() {
             final Department dept = new Department();
             leftJoin(dept, dept.deptId.eq(deptId));
             return dept;
