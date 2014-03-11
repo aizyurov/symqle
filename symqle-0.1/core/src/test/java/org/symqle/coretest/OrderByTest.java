@@ -17,34 +17,34 @@ import org.symqle.sql.TableOrView;
 public class OrderByTest extends SqlTestCase {
 
     public void testOrderByAscNullsFirst() throws Exception {
-        String sql = person.id.orderBy(person.age.asc().nullsFirst()).show(new GenericDialect());
+        String sql = person.id.orderBy(person.age.asc().nullsFirst()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC NULLS FIRST", sql);
     }
 
     public void testOrderByAscNullsLast() throws Exception {
-        String sql = person.id.orderBy(person.age.asc().nullsLast()).show(new GenericDialect());
+        String sql = person.id.orderBy(person.age.asc().nullsLast()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age ASC NULLS LAST", sql);
     }
 
     public void testOrderByMultiple() throws Exception {
-        String sql = person.id.orderBy(person.name.nullsFirst(), person.age.desc()).show(new GenericDialect());
+        String sql = person.id.orderBy(person.name.nullsFirst(), person.age.desc()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
     }
 
     public void testPairOrderByMultiple() throws Exception {
-        String sql = person.id.pair(person.name).orderBy(person.name.nullsFirst(), person.age.desc()).show(new GenericDialect());
+        String sql = person.id.pair(person.name).orderBy(person.name.nullsFirst(), person.age.desc()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name NULLS FIRST, T0.age DESC", sql);
     }
 
     public void testAdaptToAbstractSortOrderingSpecification() throws Exception {
         AbstractSortOrderingSpecification sort = AbstractSortOrderingSpecification.adapt(person.age);
-        final String sql = person.id.orderBy(sort).show(new GenericDialect());
+        final String sql = person.id.orderBy(sort).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
     }
 
     public void testAdaptToAbstractSortSpecification() throws Exception {
         AbstractSortSpecification sort = AbstractSortSpecification.adapt(person.age);
-        final String sql = person.id.orderBy(sort).show(new GenericDialect());
+        final String sql = person.id.orderBy(sort).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.age", sql);
     }
 

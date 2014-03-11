@@ -19,12 +19,12 @@ public class SqlBuilderPerformanceTest extends TestCase {
         department.innerJoin(manager, department.managerId.eq(manager.id));
         {
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
         }
         {
             final long start = System.nanoTime();
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
             System.out.println("Time: " + (System.nanoTime() - start) /1000 + " micros");
         }
 
@@ -37,12 +37,12 @@ public class SqlBuilderPerformanceTest extends TestCase {
         department.innerJoin(manager, department.managerId.eq(manager.id));
         {
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new FastGenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new FastGenericDialect());
         }
         {
             final long start = System.nanoTime();
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new FastGenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new FastGenericDialect());
             System.out.println("Time: " + (System.nanoTime() - start) /1000 + " micros");
         }
 
@@ -82,7 +82,7 @@ public class SqlBuilderPerformanceTest extends TestCase {
         for (int i=0; i< limit; i++)
         {
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
         }
         System.out.println("Average time: " + (System.nanoTime() - start) / limit / 1000 + "micros");
 

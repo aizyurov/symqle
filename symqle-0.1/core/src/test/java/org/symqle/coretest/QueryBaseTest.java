@@ -23,42 +23,42 @@ public class QueryBaseTest extends SqlTestCase {
     }
 
     public void testShow() throws Exception {
-        final String sql = createQueryBase().show(new GenericDialect());
+        final String sql = createQueryBase().showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
     public void testAdapt() throws Exception {
-        final String sql = AbstractQueryBase.adapt(person.id.pair(person.name)).show(new GenericDialect());
+        final String sql = AbstractQueryBase.adapt(person.id.pair(person.name)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
     public void testWhere() throws Exception {
-        final String sql = createQueryBase().where(person.name.isNotNull()).show(new GenericDialect());
+        final String sql = createQueryBase().where(person.name.isNotNull()).showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
     }
 
     public void testOrderBy() throws Exception {
-        final String sql = createQueryBase().orderBy(person.name).show(new GenericDialect());
+        final String sql = createQueryBase().orderBy(person.name).showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = createQueryBase().forUpdate().show(new GenericDialect());
+        final String sql = createQueryBase().forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = createQueryBase().forReadOnly().show(new GenericDialect());
+        final String sql = createQueryBase().forReadOnly().showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 FOR READ ONLY", sql);
     }
 
     public void testLimit() throws Exception {
-        final String sql = createQueryBase().limit(10).show(new GenericDialect());
+        final String sql = createQueryBase().limit(10).showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 FETCH FIRST 10 ROWS ONLY", sql);
     }
 
     public void testLimit2() throws Exception {
-        final String sql = createQueryBase().limit(10, 20).show(new GenericDialect());
+        final String sql = createQueryBase().limit(10, 20).showQuery(new GenericDialect());
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 

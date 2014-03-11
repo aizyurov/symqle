@@ -27,7 +27,7 @@ public class AbstractSelectorTest extends TestCase {
     public void testSimpleMapperSql() {
         final Person person = new Person();
         final PersonSelector mapper = new PersonSelector(person);
-        final String queryString = mapper.show(new GenericDialect());
+        final String queryString = mapper.showQuery(new GenericDialect());
         System.out.println(queryString);
         assertEquals("SELECT PERSON0.id AS C0, PERSON0.name AS C1 FROM person AS PERSON0", queryString);
     }
@@ -35,7 +35,7 @@ public class AbstractSelectorTest extends TestCase {
     public void testNoMappers() {
         final EmptyPersonSelector mapper = new EmptyPersonSelector();
         try {
-            final String sql = mapper.show(new GenericDialect());
+            final String sql = mapper.showQuery(new GenericDialect());
             fail("IllegalStateException expected but returned: "+sql);
         } catch (IllegalStateException e) {
             assertEquals("No mappings defined", e.getMessage());
@@ -45,7 +45,7 @@ public class AbstractSelectorTest extends TestCase {
     public void testMapFromCreate() throws Exception {
         final Person person = new Person();
         final MapCallFromCreateSelector mapper = new MapCallFromCreateSelector(person);
-        final String queryString = mapper.show(new GenericDialect());
+        final String queryString = mapper.showQuery(new GenericDialect());
         final DataSource dataSource = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
@@ -82,7 +82,7 @@ public class AbstractSelectorTest extends TestCase {
     public void testSimpleMapper() throws Exception {
         final Person person = new Person();
         final PersonSelector mapper = new PersonSelector(person);
-        final String queryString = mapper.show(new GenericDialect());
+        final String queryString = mapper.showQuery(new GenericDialect());
         final DataSource gate = createMock(DataSource.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final Connection connection = createMock(Connection.class);

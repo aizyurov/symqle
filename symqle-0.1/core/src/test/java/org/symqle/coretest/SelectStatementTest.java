@@ -16,14 +16,14 @@ public class SelectStatementTest extends SqlTestCase {
 
     public void testShow() throws Exception {
         final AbstractSelectStatement<Long> selectStatement = person.id.forUpdate();
-        final String sql = selectStatement.show(new GenericDialect());
-        final String sql2 = selectStatement.show(new GenericDialect());
+        final String sql = selectStatement.showQuery(new GenericDialect());
+        final String sql2 = selectStatement.showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 FOR UPDATE", sql);
         assertSimilar(sql, sql2);
     }
 
     public void testAdapt() throws Exception {
-        final String sql = AbstractSelectStatement.adapt(person.id).show(new GenericDialect());
+        final String sql = AbstractSelectStatement.adapt(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1", sql);
     }
 

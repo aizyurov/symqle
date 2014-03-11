@@ -1,10 +1,13 @@
 package org.symqle.coretest;
 
-import org.symqle.common.*;
+import org.symqle.common.InBox;
+import org.symqle.common.Pair;
+import org.symqle.common.Row;
+import org.symqle.common.SqlContext;
+import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.SelectStatement;
-import org.symqle.sql.Symqle;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -30,7 +33,7 @@ public abstract class PairScenario<StatementType extends SelectStatement<Pair<Lo
     }
 
     public void play () throws SQLException {
-        final String queryString = Symqle.show(query, new GenericDialect());
+        final String queryString = query.showQuery(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
         final Row row = createMock(Row.class);
         final InBox inBox1 = createMock(InBox.class);

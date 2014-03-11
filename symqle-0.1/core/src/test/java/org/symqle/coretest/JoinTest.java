@@ -22,7 +22,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(manager, person.managerId.eq(manager.id));
         manager.leftJoin(department, manager.departmentId.eq(department.id));
-        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).show(new GenericDialect());
+        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name || ? || T1.name || ? || T2.name AS C0 FROM person AS T0 LEFT JOIN person AS T1 LEFT JOIN department AS T2 ON T1.department_id = T2.id ON T0.manager_id = T1.id", sql);
     }
 
@@ -32,7 +32,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(manager, person.managerId.eq(manager.id));
         manager.leftJoin(department, manager.departmentId.eq(department.id));
-        final String sql = manager.name.concat(" ").concat(department.name).show(new GenericDialect());
+        final String sql = manager.name.concat(" ").concat(department.name).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.name || ? || T2.name AS C0 FROM person AS T0 LEFT JOIN person AS T1 LEFT JOIN department AS T2 ON T1.department_id = T2.id ON T0.manager_id = T1.id", sql);
     }
 
@@ -42,7 +42,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(manager, person.managerId.eq(manager.id));
         person.leftJoin(department, person.departmentId.eq(department.id));
-        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).show(new GenericDialect());
+        final String sql = person.name.concat(" ").concat(manager.name).concat(" ").concat(department.name).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name || ? || T1.name || ? || T2.name AS C0 FROM person AS T0 LEFT JOIN person AS T1 ON T0.manager_id = T1.id LEFT JOIN department AS T2 ON T0.department_id = T2.id", sql);
     }
 
@@ -94,13 +94,13 @@ public class JoinTest extends SqlTestCase {
         {
             final long startNanos = System.nanoTime();
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
             System.out.println("Compilation: "+ (System.nanoTime()-startNanos)/1000 + "micros");
         }
         {
             final long startNanos = System.nanoTime();
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
             System.out.println("Compilation: "+ (System.nanoTime()-startNanos)/1000 + "micros");
             assertSimilar("SELECT(SELECT T6.id FROM person AS T6 WHERE T6.name = ? AND T6.manager_id = T5.id) AS C1 FROM department AS T4 INNER JOIN person AS T5 ON T4.manager_id = T5.id WHERE T4.name LIKE ?", sql);
         }
@@ -112,7 +112,7 @@ public class JoinTest extends SqlTestCase {
         Department department = new Department();
         person.leftJoin(department, person.departmentId.eq(department.id));
         try {
-            final String sql = person.insert(department.name.set("John")).show(new GenericDialect());
+            final String sql = person.insert(department.name.set("John")).showUpdate(new GenericDialect());
             fail("MalformedStatementException expected but returned " + sql);
         } catch (MalformedStatementException e) {
             // Ok
@@ -148,7 +148,7 @@ public class JoinTest extends SqlTestCase {
         for (int i=0; i<Integer.valueOf(args[0]); i++)
         {
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).show(new GenericDialect());
+                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
         }
 
     }

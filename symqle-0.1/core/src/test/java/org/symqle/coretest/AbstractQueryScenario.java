@@ -10,7 +10,6 @@ import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.SelectStatement;
-import org.symqle.sql.Symqle;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public abstract class AbstractQueryScenario<T, StatementType extends SelectState
     abstract void elementCall(final InBox inBox) throws SQLException ;
 
     public final void play() throws SQLException {
-        final String queryString = Symqle.show(query, dialect, options);
+        final String queryString = query.showQuery(dialect, options);
         final SqlParameters parameters = createMock(SqlParameters.class);
         final List<OutBox> parameterList = parameterExpectations(parameters);
         final Row row = createMock(Row.class);

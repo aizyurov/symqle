@@ -73,9 +73,9 @@ Provide a separate class for database system variables. add current_user
 
 compiler: redirect stderr to log
 
-simplify insert/update: use SetClauseList directly and add explicit SetClauseList ::= AbstractSetClauseList COMMA SetClause :: SetClauseList also {}
+(done) simplify insert/update: use SetClauseList directly and add explicit SetClauseList ::= AbstractSetClauseList COMMA SetClause :: SetClauseList also {}
 
-(ot needed) simplify OrderBy: SortSpecificationList ::= ... :: AbstractSortSpecificationList then(? - conflict with when-then)
+(not needed) simplify OrderBy: SortSpecificationList ::= ... :: AbstractSortSpecificationList then(? - conflict with when-then)
 
 SelectStatement#countRows
 
@@ -84,5 +84,5 @@ ALL/ANY/SOME (future release)
 (done) Core: move submit/flush/... to Batcher. new Batcher(Engine, int). Batcher is thread-safe and can be shared. Each Batcher has its own queue.
 Implementation is inner class of AbstractEngine.
 
-Core: no ConsistentSql. CompositeSql formats on the fly - add firstChar() method (removes "my, own  table" problem. CustomSql is not formatted. Engine accepts String,
+(done) Core: no ConsistentSql. CompositeSql formats on the fly - add firstChar() method (removes "my, own  table" problem. CustomSql is not formatted. Engine accepts String,
 Parameterizer (extract from Sql).

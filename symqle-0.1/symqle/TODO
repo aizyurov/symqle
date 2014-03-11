@@ -21,6 +21,6 @@ MockTableRegistry returns table.toString for getCorrelationName (so subqueries b
 formatting inside; Engine accepts CompiledUpdate etc.
 SelectStatement#compile(Engine, Option...)
 
-refactoring of DynamicParameter: make abstract; ConstantParameter and MutableParameter.
+(done different way) refactoring of DynamicParameter: make abstract; ConstantParameter and MutableParameter.
 static DynamicParameter.constant(Mapper<T>,T) and DynamicParameter.mutable(Mapper>T>).
 resp. Params.p() and Params.mutableXxx();

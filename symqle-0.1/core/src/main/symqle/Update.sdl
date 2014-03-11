@@ -51,7 +51,7 @@ public interface DataChangeStatement : Sql {}
 
 
 import org.symqle.jdbc.Option;
-:: public String show(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
+:: String showUpdate(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
      final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
      final StringBuilder sqlBuilder = new StringBuilder();
      prepareUpdate(statement, contextBuilder, Arrays.asList(options)).appendTo(sqlBuilder);

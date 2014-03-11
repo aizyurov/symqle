@@ -12,7 +12,7 @@ import org.symqle.sql.TableOrView;
 public class InValueListTest extends SqlTestCase {
 
     public void testAdapt() throws Exception {
-        final String sql = person.id.where(person.name.in(AbstractInValueList.adapt(person.nick.asInValueList()))).show(new GenericDialect());
+        final String sql = person.id.where(person.name.in(AbstractInValueList.adapt(person.nick.asInValueList()))).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.name IN(T1.nick)", sql);
     }
 

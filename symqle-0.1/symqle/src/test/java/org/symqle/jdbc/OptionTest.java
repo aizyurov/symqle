@@ -23,7 +23,7 @@ public class OptionTest extends TestCase {
     public void testOptions() throws Exception {
         Employee employee = new Employee();
         final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.firstName.orderBy(employee.firstName);
-        final String queryString = queryExpressionBasic.show(new GenericDialect());
+        final String queryString = queryExpressionBasic.showQuery(new GenericDialect());
         final DataSource connector = createMock(DataSource.class);
         final DatabaseMetaData metaData = createMock(DatabaseMetaData.class);
         final Connection connection = createMock(Connection.class);
@@ -62,7 +62,7 @@ public class OptionTest extends TestCase {
     public void testEngineOptions() throws Exception {
         Employee employee = new Employee();
         final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.firstName.orderBy(employee.firstName);
-        final String queryString = queryExpressionBasic.show(new GenericDialect());
+        final String queryString = queryExpressionBasic.showQuery(new GenericDialect());
         final DataSource connector = createMock(DataSource.class);
         final Connection connection = createMock(Connection.class);
         final PreparedStatement statement = createMock(PreparedStatement.class);

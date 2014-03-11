@@ -26,37 +26,37 @@ public class QuerySpecificationTest extends SqlTestCase {
     }
 
     public void testShow() throws Exception {
-        final String sql = createQuerySpecification().show(new GenericDialect());
+        final String sql = createQuerySpecification().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL", sql);
     }
 
     public void testAdapt() throws Exception {
-        final String sql = AbstractQuerySpecification.adapt(person.id.pair(person.name)).show(new GenericDialect());
+        final String sql = AbstractQuerySpecification.adapt(person.id.pair(person.name)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 
     public void testLimit() throws Exception {
-        final String sql = createQuerySpecification().limit(20).show(new GenericDialect());
+        final String sql = createQuerySpecification().limit(20).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testLimit2() throws Exception {
-        final String sql = createQuerySpecification().limit(10,20).show(new GenericDialect());
+        final String sql = createQuerySpecification().limit(10,20).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = createQuerySpecification().forUpdate().show(new GenericDialect());
+        final String sql = createQuerySpecification().forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = createQuerySpecification().forReadOnly().show(new GenericDialect());
+        final String sql = createQuerySpecification().forReadOnly().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL FOR READ ONLY", sql);
     }
 
     public void testOrderBy() throws Exception {
-        final String sql = createQuerySpecification().orderBy(person.name).show(new GenericDialect());
+        final String sql = createQuerySpecification().orderBy(person.name).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY T0.name", sql);
     }
 

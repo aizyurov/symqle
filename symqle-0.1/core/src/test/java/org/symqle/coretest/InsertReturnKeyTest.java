@@ -25,7 +25,7 @@ public class InsertReturnKeyTest extends TestCase {
     public void testExecute() throws Exception {
         final Person people = new Person();
         final AbstractInsertStatement update = person.insert(person.subordinatesCount.set(people.id.count().queryValue()));
-        final String statementString = update.show(new GenericDialect());
+        final String statementString = update.showUpdate(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
         final OutBox param =createMock(OutBox.class);
         replay(parameters, param);
@@ -38,7 +38,7 @@ public class InsertReturnKeyTest extends TestCase {
     public void testCompileExecute() throws Exception {
         final Person people = new Person();
         final AbstractInsertStatement update = person.insert(person.subordinatesCount.set(people.id.count().queryValue()));
-        final String statementString = update.show(new GenericDialect());
+        final String statementString = update.showUpdate(new GenericDialect());
         final SqlParameters parameters = createMock(SqlParameters.class);
         final OutBox param =createMock(OutBox.class);
         replay(parameters, param);

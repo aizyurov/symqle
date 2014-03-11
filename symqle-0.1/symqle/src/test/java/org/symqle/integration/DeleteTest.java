@@ -50,7 +50,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     public void testDeleteAll() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        System.out.println(master.delete().show(getEngine().getDialect()));
+        System.out.println(master.delete().showUpdate(getEngine().getDialect()));
         assertEquals(0, master.delete().execute(getEngine()));
         final CompiledSql one = createInsertIntoDeleteMaster(1, "one");
         System.out.println(one);

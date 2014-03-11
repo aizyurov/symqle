@@ -26,17 +26,17 @@ public class QueryExpressionTest extends SqlTestCase {
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = createQueryExpression().forUpdate().show(new GenericDialect());
+        final String sql = createQueryExpression().forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FETCH FIRST 10 ROWS ONLY FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = createQueryExpression().forReadOnly().show(new GenericDialect());
+        final String sql = createQueryExpression().forReadOnly().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FETCH FIRST 10 ROWS ONLY FOR READ ONLY", sql);
     }
 
     public void testAdapt() throws Exception {
-        final String sql = AbstractQueryExpression.adapt(person.id.pair(person.name)).show(new GenericDialect());
+        final String sql = AbstractQueryExpression.adapt(person.id.pair(person.name)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);
     }
 

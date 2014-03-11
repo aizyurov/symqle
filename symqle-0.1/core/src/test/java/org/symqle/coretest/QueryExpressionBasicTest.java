@@ -22,24 +22,24 @@ public class QueryExpressionBasicTest extends SqlTestCase {
 
     public void testShow() throws Exception {
         final AbstractQueryExpressionBasic<Long> queryExpressionBasic = person.id.orderBy(person.id);
-        final String sql = queryExpressionBasic.show(new GenericDialect());
+        final String sql = queryExpressionBasic.showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id", sql);
-        final String sql2 = person.id.orderBy(person.id).show(new GenericDialect());
+        final String sql2 = person.id.orderBy(person.id).showQuery(new GenericDialect());
         assertSimilar(sql, sql2);
     }
 
     public void testAdapt() throws Exception {
-        final String sql = AbstractQueryExpressionBasic.adapt(person.id).show(new GenericDialect());
+        final String sql = AbstractQueryExpressionBasic.adapt(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = person.id.orderBy(person.id).forUpdate().show(new GenericDialect());
+        final String sql = person.id.orderBy(person.id).forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = person.id.orderBy(person.id).forReadOnly().show(new GenericDialect());
+        final String sql = person.id.orderBy(person.id).forReadOnly().showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR READ ONLY", sql);
     }
 

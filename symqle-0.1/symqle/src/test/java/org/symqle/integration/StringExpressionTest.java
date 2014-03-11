@@ -384,7 +384,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase {
         final AbstractQueryExpressionBasic<String> queryExpressionBasic = employee.lastName
                 .where(stringExpression(employee).isNull())
                 .orderBy(employee.lastName);
-        System.out.println(queryExpressionBasic.show(getEngine().getDialect()));
+        System.out.println(queryExpressionBasic.showQuery(getEngine().getDialect()));
         final List<String> list = queryExpressionBasic
                     .list(getEngine());
             assertEquals(Arrays.asList(), list);

@@ -185,7 +185,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase {
         final Department department = new Department();
         final AbstractQueryTerm<String> subquery2 = employee.lastName.where(employee.firstName.eq("James")).intersect(manager.lastName.where(manager.empId.eq(department.manager().empId).and(department.deptName.eq("HR"))));
         final AbstractQuerySpecificationScalar<Integer> querySpec = department.deptId.where(subquery2.exists());
-        System.out.println(querySpec.show(getEngine().getDialect()));
+        System.out.println(querySpec.showQuery(getEngine().getDialect()));
         final List<Integer> list2 = querySpec.list(getEngine());
         assertEquals(0, list2.size());
     }

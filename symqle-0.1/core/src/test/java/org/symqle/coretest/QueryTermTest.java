@@ -22,14 +22,14 @@ public class QueryTermTest extends SqlTestCase {
 
     public void testShow() throws Exception {
         final AbstractQueryTerm<Long> queryTerm = createQueryTerm();
-        final String sql = queryTerm.show(new GenericDialect());
+        final String sql = queryTerm.showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2", sql);
-        assertSimilar(sql, queryTerm.show(new GenericDialect()));
+        assertSimilar(sql, queryTerm.showQuery(new GenericDialect()));
     }
 
     public void testAdapt() throws Exception {
         final AbstractQueryTerm<Long> adaptor = AbstractQueryTerm.adapt(employee.id);
-        final String sql = adaptor.show(new GenericDialect());
+        final String sql = adaptor.showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1", sql);
         assertEquals(adaptor.getMapper(), employee.id.getMapper());
     }
@@ -37,13 +37,13 @@ public class QueryTermTest extends SqlTestCase {
     public void testOrderBy() throws Exception {
         final AbstractQueryTerm<Long> queryTerm = employee.id.intersect(manager.id);
         try {
-            final String sql = queryTerm.orderBy(employee.name).show(new GenericDialect());
+            final String sql = queryTerm.orderBy(employee.name).showQuery(new GenericDialect());
             fail ("MalformedStatementException expected but returned " + sql);
         } catch (MalformedStatementException e) {
             // Ok
         }
         try {
-            final String sql = queryTerm.orderBy(manager.name).show(new GenericDialect());
+            final String sql = queryTerm.orderBy(manager.name).showQuery(new GenericDialect());
             fail ("MalformedStatementException expected but returned " + sql);
         } catch (MalformedStatementException e) {
             // Ok
@@ -51,97 +51,97 @@ public class QueryTermTest extends SqlTestCase {
     }
 
     public void testLimit() throws Exception {
-        final String sql = createQueryTerm().limit(20).show(new GenericDialect());
+        final String sql = createQueryTerm().limit(20).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testLimit2() throws Exception {
-        final String sql = createQueryTerm().limit(10, 20).show(new GenericDialect());
+        final String sql = createQueryTerm().limit(10, 20).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testQueryValue() throws Exception {
-        final String sql = createQueryTerm().queryValue().where(person.name.isNull()).show(new GenericDialect());
+        final String sql = createQueryTerm().queryValue().where(person.name.isNull()).showQuery(new GenericDialect());
         assertSimilar("SELECT(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2) AS C1 FROM person AS T3 WHERE T3.name IS NULL", sql);
     }
 
     public void testForUpdate() throws Exception {
-        final String sql = createQueryTerm().forUpdate().show(new GenericDialect());
+        final String sql = createQueryTerm().forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 FOR UPDATE", sql);
     }
 
     public void testForReadOnly() throws Exception {
-        final String sql = createQueryTerm().forReadOnly().show(new GenericDialect());
+        final String sql = createQueryTerm().forReadOnly().showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 FOR READ ONLY", sql);
     }
 
     public void testUnion() throws Exception {
-        final String sql = createQueryTerm().union(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().union(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testUnionAll() throws Exception {
-        final String sql = createQueryTerm().unionAll(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().unionAll(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testUnionDistinct() throws Exception {
-        final String sql = createQueryTerm().unionDistinct(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().unionDistinct(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 UNION DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExcept() throws Exception {
-        final String sql = createQueryTerm().except(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().except(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 EXCEPT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExceptAll() throws Exception {
-        final String sql = createQueryTerm().exceptAll(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().exceptAll(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 EXCEPT ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testExceptDistinct() throws Exception {
-        final String sql = createQueryTerm().exceptDistinct(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().exceptDistinct(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 EXCEPT DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testIntersect() throws Exception {
-        final String sql = createQueryTerm().intersect(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().intersect(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT SELECT T0.id AS C0 FROM person AS T0", sql);
     }
 
     public void testIntersectWithIntersection() throws Exception {
-        final String sql = employee.id.intersect((manager.id).intersect(person.id)).show(new GenericDialect());
+        final String sql = employee.id.intersect((manager.id).intersect(person.id)).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT(SELECT T2.id AS C0 FROM manager AS T2 INTERSECT SELECT T0.id AS C0 FROM person AS T0)", sql);
     }
 
     public void testIntersectAll() throws Exception {
-        final String sql = createQueryTerm().intersectAll(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().intersectAll(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT ALL SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
     public void testIntersectDistinct() throws Exception {
-        final String sql = createQueryTerm().intersectDistinct(person.id).show(new GenericDialect());
+        final String sql = createQueryTerm().intersectDistinct(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C0 FROM employee AS T1 INTERSECT SELECT T2.id AS C0 FROM manager AS T2 INTERSECT DISTINCT SELECT T0.id AS C0 FROM person AS T0", sql);
 
     }
 
     public void testExists() throws Exception {
-        final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).exists()).show(new GenericDialect());
+        final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).exists()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
     }
 
     public void testContains() throws Exception {
-        final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).contains(1L)).show(new GenericDialect());
+        final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).intersect(manager.id.where(manager.id.eq(person.id))).contains(1L)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
     }
 
     public void testAsInSublist() throws Exception {
-        final String sql = person.name.where(person.id.in(createQueryTerm())).show(new GenericDialect());
+        final String sql = person.name.where(person.id.in(createQueryTerm())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
     }
 

@@ -27,7 +27,7 @@ import org.symqle.jdbc.QueryEngine;
      * @return number of calls to callback
      * @throws SQLException from the underlying jdbc driver
      */
-public <T> int scroll(final SelectStatement<T> statement,
+<T> int scroll(final SelectStatement<T> statement,
                      final QueryEngine engine,
                      final Callback<T> callback,
                      final Option... options) throws SQLException {
@@ -67,7 +67,7 @@ import org.symqle.jdbc.Option;
      * @return the list of objects
      * @throws SQLException from the underlying jdbc driver
      */
-public <T> List<T> list(final SelectStatement<T> statement,
+<T> List<T> list(final SelectStatement<T> statement,
                           final QueryEngine engine,
                           final Option... options
                         ) throws SQLException {
@@ -88,7 +88,7 @@ public <T> List<T> list(final SelectStatement<T> statement,
      * @param options query builder options
      * @return the query string
      */
-public String show(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
+String showQuery(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
      final UpdatableConfiguration configuration = new UpdatableConfiguration();
      for (Option option : options) {
          option.apply(configuration);
