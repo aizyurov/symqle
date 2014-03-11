@@ -9,56 +9,78 @@ public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 
 # all operations accept <? extends Number> and return <Number>
 NumericExpression<Number> ::=
-    /*
-    * Creates an expression {@code this + other}.
+    /**
+    * Creates expression {@code this + other}.
     * {@code this} and {@code other} should have database types, which are numeric or
     * can be converted to numbers by implicit conversion.
     * @param other the second operand
     * @return the resulting expression. It is always mapped to Number.
     */
-    e:NumericExpression<?> PLUS other:Term<?>
-         :: public AbstractNumericExpression<Number> add {
+    e:NumericExpression<?> PLUS other:Term<?> :: AbstractNumericExpression<Number> add {
             public Mapper<Number> getMapper() {
                     return CoreMappers.NUMBER;
             }
          }
 |
-    e:NumericExpression<?> MINUS t:Term<?>
-         :: public AbstractNumericExpression<Number> sub {
+    /**
+    * Creates expression {@code this - other}.
+    * {@code this} and {@code other} should have database types, which are numeric or
+    * can be converted to numbers by implicit conversion.
+    * @param other the second operand
+    * @return the resulting expression. It is always mapped to Number.
+    */
+    e:NumericExpression<?> MINUS other:Term<?> :: AbstractNumericExpression<Number> sub {
             public Mapper<Number> getMapper() {
                     return CoreMappers.NUMBER;
             }
          }
 ;
 
-:: public <T> AbstractNumericExpression<T> map(final NumericExpression<?> e, final Mapper<T> mapper) {
-    return new AbstractNumericExpression<T>() {
-        @Override
-        public Mapper<T> getMapper() {
-            return mapper;
-        }
+::
+    /**
+    * Changes mapper of {@code this}.
+    * The result produces the same SQL but is associated with different Java type.
+    * Symqle does not check that the replacement is valid, is is your responsibility.
+    * @param mapper new mapper to use.
+    * @return new AbstractNumericExpression with required mapper.
+    */
+    <T> AbstractNumericExpression<T> map(final NumericExpression<?> e, final Mapper<T> mapper) {
+        return new AbstractNumericExpression<T>() {
+            @Override
+            public Mapper<T> getMapper() {
+                return mapper;
+            }
 
-        @Override
-        public Sql z$sqlOfNumericExpression(final SqlContext context) {
-            return e.z$sqlOfNumericExpression(context);
-        }
-    };
-}
+            @Override
+            public Sql z$sqlOfNumericExpression(final SqlContext context) {
+                return e.z$sqlOfNumericExpression(context);
+            }
+        };
+    }
 
-    /*
+::
+    /**
     * Creates an expression {@code this + n}.
     * {@code this} should have database type, which is numeric or
     * can be converted to number by implicit conversion.
     * @param n the second operand. Is is converted to a DynamicParameter.
     * @return the resulting expression. It is always mapped to Number.
     */
-:: public AbstractNumericExpression<Number> add(final NumericExpression<?> e, final Number n) {
-    return add(e, DynamicParameter.create(CoreMappers.NUMBER, n));
-}
+    AbstractNumericExpression<Number> add(final NumericExpression<?> e, final Number n) {
+        return add(e, DynamicParameter.create(CoreMappers.NUMBER, n));
+    }
 
-:: public AbstractNumericExpression<Number> sub(final NumericExpression<?> e, final Number n) {
-    return sub(e,  DynamicParameter.create(CoreMappers.NUMBER, n));
-}
+::
+    /**
+    * Creates an expression {@code this - n}.
+    * {@code this} should have database type, which is numeric or
+    * can be converted to number by implicit conversion.
+    * @param n the second operand. Is is converted to a DynamicParameter.
+    * @return the resulting expression. It is always mapped to Number.
+    */
+    AbstractNumericExpression<Number> sub(final NumericExpression<?> e, final Number n) {
+        return sub(e,  DynamicParameter.create(CoreMappers.NUMBER, n));
+    }
 
 
 public interface Term<T> extends Scalar<T> : Sql {}
@@ -69,42 +91,78 @@ public class AbstractTerm<T> implements Term<T> {}
 ;
 
 Term<Number> ::=
-    t:Term<?> ASTERISK f:Factor<?>
-        :: public AbstractTerm<Number> mult {
+    /**
+    * Creates expression {@code this * other}.
+    * {@code this} and {@code other} should have database types, which are numeric or
+    * can be converted to numbers by implicit conversion.
+    * @param other the second operand
+    * @return the resulting expression. It is always mapped to Number.
+    */
+    t:Term<?> ASTERISK other:Factor<?> :: AbstractTerm<Number> mult {
             public Mapper<Number> getMapper() {
                     return CoreMappers.NUMBER;
             }
         }
 |
-    t:Term<?> SOLIDUS f:Factor<?>
-        :: public AbstractTerm<Number> div {
+    /**
+    * Creates expression {@code this / other}.
+    * {@code this} and {@code other} should have database types, which are numeric or
+    * can be converted to numbers by implicit conversion.
+    * @param other the second operand
+    * @return the resulting expression. It is always mapped to Number.
+    */
+    t:Term<?> SOLIDUS other:Factor<?> :: AbstractTerm<Number> div {
             public Mapper<Number> getMapper() {
                     return CoreMappers.NUMBER;
             }
         }
 ;
 
-:: public AbstractTerm<Number> mult(final Term<?> t, final Number n) {
-    return mult(t, DynamicParameter.create(CoreMappers.NUMBER, n));
- }
+::
+    /**
+    * Creates an expression {@code this * n}.
+    * {@code this} should have database type, which is numeric or
+    * can be converted to number by implicit conversion.
+    * @param n the second operand. Is is converted to a DynamicParameter.
+    * @return the resulting expression. It is always mapped to Number.
+    */
+    AbstractTerm<Number> mult(final Term<?> t, final Number n) {
+        return mult(t, DynamicParameter.create(CoreMappers.NUMBER, n));
+    }
 
-:: public AbstractTerm<Number> div(final Term<?> t, final Number n) {
-    return div(t, DynamicParameter.create(CoreMappers.NUMBER, n));
- }
+::
+    /**
+    * Creates an expression {@code this / n}.
+    * {@code this} should have database type, which is numeric or
+    * can be converted to number by implicit conversion.
+    * @param n the second operand. Is is converted to a DynamicParameter.
+    * @return the resulting expression. It is always mapped to Number.
+    */
+    AbstractTerm<Number> div(final Term<?> t, final Number n) {
+        return div(t, DynamicParameter.create(CoreMappers.NUMBER, n));
+    }
 
-:: public <T> AbstractTerm<T> map(final Term<?> e, final Mapper<T> mapper) {
-    return new AbstractTerm<T>() {
-        @Override
-        public Mapper<T> getMapper() {
-            return mapper;
-        }
+::
+    /**
+    * Changes mapper of {@code this}.
+    * The result produces the same SQL but is associated with different Java type.
+    * Symqle does not check that the replacement is valid, is is your responsibility.
+    * @param mapper new mapper to use.
+    * @return new AbstractNumericExpression with required mapper.
+    */
+    <T> AbstractTerm<T> map(final Term<?> e, final Mapper<T> mapper) {
+        return new AbstractTerm<T>() {
+            @Override
+            public Mapper<T> getMapper() {
+                return mapper;
+            }
 
-        @Override
-        public Sql z$sqlOfTerm(final SqlContext context) {
-            return e.z$sqlOfTerm(context);
-        }
-    };
-}
+            @Override
+            public Sql z$sqlOfTerm(final SqlContext context) {
+                return e.z$sqlOfTerm(context);
+            }
+        };
+    }
 
 
 public interface Factor<T> extends Scalar<T> : Sql {}
@@ -116,28 +174,35 @@ public class AbstractFactor<T> implements Factor<T> {}
     e:ValueExpressionPrimary<T> :: implicit {}
 ;
 <T> Factor<T> ::= 
-    MINUS e:ValueExpressionPrimary<T> :: public AbstractFactor<T> opposite {}
+    /**
+    * Unary minus:  {@code - this}.
+    * {@code this} should have database type, which is numeric or
+    * can be converted to number by implicit conversion.
+    * @return the resulting expression. Type parameter si the same as of {@code this}
+    */
+    MINUS e:ValueExpressionPrimary<T> :: AbstractFactor<T> opposite {}
 ;
 
-/**
-* Changes mapper of {@code this}.
-* The result produces the same SQL but is associated with different Java type.
-* Symqle does not check that the replacement is valid, is is your responsibility.
-* @param mapper new mapper to use.
-* @return new AbstractFactor with required mapper.
-*/
-:: public <T> AbstractFactor<T> map(final Factor<?> e, final Mapper<T> mapper) {
-    return new AbstractFactor<T>() {       
-        @Override
-        public Mapper<T> getMapper() {
-            return mapper;
-        }
+::
+    /**
+    * Changes mapper of {@code this}.
+    * The result produces the same SQL but is associated with different Java type.
+    * Symqle does not check that the replacement is valid, is is your responsibility.
+    * @param mapper new mapper to use.
+    * @return new AbstractFactor with required mapper.
+    */
+    <T> AbstractFactor<T> map(final Factor<?> e, final Mapper<T> mapper) {
+        return new AbstractFactor<T>() {
+            @Override
+            public Mapper<T> getMapper() {
+                return mapper;
+            }
 
-        @Override
-        public Sql z$sqlOfFactor(final SqlContext context) {
-            return e.z$sqlOfFactor(context);
-        }
-    };
-}
+            @Override
+            public Sql z$sqlOfFactor(final SqlContext context) {
+                return e.z$sqlOfFactor(context);
+            }
+        };
+    }
 
 
