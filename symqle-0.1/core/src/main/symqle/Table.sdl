@@ -67,7 +67,7 @@ public abstract class TableOrView implements TablePrimary,
         return new Column<T>(mapper, name, this);
     }
 
-    public String getCorrelationName(SqlContext context) {
+    String getCorrelationName(SqlContext context) {
         String name;
         for (name = context.get(TableRegistry.class).getCorrelationName(this);
                 name == null;
@@ -83,7 +83,7 @@ public abstract class TableOrView implements TablePrimary,
         referents.put(other, new JoinInfo(INNER_JOIN, condition));
     }
 
-    public Set<TableOrView> joinedTableParticipants() {
+    Set<TableOrView> joinedTableParticipants() {
         if (referral != null) {
             return referral.joinedTableParticipants();
         } else {
@@ -94,7 +94,7 @@ public abstract class TableOrView implements TablePrimary,
         }
     }
 
-    public TableOrView joinedTableRoot() {
+    TableOrView joinedTableRoot() {
         return referral == null ? this : referral.joinedTableRoot();
     }
 
