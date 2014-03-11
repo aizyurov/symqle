@@ -11,6 +11,10 @@ import org.symqle.querybuilder.*;
 import org.symqle.jdbc.Configuration;
 import org.symqle.jdbc.UpdatableConfiguration;
 import static org.symqle.common.SqlContext.Builder;
+/**
+* This class contains the logic of sql building. Other org.symqle.sql classes call its methods to construct
+* more complex clauses.
+*/
 public final class Symqle  {
     private Symqle() {
     }
@@ -86,6 +90,9 @@ public class GenericDialect implements Dialect {
 }
 
 import org.symqle.common.Sql;
+/**
+* A Dialect suitable for debugging. It allows not tables in FROM clause, all other methods behave as GenericDialect.
+*/
 public class DebugDialect extends GenericDialect {
 
     public DebugDialect() {}

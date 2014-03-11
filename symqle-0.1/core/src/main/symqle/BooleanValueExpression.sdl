@@ -5,10 +5,14 @@ public class AbstractBooleanExpression implements BooleanExpression {}
 # For BooleanValueExpression syntax is very close to sql-2003
 
 BooleanExpression ::=
-    bt:BooleanTerm :: implicit {}
+    bt:BooleanTerm :: implicit
 |
-    bve:BooleanExpression OR bvt:BooleanTerm
-        :: public AbstractBooleanExpression or {}
+    /**
+     * Creates a boolean expression representing {@code this OR other}.
+     * @param other the second argument
+     * @return logical disjunction of {@code this} and {@code} other
+     */
+    bve:BooleanExpression OR other:BooleanTerm :: public AbstractBooleanExpression or
 ;
 
 public interface BooleanTerm : Sql {}
@@ -16,10 +20,14 @@ public interface BooleanTerm : Sql {}
 public class AbstractBooleanTerm implements BooleanTerm {}
 
 BooleanTerm ::=
-    bf:BooleanFactor :: implicit {}
+    bf:BooleanFactor :: implicit
 |
-    bt:BooleanTerm AND bf:BooleanFactor
-        :: public AbstractBooleanTerm and {}
+    /**
+     * Creates a boolean term representing {@code this AND other}.
+     * @param other the second argument
+     * @return logical conjunction of {@code this} and {@code} other
+     */
+    bt:BooleanTerm AND other:BooleanFactor :: public AbstractBooleanTerm and
 ;
 
 public interface BooleanFactor : Sql {}
@@ -29,8 +37,11 @@ public class AbstractBooleanFactor implements BooleanFactor {}
 BooleanFactor ::=
     bt:BooleanTest :: implicit {}
 |
-    NOT bt:BooleanTest
-        :: public AbstractBooleanFactor negate {}
+    /**
+     * Logical negation of  {@code this}.
+     * @return logical negation of {@code this}
+     */
+    NOT bt:BooleanTest :: public AbstractBooleanFactor negate {}
 ;
 
 public interface BooleanTest : Sql {}
@@ -38,25 +49,43 @@ public interface BooleanTest : Sql {}
 public class AbstractBooleanTest implements BooleanTest {}
 
 BooleanTest ::=
-    bp:BooleanPrimary :: implicit {}
+    bp:BooleanPrimary :: implicit
 |
-    bp:BooleanPrimary  IS  NOT  TRUE
-        :: public AbstractBooleanTest isNotTrue {}
+    /**
+     * {@code this IS NOT TRUE}.
+     * @return the result of IS NOT TRUE operation
+     */
+    bp:BooleanPrimary  IS  NOT  TRUE :: public AbstractBooleanTest isNotTrue
 |
-    bp:BooleanPrimary  IS  TRUE
-        :: public AbstractBooleanTest isTrue {}
+    /**
+     * {@code this IS TRUE}.
+     * @return the result of IS TRUE operation
+     */
+    bp:BooleanPrimary  IS  TRUE :: public AbstractBooleanTest isTrue
 |
-    bp:BooleanPrimary  IS  NOT  FALSE
-        :: public AbstractBooleanTest isNotFalse {}
+    /**
+     * {@code this IS NOT FALSE}.
+     * @return the result of IS NOT FALSE operation
+     */
+    bp:BooleanPrimary  IS  NOT  FALSE :: public AbstractBooleanTest isNotFalse {}
 |
-    bp:BooleanPrimary  IS  FALSE
-        :: public AbstractBooleanTest isFalse {}
+    /**
+     * {@code this IS FALSE}.
+     * @return the result of IS FALSE operation
+     */
+    bp:BooleanPrimary  IS  FALSE :: public AbstractBooleanTest isFalse
 |
-    bp:BooleanPrimary  IS  NOT  UNKNOWN
-        :: public AbstractBooleanTest isNotUnknown {}
+    /**
+     * {@code this IS NOT UNKNOWN}.
+     * @return the result of IS NOT UNKNOWN operation
+     */
+    bp:BooleanPrimary  IS  NOT  UNKNOWN :: public AbstractBooleanTest isNotUnknown
 |
-    bp:BooleanPrimary  IS  UNKNOWN
-        :: public AbstractBooleanTest isUnknown {}
+    /**
+     * {@code this IS UNKNOWN}.
+     * @return the result of IS UNKNOWN operation
+     */
+    bp:BooleanPrimary  IS  UNKNOWN :: public AbstractBooleanTest isUnknown
 ;
 
 interface BooleanPrimary : Sql {}
@@ -66,10 +95,16 @@ public class AbstractBooleanPrimary implements BooleanPrimary {}
 BooleanPrimary ::=
     p:Predicate :: implicit {}
 |
-    LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit {}
+    LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit
 |
-    e:ValueExpressionPrimary<?>
-        :: public AbstractBooleanPrimary asPredicate {}
+    /**
+     * Converts {@code this} to logical expression.
+     * {@code this} should have database type convertable to BOOLEAN,
+     * consult your database documentation for available implicit conversions.
+     * @return {@code this} as logical expression, which can be used in conditions and in
+     * logical operations.
+     */
+    value:ValueExpressionPrimary<?> :: public AbstractBooleanPrimary asPredicate
 ;
 
 
