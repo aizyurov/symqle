@@ -8,6 +8,7 @@ import java.util.List;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.PreparedQuery;
+import org.symqle.common.Callback;
 public interface SelectStatement<T> : Query<T> {
 }
 
@@ -16,6 +17,7 @@ public class AbstractSelectStatement<T> implements SelectStatement<T> {}
 # key Symqle methods to query values
 
 import java.sql.SQLException;
+import org.symqle.common.Callback;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 ::
@@ -27,19 +29,19 @@ import org.symqle.jdbc.QueryEngine;
      * @return number of calls to callback
      * @throws SQLException from the underlying jdbc driver
      */
-<T> int scroll(final SelectStatement<T> statement,
-                     final QueryEngine engine,
-                     final Callback<T> callback,
-                     final Option... options) throws SQLException {
-    return compileQuery(statement, engine, options).scroll(callback);
-}
+  <T> int scroll(final SelectStatement<T> statement,
+                       final QueryEngine engine,
+                       final Callback<T> callback,
+                       final Option... options) throws SQLException {
+      return compileQuery(statement, engine, options).scroll(callback);
+  }
 
 import java.sql.SQLException;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.PreparedQuery;
 ::
-public <T> PreparedQuery<T> compileQuery(final SelectStatement<T> statement,
+<T> PreparedQuery<T> compileQuery(final SelectStatement<T> statement,
                                                                final QueryEngine engine,
                                                                final Option... options
                                                                ) {
@@ -131,14 +133,14 @@ String showQuery(final SelectStatement<?> statement, final Dialect dialect, fina
     */
     qe:QueryExpression<T>  FOR READ ONLY ::
         import java.util.LinkedList;
-        public AbstractSelectStatement<T> forReadOnly {}
+        AbstractSelectStatement<T> forReadOnly
 |
     /**
     * Creates select statement for update.
     * @return new select statement
     */
     qe:QueryExpression<T> FOR UPDATE
-        :: public AbstractSelectStatement<T> forUpdate {}
+        :: AbstractSelectStatement<T> forUpdate
 ;
 
 ##### QueryExpression ####
@@ -186,20 +188,20 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
      * @param limit the row number limit
      * @return new AbstractQueryExpression with row limit
      */
-public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
-    return limitOnly(qeb, new IntLiteral(limit));
-}
+  <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
+      return limitOnly(qeb, new IntLiteral(limit));
+  }
 
 ::
     /**
-     * Creates an AbstractQueryExpression, which skips {@code offset} number of rows and returns not more than {@code limit} number of rows.
+     * Applies limit and offset to {@code this}.
      * @param offset the number of rows to skip
      * @param limit the row number limit
      * @return new AbstractQueryExpression with offset and row limit
      */
-public <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
-              return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
-}
+  <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
+                return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
+  }
 
 ##### QueryExpressionBasic ####
 
@@ -221,13 +223,13 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
      * @param additionalSort sort specifications to apply if previous sort keys are equal
      * @return new AbstractQueryExpressionBasic with sort specifications applied
      */
-public <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
-    SortSpecificationList list = createSortSpecificationList(sort);
-     for (SortSpecification add: additionalSort) {
-         list = appendSortSpecification(list, add);
-     }
-     return  orderBy(qe, createOrderByClause(list));
-}
+    <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
+        SortSpecificationList list = createSortSpecificationList(sort);
+         for (SortSpecification add: additionalSort) {
+             list = appendSortSpecification(list, add);
+         }
+         return  orderBy(qe, createOrderByClause(list));
+    }
 
 # see QueryExpressionBody.sdl, Sort.sdl
 
@@ -240,7 +242,7 @@ import org.symqle.querybuilder.StringSql;
 public class IntLiteral implements Literal {
     private final int value;
 
-    public IntLiteral(int value) {
+    public IntLiteral(final int value) {
         this.value = value;
     }
 
@@ -249,7 +251,7 @@ public class IntLiteral implements Literal {
     * @param context the Sql construction context
     * @return constructed Sql
     */
-    public Sql z$sqlOfLiteral(SqlContext context) {
+    public Sql z$sqlOfLiteral(final SqlContext context) {
         return new StringSql(String.valueOf(value));
     }
 

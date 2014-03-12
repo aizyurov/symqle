@@ -13,7 +13,7 @@ AggregateFunction<Integer> ::=
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction
      */
-    public AbstractAggregateFunction<Integer> count {
+    AbstractAggregateFunction<Integer> count {
         public Mapper<Integer> getMapper() {
             return CoreMappers.INTEGER;
         }
@@ -24,7 +24,7 @@ AggregateFunction<Integer> ::=
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction
      */
-    COUNT LEFT_PAREN DISTINCT ve:ValueExpression<?> RIGHT_PAREN :: public AbstractAggregateFunction<Integer> countDistinct {
+    COUNT LEFT_PAREN DISTINCT ve:ValueExpression<?> RIGHT_PAREN :: AbstractAggregateFunction<Integer> countDistinct {
         public Mapper<Integer> getMapper() {
             return CoreMappers.INTEGER;
         }
@@ -37,14 +37,14 @@ AggregateFunction<Integer> ::=
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction with type parameter inherited from the argument.
      */
-    MIN LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: public AbstractAggregateFunction<T> min
+    MIN LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: AbstractAggregateFunction<T> min
 |
     /**
      * Creates {@code max(this)}.
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction  with type parameter inherited from the argument.
      */
-    MAX LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: public AbstractAggregateFunction<T> max
+    MAX LEFT_PAREN ve:ValueExpression<T> RIGHT_PAREN :: AbstractAggregateFunction<T> max
 ;
 
 AggregateFunction<Number> ::=
@@ -53,7 +53,7 @@ AggregateFunction<Number> ::=
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction<Number>
      */
-    SUM LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: public AbstractAggregateFunction<Number> sum {
+    SUM LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: AbstractAggregateFunction<Number> sum {
         public Mapper<Number> getMapper() {
             return CoreMappers.NUMBER;
         }
@@ -64,7 +64,7 @@ AggregateFunction<Number> ::=
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction<Number>
      */
-    AVG LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: public AbstractAggregateFunction<Number> avg {
+    AVG LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: AbstractAggregateFunction<Number> avg {
         public Mapper<Number> getMapper() {
             return CoreMappers.NUMBER;
         }

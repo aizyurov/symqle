@@ -6,27 +6,25 @@ public interface QuerySpecificationScalar<T> extends Scalar<T> : Query<T> {}
 public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationScalar<T> {}
 
 <T> QuerySpecificationScalar<T> ::=
-    qb:QueryBaseScalar<T> :: implicit {}
+    qb:QueryBaseScalar<T> :: implicit
 |
     /**
     * Applies {@code whereClause} to {@code this}.
     * @param whereClause the condition to apply
-    * @return new QuerySpecificationScalar
+    * @return new AbstractQuerySpecificationScalar
     */
-    qb:QueryBaseScalar<T> whereClause:WhereClause ::
-         public AbstractQuerySpecificationScalar<T> where {}
+    qb:QueryBaseScalar<T> whereClause:WhereClause :: AbstractQuerySpecificationScalar<T> where
 ;
 
 <T> QuerySpecification<T> ::=
-    qb:QueryBase<T> :: implicit {}
+    qb:QueryBase<T> :: implicit
 |
     /**
     * Applies {@code whereClause} to {@code this}.
     * @param whereClause the condition to apply
-    * @return new QuerySpecification
+    * @return new AbstractQuerySpecification
     */
-    qb:QueryBase<T> whereClause:WhereClause ::
-         public AbstractQuerySpecification<T> where {}
+    qb:QueryBase<T> whereClause:WhereClause :: AbstractQuerySpecification<T> where
 ;
 
 
@@ -119,7 +117,7 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     * Creates a SELECT ALL clause from {@code this}.
     * @return new AbstractQueryBase
     */
-    SELECT ALL sl:SelectList<T> :: public AbstractQueryBase<T> selectAll {
+    SELECT ALL sl:SelectList<T> :: AbstractQueryBase<T> selectAll {
         public Query<T> z$sqlOfQueryBase(final SqlContext context) {
                 final Query<T> query = sl.z$sqlOfSelectList(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);

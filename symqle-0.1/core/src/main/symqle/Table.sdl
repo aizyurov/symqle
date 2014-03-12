@@ -5,7 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.symqle.common.*;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Mapper;
 import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.TableNameGenerator;
 
@@ -17,6 +18,10 @@ public abstract class TableOrView implements TablePrimary,
     private TableOrView referral = null;
     private final Map<TableOrView, JoinInfo> referents = new LinkedHashMap<TableOrView, JoinInfo>();
 
+    /**
+    * Table name as accepted by database: identifier or quoted identifier.
+    * @return table name
+    */
     public abstract String getTableName();
 
     private final int LEFT_JOIN = 1;
@@ -63,6 +68,14 @@ public abstract class TableOrView implements TablePrimary,
         // OK, came to the root
     }
 
+
+    /**
+     * Use in derived classes to define table columns.
+     * @param mapper the mapper to use
+     * @param name column name
+     * @param <T> associated Java type
+     * @return new instance of Column
+     */
     protected final <T> Column<T> defineColumn(final Mapper<T> mapper, final String name) {
         return new Column<T>(mapper, name, this);
     }
@@ -77,11 +90,6 @@ public abstract class TableOrView implements TablePrimary,
         return name;
     }
 
-    public void innerJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        other.referral = this;
-        referents.put(other, new JoinInfo(INNER_JOIN, condition));
-    }
 
     Set<TableOrView> joinedTableParticipants() {
         if (referral != null) {
@@ -98,26 +106,63 @@ public abstract class TableOrView implements TablePrimary,
         return referral == null ? this : referral.joinedTableRoot();
     }
 
-    public void leftJoin(TableOrView other, BooleanExpression condition) {
+    private void join(final TableOrView other, final int type, final BooleanExpression condition) {
         checkJoin(other);
         other.referral = this;
-        referents.put(other, new JoinInfo(LEFT_JOIN, condition));
-    }
-
-    public void outerJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        other.referral = this;
-        referents.put(other, new JoinInfo(OUTER_JOIN, condition));
-    }
-
-    public void rightJoin(TableOrView other, BooleanExpression condition) {
-        checkJoin(other);
-        other.referral = this;
-        referents.put(other, new JoinInfo(RIGHT_JOIN, condition));
+        referents.put(other, new JoinInfo(type, condition));
     }
 
     /**
-    * Creates an Sql representing <code>this</code>
+     * Creates {@code this INNER JOIN other ON condition}.
+     * Modifies {@code this}.
+     * @param other the table to join
+     * @param condition join condition
+     * @return other
+     */
+    public <T extends TableOrView> T innerJoin(final T other, final BooleanExpression condition) {
+        join(other, INNER_JOIN, condition);
+        return other;
+    }
+
+    /**
+     * Creates {@code this LEFT JOIN other ON condition}.
+     * Modifies {@code this}.
+     * @param other the table to join
+     * @param condition join condition
+     * @return other
+     */
+    public <T extends TableOrView> T leftJoin(final T other, final BooleanExpression condition) {
+        join(other, LEFT_JOIN, condition);
+        return other;
+    }
+
+    /**
+     * Creates {@code this OUTER JOIN other ON condition}.
+     * Modifies {@code this}.
+     * @param other the table to join
+     * @param condition join condition
+     * @return other
+     */
+    public <T extends TableOrView> T outerJoin(final T other, final BooleanExpression condition) {
+        join(other, OUTER_JOIN, condition);
+        return other;
+    }
+
+    /**
+     * Creates {@code this RIGHT JOIN other ON condition}.
+     * Modifies {@code this}.
+     * @param other the table to join
+     * @param condition join condition
+     * @return other
+     */
+    public <T extends TableOrView> T rightJoin(final T other, final BooleanExpression condition) {
+        join(other, RIGHT_JOIN, condition);
+        return other;
+    }
+
+
+    /**
+    * Creates an Sql representing <code>(TableName)this</code>
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
@@ -126,7 +171,7 @@ public abstract class TableOrView implements TablePrimary,
     }
 
     /**
-    * Creates an Sql representing <code>this</code>
+    * Creates an Sql representing <code>(TablePrimary)this</code>
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
@@ -136,7 +181,7 @@ public abstract class TableOrView implements TablePrimary,
     }
 
     /**
-    * Creates an Sql representing <code>this</code>
+    * Creates an Sql representing <code>(TableReference)this</code>
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */

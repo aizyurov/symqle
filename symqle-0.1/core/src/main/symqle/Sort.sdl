@@ -10,16 +10,16 @@
 
 public interface OrderByClause : Sql {}
 
-OrderByClause ::= ORDER BY ssl:SortSpecificationList :: protected OrderByClause createOrderByClause {}
+OrderByClause ::= ORDER BY ssl:SortSpecificationList :: private OrderByClause createOrderByClause
 ;
 
 public interface SortSpecificationList : Sql {}
 
 #
 SortSpecificationList ::=
-    ss:SortSpecification :: protected SortSpecificationList createSortSpecificationList {}
+    ss:SortSpecification :: private SortSpecificationList createSortSpecificationList
 |
-    ssl:SortSpecificationList COMMA ss:SortSpecification :: protected SortSpecificationList appendSortSpecification {}
+    ssl:SortSpecificationList COMMA ss:SortSpecification :: private SortSpecificationList appendSortSpecification
 ;
 
 public interface SortSpecification : Sql {}
@@ -27,11 +27,19 @@ public interface SortSpecification : Sql {}
 public class AbstractSortSpecification implements SortSpecification {}
 
 SortSpecification ::=
-    sos:SortOrderingSpecification :: implicit {}
+    sos:SortOrderingSpecification :: implicit
 |
-    sos:SortOrderingSpecification NULLS FIRST :: public AbstractSortSpecification nullsFirst {}
+    /**
+     * Applies {@code NULLS FIRST} to {@code this}.
+     * @return resulting sort specification
+     */
+    sos:SortOrderingSpecification NULLS FIRST :: AbstractSortSpecification nullsFirst {}
 |
-    sos:SortOrderingSpecification NULLS LAST :: public AbstractSortSpecification nullsLast {}
+    /**
+     * Applies {@code NULLS LAST} to {@code this}.
+     * @return resulting sort specification
+     */
+    sos:SortOrderingSpecification NULLS LAST :: AbstractSortSpecification nullsLast {}
 ;
 
 public interface SortOrderingSpecification : Sql {}
@@ -40,33 +48,34 @@ public class AbstractSortOrderingSpecification implements SortOrderingSpecificat
 
 public interface SortKey : Sql {}
 
-SortKey ::= ve:ValueExpression<?> :: implicit {}
+SortKey ::= ve:ValueExpression<?> :: implicit
 ;
 
 SortOrderingSpecification ::=
-    key:SortKey :: implicit {}
+    key:SortKey :: implicit
 |
-    key:SortKey ASC
-     :: public AbstractSortOrderingSpecification asc {
-            /**
-            * Creates an Sql representing SortOrderingSpecification
-            * @param context the Sql construction context
-            * @return constructed Sql
-            */
-            public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
-                 return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_ASC(key.z$sqlOfSortKey(context));
-            }
-     }
-|  key:SortKey DESC
-     :: public AbstractSortOrderingSpecification desc {
-            /**
-            * Creates an Sql representing SortOrderingSpecification
-            * @param context the Sql construction context
-            * @return constructed Sql
-            */
-            public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
-                 // need a separate inner context for sort key because ScalarInnerContext column name may be accessed only once
-                 return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_DESC(key.z$sqlOfSortKey(context));
-            }
+    /**
+     * Applies {@code ASC} to {@code this}.
+     * @return resulting sort ordering specification with ascending order
+     */
+    key:SortKey ASC :: AbstractSortOrderingSpecification asc {
+        public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
+             return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_ASC(key.z$sqlOfSortKey(context));
+        }
+    }
+|
+    /**
+     * Applies {@code ASC} to {@code this}.
+     * @return resulting sort ordering specification with descending order
+     */
+    key:SortKey DESC :: AbstractSortOrderingSpecification desc {
+        /**
+        * Creates an Sql representing SortOrderingSpecification
+        * @param context the Sql construction context
+        * @return constructed Sql
+        */
+        public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
+             return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_DESC(key.z$sqlOfSortKey(context));
+        }
      }
 ;

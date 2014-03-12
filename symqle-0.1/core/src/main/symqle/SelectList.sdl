@@ -1,4 +1,5 @@
 
+import org.symqle.common.Pair;
 public interface SelectList<T> : Query<T> {}
 public class AbstractSelectList<T> implements SelectList<T> {}
 

@@ -21,11 +21,11 @@ public class AbstractPredicate implements Predicate {}
 public interface Predicand<T> extends Scalar<T> : Sql {}
 
 <T> Predicand<T> ::=
-    e:NumericExpression<T> :: implicit {}
+    e:NumericExpression<T> :: implicit
 |
-    e:StringExpression<T> :: implicit {}
+    e:StringExpression<T> :: implicit
 |
-    e:ValueExpressionPrimary<T> :: implicit {}
+    e:ValueExpressionPrimary<T> :: implicit
 ;
 
 # skipped Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN
@@ -34,60 +34,145 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
 # ComparisonPredicate
 
 <T> Predicate ::=
-     p1:Predicand<T> EQ p2:Predicand<T>
-        :: public AbstractPredicate eq {}
+    /**
+     * Constructs predicate {@code this = other}.
+     * @param other the second predicand
+     * @return constructed predicate
+     */
+     p1:Predicand<T> EQ other:Predicand<T> :: AbstractPredicate eq
 |
-
-     p1:Predicand<T> NE p2:Predicand<T>
-        :: public AbstractPredicate ne {}
+    /**
+     * Constructs predicate {@code this <> other}.
+     * @param other the second predicand
+     * @return constructed predicate
+     */
+     p1:Predicand<T> NE other:Predicand<T> :: AbstractPredicate ne
 |
-     p1:Predicand<T> GT p2:Predicand<T>
-        :: public AbstractPredicate gt {}
+    /**
+     * Constructs predicate {@code this > other}.
+     * @param other the second predicand
+     * @return constructed predicate
+     */
+     p1:Predicand<T> GT other:Predicand<T> :: AbstractPredicate gt
 |
-     p1:Predicand<T> GE p2:Predicand<T>
-        :: public AbstractPredicate ge {}
+    /**
+     * Constructs predicate {@code this >= other}.
+     * @param other the second predicand
+     * @return constructed predicate
+     */
+     p1:Predicand<T> GE other:Predicand<T> :: AbstractPredicate ge {}
 |
-     p1:Predicand<T> LT p2:Predicand<T>
-        :: public AbstractPredicate lt {}
+    /**
+     * Constructs predicate {@code this < other}.
+     * @param other the second predicand
+     * @return constructed predicate
+     */
+     p1:Predicand<T> LT other:Predicand<T> :: AbstractPredicate lt
 |
-     p1:Predicand<T> LE p2:Predicand<T>
-        :: public AbstractPredicate le {}
+    /**
+     * Constructs predicate {@code this <= other}.
+     * @param other the second predicand
+     * @return constructed predicate
+     */
+     p1:Predicand<T> LE other:Predicand<T> :: AbstractPredicate le
 ;
 
-:: public <T> AbstractPredicate eq(Predicand<T> p, T v) {
-    return eq(p, DynamicParameter.create(p.getMapper(), v));
-}
-:: public <T> AbstractPredicate ne(Predicand<T> p, T v) {
-    return ne(p, DynamicParameter.create(p.getMapper(), v));
-}
-:: public <T> AbstractPredicate gt(Predicand<T> p, T v) {
-    return gt(p, DynamicParameter.create(p.getMapper(), v));
-}
-:: public <T> AbstractPredicate ge(Predicand<T> p, T v) {
-    return ge(p, DynamicParameter.create(p.getMapper(), v));
-}
-:: public <T> AbstractPredicate lt(Predicand<T> p, T v) {
-    return lt(p, DynamicParameter.create(p.getMapper(), v));
-}
-:: public <T> AbstractPredicate le(Predicand<T> p, T v) {
-    return le(p, DynamicParameter.create(p.getMapper(), v));
-}
+::
+    /**
+     * Constructs predicate {@code this = ?}.
+     * The value of dynamic parameter is set to {@code value>}
+     * @param value value of the second predicand
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate eq(Predicand<T> p, T value) {
+        return eq(p, DynamicParameter.create(p.getMapper(), value));
+    }
+
+::
+    /**
+     * Constructs predicate {@code this <> ?}.
+     * The value of dynamic parameter is set to {@code value>}
+     * @param value value of the second predicand
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate ne(Predicand<T> p, T value) {
+        return ne(p, DynamicParameter.create(p.getMapper(), value));
+    }
+::
+    /**
+     * Constructs predicate {@code this > ?}.
+     * The value of dynamic parameter is set to {@code value>}
+     * @param value value of the second predicand
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate gt(Predicand<T> p, T value) {
+        return gt(p, DynamicParameter.create(p.getMapper(), value));
+    }
+
+::
+    /**
+     * Constructs predicate {@code this >= ?}.
+     * The value of dynamic parameter is set to {@code value>}
+     * @param value value of the second predicand
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate ge(Predicand<T> p, T value) {
+        return ge(p, DynamicParameter.create(p.getMapper(), value));
+    }
+
+::
+    /**
+     * Constructs predicate {@code this < ?}.
+     * The value of dynamic parameter is set to {@code value>}
+     * @param value value of the second predicand
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate lt(Predicand<T> p, T value) {
+        return lt(p, DynamicParameter.create(p.getMapper(), value));
+    }
+
+::
+    /**
+     * Constructs predicate {@code this <= ?}.
+     * The value of dynamic parameter is set to {@code value>}
+     * @param value value of the second predicand
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate le(Predicand<T> p, T value) {
+        return le(p, DynamicParameter.create(p.getMapper(), value));
+    }
 
 
 # InPredicate
 
 <T> Predicate ::=
-    p:Predicand<T> IN v:InPredicateValue<T> :: public AbstractPredicate in {}
+    /**
+     * Constructs predicate {@code this IN values}.
+     * {@code values} may be either {@link ScalarSubquery} or {@link InValueList}.
+     * The latter can be constructed using {@link org.symqle.sql.ValueExpression#asInValueList()}
+     * and {@link InValueList#append(ValueExpression)}.
+     * @param values the list of values as InPredicateValue
+     * @return constructed predicate
+     */
+    p:Predicand<T> IN values:InPredicateValue<T> :: AbstractPredicate in
 |
-        p:Predicand<T> NOT IN v:InPredicateValue<T> :: public AbstractPredicate notIn {}
+    /**
+     * Constructs predicate {@code this NOT IN values}.
+     * {@code values} may be either {@link ScalarSubquery} or {@link InValueList}.
+     * The latter can be constructed using {@link org.symqle.sql.ValueExpression#asInValueList()}
+     * and {@link InValueList#append(ValueExpression)}.
+     * @param values the list of values as InPredicateValue
+     * @return constructed predicate
+     */
+        p:Predicand<T> NOT IN values:InPredicateValue<T> :: AbstractPredicate notIn
 ;
 
 public interface InPredicateValue<T> : Sql {}
 
 <T> InPredicateValue<T> ::=
-    s:ScalarSubquery<T> :: implicit {}
+    s:ScalarSubquery<T> :: implicit
 |
-    LEFT_PAREN l:InValueList<T> RIGHT_PAREN :: implicit {}
+    LEFT_PAREN l:InValueList<T> RIGHT_PAREN :: implicit
 ;
 
 public interface InValueList<T> : Sql {}
@@ -101,24 +186,47 @@ public class AbstractInValueList<T> implements InValueList<T> {}
 
 # public convenience methods for construction of InPredicate from list of ValueExpression
 
-:: public <T> AbstractPredicate in(final Predicand<T> p, final T first, final T... other) {
-     return in(p, prepareInPredicateValue(p.getMapper(), first, other));
-}
+::
+    /**
+     * Constructs predicate {@code this IN (?,...)}.
+     * Values of dynamic parameters are set from arguments.
+     * @param first value of the first parameter
+     * @param other values of other parameters
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate in(final Predicand<T> p, final T first, final T... other) {
+         return in(p, prepareInPredicateValue(p.getMapper(), first, other));
+    }
 
-:: public <T> AbstractPredicate notIn(final Predicand<T> p, final T first, final T... other) {
-     return notIn(p, prepareInPredicateValue(p.getMapper(), first, other));
-}
+::
+    /**
+     * Constructs predicate {@code this IN (?,...)}.
+     * Values of dynamic parameters are set from arguments.
+     * @param first value of the first parameter
+     * @param other values of other parameters
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate notIn(final Predicand<T> p, final T first, final T... other) {
+         return notIn(p, prepareInPredicateValue(p.getMapper(), first, other));
+    }
 
-:: public <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, T element) {
-    return DynamicParameter.create(subquery.getMapper(), element).in(new InPredicateValue<T>() {
-        @Override
-        public Sql z$sqlOfInPredicateValue(final SqlContext context) {
-            return z$InPredicateValue$from$ScalarSubquery(subquery).z$sqlOfInPredicateValue(context);
-        }
-    });
-}
+::
+    /**
+     * Constructs predicate {@code ? IN ((ScalarSubquery)this)}.
+     * Values of dynamic parameter is set to argument
+     * @param value the value set to dynamicc parameter
+     * @return constructed predicate
+     */
+    <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, T value) {
+        return DynamicParameter.create(subquery.getMapper(), value).in(new InPredicateValue<T>() {
+            @Override
+            public Sql z$sqlOfInPredicateValue(final SqlContext context) {
+                return z$InPredicateValue$from$ScalarSubquery(subquery).z$sqlOfInPredicateValue(context);
+            }
+        });
+    }
 
-:: protected <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {
+:: private <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {
      AbstractInValueList<T> list = DynamicParameter.create(mapper, first).asInValueList();
      for (T e: other) {
          list = list.append(DynamicParameter.create(mapper, e));
@@ -129,43 +237,96 @@ public class AbstractInValueList<T> implements InValueList<T> {}
 #NullPredicate
 
 Predicate ::=
-    p:Predicand<?> IS NULL :: public AbstractPredicate isNull {}
+    /**
+     * Constructs predicate {@code this IS NULL}.
+     * @return constructed predicate
+     */
+    p:Predicand<?> IS NULL :: AbstractPredicate isNull {}
 |
-    p:Predicand<?> IS NOT NULL :: public AbstractPredicate isNotNull {}
+    /**
+     * Constructs predicate {@code this IS NOT NULL}.
+     * @return constructed predicate
+     */
+    p:Predicand<?> IS NOT NULL :: AbstractPredicate isNotNull {}
 ;
 
 
 #ExistsPredicate
 
-Predicate ::= EXISTS s:ScalarSubquery<?> :: public AbstractPredicate exists {}
+
+Predicate ::=
+    /**
+     * Constructs predicate {@code EXISTS  ((ScalarSubquery)this)}.
+     * @return constructed predicate
+     */
+    EXISTS s:ScalarSubquery<?> :: AbstractPredicate exists
 ;
 
 # LikePredicate
 # BLOB like not supported yet
 
 Predicate ::=
-    b:LikePredicateBase :: implicit {}
+    b:LikePredicateBase :: implicit
 |
-    b:LikePredicateBase ESCAPE esc:StringExpression<String> :: public AbstractPredicate escape {}
+    /**
+     * Creates a predicate adding {@code ESCAPE esc} to {code this}.
+     * @param esc StringExpression, which value is escape character
+     * @return constructed predicate
+     */
+    b:LikePredicateBase ESCAPE esc:StringExpression<String> :: AbstractPredicate escape
 ;
 
-:: public AbstractPredicate escape(final LikePredicateBase base, final char escapeCharacter) {
-    return escape(base, DynamicParameter.create(CoreMappers.STRING, new String(new char[] {escapeCharacter})));
-}
+::
+    /**
+     * Creates a predicate adding {@code ESCAPE ?} to {code this}.
+     * The value of dynamic parameter is set to escapeCharacter.
+     * @param escapeCharacter the value to set
+     * @return constructed predicate
+     */
+    AbstractPredicate escape(final LikePredicateBase base, final char escapeCharacter) {
+        return escape(base, DynamicParameter.create(CoreMappers.STRING, new String(new char[] {escapeCharacter})));
+    }
 
 public interface LikePredicateBase : Sql {}
 public class AbstractLikePredicateBase implements LikePredicateBase {}
 
 LikePredicateBase ::=
-    e:ValueExpression<?> LIKE p:StringExpression<String> :: public AbstractLikePredicateBase like {}
+    /**
+     * Created a predicate {@code this LIKE pattern}
+     * Value of dynamic parameter is set to pattern.
+      * @param pattern the pattern
+     * @return constructed predicate
+     */
+    e:ValueExpression<?> LIKE pattern:StringExpression<String> :: AbstractLikePredicateBase like
 |
-    e:ValueExpression<?> NOT LIKE p:StringExpression<String> :: public AbstractLikePredicateBase notLike {}
+    /**
+     * Created a predicate {@code this NOT LIKE pattern}
+     * Value of dynamic parameter is set to pattern.
+      * @param pattern the pattern
+     * @return constructed predicate
+     */
+    e:ValueExpression<?> NOT LIKE pattern:StringExpression<String> :: public AbstractLikePredicateBase notLike
 ;
 
-:: public AbstractLikePredicateBase like(ValueExpression<?> expr, String pattern) {
-      return like(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
-}
+::
+    /**
+     * Created a predicate {@code this LIKE ?}
+     * Value of dynamic parameter is set to pattern.
+      * @param pattern the value
+     * @return constructed predicate
+     */
+    AbstractLikePredicateBase like(ValueExpression<?> expr, String pattern) {
+          return like(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
+    }
 
-:: public AbstractLikePredicateBase notLike(ValueExpression<?> expr, String pattern) {
-      return notLike(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
-}
+
+::
+    /**
+     * Created a predicate {@code this NOT LIKE ?}
+     * Value of dynamic parameter is set to pattern.
+      * @param pattern the value
+     * @return constructed predicate
+     */
+    AbstractLikePredicateBase notLike(ValueExpression<?> expr, String pattern) {
+          return notLike(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
+    }

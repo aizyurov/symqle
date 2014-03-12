@@ -34,10 +34,11 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
 
 
 
+import org.symqle.common.SqlParameters;
 public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {
 }
 
-import org.symqle.common.*;
+import org.symqle.common.Mapper;
 public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
     private final Mapper<T> mapper;
     private T value;
