@@ -20,15 +20,12 @@ package org.symqle.common;
  * This interface represents text of a syntax element of SQL language, which may contain dynamic parameters.
  * The interface also provides values for the parameters.
  * For better performance the access tp SQL text is provided by {@link #appendTo}.
- * It is expected that all implementations are consistent: {@code this.appendTo(builder)} has the same result as
- * {@code this.toString().appendTo(builder)}. If possible, implementing classes should inherit from
  */
 public interface Sql extends Parameterizer {
 
     /**
      * Appends the text of this Sql to an SqlBuilder.
      * The text may contain dynamic parameters (?).
-      * @return the text
      */
     void appendTo(StringBuilder builder);
 

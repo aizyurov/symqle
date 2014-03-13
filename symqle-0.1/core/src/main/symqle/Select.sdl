@@ -29,34 +29,41 @@ import org.symqle.jdbc.QueryEngine;
      * @return number of calls to callback
      * @throws SQLException from the underlying jdbc driver
      */
-  <T> int scroll(final SelectStatement<T> statement,
-                       final QueryEngine engine,
-                       final Callback<T> callback,
-                       final Option... options) throws SQLException {
-      return compileQuery(statement, engine, options).scroll(callback);
-  }
+    <T> int scroll(final SelectStatement<T> statement,
+                         final QueryEngine engine,
+                         final Callback<T> callback,
+                         final Option... options) throws SQLException {
+        return compileQuery(statement, engine, options).scroll(callback);
+    }
 
 import java.sql.SQLException;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.PreparedQuery;
 ::
-<T> PreparedQuery<T> compileQuery(final SelectStatement<T> statement,
-                                                               final QueryEngine engine,
-                                                               final Option... options
-                                                               ) {
+    /**
+     * Compiles {@code (SelectStatement)this}.
+     * The result may be executed later (once or many times).
+     * @param engine the target engine
+     * @param options query builder and execution options to apply
+     * @return pre-compiled query
+     */
+    <T> PreparedQuery<T> compileQuery(final SelectStatement<T> statement,
+                                                                   final QueryEngine engine,
+                                                                   final Option... options
+                                                                   ) {
 
-    final Dialect dialect = engine.getDialect();
-    final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
-    List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
-    allOptions.addAll(Arrays.asList(options));
-    UpdatableConfiguration configuration = new UpdatableConfiguration();
-    for (Option option : allOptions) {
-        option.apply(configuration);
+        final Dialect dialect = engine.getDialect();
+        final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
+        List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+        allOptions.addAll(Arrays.asList(options));
+        UpdatableConfiguration configuration = new UpdatableConfiguration();
+        for (Option option : allOptions) {
+            option.apply(configuration);
+        }
+        final Query<T> query = prepareQuery(statement, dialect, configuration);
+        return new PreparedQuery<T>(engine, query, allOptions);
     }
-    final Query<T> query = prepareQuery(statement, dialect, configuration);
-    return new PreparedQuery<T>(engine, query, allOptions);
-}
 
 import java.sql.SQLException;
 import java.util.List;
@@ -90,14 +97,14 @@ import org.symqle.jdbc.Option;
      * @param options query builder options
      * @return the query string
      */
-String showQuery(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
-     final UpdatableConfiguration configuration = new UpdatableConfiguration();
-     for (Option option : options) {
-         option.apply(configuration);
-     }
-    final StringBuilder stringBuilder = new StringBuilder();
-    prepareQuery(statement, dialect, configuration).appendTo(stringBuilder);
-    return stringBuilder.toString();
+    String showQuery(final SelectStatement<?> statement, final Dialect dialect, final Option... options) {
+        final UpdatableConfiguration configuration = new UpdatableConfiguration();
+        for (Option option : options) {
+             option.apply(configuration);
+        }
+        final StringBuilder stringBuilder = new StringBuilder();
+        prepareQuery(statement, dialect, configuration).appendTo(stringBuilder);
+        return stringBuilder.toString();
     }
 
 :: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
@@ -125,7 +132,7 @@ String showQuery(final SelectStatement<?> statement, final Dialect dialect, fina
 # SelectStatement methods require these imports, but it has no productions for its methods
 
 <T> SelectStatement<T> ::=
-    qe:QueryExpression<T> :: implicit {}
+    qe:QueryExpression<T> :: implicit
 |
     /**
     * Creates select statement for read only.
@@ -171,7 +178,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 # see QueryExpressionBody.sdl, Sort.sdl
 
 <T> QueryExpression<T> ::=
-    qe:QueryExpressionBasic<T> :: implicit {}
+    qe:QueryExpressionBasic<T> :: implicit
 |
     qe:QueryExpressionBasic<T> OFFSET offset:Literal ROWS FETCH FIRST limit:Literal ROWS ONLY ::
       private AbstractQueryExpression<T> offsetAndLimit {}
@@ -184,24 +191,25 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 # public methods
 ::
     /**
-     * Creates an AbstractQueryExpression, which returns not more than {@code limit} number of rows.
+     * Applies limit to {@code (QueryExpression)this}.
+     * The resulting AbstractQueryExpression will return not more than {@code limit} number of rows.
      * @param limit the row number limit
      * @return new AbstractQueryExpression with row limit
      */
-  <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
-      return limitOnly(qeb, new IntLiteral(limit));
-  }
+    <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
+        return limitOnly(qeb, new IntLiteral(limit));
+    }
 
 ::
     /**
-     * Applies limit and offset to {@code this}.
+     * Applies limit and offset to {@code (QueryExpression)this}.
      * @param offset the number of rows to skip
      * @param limit the row number limit
      * @return new AbstractQueryExpression with offset and row limit
      */
-  <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
-                return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
-  }
+    <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
+                  return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
+    }
 
 ##### QueryExpressionBasic ####
 
@@ -211,14 +219,14 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
 # <query expression body> [ <order by clause> ]
 
 <T> QueryExpressionBasic<T> ::=
-    body:QueryExpressionBody<T> :: implicit {}
+    body:QueryExpressionBody<T> :: implicit
 |
-    body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy {}
+    body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy
 ;
 
 ::
     /**
-     * Applies SortSpecifications to {@code this}.
+     * Applies SortSpecifications to {@code (QueryExpressionBody)this}.
      * @param sort first sort specification
      * @param additionalSort sort specifications to apply if previous sort keys are equal
      * @return new AbstractQueryExpressionBasic with sort specifications applied
@@ -236,13 +244,15 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
 # Literal is used by Symqle in limit/offset only, so defining it here
 # note that it is not convertible to ValueExpression and is not Scalar;
 # we cannot select Literals
+# for the time being it is a package scope class
+
 public interface Literal : Sql {}
 
 import org.symqle.querybuilder.StringSql;
-public class IntLiteral implements Literal {
+class IntLiteral implements Literal {
     private final int value;
 
-    public IntLiteral(final int value) {
+    IntLiteral(final int value) {
         this.value = value;
     }
 

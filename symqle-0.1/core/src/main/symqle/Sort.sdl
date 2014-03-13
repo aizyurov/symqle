@@ -65,7 +65,7 @@ SortOrderingSpecification ::=
     }
 |
     /**
-     * Applies {@code ASC} to {@code this}.
+     * Applies {@code DESC} to {@code this}.
      * @return resulting sort ordering specification with descending order
      */
     key:SortKey DESC :: AbstractSortOrderingSpecification desc {

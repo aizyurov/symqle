@@ -35,7 +35,8 @@ import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.PreparedUpdate;
 public interface DataChangeStatement : Sql {}
 
-:: private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final List<Option> options) {
+::
+private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final List<Option> options) {
         final UpdatableConfiguration configuration = new UpdatableConfiguration();
         for (final Option option : options) {
            option.apply(configuration);
@@ -51,41 +52,75 @@ public interface DataChangeStatement : Sql {}
 
 
 import org.symqle.jdbc.Option;
-:: String showUpdate(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
-     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
-     final StringBuilder sqlBuilder = new StringBuilder();
-     prepareUpdate(statement, contextBuilder, Arrays.asList(options)).appendTo(sqlBuilder);
-     return sqlBuilder.toString();
-}
+::
+    /**
+     * SQL string as would be passed to database when {@code this} is executed.
+     * @param dialect the dialect to use for sql building
+     * @param options sql builder options
+     * @return the statement string
+     */
+    String showUpdate(final DataChangeStatement statement, final Dialect dialect, final Option... options) {
+         final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, dialect);
+         final StringBuilder sqlBuilder = new StringBuilder();
+         prepareUpdate(statement, contextBuilder, Arrays.asList(options)).appendTo(sqlBuilder);
+         return sqlBuilder.toString();
+    }
 
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 import java.sql.SQLException;
-:: public int execute(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
-     return compileUpdate(statement, engine, options).execute();
-}
+
+::
+    /**
+     * Executes (@code this}.
+     * @param engine the engine to use
+     * @param options query builder and execution options
+     * @return number of affected rows
+     * @throws SQLException from jdbc driver
+     */
+    int execute(final DataChangeStatement statement, final Engine engine, final Option... options) throws SQLException {
+         return compileUpdate(statement, engine, options).execute();
+    }
 
 import org.symqle.jdbc.PreparedUpdate;
-:: public PreparedUpdate compileUpdate(final DataChangeStatement statement, final Engine engine, final Option... options) {
-     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
-     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
-     allOptions.addAll(Arrays.asList(options));
-     final Sql sql = prepareUpdate(statement, contextBuilder, allOptions);
-     return new PreparedUpdate(engine, sql, allOptions, null);
-}
+::
+    /**
+     * Compiles {@code this}.
+     * The resulting PreparedUpdate may be executed once or many times.
+     * @param engine the engine to use
+     * @param options query builder and execution options
+     * @return pre-compiled PreparedUpdate
+     */
+    PreparedUpdate compileUpdate(final DataChangeStatement statement, final Engine engine, final Option... options) {
+         final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
+         List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+         allOptions.addAll(Arrays.asList(options));
+         final Sql sql = prepareUpdate(statement, contextBuilder, allOptions);
+         return new PreparedUpdate(engine, sql, allOptions, null);
+    }
 
 
 import org.symqle.jdbc.Batcher;
-:: public int[] submit(final DataChangeStatement statement, final Batcher batcher, final Option... options) throws SQLException {
-        return compileUpdate(statement, batcher.getEngine(), options).submit(batcher);
-   }
+::
+    /**
+     * Submits {@code this} for batch execution.
+     * The batcher may flush pending updates during this operation.
+     * @param batcher the batcher to submit to
+     * @param options sql builder and execution options
+     * @return same as {@link java.sql.Statement#executeBatch()} if pending updates were flushed,
+     * enpty array if nothing flushed
+     * @throws SQLException if something goes wrong during flush
+     */
+    int[] submit(final DataChangeStatement statement, final Batcher batcher, final Option... options) throws SQLException {
+            return compileUpdate(statement, batcher.getEngine(), options).submit(batcher);
+       }
 
 DataChangeStatement ::=
-    s:UpdateStatement :: implicit {}
+    s:UpdateStatement :: implicit
 |
-    s:InsertStatement :: implicit {}
+    s:InsertStatement :: implicit
 |
-    s:DeleteStatement :: implicit {}
+    s:DeleteStatement :: implicit
 ;
 
 public interface UpdateStatement : Sql {}
@@ -93,10 +128,14 @@ public interface UpdateStatement : Sql {}
 public class AbstractUpdateStatement implements UpdateStatement {}
 
 UpdateStatement ::=
-    b:UpdateStatementBase :: implicit {}
+    b:UpdateStatementBase :: implicit
 |
-    b:UpdateStatementBase wc:WhereClause ::
-        public AbstractUpdateStatement where {}
+    /**
+     * Applies condition to {@code this} to identify which rows to update.
+     * @param condition the condition to apply
+     * @return an UpdateStatement with condition set
+     */
+    b:UpdateStatementBase condition:WhereClause :: AbstractUpdateStatement where
 ;
 
 public interface UpdateStatementBase : Sql {}
@@ -104,7 +143,12 @@ public interface UpdateStatementBase : Sql {}
 public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 
 UpdateStatementBase ::=
-    UPDATE t:TargetTable SET l:SetClauseList :: AbstractUpdateStatementBase update {}
+       /**
+        * Created an statement which would update rows of  {@code this} when executed.
+        * @param l the update list. The list can be constructed using {@link ColumnName#set(Object)} and {@link SetClauseList#also(SetClauseList)}.
+        * @return new object which would produce SQL {@code UPDATE this SET ...}
+        */
+        UPDATE t:TargetTable SET l:SetClauseList :: AbstractUpdateStatementBase update
 ;
 
 public interface TargetTable : Sql {}
@@ -112,16 +156,21 @@ public interface TargetTable : Sql {}
 public interface SetClauseList extends InsertColumnList, ContextuallyTypedRowValueList : Sql {}
 
 SetClauseList ::=
-    c:SetClause :: implicit {}
+    c:SetClause :: implicit
 |
-    l:SetClauseList COMMA c:SetClauseList :: SetClauseList also {
+    /**
+     * Combines {@code this} and {@code other} to a single list.
+     * @param other the list to append to {@code this}
+     * @return resulting list
+     */
+    l:SetClauseList COMMA other:SetClauseList :: SetClauseList also {
             /**
             * Creates an Sql representing ContextuallyTypedRowValueList.
             * @param context the Sql construction context
             * @return constructed Sql
             */
             public Sql z$sqlOfContextuallyTypedRowValueList(final SqlContext context) {
-                return combineRowValueLists(l, c).z$sqlOfContextuallyTypedRowValueList(context);
+                return combineRowValueLists(l, other).z$sqlOfContextuallyTypedRowValueList(context);
             }
             /**
             * Creates an Sql representing InsertColumnList.
@@ -129,7 +178,7 @@ SetClauseList ::=
             * @return constructed Sql
             */
             public Sql z$sqlOfInsertColumnList(final SqlContext context) {
-                return combineInsertColumnLists(l, c).z$sqlOfInsertColumnList(context);
+                return combineInsertColumnLists(l, other).z$sqlOfInsertColumnList(context);
             }
     }
 ;
@@ -147,14 +196,26 @@ public class AbstractSetClause implements SetClause {
               }
 }
 
-:: public <T> AbstractSetClause set(final ColumnName<T> column, final T value) {
-    return set(column, DynamicParameter.create(column.getMapper(), value));
-}
+::
+    /**
+     * Creates AbstractSetClause representing {@code this = ?}.
+     * Dynamic parameter value is set to {@code value} argument.
+     * @param value parameter value
+     * @return new AbstractSetClause representing {@code this = ?}.
+     */
+    <T> AbstractSetClause set(final ColumnName<T> column, final T value) {
+        return set(column, DynamicParameter.create(column.getMapper(), value));
+    }
 
 <T> SetClause ::=
-    c:ColumnName<T> EQ e:ValueExpression<T> :: public AbstractSetClause set {
+      /**
+       * Creates AbstractSetClause representing {@code this = value}.
+       * @param value parameter value
+       * @return new AbstractSetClause representing {@code this = value}.
+       */
+      c:ColumnName<T> EQ value:ValueExpression<T> :: AbstractSetClause set {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
-                return e.z$sqlOfValueExpression(context);
+                return value.z$sqlOfValueExpression(context);
             }
 
             public Sql z$sqlOfInsertColumn(final SqlContext context) {
@@ -164,7 +225,11 @@ public class AbstractSetClause implements SetClause {
 ;
 
 SetClause ::=
-    c:ColumnName<?> EQ NULL :: public AbstractSetClause setNull {
+    /**
+     * Creates AbstractSetClause representing {@code this = NULL}.
+     * @return new AbstractSetClause representing {@code this = NULL}.
+     */
+    c:ColumnName<?> EQ NULL :: AbstractSetClause setNull {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.NULL;
             }
@@ -173,7 +238,11 @@ SetClause ::=
             }
     }
 |
-    c:ColumnName<?> EQ DEFAULT :: public AbstractSetClause setDefault {
+    /**
+     * Creates AbstractSetClause representing {@code this = DEFAULT}.
+     * @return new AbstractSetClause representing {@code this = DEFAULT}.
+     */
+    c:ColumnName<?> EQ DEFAULT :: AbstractSetClause setDefault {
             public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.DEFAULT;
             }
@@ -188,6 +257,11 @@ public interface ColumnName<T> extends Scalar<T> : Sql {}
 
 
 import java.util.Collections;
+/**
+ * Base class representing a notion of database table.
+ * Public methods of this class construct descendants of {@link }DataChangeStatement}.
+ * Subclasses must implement {@link #getTableName}.
+ */
 public abstract class Table extends TableOrView implements TargetTable {
 
     public Sql z$sqlOfTargetTable(final SqlContext context) {
@@ -214,13 +288,26 @@ InsertStatement ::=
     INSERT INTO t:TargetTable s:FromConstructor
         :: private AbstractInsertStatement insert {}
 |
+    /**
+     * Created an AbstractInsertStatement representing {@code INSERT INTO this DEFAULT VALUES}.
+     * Execution of the result would insert into {@code this} a new row with database default values for all columns.
+     * @return new object which would produce SQL {@code INSERT INTO this DEFAULT VALUES}.
+     */
     INSERT INTO t:TargetTable DEFAULT VALUES
-        :: public AbstractInsertStatement insertDefault {}
+        :: AbstractInsertStatement insertDefault {}
 ;
 
-:: public AbstractInsertStatement insert(final TargetTable targetTable, final SetClauseList list) {
-    return insert(targetTable, createFromConstructor(list, createTableValueConstructor(list)));
-}
+::
+    /**
+     * Creates a statement, which would insert rows into {@code this} when executed.
+     * @param list defines which value will be inserted into a given column.
+     * The list can be constructed using {@link ColumnName#set(Object)}
+     * and {@link SetClauseList#also(SetClauseList)}.
+     * @return
+     */
+    public AbstractInsertStatement insert(final TargetTable targetTable, final SetClauseList list) {
+        return insert(targetTable, createFromConstructor(list, createTableValueConstructor(list)));
+    }
 
 # interface FromSubquery : Sql {}
 
@@ -253,9 +340,9 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
 interface InsertColumnList : Sql {}
 
 InsertColumnList ::=
-    c:InsertColumn :: implicit {}
+    c:InsertColumn :: implicit
 |
-    l:InsertColumnList COMMA c:InsertColumnList :: private InsertColumnList combineInsertColumnLists {}
+    l:InsertColumnList COMMA c:InsertColumnList :: private InsertColumnList combineInsertColumnLists
 ;
 
 public interface InsertColumn : Sql {}
@@ -273,10 +360,10 @@ interface ContextuallyTypedRowValueList : Sql {}
 
 ContextuallyTypedRowValueList ::=
     e:ContextuallyTypedRowValueElement
-        :: implicit {}
+        :: implicit
 |
     l:ContextuallyTypedRowValueList COMMA d:ContextuallyTypedRowValueList
-        :: private ContextuallyTypedRowValueList combineRowValueLists {}
+        :: private ContextuallyTypedRowValueList combineRowValueLists
 ;
 
 public interface ContextuallyTypedRowValueElement : Sql {}
@@ -285,35 +372,64 @@ public interface DeleteStatement : Sql {}
 
 public class AbstractDeleteStatement implements DeleteStatement {}
 
-DeleteStatement ::= b:DeleteStatementBase :: implicit {}
+DeleteStatement ::= b:DeleteStatementBase :: implicit
 |
-    b:DeleteStatementBase wc:WhereClause :: public AbstractDeleteStatement where {}
+    /**
+     * Applies condition to {@code this} to identify which rows to delete.
+     * @param condition the condition to apply
+     * @return a DeleteStatement with condition set
+     */
+    b:DeleteStatementBase condition:WhereClause :: public AbstractDeleteStatement where
 ;
 
 public interface DeleteStatementBase : Sql {}
 
 public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 
-DeleteStatementBase ::= DELETE FROM t:TargetTable :: public AbstractDeleteStatementBase delete {}
+DeleteStatementBase ::=
+    /**
+     * Creates a statement, which whould delete rows from {@code this} when executed.
+     * @return new AbstractDeleteStatementBase
+     */
+    DELETE FROM t:TargetTable :: AbstractDeleteStatementBase delete
 ;
 
 import org.symqle.jdbc.GeneratedKeys;
-:: public int execute(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
-       return compileUpdate(statement, generatedKeys, engine, options).execute();
-}
+::
+    /**
+     * Executes {@code this} and collects generated keys.
+     * @param generatedKeys the receiver of generated keys
+     * @param engine the engine to use
+     * @param options query builder and execution options
+     * @return number of affected rows
+     * @throws SQLException from jdbc driver
+     */
+    int execute(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
+           return compileUpdate(statement, generatedKeys, engine, options).execute();
+    }
 
 
-:: public PreparedUpdate compileUpdate(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
-     final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
-     List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
-     allOptions.addAll(Arrays.asList(options));
-       final DataChangeStatement dataChange = new AbstractInsertStatement() {
-           @Override
-           public Sql z$sqlOfInsertStatement(final SqlContext context) {
-               return statement.z$sqlOfInsertStatement(context);
-           }
-       };
-      final Sql sql = prepareUpdate(dataChange, contextBuilder, allOptions);
-      return new PreparedUpdate(engine, sql, allOptions, generatedKeys);
-}
+::
+    /**
+     * Compiles {@code this} for later execution with collection of generated keys.
+     * The result may be executed later (once or many times). Generated keys from all executions
+     * will be collected to {@code generatedKeys} in the execution order.
+     * @param generatedKeys the receiver of generated keys
+     * @param engine the target engine
+     * @param options query builder and execution options to apply
+     * @return pre-compiled query
+     */
+    PreparedUpdate compileUpdate(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
+         final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
+         List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
+         allOptions.addAll(Arrays.asList(options));
+           final DataChangeStatement dataChange = new AbstractInsertStatement() {
+               @Override
+               public Sql z$sqlOfInsertStatement(final SqlContext context) {
+                   return statement.z$sqlOfInsertStatement(context);
+               }
+           };
+          final Sql sql = prepareUpdate(dataChange, contextBuilder, allOptions);
+          return new PreparedUpdate(engine, sql, allOptions, generatedKeys);
+    }
 

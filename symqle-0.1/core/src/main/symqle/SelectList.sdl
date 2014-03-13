@@ -3,8 +3,7 @@ import org.symqle.common.Pair;
 public interface SelectList<T> : Query<T> {}
 public class AbstractSelectList<T> implements SelectList<T> {}
 
-<T> SelectList<T> ::=
-    sl:SelectSublist<T> :: implicit {}
+<T> SelectList<T> ::= sl:SelectSublist<T> :: implicit
 ;
 
 # non-trivial construction of resulting Query; cannot be derived automatically
@@ -13,7 +12,7 @@ import org.symqle.common.Pair;
      /**
      * Creates a new SelectList representing a pair of {@code this} and {@code other}.
      * @param other the second participant of resulting SelectList
-     * @param <U> Java type of {@code other}
+     * @param <U> {@code other} type argument
      * @return new AbstractSelectList
      */
     self:SelectList<T> COMMA other:SelectList<U> ::
