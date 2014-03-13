@@ -107,11 +107,10 @@ Term<Number> ::=
         }
 |
     /**
-    * Creates an expression {@code this / ?}.
-    * Value of dynamic parameter is set to n.
-    * {@code this} should have database type, which is numeric or
-    * can be converted to number by implicit conversion.
-    * @param n value of the second operand.
+    * Creates expression {@code this / other}.
+    * {@code this} and {@code other} should have database types, which are numeric or
+    * can be converted to numbers by implicit conversion.
+    * @param other the second operand
     * @return the resulting expression. It is always mapped to Number.
     */
     t:Term<?> SOLIDUS other:Factor<?> :: AbstractTerm<Number> div {

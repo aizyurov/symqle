@@ -22,14 +22,15 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qt:QueryTerm<T> :: implicit {}
 |
     /**
-     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} UNION ALL {@code qt}.
-     * @param qt second argument of UNION ALL
+     * Creates a AbstractQueryExpressionBodyScalar
+     * representing {@code (QueryExpressionBodyScalar)this UNION ALL other}.
+     * @param other second argument of UNION ALL
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qe:QueryExpressionBodyScalar<T> UNION ALL qt:QueryTerm<T> ::
-        public AbstractQueryExpressionBodyScalar<T> unionAll {
+    qe:QueryExpressionBodyScalar<T> UNION ALL other:QueryTerm<T> ::
+        AbstractQueryExpressionBodyScalar<T> unionAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, qt){
+                return new UnionExceptBuilder<T>(qe, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(left, right);
@@ -39,14 +40,15 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
         }
 |
     /**
-     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} UNION DISTINCT {@code qt}.
-     * @param qt second argument of UNION DISTINCT
+     * Creates a AbstractQueryExpressionBodyScalar
+     * representing {@code (QueryExpressionBodyScalar)this UNION DISTINCT other}.
+     * @param other second argument of UNION DISTINCT
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qe:QueryExpressionBodyScalar<T> UNION DISTINCT qt:QueryTerm<T> ::
-        public AbstractQueryExpressionBodyScalar<T> unionDistinct {
+    qe:QueryExpressionBodyScalar<T> UNION DISTINCT other:QueryTerm<T> ::
+        AbstractQueryExpressionBodyScalar<T> unionDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, qt){
+                return new UnionExceptBuilder<T>(qe, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(left, right);
@@ -56,14 +58,15 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
         }
 |
     /**
-     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} UNION {@code qt}.
-     * @param qt second argument of UNION
+     * Creates a AbstractQueryExpressionBodyScalar representing
+     * {@code (QueryExpressionBodyScalar)this UNION other}.
+     * @param other second argument of UNION
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qe:QueryExpressionBodyScalar<T> UNION qt:QueryTerm<T> ::
-        public AbstractQueryExpressionBodyScalar<T> union {
+    qe:QueryExpressionBodyScalar<T> UNION other:QueryTerm<T> ::
+        AbstractQueryExpressionBodyScalar<T> union {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, qt){
+                return new UnionExceptBuilder<T>(qe, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(left, right);
@@ -73,14 +76,15 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
         }
 |
     /**
-     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} EXCEPT ALL {@code qt}.
-     * @param qt second argument of EXCEPT ALL
+     * Creates a AbstractQueryExpressionBodyScalar representing
+     * {@code (QueryExpressionBodyScalar)this EXCEPT ALL other}.
+     * @param other second argument of EXCEPT ALL
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qe:QueryExpressionBodyScalar<T> EXCEPT ALL qt:QueryTerm<T> ::
-        public AbstractQueryExpressionBodyScalar<T> exceptAll {
+    qe:QueryExpressionBodyScalar<T> EXCEPT ALL other:QueryTerm<T> ::
+        AbstractQueryExpressionBodyScalar<T> exceptAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, qt){
+                return new UnionExceptBuilder<T>(qe, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(left, right);
@@ -90,14 +94,15 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
         }
 |
     /**
-     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} EXCEPT DISTINCT {@code qt}.
-     * @param qt second argument of EXCEPT DISTINCT
+     * Creates a AbstractQueryExpressionBodyScalar representing
+     * {@code (QueryExpressionBodyScalar)this EXCEPT DISTINCT other}.
+     * @param other second argument of EXCEPT DISTINCT
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qe:QueryExpressionBodyScalar<T> EXCEPT DISTINCT qt:QueryTerm<T> ::
-        public AbstractQueryExpressionBodyScalar<T> exceptDistinct {
+    qe:QueryExpressionBodyScalar<T> EXCEPT DISTINCT other:QueryTerm<T> ::
+        AbstractQueryExpressionBodyScalar<T> exceptDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, qt){
+                return new UnionExceptBuilder<T>(qe, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(left, right);
@@ -107,14 +112,15 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
         }
 |
     /**
-     * Creates a AbstractQueryExpressionBodyScalar representing {@code this} EXCEPT {@code qt}.
-     * @param qt second argument of EXCEPT
+     * Creates a AbstractQueryExpressionBodyScalar representing
+     * {@code (QueryExpressionBodyScalar) this EXCEPT other}.
+     * @param other second argument of EXCEPT
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qe:QueryExpressionBodyScalar<T> EXCEPT qt:QueryTerm<T> ::
-        public AbstractQueryExpressionBodyScalar<T> except {
+    qe:QueryExpressionBodyScalar<T> EXCEPT other:QueryTerm<T> ::
+        AbstractQueryExpressionBodyScalar<T> except {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, qt){
+                return new UnionExceptBuilder<T>(qe, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(left, right);
@@ -124,24 +130,24 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
         }
 ;
 
-# zQueryTerm is always scalar; we do not add suffix _scalar for brevity
+# QueryTerm is always scalar; we do not add suffix Scalar
 #
 public interface QueryTerm<T> extends Scalar<T> :  Query<T> {}
 
 public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 
 <T> QueryTerm<T> ::=
-    qp:QueryPrimary<T> :: implicit {}
+    qp:QueryPrimary<T> :: implicit
 |
     /**
-     * Creates a AbstractQueryTerm representing {@code this} INTERSECT ALL {@code qp}.
-     * @param qt second argument of INTERSECT ALL
+     * Creates a AbstractQueryTerm representing {@code (QueryTerm)this INTERSECT ALL other}.
+     * @param other second argument of INTERSECT ALL
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qt:QueryTerm<T> INTERSECT ALL qp:QueryPrimary<T> ::
-        public AbstractQueryTerm<T> intersectAll {
+    qt:QueryTerm<T> INTERSECT ALL other:QueryPrimary<T> ::
+        AbstractQueryTerm<T> intersectAll {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                return new IntersectBuilder<T>(qt, qp){
+                return new IntersectBuilder<T>(qt, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryTerm_is_QueryTerm_INTERSECT_ALL_QueryPrimary(left, right);
@@ -151,14 +157,14 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
         }
 |
     /**
-     * Creates a AbstractQueryTerm representing {@code this} INTERSECT DISTINCT {@code qp}.
-     * @param qt second argument of INTERSECT DISTINCT
+     * Creates a AbstractQueryTerm representing {@code (QueryTerm)this INTERSECT DISTINCT other}.
+     * @param other second argument of INTERSECT DISTINCT
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qt:QueryTerm<T> INTERSECT DISTINCT qp:QueryPrimary<T> ::
-          public AbstractQueryTerm<T> intersectDistinct {
+    qt:QueryTerm<T> INTERSECT DISTINCT other:QueryPrimary<T> ::
+          AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                return new IntersectBuilder<T>(qt, qp){
+                return new IntersectBuilder<T>(qt, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryTerm_is_QueryTerm_INTERSECT_DISTINCT_QueryPrimary(left, right);
@@ -168,14 +174,14 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
           }
 |
     /**
-     * Creates a AbstractQueryTerm representing {@code this} INTERSECT {@code qp}.
-     * @param qt second argument of INTERSECT
+     * Creates a AbstractQueryTerm representing {@code (QueryTerm)this INTERSECT other}.
+     * @param other second argument of INTERSECT
      * @return new AbstractQueryExpressionBodyScalar
      */
-    qt:QueryTerm<T> INTERSECT qp:QueryPrimary<T> ::
-          public AbstractQueryTerm<T> intersect {
+    qt:QueryTerm<T> INTERSECT other:QueryPrimary<T> ::
+          AbstractQueryTerm<T> intersect {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                return new IntersectBuilder<T>(qt, qp){
+                return new IntersectBuilder<T>(qt, other){
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryTerm_is_QueryTerm_INTERSECT_QueryPrimary(left, right);
@@ -188,9 +194,9 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
 public interface QueryPrimary<T> extends Scalar<T>  : Query<T> {}
 
 <T> QueryPrimary<T> ::=
-    qs:QuerySpecificationScalar<T> :: implicit {}
+    qs:QuerySpecificationScalar<T> :: implicit
 |
-    LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN :: implicit {}
+    LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN :: implicit
 ;
 
 
