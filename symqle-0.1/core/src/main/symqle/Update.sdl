@@ -286,7 +286,7 @@ InsertStatement ::=
 #        :: protected AbstractInsertStatement fromSubquery {}
 #|
     INSERT INTO t:TargetTable s:FromConstructor
-        :: private AbstractInsertStatement insert {}
+        :: private AbstractInsertStatement insert
 |
     /**
      * Created an AbstractInsertStatement representing {@code INSERT INTO this DEFAULT VALUES}.
@@ -303,7 +303,7 @@ InsertStatement ::=
      * @param list defines which value will be inserted into a given column.
      * The list can be constructed using {@link ColumnName#set(Object)}
      * and {@link SetClauseList#also(SetClauseList)}.
-     * @return
+     * @return insert statement object
      */
     public AbstractInsertStatement insert(final TargetTable targetTable, final SetClauseList list) {
         return insert(targetTable, createFromConstructor(list, createTableValueConstructor(list)));

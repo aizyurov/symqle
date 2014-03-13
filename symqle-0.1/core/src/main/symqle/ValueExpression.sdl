@@ -9,7 +9,15 @@ public interface ValueExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractValueExpression<T> implements ValueExpression<T> {}
 
-:: public <T> AbstractValueExpression<T> map(final ValueExpression<?> e, final Mapper<T> mapper) {
+::
+    /**
+    * Changes mapper of {@code this}.
+    * The result produces the same SQL but is associated with different Java type.
+    * Symqle does not check that the replacement is valid, is is your responsibility.
+    * @param mapper new mapper to use.
+    * @return new AbstractNumericExpression with required mapper.
+    */
+    <T> AbstractValueExpression<T> map(final ValueExpression<?> e, final Mapper<T> mapper) {
     return new AbstractValueExpression<T>() {
         @Override
         public Mapper<T> getMapper() {
@@ -23,29 +31,52 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
     };
 }
 
-:: public <T> DynamicParameter<T> param(final ValueExpression<T> e, T value) {
-    return DynamicParameter.create(e.getMapper(), value);
-}
+::
+    /**
+     * Creates a dynamic parameter with the same mapper as of {@code this}.
+     * @param value initial value of created parameter
+     * @return a parameter with given initial value
+     */
+    <T> DynamicParameter<T> param(final ValueExpression<T> e, T value) {
+        return DynamicParameter.create(e.getMapper(), value);
+    }
 
-:: public <T> DynamicParameter<T> param(final ValueExpression<T> e) {
-    return DynamicParameter.create(e.getMapper());
-}
+::
+    /**
+     * Creates a dynamic parameter with the same mapper as of {@code this}.
+     * @return a parameter with initial value {@code null}
+     */
+    <T> DynamicParameter<T> param(final ValueExpression<T> e) {
+        return DynamicParameter.create(e.getMapper());
+    }
 
+# see ValueExpressionPrimary.sdl, NumericExpression.sdl.
+# StringExpressions are below in this file
 <T> ValueExpression<T> ::=
-    e:NumericExpression<T> :: implicit {}
+    e:NumericExpression<T> :: implicit
 |
-    e:StringExpression<T> :: implicit {}
+    e:StringExpression<T> :: implicit
 |
-    e:ValueExpressionPrimary<T> :: implicit {}
+    e:ValueExpressionPrimary<T> :: implicit
 ;
 
 # see BooleanValueExpression.sdl
-ValueExpression<Boolean> ::=  bve:BooleanExpression :: public AbstractValueExpression<Boolean> asValue {
-                public Mapper<Boolean> getMapper() {
-                    return CoreMappers.BOOLEAN;
-                }
-    }
-;
+
+
+ValueExpression<Boolean> ::=
+    /**
+     * Converts {@code this} to {@code }AbstractValueExpression<Boolean>}.
+     * The result can be used in select lists,
+     * as argument of {@link ColumnName#set(ValueExpression)}
+     * and as sort specification.
+     * @return conversion result
+     */
+     bve:BooleanExpression :: AbstractValueExpression<Boolean> asValue {
+         public Mapper<Boolean> getMapper() {
+             return CoreMappers.BOOLEAN;
+         }
+     }
+    ;
 
 # no abstract class: no methods - removed as unnecessary
 // public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
@@ -54,62 +85,110 @@ public interface StringExpression<T> extends Scalar<T> : Sql {}
 
 public class AbstractStringExpression<T> implements StringExpression<T> {}
 
-:: public <T> AbstractStringExpression<T> map(final StringExpression<?> e, final Mapper<T> mapper) {
-    return new AbstractStringExpression<T>() {
-        @Override
-        public Mapper<T> getMapper() {
-            return mapper;
-        }
+::
+    /**
+    * Changes mapper of {@code this}.
+    * The result produces the same SQL but is associated with different Java type.
+    * Symqle does not check that the replacement is valid, is is your responsibility.
+    * @param mapper new mapper to use.
+    * @return new AbstractNumericExpression with required mapper.
+    */
+    public <T> AbstractStringExpression<T> map(final StringExpression<?> e, final Mapper<T> mapper) {
+        return new AbstractStringExpression<T>() {
+            @Override
+            public Mapper<T> getMapper() {
+                return mapper;
+            }
 
-        @Override
-        public Sql z$sqlOfStringExpression(final SqlContext context) {
-            return e.z$sqlOfStringExpression(context);
-        }
-    };
-}
+            @Override
+            public Sql z$sqlOfStringExpression(final SqlContext context) {
+                return e.z$sqlOfStringExpression(context);
+            }
+        };
+    }
 
 
 <T> StringExpression<T> ::=
-    cf:CharacterFactor<T> :: implicit {}
+    cf:CharacterFactor<T> :: implicit
 ;
 
 StringExpression<String> ::=
-    s:StringExpression<?> CONCAT e:CharacterFactor<?>
-        :: public AbstractStringExpression<String> concat {
+    /**
+     * Concatenation of {@code this} and {@code other}.
+     * The result produces {@code this || other} SQL.
+     * @param other the string to append
+     * @return the result of concatenation
+     */
+    s:StringExpression<?> CONCAT other:CharacterFactor<?>
+        :: AbstractStringExpression<String> concat {
                 public Mapper<String> getMapper() {
                     return CoreMappers.STRING;
                 }
         }
 ;
 
+::
+    /**
+     * Concatenation of {@code this} and {@code s}.
+     * Produces {@code this || ?} SQL, the value of dynamic parameter is set to {@code s}.
+     * @param s the string to append
+     * @return the result of concatenation
+     */
+    AbstractStringExpression<String> concat(final StringExpression<?> e, final String s) {
+        return concat(e,  DynamicParameter.create(CoreMappers.STRING, s));
+    }
+
+
 # SUBSTRING <left paren> <character value expression> FROM <start position> [ FOR <string length> ] [ USING <char length units> ] <right paren>
 
 StringExpression<String> ::=
+    /**
+     * Substring of {@code this} from {@code start} to the end of {@code this}.
+     * @param start starting position. The leftmost is 1.
+     * @return substring expression
+     */
     SUBSTRING LEFT_PAREN s:StringExpression<?> FROM start:NumericExpression<?> RIGHT_PAREN
-        :: public AbstractStringExpression<String> substring {
+        :: AbstractStringExpression<String> substring {
                 public Mapper<String> getMapper() {
                     return CoreMappers.STRING;
                 }
         }
 |
+    /**
+     * Substring of {@code this} from {@code start} with maximum {@code len} length.
+     * @param start starting position. The leftmost is 1.
+     * @param len max length of substring
+     * @return substring expression
+     */
     SUBSTRING LEFT_PAREN s:StringExpression<?> FROM start:NumericExpression<?> FOR len:NumericExpression<?> RIGHT_PAREN
-        :: public AbstractStringExpression<String> substring {
+        :: AbstractStringExpression<String> substring {
                 public Mapper<String> getMapper() {
                     return CoreMappers.STRING;
                 }
         }
 ;
 
-:: public AbstractStringExpression<String> substring(StringExpression<?> source, int start) {
-    return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start));
-}
+::
+    /**
+     * Substring of {@code this} from {@code start} to the end of {@code this}.
+     * {@code start} is supplied as a dynamic parameter.
+     * @param start starting position. The leftmost is 1.
+     * @return substring expression
+     */
+    AbstractStringExpression<String> substring(StringExpression<?> source, int start) {
+        return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start));
+    }
 
-:: public AbstractStringExpression<String> substring(StringExpression<?> source, int start, int len) {
+::
+    /**
+     * Substring of {@code this} from {@code start} with maximum {@code len} length.
+     * {@code start} and {@code len} are supplied as dynamic parameters.
+     * @param start starting position. The leftmost is 1.
+     * @param len max length of substring
+     * @return substring expression
+     */
+AbstractStringExpression<String> substring(StringExpression<?> source, int start, int len) {
     return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start), DynamicParameter.create(CoreMappers.INTEGER, len));
-}
-
-:: public AbstractStringExpression<String> concat(final StringExpression<?> e, final String s) {
-    return concat(e,  DynamicParameter.create(CoreMappers.STRING, s));
 }
 
 public interface CharacterFactor<T> extends Scalar<T> : Sql {}
@@ -124,18 +203,26 @@ public interface CollationName : Sql {}
     e:ValueExpressionPrimary<T> COLLATE cn:CollationName :: private AbstractCharacterFactor<T> collate {}
 ;
 
-:: public <T> AbstractCharacterFactor<T> collate (final ValueExpressionPrimary<T> e, final String collationName) {
-     return collate(e, new CollationName() {
-         @Override
-         public Sql z$sqlOfCollationName(final SqlContext context) {
-             return new StringSql(collationName);
-         }
-     });
-}
+::
+    /**
+     * Applies {@code COLLATE collationName} to {@code this}.
+     * If {@code this} is not CHAR or VARCHAR, the result is database-specific.
+     * @param collationName consult your database documentation for valid collation names.
+     * @return equivalent of {@code this COLLATE collationName}
+     */
+    <T> AbstractCharacterFactor<T> collate (final ValueExpressionPrimary<T> e, final String collationName) {
+         return collate(e, new CollationName() {
+             @Override
+             public Sql z$sqlOfCollationName(final SqlContext context) {
+                 return new StringSql(collationName);
+             }
+         });
+    }
 
 # POSITION <left paren> <string value expression> IN <string value expression> [ USING <char length units> ] <right paren>
 
-NumericExpression<Integer> ::= POSITION  LEFT_PAREN pattern:StringExpression<?> IN source:StringExpression<?> RIGHT_PAREN
+NumericExpression<Integer> ::=
+    POSITION  LEFT_PAREN pattern:StringExpression<?> IN source:StringExpression<?> RIGHT_PAREN
     :: private AbstractNumericExpression<Integer> pos {
                 public Mapper<Integer> getMapper() {
                     return CoreMappers.INTEGER;
@@ -143,11 +230,26 @@ NumericExpression<Integer> ::= POSITION  LEFT_PAREN pattern:StringExpression<?> 
     }
 ;
 
-:: public AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, StringExpression<?> pattern) {
+::
+    /**
+     * Position of pattern in {@code this}.
+     * Positions start from 1.
+     * @param pattern the pattern to match
+     * @return expression, which produces SQL like {@code POSITION(pattern) IN this} or equivalent.
+     */
+AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, StringExpression<?> pattern) {
     return pos(pattern, source);
 }
 
-:: public AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, String pattern) {
+::
+    /**
+     * Position of pattern in {@code this}.
+     * Positions start from 1.
+     * @param pattern the pattern to match
+     * @return expression, which produces SQL like {@code POSITION(?) IN this} or equivalent
+     * with value of dynamic parameter set to {@code pattern}
+     */
+AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, String pattern) {
     return pos(DynamicParameter.create(CoreMappers.STRING, pattern), source);
 }
 

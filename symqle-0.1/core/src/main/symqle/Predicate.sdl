@@ -179,9 +179,20 @@ public interface InValueList<T> : Sql {}
 public class AbstractInValueList<T> implements InValueList<T> {}
 
 <T>  InValueList<T> ::=
+    /**
+     * Converts {@code this} to InValueList.
+     * Other values can be appended to the list via {@link InValueList#append(ValueExpression)}.
+     * The list can be used in {@link Predicand#in(InPredicateValue)} and {@link Predicand#notIn(InPredicateValue)}.
+     * @return AbstractInValueList containing one element
+     */
     e1:ValueExpression<T> :: AbstractInValueList<T> asInValueList
 |
-    l:InValueList<T> COMMA e:ValueExpression<T> :: AbstractInValueList<T> append {}
+    /**
+     * Constructs new list by appending {@code other} to {@code this}.
+     * @param other the ValueExpression to append
+     * @return extended list
+     */
+    l:InValueList<T> COMMA other:ValueExpression<T> :: AbstractInValueList<T> append
 ;
 
 # public convenience methods for construction of InPredicate from list of ValueExpression

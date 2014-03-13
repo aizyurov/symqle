@@ -176,7 +176,7 @@ public class AbstractFactor<T> implements Factor<T> {}
 <T> Factor<T> ::=
     e:ValueExpressionPrimary<T> :: implicit {}
 ;
-<T> Factor<T> ::= 
+<T> Factor<T> ::=
     /**
     * Unary minus:  {@code - this}.
     * {@code this} should have database type, which is numeric or

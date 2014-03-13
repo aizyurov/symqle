@@ -75,7 +75,7 @@ public class SqlContext {
             }
             int i = 0;
             // will have ArrayIndexOutOfBoundsException it there is no free slot
-            // ever expected
+            // never expected
             while (keys[i] !=null) {
                 i++;
             }
