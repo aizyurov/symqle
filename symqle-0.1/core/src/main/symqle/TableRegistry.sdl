@@ -122,7 +122,6 @@ class DataChangeTableRegistry implements TableRegistry {
 
 }
 
-import java.util.Collections;
 import org.symqle.common.MalformedStatementException;
 class NoTablesRegistry implements TableRegistry {
     private final TableRegistry parent;

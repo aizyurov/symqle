@@ -7,13 +7,12 @@ public class AbstractAggregateFunction<T> implements AggregateFunction<T> {}
 # COUNT(*) not supported so far
 
 AggregateFunction<Integer> ::=
-    COUNT LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN ::
     /**
      * Creates {@code count(this)}.
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction
      */
-    AbstractAggregateFunction<Integer> count {
+    COUNT LEFT_PAREN ve:ValueExpression<?> RIGHT_PAREN :: AbstractAggregateFunction<Integer> count {
         public Mapper<Integer> getMapper() {
             return CoreMappers.INTEGER;
         }

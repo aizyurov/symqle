@@ -15,8 +15,7 @@ import org.symqle.common.Pair;
      * @param <U> {@code other} type argument
      * @return new AbstractSelectList
      */
-    self:SelectList<T> COMMA other:SelectList<U> ::
-    public AbstractSelectList<Pair<T, U>> pair {
+    self:SelectList<T> COMMA other:SelectList<U> :: AbstractSelectList<Pair<T, U>> pair {
             /**
             * Creates a Query representing <code>this</code>
             * @param context the Sql construction context
@@ -27,7 +26,7 @@ import org.symqle.common.Pair;
                 final Query<U> query2 = other.z$sqlOfSelectList(context);
                 RowMapper<Pair<T, U>> extractor = new RowMapper<Pair<T, U>>() {
                     @Override
-                    public Pair<T, U> extract(Row row) throws SQLException {
+                    public Pair<T, U> extract(final Row row) throws SQLException {
                         return Pair.make(query1.extract(row), query2.extract(row));
                     }
                 };
@@ -51,7 +50,7 @@ public interface Identifier : Sql {}
 
 <T> SelectSublist<T> ::= ve:ValueExpression<T> ::
     implicit {
-            /**
+           /**
             * Creates a Query representing <code>this</code>
             * @param context the Sql construction context
             * @return query conforming to <code>this</code> syntax
@@ -64,13 +63,13 @@ public interface Identifier : Sql {}
                     context.get(Dialect.class).SelectSublist_is_ValueExpression(veSql));
                 } else {
                     final String name = nameProvider.getUniqueName();
-                    return new ComplexQuery<T>(new RowMapper<T>(){
+                    return new ComplexQuery<T>(new RowMapper<T>() {
                                 @Override
-                                public T extract(Row row) throws SQLException {
+                                public T extract(final Row row) throws SQLException {
                                     return ve.getMapper().value(row.getValue(name));
                                 }
                             }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSql(name)));
-                }           
+                }
             }
     }
 |
@@ -85,7 +84,7 @@ public interface Identifier : Sql {}
 * @param label the label to associate with {@code this}
 * @return new AbstractSelectSublist
 */
-public <T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Label label) {
+<T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Label label) {
   return new AbstractSelectSublist<T>() {
           public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
               final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
@@ -95,9 +94,9 @@ public <T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Lab
               } else {
                   final String name = nameProvider.getUniqueName();
                   label.setName(ve, name);
-                  return new ComplexQuery<T>(new RowMapper<T>(){
+                  return new ComplexQuery<T>(new RowMapper<T>() {
                               @Override
-                              public T extract(Row row) throws SQLException {
+                              public T extract(final Row row) throws SQLException {
                                   return ve.getMapper().value(row.getValue(name));
                               }
                           }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSql(name)));
@@ -127,9 +126,9 @@ public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
                     context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction(aggrSql));
                 } else {
                     final String name = nameProvider.getUniqueName();
-                    return new ComplexQuery<T>(new RowMapper<T>(){
+                    return new ComplexQuery<T>(new RowMapper<T>() {
                                 @Override
-                                public T extract(Row row) throws SQLException {
+                                public T extract(final Row row) throws SQLException {
                                     return aggr.getMapper().value(row.getValue(name));
                                 }
                             }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new StringSql(name)));

@@ -30,12 +30,13 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> UNION ALL other:QueryTerm<T> ::
         AbstractQueryExpressionBodyScalar<T> unionAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, other){
+                return new UnionExceptBuilder<T>(qe, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 |
@@ -48,12 +49,13 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> UNION DISTINCT other:QueryTerm<T> ::
         AbstractQueryExpressionBodyScalar<T> unionDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, other){
+                return new UnionExceptBuilder<T>(qe, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 |
@@ -66,12 +68,13 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> UNION other:QueryTerm<T> ::
         AbstractQueryExpressionBodyScalar<T> union {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, other){
+                return new UnionExceptBuilder<T>(qe, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 |
@@ -84,12 +87,13 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> EXCEPT ALL other:QueryTerm<T> ::
         AbstractQueryExpressionBodyScalar<T> exceptAll {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, other){
+                return new UnionExceptBuilder<T>(qe, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 |
@@ -102,12 +106,13 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> EXCEPT DISTINCT other:QueryTerm<T> ::
         AbstractQueryExpressionBodyScalar<T> exceptDistinct {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, other){
+                return new UnionExceptBuilder<T>(qe, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 |
@@ -120,12 +125,13 @@ public class AbstractQueryExpressionBodyScalar<T> implements QueryExpressionBody
     qe:QueryExpressionBodyScalar<T> EXCEPT other:QueryTerm<T> ::
         AbstractQueryExpressionBodyScalar<T> except {
             public Query<T> z$sqlOfQueryExpressionBodyScalar(final SqlContext context) {
-                return new UnionExceptBuilder<T>(qe, other){
+                return new UnionExceptBuilder<T>(qe, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 ;
@@ -147,12 +153,13 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT ALL other:QueryPrimary<T> ::
         AbstractQueryTerm<T> intersectAll {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                return new IntersectBuilder<T>(qt, other){
+                return new IntersectBuilder<T>(qt, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryTerm_is_QueryTerm_INTERSECT_ALL_QueryPrimary(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
         }
 |
@@ -164,12 +171,13 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT DISTINCT other:QueryPrimary<T> ::
           AbstractQueryTerm<T> intersectDistinct {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                return new IntersectBuilder<T>(qt, other){
+                return new IntersectBuilder<T>(qt, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryTerm_is_QueryTerm_INTERSECT_DISTINCT_QueryPrimary(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
           }
 |
@@ -181,12 +189,13 @@ public class AbstractQueryTerm<T> implements QueryTerm<T> {}
     qt:QueryTerm<T> INTERSECT other:QueryPrimary<T> ::
           AbstractQueryTerm<T> intersect {
             public Query<T> z$sqlOfQueryTerm(final SqlContext context) {
-                return new IntersectBuilder<T>(qt, other){
+                return new IntersectBuilder<T>(qt, other) {
                     @Override
                     protected Sql composeSql(final Dialect dialect, final Sql left, final Sql right) {
                         return dialect.QueryTerm_is_QueryTerm_INTERSECT_QueryPrimary(left, right);
                     }
-                }.build(context);
+                }
+                .build(context);
             }
           }
 ;

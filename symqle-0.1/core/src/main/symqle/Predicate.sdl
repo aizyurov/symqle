@@ -84,7 +84,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @param value value of the second predicand
      * @return constructed predicate
      */
-    <T> AbstractPredicate eq(Predicand<T> p, T value) {
+    <T> AbstractPredicate eq(final Predicand<T> p, final T value) {
         return eq(p, DynamicParameter.create(p.getMapper(), value));
     }
 
@@ -95,7 +95,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @param value value of the second predicand
      * @return constructed predicate
      */
-    <T> AbstractPredicate ne(Predicand<T> p, T value) {
+    <T> AbstractPredicate ne(final Predicand<T> p, final T value) {
         return ne(p, DynamicParameter.create(p.getMapper(), value));
     }
 ::
@@ -105,7 +105,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @param value value of the second predicand
      * @return constructed predicate
      */
-    <T> AbstractPredicate gt(Predicand<T> p, T value) {
+    <T> AbstractPredicate gt(final Predicand<T> p, final T value) {
         return gt(p, DynamicParameter.create(p.getMapper(), value));
     }
 
@@ -116,7 +116,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @param value value of the second predicand
      * @return constructed predicate
      */
-    <T> AbstractPredicate ge(Predicand<T> p, T value) {
+    <T> AbstractPredicate ge(final Predicand<T> p, final T value) {
         return ge(p, DynamicParameter.create(p.getMapper(), value));
     }
 
@@ -127,7 +127,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @param value value of the second predicand
      * @return constructed predicate
      */
-    <T> AbstractPredicate lt(Predicand<T> p, T value) {
+    <T> AbstractPredicate lt(final Predicand<T> p, final T value) {
         return lt(p, DynamicParameter.create(p.getMapper(), value));
     }
 
@@ -138,7 +138,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @param value value of the second predicand
      * @return constructed predicate
      */
-    <T> AbstractPredicate le(Predicand<T> p, T value) {
+    <T> AbstractPredicate le(final Predicand<T> p, final T value) {
         return le(p, DynamicParameter.create(p.getMapper(), value));
     }
 
@@ -228,7 +228,7 @@ public class AbstractInValueList<T> implements InValueList<T> {}
      * @param value the value set to dynamicc parameter
      * @return constructed predicate
      */
-    <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, T value) {
+    <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, final T value) {
         return DynamicParameter.create(subquery.getMapper(), value).in(new InPredicateValue<T>() {
             @Override
             public Sql z$sqlOfInPredicateValue(final SqlContext context) {
@@ -237,9 +237,9 @@ public class AbstractInValueList<T> implements InValueList<T> {}
         });
     }
 
-:: private <T> InPredicateValue<T> prepareInPredicateValue(Mapper<T> mapper, final T first, final T... other) {
+:: private <T> InPredicateValue<T> prepareInPredicateValue(final Mapper<T> mapper, final T first, final T... other) {
      AbstractInValueList<T> list = DynamicParameter.create(mapper, first).asInValueList();
-     for (T e: other) {
+     for (T e : other) {
          list = list.append(DynamicParameter.create(mapper, e));
      }
      return list;
@@ -316,7 +316,7 @@ LikePredicateBase ::=
       * @param pattern the pattern
      * @return constructed predicate
      */
-    e:ValueExpression<?> NOT LIKE pattern:StringExpression<String> :: public AbstractLikePredicateBase notLike
+    e:ValueExpression<?> NOT LIKE pattern:StringExpression<String> :: AbstractLikePredicateBase notLike
 ;
 
 ::
@@ -326,7 +326,7 @@ LikePredicateBase ::=
       * @param pattern the value
      * @return constructed predicate
      */
-    AbstractLikePredicateBase like(ValueExpression<?> expr, String pattern) {
+    AbstractLikePredicateBase like(final ValueExpression<?> expr, final String pattern) {
           return like(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
     }
 
@@ -338,6 +338,6 @@ LikePredicateBase ::=
       * @param pattern the value
      * @return constructed predicate
      */
-    AbstractLikePredicateBase notLike(ValueExpression<?> expr, String pattern) {
+    AbstractLikePredicateBase notLike(final ValueExpression<?> expr, final String pattern) {
           return notLike(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
     }

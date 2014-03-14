@@ -1,11 +1,11 @@
 public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 
 <T> ValueExpressionPrimary<T> ::=
-    LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit
+     LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit
 |
-    p:DynamicParameterSpecification<T> :: implicit
+     p:DynamicParameterSpecification<T> :: implicit
 |
-	c:ColumnReference<T> :: implicit
+	   c:ColumnReference<T> :: implicit
 |
     /**
      * Converts {@code (ScalarSubquery)this} to an expression, which represents the
@@ -31,21 +31,22 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param mapper new mapper to use.
+    * @param <A> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-<T> AbstractValueExpressionPrimary<T> map(final ValueExpressionPrimary<?> e, final Mapper<T> mapper) {
-    return new AbstractValueExpressionPrimary<T>() {
-        @Override
-        public Mapper<T> getMapper() {
-            return mapper;
-        }
+    <A> AbstractValueExpressionPrimary<A> map(final ValueExpressionPrimary<?> e, final Mapper<A> mapper) {
+        return new AbstractValueExpressionPrimary<A>() {
+            @Override
+            public Mapper<A> getMapper() {
+                return mapper;
+            }
 
-        @Override
-        public Sql z$sqlOfValueExpressionPrimary(final SqlContext context) {
-            return e.z$sqlOfValueExpressionPrimary(context);
-        }
-    };
-}
+            @Override
+            public Sql z$sqlOfValueExpressionPrimary(final SqlContext context) {
+                return e.z$sqlOfValueExpressionPrimary(context);
+            }
+        };
+    }
 
 
 
@@ -175,8 +176,6 @@ public interface RoutineInvocation<T> extends Scalar<T> : Sql {}
 
 public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
 
-import java.util.Set;
-import java.util.Collections;
 <T> RoutineInvocation<T> ::=
     rn:RoutineName<T> LEFT_PAREN al:ArgumentList RIGHT_PAREN
         :: private AbstractRoutineInvocation<T> invoke
@@ -192,13 +191,13 @@ import java.util.Collections;
      * @param arg the arguments
      * @return created expression
      */
-  <T> AbstractRoutineInvocation<T> apply(RoutineName<T> routine, ValueExpression<?>... arg) {
+  <T> AbstractRoutineInvocation<T> apply(final RoutineName<T> routine, final ValueExpression<?>... arg) {
       if (arg.length == 0) {
           return invoke(routine);
       } else {
           ArgumentList al = createArgument(arg[0]);
           int i;
-          for (i=1; i<arg.length; i++) {
+          for (i = 1; i < arg.length; i++) {
               al = appendArgument(al, arg[i]);
           }
           return invoke(routine, al);
@@ -256,7 +255,17 @@ public class AbstractSearchedWhenClauseList<T> implements SearchedWhenClauseList
 <T> SearchedWhenClauseList<T> ::=
     l:SearchedWhenClauseBaseList<T> :: implicit
 |
-    l:SearchedWhenClauseBaseList<T> elseClause:ElseClause<T> :: AbstractSearchedWhenClauseList<T> orElse
+    /**
+     * Creates a new conditional expression by appending {@code ELSE value} to {@code this} SQL.
+     * @param elseValue the value of conditional expression if all conditions are false
+     * @return constructed when clause list, which produces SQL like {@code WHEN c1 THEN v1 ... ELSE value}
+     */
+    l:SearchedWhenClauseBaseList<T> elseValue:ElseClause<T> :: AbstractSearchedWhenClauseList<T> orElse
+;
+
+public interface ElseClause<T> extends Scalar<T> : Sql {}
+
+<T> ElseClause<T> ::= ELSE e:ValueExpression<T> :: implicit {}
 ;
 
 public interface SearchedWhenClauseBaseList<T> extends Scalar<T> : Sql {}
@@ -265,18 +274,35 @@ public class AbstractSearchedWhenClauseBaseList<T> implements SearchedWhenClause
 <T> SearchedWhenClauseBaseList<T> ::=
     c:SearchedWhenClause<T> :: implicit {}
 |
+    /**
+     * Chain another conditional expression to {code this}
+     * @param whenClause another when clause, see {@link BooleanExpression#then(ValueExpression)}.
+     * @return constructed when clause list, which produces SQL like {@code WHEN c1 THEN v1 ELSE WHEN c2 ELSE v2...}
+     */
     l:SearchedWhenClauseBaseList<T> whenClause:SearchedWhenClause<T> :: AbstractSearchedWhenClauseBaseList<T> orWhen
 |
-    l:SearchedWhenClauseBaseList<T> thenNull:ThenNullClause :: AbstractSearchedWhenClauseBaseList<T> orWhen
+    /**
+     * Chain another conditional expression to {code this}
+     * @param whenClause another when clause with null value if condition is true,
+     * see {@link BooleanExpression#thenNull()}.
+     * @return constructed when clause list, which produces SQL like {@code WHEN c1 THEN v1 ELSE WHEN c2 ELSE NULL}
+     */
+    l:SearchedWhenClauseBaseList<T> whenClause:ThenNullClause :: AbstractSearchedWhenClauseBaseList<T> orWhen
 ;
 
 public interface SearchedWhenClause<T> extends Scalar<T> : Sql {}
 public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
 
 <T> SearchedWhenClause<T> ::=
+    /**
+     * Creates a when clause {@code WHEN this THEN value}.
+     * @param value the expression value when condition is true
+     * @param <T> Java type associated with value
+     * @return new when clause
+     */
     WHEN condition:BooleanExpression THEN value:ValueExpression<T> :: AbstractSearchedWhenClause<T> then {
         private final Mapper<T> mapper = value.getMapper();
-        public final Mapper<T> getMapper() {
+        public Mapper<T> getMapper() {
             return mapper;
         }
     }
@@ -284,12 +310,12 @@ public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
 
 public interface ThenNullClause : Sql {}
 
-ThenNullClause ::= WHEN condition:BooleanExpression THEN NULL :: ThenNullClause thenNull {}
-;
-
-public interface ElseClause<T> extends Scalar<T> : Sql {}
-
-<T> ElseClause<T> ::= ELSE e:ValueExpression<T> :: implicit {}
+ThenNullClause ::=
+    /**
+     * Creates a when clause {@code WHEN this THEN NULL}.
+     * @return new when clause
+     */
+    WHEN condition:BooleanExpression THEN NULL :: ThenNullClause thenNull {}
 ;
 
 public interface CastSpecification<T> extends Scalar<T> : Sql {}
@@ -303,14 +329,20 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
 ;
 
 ::
-  <T> AbstractCastSpecification<T> cast(final ValueExpression<T> e, final String castTarget) {
-       return cast(e, new CastTarget() {
-           @Override
-           public Sql z$sqlOfCastTarget(final SqlContext context) {
-               return new StringSql(castTarget);
-           }
-       });
-  }
+    /**
+     * Creates an expression equivalent to {@code CAST(this AS castTarget)}.
+     * It does not affect associated Java type, this is database-side cast.
+     * @param castTarget any valid database type name.
+     * @return created expression
+     */
+    <T> AbstractCastSpecification<T> cast(final ValueExpression<T> e, final String castTarget) {
+         return cast(e, new CastTarget() {
+             @Override
+             public Sql z$sqlOfCastTarget(final SqlContext context) {
+                 return new StringSql(castTarget);
+             }
+         });
+    }
 
 public interface CastTarget : Sql {}
 
@@ -318,27 +350,40 @@ public interface CastTarget : Sql {}
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-ValueExpressionPrimary<Date> ::= CURRENT_DATE :: public AbstractValueExpressionPrimary<Date> currentDate {
-    public Mapper<Date> getMapper() {
-        return CoreMappers.DATE;
+ValueExpressionPrimary<Date> ::=
+   /**
+    * {@code current_date}.
+    * @return ValueExpressionPrimary, which SQL code is {@code current_date}
+    */
+    CURRENT_DATE :: public AbstractValueExpressionPrimary<Date> currentDate {
+      public Mapper<Date> getMapper() {
+          return CoreMappers.DATE;
+      }
     }
-}
 ;
 
-ValueExpressionPrimary<Timestamp> ::= CURRENT_TIMESTAMP
- :: public AbstractValueExpressionPrimary<Timestamp> currentTimestamp {
-   public Mapper<Timestamp> getMapper() {
-       return CoreMappers.TIMESTAMP;
-   }
-}
+ValueExpressionPrimary<Timestamp> ::=
+   /**
+    * {@code current_timestamp}.
+    * @return ValueExpressionPrimary, which SQL code is {@code current_timestamp}
+    */
+    CURRENT_TIMESTAMP :: public AbstractValueExpressionPrimary<Timestamp> currentTimestamp {
+       public Mapper<Timestamp> getMapper() {
+           return CoreMappers.TIMESTAMP;
+       }
+    }
 ;
 
-ValueExpressionPrimary<Time> ::= CURRENT_TIME
- :: public AbstractValueExpressionPrimary<Time> currentTime {
-   public Mapper<Time> getMapper() {
-       return CoreMappers.TIME;
-   }
-}
+ValueExpressionPrimary<Time> ::=
+   /**
+    * {@code current_time}.
+    * @return ValueExpressionPrimary, which SQL code is {@code current_time}
+    */
+    CURRENT_TIME :: public AbstractValueExpressionPrimary<Time> currentTime {
+       public Mapper<Time> getMapper() {
+           return CoreMappers.TIME;
+       }
+    }
 ;
 
 

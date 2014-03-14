@@ -196,7 +196,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
      * @param limit the row number limit
      * @return new AbstractQueryExpression with row limit
      */
-    <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int limit) {
+    <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, final int limit) {
         return limitOnly(qeb, new IntLiteral(limit));
     }
 
@@ -207,7 +207,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
      * @param limit the row number limit
      * @return new AbstractQueryExpression with offset and row limit
      */
-    <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, int offset, int limit) {
+    <T> AbstractQueryExpression<T> limit(final QueryExpressionBasic<T> qeb, final int offset, final int limit) {
                   return offsetAndLimit(qeb, new IntLiteral(offset), new IntLiteral(limit));
     }
 
@@ -233,7 +233,7 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
      */
     <T> AbstractQueryExpressionBasic<T> orderBy(final QueryExpressionBody<T> qe, final SortSpecification sort, final SortSpecification... additionalSort) {
         SortSpecificationList list = createSortSpecificationList(sort);
-         for (SortSpecification add: additionalSort) {
+         for (SortSpecification add : additionalSort) {
              list = appendSortSpecification(list, add);
          }
          return  orderBy(qe, createOrderByClause(list));

@@ -3,13 +3,17 @@
 
 # Scalar interface is also defined here, because code generator should know it
 
-import java.sql.*;
-import java.util.*;
-import javax.sql.DataSource;
 import org.symqle.common.*;
+import org.symqle.jdbc.*;
 import org.symqle.querybuilder.*;
-import org.symqle.jdbc.Configuration;
-import org.symqle.jdbc.UpdatableConfiguration;
+
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import static org.symqle.common.SqlContext.Builder;
 /**
 * This class contains the logic of sql building. Other org.symqle.sql classes call its methods to construct

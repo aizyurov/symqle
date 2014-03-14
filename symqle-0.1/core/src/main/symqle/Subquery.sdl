@@ -3,7 +3,7 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
 <T> ScalarSubquery<T> ::= LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN ::
         implicit
     {
-       public Sql z$sqlOfScalarSubquery(SqlContext context) {
+       public Sql z$sqlOfScalarSubquery(final SqlContext context) {
        final TableRegistry innerRegistry = new ChildSelectTableRegistry(context.get(TableRegistry.class));
        final SqlContext innerContext = context.newBuilder().
                 put(ColumnNameGenerator.class, null).

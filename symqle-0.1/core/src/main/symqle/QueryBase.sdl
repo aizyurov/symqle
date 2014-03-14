@@ -50,9 +50,9 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
                 final Query<T> query = sl.z$sqlOfSelectListScalar(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null ?
-                        dialect.QueryBaseScalar_is_SELECT_SelectListScalar(query) :
-                        dialect.QueryBaseScalar_is_SELECT_SelectListScalar_FromClause(query, fromClauseSql);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.QueryBaseScalar_is_SELECT_SelectListScalar(query)
+                        : dialect.QueryBaseScalar_is_SELECT_SelectListScalar_FromClause(query, fromClauseSql);
                 return new ComplexQuery<T>(query, sql);
             }
     }
@@ -68,9 +68,9 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
                 final Query<T> query = sl.z$sqlOfSelectListScalar(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null ?
-                        dialect.QueryBaseScalar_is_SELECT_ALL_SelectListScalar(query) :
-                        dialect.QueryBaseScalar_is_SELECT_ALL_SelectListScalar_FromClause(query, fromClauseSql);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.QueryBaseScalar_is_SELECT_ALL_SelectListScalar(query)
+                        : dialect.QueryBaseScalar_is_SELECT_ALL_SelectListScalar_FromClause(query, fromClauseSql);
                 return new ComplexQuery<T>(query, sql);
             }
     }
@@ -86,9 +86,9 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
                 final Query<T> query = sl.z$sqlOfSelectListScalar(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null ?
-                        dialect.QueryBaseScalar_is_SELECT_DISTINCT_SelectListScalar(query) :
-                        dialect.QueryBaseScalar_is_SELECT_DISTINCT_SelectListScalar_FromClause(query, fromClauseSql);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.QueryBaseScalar_is_SELECT_DISTINCT_SelectListScalar(query)
+                        : dialect.QueryBaseScalar_is_SELECT_DISTINCT_SelectListScalar_FromClause(query, fromClauseSql);
                 return new ComplexQuery<T>(query, sql);
             }
     }
@@ -104,9 +104,9 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
                 final Query<T> query = sl.z$sqlOfSelectList(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null ?
-                        dialect.QueryBase_is_SELECT_SelectList(query) :
-                        dialect.QueryBase_is_SELECT_SelectList_FromClause(query, fromClauseSql);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.QueryBase_is_SELECT_SelectList(query)
+                        : dialect.QueryBase_is_SELECT_SelectList_FromClause(query, fromClauseSql);
                 return new ComplexQuery<T>(query, sql);
         }
     }
@@ -122,9 +122,9 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
                 final Query<T> query = sl.z$sqlOfSelectList(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null ?
-                        dialect.QueryBase_is_SELECT_ALL_SelectList(query) :
-                        dialect.QueryBase_is_SELECT_ALL_SelectList_FromClause(query, fromClauseSql);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.QueryBase_is_SELECT_ALL_SelectList(query)
+                        : dialect.QueryBase_is_SELECT_ALL_SelectList_FromClause(query, fromClauseSql);
                 return new ComplexQuery<T>(query, sql);
         }
     }
@@ -140,9 +140,9 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
                 final Query<T> query = sl.z$sqlOfSelectList(context);
                 final Sql fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null ?
-                        dialect.QueryBase_is_SELECT_DISTINCT_SelectList(query) :
-                        dialect.QueryBase_is_SELECT_DISTINCT_SelectList_FromClause(query, fromClauseSql);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.QueryBase_is_SELECT_DISTINCT_SelectList(query)
+                        : dialect.QueryBase_is_SELECT_DISTINCT_SelectList_FromClause(query, fromClauseSql);
                 return new ComplexQuery<T>(query, sql);
         }
     }

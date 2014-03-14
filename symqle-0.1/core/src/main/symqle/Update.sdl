@@ -404,7 +404,8 @@ import org.symqle.jdbc.GeneratedKeys;
      * @return number of affected rows
      * @throws SQLException from jdbc driver
      */
-    int execute(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
+    int execute(final InsertStatement statement, final GeneratedKeys<?> generatedKeys,
+                final Engine engine, final Option... options) throws SQLException {
            return compileUpdate(statement, generatedKeys, engine, options).execute();
     }
 
@@ -419,7 +420,7 @@ import org.symqle.jdbc.GeneratedKeys;
      * @param options query builder and execution options to apply
      * @return pre-compiled query
      */
-    PreparedUpdate compileUpdate(final InsertStatement statement, GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) throws SQLException {
+    PreparedUpdate compileUpdate(final InsertStatement statement, final GeneratedKeys<?> generatedKeys, final Engine engine, final Option... options) {
          final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
          List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
          allOptions.addAll(Arrays.asList(options));

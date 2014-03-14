@@ -15,12 +15,13 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param mapper new mapper to use.
+    * @param <A> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <T> AbstractValueExpression<T> map(final ValueExpression<?> e, final Mapper<T> mapper) {
-    return new AbstractValueExpression<T>() {
+    <A> AbstractValueExpression<A> map(final ValueExpression<?> e, final Mapper<A> mapper) {
+    return new AbstractValueExpression<A>() {
         @Override
-        public Mapper<T> getMapper() {
+        public Mapper<A> getMapper() {
             return mapper;
         }
 
@@ -37,7 +38,7 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
      * @param value initial value of created parameter
      * @return a parameter with given initial value
      */
-    <T> DynamicParameter<T> param(final ValueExpression<T> e, T value) {
+    <T> DynamicParameter<T> param(final ValueExpression<T> e, final T value) {
         return DynamicParameter.create(e.getMapper(), value);
     }
 
@@ -91,12 +92,13 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param mapper new mapper to use.
+    * @param <A> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    public <T> AbstractStringExpression<T> map(final StringExpression<?> e, final Mapper<T> mapper) {
-        return new AbstractStringExpression<T>() {
+    <A> AbstractStringExpression<A> map(final StringExpression<?> e, final Mapper<A> mapper) {
+        return new AbstractStringExpression<A>() {
             @Override
-            public Mapper<T> getMapper() {
+            public Mapper<A> getMapper() {
                 return mapper;
             }
 
@@ -175,7 +177,7 @@ StringExpression<String> ::=
      * @param start starting position. The leftmost is 1.
      * @return substring expression
      */
-    AbstractStringExpression<String> substring(StringExpression<?> source, int start) {
+    AbstractStringExpression<String> substring(final StringExpression<?> source, final int start) {
         return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start));
     }
 
@@ -187,7 +189,7 @@ StringExpression<String> ::=
      * @param len max length of substring
      * @return substring expression
      */
-AbstractStringExpression<String> substring(StringExpression<?> source, int start, int len) {
+AbstractStringExpression<String> substring(final StringExpression<?> source, final int start, final int len) {
     return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start), DynamicParameter.create(CoreMappers.INTEGER, len));
 }
 
@@ -237,7 +239,7 @@ NumericExpression<Integer> ::=
      * @param pattern the pattern to match
      * @return expression, which produces SQL like {@code POSITION(pattern) IN this} or equivalent.
      */
-AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, StringExpression<?> pattern) {
+AbstractNumericExpression<Integer> positionOf(final StringExpression<?> source, final StringExpression<?> pattern) {
     return pos(pattern, source);
 }
 
@@ -249,7 +251,7 @@ AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, String
      * @return expression, which produces SQL like {@code POSITION(?) IN this} or equivalent
      * with value of dynamic parameter set to {@code pattern}
      */
-AbstractNumericExpression<Integer> positionOf(StringExpression<?> source, String pattern) {
+AbstractNumericExpression<Integer> positionOf(final StringExpression<?> source, final String pattern) {
     return pos(DynamicParameter.create(CoreMappers.STRING, pattern), source);
 }
 
