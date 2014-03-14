@@ -24,43 +24,40 @@ public abstract class TableOrView implements TablePrimary,
     */
     public abstract String getTableName();
 
-    private final int LEFT_JOIN = 1;
-    private final int RIGHT_JOIN = 2;
-    private final int INNER_JOIN = 3;
-    private final int OUTER_JOIN = 4;
-    
-    
+    private static final int LEFT_JOIN = 1;
+    private static final int RIGHT_JOIN = 2;
+    private static final int INNER_JOIN = 3;
+    private static final int OUTER_JOIN = 4;
+
+
     private static class JoinInfo {
         private final int joinType;
         private final BooleanExpression condition;
 
-        private JoinInfo(final int joinType, final BooleanExpression condition) {
+        public JoinInfo(final int joinType, final BooleanExpression condition) {
             this.joinType = joinType;
             this.condition = condition;
         }
     }
 
-
     private Set<TableOrView> allReachable() {
         final Set<TableOrView> reachable = new HashSet<TableOrView>(referents.keySet());
-        for (TableOrView referent: referents.keySet()) {
+        for (TableOrView referent : referents.keySet()) {
             reachable.addAll(referent.allReachable());
         }
         return reachable;
     }
 
-
-
     private void checkJoin(TableOrView other) {
         if (other.referral != null) {
-            throw new MalformedStatementException(other + "is already joined to "+ other.referral);
+            throw new MalformedStatementException(other + "is already joined to " + other.referral);
         }
         List<TableOrView> cycle = new ArrayList<TableOrView>();
         // try to find cycle starting from other
         TableOrView t;
         for (t = this; t != null; t = t.referral) {
             cycle.add(0, t);
-            if (other==t) {
+            if (other == t) {
                 // cycle!
                 throw new MalformedStatementException("Cyclic join: " + cycle);
             }
@@ -80,7 +77,7 @@ public abstract class TableOrView implements TablePrimary,
         return new Column<T>(mapper, name, this);
     }
 
-    String getCorrelationName(SqlContext context) {
+    final String getCorrelationName(SqlContext context) {
         String name;
         for (name = context.get(TableRegistry.class).getCorrelationName(this);
                 name == null;
@@ -91,7 +88,7 @@ public abstract class TableOrView implements TablePrimary,
     }
 
 
-    Set<TableOrView> joinedTableParticipants() {
+    final Set<TableOrView> joinedTableParticipants() {
         if (referral != null) {
             return referral.joinedTableParticipants();
         } else {
@@ -102,7 +99,7 @@ public abstract class TableOrView implements TablePrimary,
         }
     }
 
-    TableOrView joinedTableRoot() {
+    final TableOrView joinedTableRoot() {
         return referral == null ? this : referral.joinedTableRoot();
     }
 
@@ -117,9 +114,10 @@ public abstract class TableOrView implements TablePrimary,
      * Modifies {@code this}.
      * @param other the table to join
      * @param condition join condition
+     * @param <T> type of {@code other}
      * @return other
      */
-    public <T extends TableOrView> T innerJoin(final T other, final BooleanExpression condition) {
+    public final <T extends TableOrView> T innerJoin(final T other, final BooleanExpression condition) {
         join(other, INNER_JOIN, condition);
         return other;
     }
@@ -129,9 +127,10 @@ public abstract class TableOrView implements TablePrimary,
      * Modifies {@code this}.
      * @param other the table to join
      * @param condition join condition
+     * @param <T> type of {@code other}
      * @return other
      */
-    public <T extends TableOrView> T leftJoin(final T other, final BooleanExpression condition) {
+    public final <T extends TableOrView> T leftJoin(final T other, final BooleanExpression condition) {
         join(other, LEFT_JOIN, condition);
         return other;
     }
@@ -141,9 +140,10 @@ public abstract class TableOrView implements TablePrimary,
      * Modifies {@code this}.
      * @param other the table to join
      * @param condition join condition
+     * @param <T> type of {@code other}
      * @return other
      */
-    public <T extends TableOrView> T outerJoin(final T other, final BooleanExpression condition) {
+    public final <T extends TableOrView> T outerJoin(final T other, final BooleanExpression condition) {
         join(other, OUTER_JOIN, condition);
         return other;
     }
@@ -153,54 +153,56 @@ public abstract class TableOrView implements TablePrimary,
      * Modifies {@code this}.
      * @param other the table to join
      * @param condition join condition
+     * @param <T> type of {@code other}
      * @return other
      */
-    public <T extends TableOrView> T rightJoin(final T other, final BooleanExpression condition) {
+    public final <T extends TableOrView> T rightJoin(final T other, final BooleanExpression condition) {
         join(other, RIGHT_JOIN, condition);
         return other;
     }
 
 
     /**
-    * Creates an Sql representing <code>(TableName)this</code>
+    * Creates an Sql representing <code>(TableName)this</code>.
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
-    public Sql z$sqlOfTableName(SqlContext context) {
+    public final Sql z$sqlOfTableName(final SqlContext context) {
         return new StringSql(getTableName());
     }
 
     /**
-    * Creates an Sql representing <code>(TablePrimary)this</code>
+    * Creates an Sql representing <code>(TablePrimary)this</code>.
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
-    public Sql z$sqlOfTablePrimary(SqlContext context) {
-        return context.get(Dialect.class).TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
+    public final Sql z$sqlOfTablePrimary(final SqlContext context) {
+        return context.get(Dialect.class)
+              .TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
                 new StringSql(getCorrelationName(context)));
     }
 
     /**
-    * Creates an Sql representing <code>(TableReference)this</code>
+    * Creates an Sql representing <code>(TableReference)this</code>.
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
-    public Sql z$sqlOfTableReference(SqlContext context) {
+    public final Sql z$sqlOfTableReference(final SqlContext context) {
         TableReference tableReference = Symqle.asTableReference(this);
         for (Map.Entry<TableOrView, JoinInfo> entry : referents.entrySet()) {
             final TableOrView referent = entry.getKey();
             final JoinInfo joinInfo = entry.getValue();
             switch (joinInfo.joinType) {
-                case LEFT_JOIN : 
+                case LEFT_JOIN :
                     tableReference = Symqle.leftJoin(tableReference, referent, joinInfo.condition);
                     break;
-                case RIGHT_JOIN : 
+                case RIGHT_JOIN :
                     tableReference = Symqle.rightJoin(tableReference, referent, joinInfo.condition);
                     break;
-                case INNER_JOIN : 
+                case INNER_JOIN :
                     tableReference = Symqle.innerJoin(tableReference, referent, joinInfo.condition);
                     break;
-                case OUTER_JOIN : 
+                case OUTER_JOIN :
                     tableReference = Symqle.outerJoin(tableReference, referent, joinInfo.condition);
                     break;
             }

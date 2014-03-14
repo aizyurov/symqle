@@ -259,13 +259,15 @@ public interface ColumnName<T> extends Scalar<T> : Sql {}
 import java.util.Collections;
 /**
  * Base class representing a notion of database table.
- * Public methods of this class construct descendants of {@link }DataChangeStatement}.
+ * Public methods of this class construct descendants of {@link DataChangeStatement}.
  * Subclasses must implement {@link #getTableName}.
  */
 public abstract class Table extends TableOrView implements TargetTable {
 
-    public Sql z$sqlOfTargetTable(final SqlContext context) {
-        context.get(TableRegistry.class).addAll(Collections.<TableOrView>singleton(this), context.get(TableNameGenerator.class));
+    public final Sql z$sqlOfTargetTable(final SqlContext context) {
+        context.get(TableRegistry.class).addAll(
+            Collections.<TableOrView>singleton(this),
+            context.get(TableNameGenerator.class));
         return new StringSql(getTableName());
     }
 }
@@ -305,7 +307,7 @@ InsertStatement ::=
      * and {@link SetClauseList#also(SetClauseList)}.
      * @return insert statement object
      */
-    public AbstractInsertStatement insert(final TargetTable targetTable, final SetClauseList list) {
+    AbstractInsertStatement insert(final TargetTable targetTable, final SetClauseList list) {
         return insert(targetTable, createFromConstructor(list, createTableValueConstructor(list)));
     }
 
@@ -379,7 +381,7 @@ DeleteStatement ::= b:DeleteStatementBase :: implicit
      * @param condition the condition to apply
      * @return a DeleteStatement with condition set
      */
-    b:DeleteStatementBase condition:WhereClause :: public AbstractDeleteStatement where
+    b:DeleteStatementBase condition:WhereClause :: AbstractDeleteStatement where
 ;
 
 public interface DeleteStatementBase : Sql {}
