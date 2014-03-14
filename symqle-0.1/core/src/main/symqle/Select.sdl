@@ -139,7 +139,6 @@ import org.symqle.jdbc.Option;
     * @return new select statement
     */
     qe:QueryExpression<T>  FOR READ ONLY ::
-        import java.util.LinkedList;
         AbstractSelectStatement<T> forReadOnly
 |
     /**

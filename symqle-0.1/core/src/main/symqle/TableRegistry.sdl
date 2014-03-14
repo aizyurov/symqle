@@ -1,5 +1,4 @@
 import java.util.Collection;
-import java.util.List;
 import org.symqle.querybuilder.TableNameGenerator;
 public interface TableRegistry {
 
@@ -66,7 +65,6 @@ import org.symqle.common.MalformedStatementException;
      }
 }
 
-import java.util.List;
 class ChildSelectTableRegistry extends RootSelectTableRegistry {
 
     private final TableRegistry parent;
@@ -75,7 +73,7 @@ class ChildSelectTableRegistry extends RootSelectTableRegistry {
         this.parent = parent;
     }
 
-    public String getCorrelationName(TableOrView table) {
+    public String getCorrelationName(final TableOrView table) {
         final String parentName = parent.getCorrelationName(table);
         return parentName != null ? parentName : super.getCorrelationName(table);
     }
@@ -88,9 +86,9 @@ import org.symqle.common.Bug;
 import org.symqle.common.MalformedStatementException;
 class DataChangeTableRegistry implements TableRegistry {
 
-    TableOrView targetTable;
+    private TableOrView targetTable;
 
-    public void addAll(final Collection<TableOrView> tables, final TableNameGenerator generator) {
+    public final void addAll(final Collection<TableOrView> tables, final TableNameGenerator generator) {
         Bug.reportIf(tables.isEmpty());
         Set<TableOrView> illegalTables = new HashSet<TableOrView>(tables);
         if (targetTable != null) {
@@ -112,7 +110,7 @@ class DataChangeTableRegistry implements TableRegistry {
     }
 
 
-    public String getCorrelationName(TableOrView table) {
+    public final String getCorrelationName(final TableOrView table) {
         if (table.equals(targetTable)) {
             return targetTable.getTableName();
         } else {

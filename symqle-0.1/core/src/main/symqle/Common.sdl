@@ -62,9 +62,6 @@ public interface Dialect  {
 }
 
 
-import java.sql.SQLException;
-import java.util.regex.Pattern;
-import org.symqle.common.SqlParameters;
 import org.symqle.common.Sql;
 import org.symqle.common.CompositeSql;
 import org.symqle.common.MalformedStatementException;
@@ -78,15 +75,30 @@ import static org.symqle.querybuilder.SqlTerm.*;
 */
 public class GenericDialect implements Dialect {
 
+    /**
+    * Name of this dialect.
+    * Subclasses must override.
+    * @return "Generic"
+    */
     public String getName() {
         return "Generic";
     }
 
+    /**
+     * Generic dialect does not allow no FROM clause and has no replacement.
+     * @return never; always throws MalformedStatementException
+     */
     @Override
     public String fallbackTableName() {
-        throw new MalformedStatementException(getName() + " dialect does not support selects with no tables");
+        throw new MalformedStatementException(
+              getName() + " dialect does not support selects with no tables");
     }
 
+    /**
+    * A shortcut for new CompositeSql(first, other).
+    * @param first the first Sql
+    * @param other zero or more other Sqls
+    */
     protected final Sql concat(final Sql first, final Sql... other) {
         return new CompositeSql(first, other);
     }
@@ -99,8 +111,10 @@ import org.symqle.common.Sql;
 */
 public class DebugDialect extends GenericDialect {
 
-    public DebugDialect() {}
-
+    /**
+     * Debug dialect allows no FROM clause.
+     * @return null
+     */
     @Override
     public String fallbackTableName() {
         return null;

@@ -14,15 +14,15 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
     * Changes mapper of {@code this}.
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
-    * @param mapper new mapper to use.
+    * @param newMapper new mapper to use.
     * @param <A> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractValueExpression<A> map(final ValueExpression<?> e, final Mapper<A> mapper) {
+    <A> AbstractValueExpression<A> map(final ValueExpression<?> e, final Mapper<A> newMapper) {
     return new AbstractValueExpression<A>() {
         @Override
         public Mapper<A> getMapper() {
-            return mapper;
+            return newMapper;
         }
 
         @Override
@@ -91,15 +91,15 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
     * Changes mapper of {@code this}.
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
-    * @param mapper new mapper to use.
+    * @param newMapper new mapper to use.
     * @param <A> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractStringExpression<A> map(final StringExpression<?> e, final Mapper<A> mapper) {
+    <A> AbstractStringExpression<A> map(final StringExpression<?> e, final Mapper<A> newMapper) {
         return new AbstractStringExpression<A>() {
             @Override
             public Mapper<A> getMapper() {
-                return mapper;
+                return newMapper;
             }
 
             @Override
@@ -200,9 +200,9 @@ public class AbstractCharacterFactor<T> implements CharacterFactor<T> {}
 public interface CollationName : Sql {}
 
 <T> CharacterFactor<T> ::=
-    e:ValueExpressionPrimary<T> :: implicit {}
+    e:ValueExpressionPrimary<T> :: implicit
 |
-    e:ValueExpressionPrimary<T> COLLATE cn:CollationName :: private AbstractCharacterFactor<T> collate {}
+    e:ValueExpressionPrimary<T> COLLATE cn:CollationName :: private AbstractCharacterFactor<T> collate
 ;
 
 ::

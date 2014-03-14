@@ -257,6 +257,8 @@ public interface ColumnName<T> extends Scalar<T> : Sql {}
 
 
 import java.util.Collections;
+import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.TableNameGenerator;
 /**
  * Base class representing a notion of database table.
  * Public methods of this class construct descendants of {@link DataChangeStatement}.

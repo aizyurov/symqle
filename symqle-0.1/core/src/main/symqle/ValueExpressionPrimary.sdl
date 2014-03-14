@@ -1,11 +1,11 @@
 public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 
 <T> ValueExpressionPrimary<T> ::=
-     LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit
+    LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit
 |
-     p:DynamicParameterSpecification<T> :: implicit
+    p:DynamicParameterSpecification<T> :: implicit
 |
-	   c:ColumnReference<T> :: implicit
+    c:ColumnReference<T> :: implicit
 |
     /**
      * Converts {@code (ScalarSubquery)this} to an expression, which represents the
@@ -18,7 +18,7 @@ public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
 |
     e:CaseExpression<T> :: implicit
 |
-	  r:RoutineInvocation<T> :: implicit
+    r:RoutineInvocation<T> :: implicit
 |
     c:CastSpecification<T> :: implicit
 ;
@@ -30,15 +30,15 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
     * Changes mapper of {@code this}.
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
-    * @param mapper new mapper to use.
+    * @param newMapper new mapper to use.
     * @param <A> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractValueExpressionPrimary<A> map(final ValueExpressionPrimary<?> e, final Mapper<A> mapper) {
+    <A> AbstractValueExpressionPrimary<A> map(final ValueExpressionPrimary<?> e, final Mapper<A> newMapper) {
         return new AbstractValueExpressionPrimary<A>() {
             @Override
             public Mapper<A> getMapper() {
-                return mapper;
+                return newMapper;
             }
 
             @Override
@@ -56,26 +56,31 @@ public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {}
 import org.symqle.common.Mapper;
 public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
     private final Mapper<T> mapper;
-    private T value;
+    private T currentValue;
 
-    private DynamicParameter(final Mapper<T> mapper, T value) {
+    /**
+     * Creates a new dynamic parameter with given initial value.
+     * @param mapper the mapper to use when passing this parameter value to database
+     * @param value initial value
+     */
+    public DynamicParameter(final Mapper<T> mapper, final T value) {
         this.mapper = mapper;
-        this.value = value;
+        this.currentValue = value;
      }
 
     /**
-     * Creates a new dynamic parameter with initial value {@code value}
+     * Creates a new dynamic parameter with initial value {@code value}.
      * @param mapper the mapper to use when passing this parameter value to database
      * @param value initial value
      * @param <T> the type of value of this dynamic parameter
      * @return constructed dynamic parameter
      */
      public static <T> DynamicParameter<T> create(final Mapper<T> mapper, final T value) {
-        return new DynamicParameter<T>(mapper, value); 
+        return new DynamicParameter<T>(mapper, value);
      }
 
     /**
-     * Creates a new dynamic parameter with initial value {@code null}
+     * Creates a new dynamic parameter with initial value {@code null}.
      * @param mapper the mapper to use
      * @param <T> the type of value of this dynamic parameter
      * @return constructed dynamic parameter
@@ -90,39 +95,40 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
      * @param value new value
      */
      public void setValue(T value) {
-        this.value = value;
+        this.currentValue = value;
      }
 
-            /**
-            * Creates an Sql representing <code>this</code>
-            * @param context the Sql construction context
-            * @return sql conforming to <code>this</code> syntax
-            */
-            public final Sql z$sqlOfDynamicParameterSpecification(SqlContext context) {
-                return new Sql() {
-                    @Override
-                    public void appendTo(final StringBuilder builder) {
-                        builder.append("?");
-                    }
+      /**
+      * Creates an Sql representing <code>this</code>.
+      * @param context the Sql construction context
+      * @return sql conforming to <code>this</code> syntax
+      */
+      public final Sql z$sqlOfDynamicParameterSpecification(final SqlContext context) {
+          return new Sql() {
+              @Override
+              public void appendTo(final StringBuilder builder) {
+                  builder.append("?");
+              }
 
-                    @Override
-                    public void setParameters(final SqlParameters p) throws SQLException {
-                        mapper.setValue(p.next(), value);
-                    }
+              @Override
+              public void setParameters(final SqlParameters p) throws SQLException {
+                  mapper.setValue(p.next(), currentValue);
+              }
 
-                    @Override
-                    public char firstChar() {
-                        return '?';
-                    }
-                };
-            }
+              @Override
+              public char firstChar() {
+                  return '?';
+              }
+          };
+      }
 
-            /**
-            * Implement in derived classes
-            */
-             public final Mapper<T> getMapper() {
-                return mapper;
-             }
+    /**
+     * Mapper for this parameter.
+     * @return the mapper
+     */
+     public final Mapper<T> getMapper() {
+        return mapper;
+     }
 
 }
 
@@ -153,9 +159,15 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
         this.owner = owner;
      }
 
-    public final Sql z$sqlOfColumnReference(SqlContext context) {
+    /**
+    * Creates an Sql representing ColumnReference.
+    * @param context the Sql construction context
+    * @return constructed Sql
+    */
+    public final Sql z$sqlOfColumnReference(final SqlContext context) {
         final String correlationName = owner.getCorrelationName(context);
-        return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(new StringSql(correlationName),
+        return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(
+                new StringSql(correlationName),
                 z$sqlOfColumnName(context));
     }
 
@@ -166,6 +178,10 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
         return new StringSql(columnName);
     }
 
+    /**
+     * Mapper for this Column.
+     * @return the mapper
+     */
     public final Mapper<T> getMapper() {
         return mapper;
     }
@@ -275,14 +291,14 @@ public class AbstractSearchedWhenClauseBaseList<T> implements SearchedWhenClause
     c:SearchedWhenClause<T> :: implicit {}
 |
     /**
-     * Chain another conditional expression to {code this}
+     * Chain another conditional expression to {code this}.
      * @param whenClause another when clause, see {@link BooleanExpression#then(ValueExpression)}.
      * @return constructed when clause list, which produces SQL like {@code WHEN c1 THEN v1 ELSE WHEN c2 ELSE v2...}
      */
     l:SearchedWhenClauseBaseList<T> whenClause:SearchedWhenClause<T> :: AbstractSearchedWhenClauseBaseList<T> orWhen
 |
     /**
-     * Chain another conditional expression to {code this}
+     * Chain another conditional expression to {code this}.
      * @param whenClause another when clause with null value if condition is true,
      * see {@link BooleanExpression#thenNull()}.
      * @return constructed when clause list, which produces SQL like {@code WHEN c1 THEN v1 ELSE WHEN c2 ELSE NULL}
