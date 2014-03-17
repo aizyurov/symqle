@@ -5,27 +5,33 @@ import org.symqle.common.SqlContext;
 import org.symqle.querybuilder.StringSql;
 
 /**
- * @author lvovich
+ * Label can be used as SortKey.
+ * Assign a label using {@link ValueExpression#label(Label)}.
  */
 public class Label implements SortKey {
 
-    private String name;
-    private ValueExpression<?> owner;
+    private String labelName;
+    private ValueExpression<?> labelOwner;
 
-    void setName(final ValueExpression<?> owner, final String name) {
-        if (this.owner !=null && this.owner != owner) {
+    final void setName(final ValueExpression<?> owner, final String name) {
+        if (this.labelOwner != null && this.labelOwner != owner) {
             throw new MalformedStatementException("Label used twice: " + this);
         }
-        this.owner = owner;
-        this.name = name;
+        this.labelOwner = owner;
+        this.labelName = name;
     }
 
+    /**
+    * Creates an Sql representing SortKey.
+    * @param context the Sql construction context
+    * @return constructed Sql
+    */
     @Override
-    public Sql z$sqlOfSortKey(final SqlContext context) {
-        if (owner == null) {
+    public final Sql z$sqlOfSortKey(final SqlContext context) {
+        if (labelOwner == null) {
             throw new MalformedStatementException("Unassigned label: " + this);
         }
-        return new StringSql(name);
+        return new StringSql(labelName);
     }
 
 }

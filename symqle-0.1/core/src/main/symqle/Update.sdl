@@ -145,12 +145,17 @@ public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 UpdateStatementBase ::=
        /**
         * Created an statement which would update rows of  {@code this} when executed.
-        * @param l the update list. The list can be constructed using {@link ColumnName#set(Object)} and {@link SetClauseList#also(SetClauseList)}.
+        * @param l the update list. The list can be constructed using
+        * {@link ColumnName#set(Object)} and {@link SetClauseList#also(SetClauseList)}.
         * @return new object which would produce SQL {@code UPDATE this SET ...}
         */
         UPDATE t:TargetTable SET l:SetClauseList :: AbstractUpdateStatementBase update
 ;
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 public interface TargetTable : Sql {}
 
 public interface SetClauseList extends InsertColumnList, ContextuallyTypedRowValueList : Sql {}
@@ -253,6 +258,11 @@ SetClause ::=
 ;
 
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+* @param <T> Java type of this column values
+*/
 public interface ColumnName<T> extends Scalar<T> : Sql {}
 
 
@@ -266,6 +276,11 @@ import org.symqle.querybuilder.TableNameGenerator;
  */
 public abstract class Table extends TableOrView implements TargetTable {
 
+    /**
+    * Creates an Sql representing TargetTable.
+    * @param context the Sql construction context
+    * @return constructed Sql
+    */
     public final Sql z$sqlOfTargetTable(final SqlContext context) {
         context.get(TableRegistry.class).addAll(
             Collections.<TableOrView>singleton(this),
@@ -349,6 +364,10 @@ InsertColumnList ::=
     l:InsertColumnList COMMA c:InsertColumnList :: private InsertColumnList combineInsertColumnLists
 ;
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 public interface InsertColumn : Sql {}
 
 interface TableValueConstructor : Sql {}
@@ -360,6 +379,10 @@ TableValueConstructor ::= VALUES LEFT_PAREN l:ContextuallyTypedRowValueList RIGH
 }
 ;
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 interface ContextuallyTypedRowValueList : Sql {}
 
 ContextuallyTypedRowValueList ::=

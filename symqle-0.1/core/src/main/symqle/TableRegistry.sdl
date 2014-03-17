@@ -1,19 +1,45 @@
 import java.util.Collection;
 import org.symqle.querybuilder.TableNameGenerator;
+/**
+ * Symqle internal structure, holding table to correlation name mapping.
+ *
+ */
 public interface TableRegistry {
 
+    /**
+     * Adds tables to the registry and generates correlation names for them.
+     * @param tables the tables to add.
+     * @param generator used to generate correlation names
+     */
     void addAll(Collection<TableOrView> tables, final TableNameGenerator generator);
 
+    /**
+     * Gets correlation name for given table.
+     * @param table the table
+     * @return correlation name; null if table not found (never added).
+     */
     String getCorrelationName(TableOrView table);
 
 }
 
-import java.util.Collection;
 import java.util.List;
+/**
+ * Symqle internal structure, holding tables in the current select clause scope.
+ *
+ */
 public interface SelectTableRegistry extends TableRegistry {
 
+    /**
+     * Tables local to current scope.
+     * Tables from enclosing scopes are not included.
+     * @return the list of local tables
+     */
     List<TableOrView> getLocal();
 
+    /**
+     * Locks {@code this}.
+     * After a call to this method, adding new tables to the registry is not allowed.
+     */
     void lock();
 }
 
@@ -31,7 +57,7 @@ import org.symqle.common.MalformedStatementException;
     private boolean locked = false;
 
 
-    public void addAll(Collection<TableOrView> tables, final TableNameGenerator generator) {
+    public void addAll(final Collection<TableOrView> tables, final TableNameGenerator generator) {
         if (locked) {
             throw new MalformedStatementException("Illegal in this context: " + tables);
         }
@@ -44,7 +70,7 @@ import org.symqle.common.MalformedStatementException;
     }
 
 
-    private void addToLocalTables(TableOrView table, final TableNameGenerator generator) {
+    private void addToLocalTables(final TableOrView table, final TableNameGenerator generator) {
             final String newName = generator.generate(table.getTableName());
             localTables.put(table, newName);
     }
@@ -129,11 +155,11 @@ class NoTablesRegistry implements TableRegistry {
      }
 
 
-     public void addAll(Collection<TableOrView> tables, final TableNameGenerator generator) {
+     public final void addAll(final Collection<TableOrView> tables, final TableNameGenerator generator) {
         throw new MalformedStatementException("Illegal in this context: " + tables);
     }
 
-    public String getCorrelationName(TableOrView table) {
+    public final String getCorrelationName(final TableOrView table) {
         if (parent.getCorrelationName(table) != null) {
             throw new MalformedStatementException("Illegal in this context: " + table);
         }

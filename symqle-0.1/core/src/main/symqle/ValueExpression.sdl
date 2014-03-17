@@ -197,6 +197,10 @@ public interface CharacterFactor<T> extends Scalar<T> : Sql {}
 
 public class AbstractCharacterFactor<T> implements CharacterFactor<T> {}
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 public interface CollationName : Sql {}
 
 <T> CharacterFactor<T> ::=

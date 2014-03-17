@@ -1,5 +1,4 @@
 import org.symqle.common.Query;
-import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
 import org.symqle.querybuilder.ScalarNameGenerator;
 import org.symqle.querybuilder.ColumnNameGenerator;

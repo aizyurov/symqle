@@ -245,6 +245,10 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
 # we cannot select Literals
 # for the time being it is a package scope class
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 public interface Literal : Sql {}
 
 import org.symqle.querybuilder.StringSql;

@@ -10,6 +10,13 @@ import org.symqle.common.Mapper;
 import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.TableNameGenerator;
 
+/**
+ * Corresponds to Table, View or Synonym.
+ * It is read-only: you can use columns of this table to construct queries
+ * and join to other tables, but there are no methods to create dta change statements.
+ * For updatable entities use {@link Table}.
+ * Use {@link #defineColumn(org.symqle.common.Mapper, String)} to add columns to model.
+ */
 public abstract class TableOrView implements TablePrimary,
                                                             TableName,
                                                             TableReference {
@@ -48,7 +55,7 @@ public abstract class TableOrView implements TablePrimary,
         return reachable;
     }
 
-    private void checkJoin(TableOrView other) {
+    private void checkJoin(final TableOrView other) {
         if (other.referral != null) {
             throw new MalformedStatementException(other + "is already joined to " + other.referral);
         }
@@ -77,7 +84,7 @@ public abstract class TableOrView implements TablePrimary,
         return new Column<T>(mapper, name, this);
     }
 
-    final String getCorrelationName(SqlContext context) {
+    final String getCorrelationName(final SqlContext context) {
         String name;
         for (name = context.get(TableRegistry.class).getCorrelationName(this);
                 name == null;

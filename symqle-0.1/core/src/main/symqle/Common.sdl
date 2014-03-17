@@ -98,6 +98,7 @@ public class GenericDialect implements Dialect {
     * A shortcut for new CompositeSql(first, other).
     * @param first the first Sql
     * @param other zero or more other Sqls
+    * @return concatenation of arguments
     */
     protected final Sql concat(final Sql first, final Sql... other) {
         return new CompositeSql(first, other);
@@ -105,7 +106,6 @@ public class GenericDialect implements Dialect {
 
 }
 
-import org.symqle.common.Sql;
 /**
 * A Dialect suitable for debugging. It allows not tables in FROM clause, all other methods behave as GenericDialect.
 */
@@ -116,7 +116,7 @@ public class DebugDialect extends GenericDialect {
      * @return null
      */
     @Override
-    public String fallbackTableName() {
+    public final String fallbackTableName() {
         return null;
     }
 

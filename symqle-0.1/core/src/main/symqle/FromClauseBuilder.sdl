@@ -1,14 +1,20 @@
 
-import org.symqle.common.*;
+import org.symqle.common.CompositeSql;
+import org.symqle.common.MalformedStatementException;
+import org.symqle.common.Sql;
+import org.symqle.common.SqlContext;
 import org.symqle.jdbc.Configuration;
 import org.symqle.querybuilder.StringSql;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.querybuilder.TableNameGenerator;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 class FromClauseBuilder {
     /**
-     * Builds a Sql of FromClause from local scope tables
+     * Builds a Sql of FromClause from local scope tables.
      * @param context
      * @return null if FROM CLAUSE is not applicable (no tables and supported by dialect and options)
      */
@@ -26,14 +32,14 @@ class FromClauseBuilder {
             }
         }
         final Set<TableOrView> roots = new HashSet<TableOrView>();
-        for (TableOrView t: localTables) {
+        for (TableOrView t : localTables) {
             roots.add(t.joinedTableRoot());
         }
         final Iterator<TableOrView> iterator = roots.iterator();
         TableReferenceList tableReferenceList = Symqle.createTableReferenceList(iterator.next());
         while (iterator.hasNext()) {
             if (!allowImplicitCrossJoins) {
-                throw new MalformedStatementException("Implicit cross joins are not allowed, cross joined: "+ roots);
+                throw new MalformedStatementException("Implicit cross joins are not allowed, cross joined: " + roots);
             }
             tableReferenceList = Symqle.appendTableReferenceList(tableReferenceList, iterator.next());
         }
@@ -41,7 +47,7 @@ class FromClauseBuilder {
     }
 
 
-    private Sql generateEmptyFromClause(SqlContext context) {
+    private Sql generateEmptyFromClause(final SqlContext context) {
         final Dialect dialect = context.get(Dialect.class);
         final String fallbackTableName = dialect.fallbackTableName();
         if (fallbackTableName == null) {

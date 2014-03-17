@@ -56,7 +56,8 @@ TableReference ::=
     l:TableReference OUTER JOIN r:TableReference ON c:BooleanExpression :: protected TableReference outerJoin {}
 ;
 
-public interface JoinedTable : Sql {}
+# unused
+# public interface JoinedTable : Sql {}
 
 # <table primary> ::=
 #		<table or query name> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
@@ -74,8 +75,11 @@ public interface TablePrimary : Sql {}
 TablePrimary ::= t:TableName AS id:Identifier
 ;
 
-public interface TableName : Sql {
-}
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
+public interface TableName : Sql {}
 
 
 

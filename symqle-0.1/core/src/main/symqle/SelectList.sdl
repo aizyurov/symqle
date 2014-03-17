@@ -46,6 +46,10 @@ public interface SelectListScalar<T> extends Scalar<T> : Query<T> {}
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
 public class AbstractSelectSublist<T> implements SelectSublist<T> {}
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 public interface Identifier : Sql {}
 
 <T> SelectSublist<T> ::= ve:ValueExpression<T> ::

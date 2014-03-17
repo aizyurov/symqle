@@ -51,9 +51,20 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
 
 
 import org.symqle.common.SqlParameters;
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+* @param <T> Java type of parameter value
+*/
 public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {}
 
 import org.symqle.common.Mapper;
+/**
+* Mutable dynamic parameter. Constructs SQL as required for
+* DynamicParameterSpecification. Sets current value to OutBox.
+* The current value can be changed at any time.
+* @param <T> Java type of parameter value
+*/
 public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
     private final Mapper<T> mapper;
     private T currentValue;
@@ -94,7 +105,7 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
      * Changes the value, which this parameter holds.
      * @param value new value
      */
-     public void setValue(T value) {
+     public final void setValue(final T value) {
         this.currentValue = value;
      }
 
@@ -171,6 +182,11 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
                 z$sqlOfColumnName(context));
     }
 
+    /**
+    * Creates an Sql representing ColumnName.
+    * @param context the Sql construction context
+    * @return constructed Sql
+    */
     public final Sql z$sqlOfColumnName(final SqlContext context) {
         // make sure that owner is valid in the context
         // by getting correlation name; the result is not used
@@ -220,6 +236,11 @@ public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
       }
   }
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+* @param <T> Java type of returned value
+*/
 public interface RoutineName<T> extends Scalar<T> : Sql {}
 
 public interface ArgumentList : Sql {}
@@ -232,23 +253,39 @@ ArgumentList ::=
 ;
 
 import org.symqle.querybuilder.StringSql;
+/**
+ * An implementation of RoutineName.
+ * @param <T> Java type of returned value
+ */
 public class SqlFunction<T> implements RoutineName<T> {
-    private final String name;
-    private final Mapper<T> mapper;
+    private final String functionName;
+    private final Mapper<T> functionMapper;
 
-    private SqlFunction(final String name, final Mapper<T> mapper) {
-        this.name = name;
-        this.mapper = mapper;
+    /**
+     * Constructs new SqlFunction.
+     * @param name function name
+     * @param mapper mapper to use
+     */
+    public SqlFunction(final String name, final Mapper<T> mapper) {
+        this.functionName = name;
+        this.functionMapper = mapper;
     }
 
     public final Sql z$sqlOfRoutineName(SqlContext context) {
-        return new StringSql(name);
+        return new StringSql(functionName);
     }
 
     public final Mapper<T> getMapper() {
-        return mapper;
+        return functionMapper;
     }
 
+    /**
+     * Constructs new SqlFunction.
+     * @param name function name
+     * @param mapper mapper to use
+     * @param <T> Java type of return value
+     * @return new instance of SqlFunction
+     */
     public static <T> SqlFunction<T> create(final String name, final Mapper<T> mapper) {
         return new SqlFunction<T>(name, mapper);
     }
@@ -360,6 +397,10 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
          });
     }
 
+/**
+* A terminal symbol of Symqle SQL language.
+* Implementing classes are responsible for correct lexis and semantics.
+*/
 public interface CastTarget : Sql {}
 
 # Special ValueExpressionPrimary, which may have different names in dialects
