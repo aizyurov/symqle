@@ -96,15 +96,20 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
     <chapter><title>Building and executing statements</title>
         <sect1><title>Symqle classes and interfaces</title>
             <para>
+            Each interface corresponds to an SQL language symbol.
+            Most interfaces have factory methods, which build more complex objects from simpler ones. They accept other interfaces
+            (or sometimes java.lang objects) as arguments and
+            return instances of Symqle classes. Applying these methods, you build
+            your more and more complex objects until you get an executable statement.
             There are two Symqle interfaces, which have methods for statement execution: SelectStatement and DataChangeStatement.
-            Other interfaces have factory methods, which build more complex objects from simpler ones. Applying these methods, you build
-            your statement.
             </para>
             <para>
-                Each symqle classes implements multiple interfaces. For example, Column class is a ValueExpression and so it has method <emphasis>add</emphasis>,
+
+                Each symqle classes implements multiple interfaces. It allows different interpretation of a Symqle object in different contexts.
+                For example, Column class is a ValueExpression and so it has method <emphasis>add</emphasis>,
                 which constructs a new object, representing sum of <emphasis>this</emphasis> and its argument.
                 On the other hand, Column is also a SortOrderingSpecification and can be used as an argument of <emphasis>orderBy</emphasis> method.
-                Column is also a SelectStatement, so you can list values of column usnig its <emphasis>list</emphasis> method.
+                Column is also a SelectStatement, so you can list values of column using its <emphasis>list</emphasis> method.
             </para>
             <para>
                 Factory methods of Symqle interfaces accept interfaces as their arguments and returm instances of Symqle classes. So, return value
@@ -118,16 +123,72 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
         <sect1><title>Tables and columns</title>
             <para>
                 Most of Symqle objects are built using factory methods, but we have something to start with.
-                We need a model of our database. Symqle model contains of classes, which extend TableOrView or Table class.
+                The starting point is a model of our database. Symqle model consists of classes, which extend TableOrView or Table class.
                 The difference is that TableOrView has no methods for data change operations; Table has methods, which construct
                 DataChangeStatement, see <link linkend="datachange">Data change</link> chapter.
             </para>
             <para>
-
+                Tables define their columns, usually as accessor methods. Tables may also provide methods, which return other tables joined to
+                this table - see <link linkend="autojoins">Auto joins</link>
+            </para>
+            <para>
+                Other primitive elements, which can be used for query construction, are dynamic parameters and
+                SQL functions.
+            </para>
+        </sect1>
+        <sect1><title>SelectStatement and DataChangeStatement structure</title>
+            <para>
+                SelectStatement basically consists of 3 parts. First, you define <link linkend="select">what</link> you are selecting.
+                It may be any java object. If you need a single column or a couple of columns, Symqle will make all necessary data conversions for you.
+                If it is more comlex object, you have to decide the conversion algorithm yourself. Symqle provides <link linkend="selectors">abstract classes</link>,
+                which make this task easy.
+                Then you may apply <link linkend="where">where clause</link> and/or <link linkend="orderby">order by clause</link> to the result.
+                Additionally, you can use <link linkend="limit">limit and offset</link> and <link linkend="forupdate">for update</link>.
+                GROUP BY and HAVING are not supported by Symqle.
+                Note that you do not have to construct FROM clause. Symqle generates it <link linkend="from">automatically</link> based on the columns involved to
+                SELECT, WHERE and ORDER BY and joins defined by you or created automatically.
+            </para>
+            <para>
+                DataChangeStatements are created by methods of Table class. It has <link linkend="insert">insert</link>,
+                <link linkend="update">update</link> and <link linkend="delete">delete</link> methods.
+                Update and insert methods require  <link linkend="setclauselist">SetClausList</link> argument.
+                The objects returned by
+                update and delete have <emphasis>where</emphasis> method to identify which columns will be updated/deleted.
+            </para>
+        </sect1>
+        <sect1 id="execution">
+            <para>
+                To execute a statement, you need an <link linkend="engine">Engine</link> - an object, which connects Symqle ot jdbc layer.
+                Usually it is DataSource-based. SelectStatement has <link linkend="list">list and scroll</link> methods. the first just returns a list
+                of objects. The second calls your Callback, providing one object at a time. It is more memory-saving if you need not the whole collection -
+                for example, you make some calculations or write the objects to a stream.
+            </para>
+            <para>
+                DataChangeStatement has an <link linkend="execute">execute</link> method. <link linkend="batching">JDBC batching</link> is also supported.
+            </para>
+            <para>
+                Statement execution methods accept Option arguments. Engine constructor also has <emphasis>options</emphasis> argument.
+                There are 2 kinds of options: the query builder options and statement execution options. Options provided to Engine constructor
+                are applied to all statements executed with this engine. They may be overridden for a particular statement.
+            </para>
+            <para>
+                Query builder options affect the construction of <link linkend="from">FROM clause</link> and are described in corresponding chapter.
+            </para>
+            <para>
+                Statement execution options are passed to Statement before execution. They are constructed by static methods of Option class:
+                <code>setFetchDirection</code>, <code>setFetchSize</code>, <code>setQueryTimeout</code>, <code>setMaxRows</code>, <code>setMaxFieldSize</code>.
+                See API documentation for detail.
             </para>
         </sect1>
     </chapter>
-    <chapter><title>Building SELECT clause</title>
+    <chapter id="select"><title>Building SELECT clause</title>
+        <sect1 id="typeparameters">
+            <title>Symqle objects have type parameters</title>
+            <para>
+                Symqle objects, which can participate in SELECT clause, always have type parameters. The type parameter
+                defines the Java class, to which this object will be converted when appears in the results set.
+            </para>
+        </sect1>
         <sect1>
             <title>Primary value expressions</title>
 
@@ -147,7 +208,11 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
         <sect1>
             <title>Functions</title>
         </sect1>
-        <sect1>
+        <sect1 id="pair">
+            <title>Pairs</title>
+            TODO include code re-use here
+        </sect1>
+        <sect1 id="selectors">
             <title>Selectors</title>
             TODO include code re-use here
         </sect1>
@@ -155,7 +220,7 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
             <title>Cast and map</title>
         </sect1>
     </chapter>
-    <chapter><title>Building WHERE clause</title>
+    <chapter id="where"><title>Building WHERE clause</title>
         <sect1>
             <title>Predicates</title>
         </sect1>
@@ -163,23 +228,23 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
             <title>Boolean expressions</title>
         </sect1>
     </chapter>
-    <chapter><title>FROM clause</title>
+    <chapter id="from"><title>FROM clause</title>
         <sect1>
             <title>How Symqle build FROM clause</title>
         </sect1>
     </chapter>
-    <chapter><title>ORDER BY</title>
+    <chapter id="orderby"><title>ORDER BY</title>
     </chapter>
     <chapter><title>Set operations</title>
     </chapter>
     <chapter><title>Building select statement</title>
-        <sect1>
+        <sect1 id="limit">
             <title>Offset and limit</title>
         </sect1>
-        <sect1>
+        <sect1 id="forupdate">
             <title>FOR UPDATE and FOR READ ONLY</title>
         </sect1>
-        <sect1>
+        <sect1 id="list">
             <title>List and scroll</title>
         </sect1>
         <sect1>
@@ -191,27 +256,52 @@ List&lt;Pair&lt;Long, String&gt;&gt; personList = person.id()
     <chapter><title>Collections</title>
     </chapter>
     <chapter id="datachange"><title>Data change statements</title>
-        <sect1>
+        <sect1 id="update">
             <title>Update</title>
         </sect1>
-        <sect1>
+        <sect1 id="setclauselist">
+            <title>Update</title>
+        </sect1>
+        <sect1 id="insert">
             <title>Insert</title>
         </sect1>
-        <sect1>
-            <title>Batching</title>
+        <sect1 id="delete">
+            <title>Delete</title>
+        </sect1>
+        <sect1 id="execute">
+            <title>Execution of data change statements</title>
         </sect1>
     </chapter>
-    <chapter><title>Symqle model</title>
+    <chapter id="model"><title>Symqle model</title>
         <sect1>
             <title>Using modeler</title>
+        </sect1>
+        <sect1>
+            <title>Writing model manually</title>
+        </sect1>
+        <sect1 id="autojoins">
+            <title>Auto joins</title>
         </sect1>
         <sect1>
             <title>Derived tables</title>
         </sect1>
     </chapter>
+    <chapter><title>Increasing performance</title>
+        <sect1 id="batching">
+            <title>Batching</title>
+        </sect1>
+        <sect1>
+            <title>Pre-compiled statements</title>
+        </sect1>
+    </chapter>
     <chapter><title>Transactions</title>
         <sect1>
             <title>TODO</title>
+        </sect1>
+    </chapter>
+    <chapter id="engine"><title>Engine</title>
+        <sect1>
+            <title>Creating engine</title>
         </sect1>
     </chapter>
     <chapter><title>Exceptions</title>
