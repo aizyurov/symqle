@@ -85,7 +85,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @return constructed predicate
      */
     <T> AbstractPredicate eq(final Predicand<T> p, final T value) {
-        return eq(p, DynamicParameter.create(p.getMapper(), value));
+        return eq(p, p.param(value));
     }
 
 ::
@@ -96,7 +96,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @return constructed predicate
      */
     <T> AbstractPredicate ne(final Predicand<T> p, final T value) {
-        return ne(p, DynamicParameter.create(p.getMapper(), value));
+        return ne(p, p.param(value));
     }
 ::
     /**
@@ -106,7 +106,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @return constructed predicate
      */
     <T> AbstractPredicate gt(final Predicand<T> p, final T value) {
-        return gt(p, DynamicParameter.create(p.getMapper(), value));
+        return gt(p, p.param(value));
     }
 
 ::
@@ -117,7 +117,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @return constructed predicate
      */
     <T> AbstractPredicate ge(final Predicand<T> p, final T value) {
-        return ge(p, DynamicParameter.create(p.getMapper(), value));
+        return ge(p, p.param(value));
     }
 
 ::
@@ -128,7 +128,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @return constructed predicate
      */
     <T> AbstractPredicate lt(final Predicand<T> p, final T value) {
-        return lt(p, DynamicParameter.create(p.getMapper(), value));
+        return lt(p, p.param(value));
     }
 
 ::
@@ -139,7 +139,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
      * @return constructed predicate
      */
     <T> AbstractPredicate le(final Predicand<T> p, final T value) {
-        return le(p, DynamicParameter.create(p.getMapper(), value));
+        return le(p, p.param(value));
     }
 
 

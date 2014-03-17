@@ -18,34 +18,75 @@ import org.symqle.querybuilder.TableNameGenerator;
  * Use {@link #defineColumn(org.symqle.common.Mapper, String)} to add columns to model.
  */
 public abstract class TableOrView implements TablePrimary,
-                                                            TableName,
-                                                            TableReference {
+                                                            TableReference,
+                                                            TableName {
+
 
 
     private TableOrView referral = null;
-    private final Map<TableOrView, JoinInfo> referents = new LinkedHashMap<TableOrView, JoinInfo>();
 
-    /**
-    * Table name as accepted by database: identifier or quoted identifier.
-    * @return table name
-    */
-    public abstract String getTableName();
+    private final Map<TableOrView, DeferredJoin> referents = new LinkedHashMap<TableOrView, DeferredJoin>();
 
-    private static final int LEFT_JOIN = 1;
-    private static final int RIGHT_JOIN = 2;
-    private static final int INNER_JOIN = 3;
-    private static final int OUTER_JOIN = 4;
-
-
-    private static class JoinInfo {
-        private final int joinType;
+    private abstract static class DeferredJoin {
+        private final TableReference referent;
         private final BooleanExpression condition;
 
-        public JoinInfo(final int joinType, final BooleanExpression condition) {
-            this.joinType = joinType;
+        protected DeferredJoin(final TableReference referent, final BooleanExpression condition) {
+            this.referent = referent;
             this.condition = condition;
         }
+
+        protected final TableReference getReferent() {
+            return referent;
+        }
+
+        protected final BooleanExpression getCondition() {
+            return condition;
+        }
+
+        protected abstract TableReference makeJoin(TableReference referral);
     }
+
+    private static final class LeftDeferredJoin extends DeferredJoin {
+        private LeftDeferredJoin(final TableReference referent, final BooleanExpression condition) {
+            super(referent, condition);
+        }
+        @Override
+        protected TableReference makeJoin(final TableReference referral) {
+            return Symqle.leftJoin(referral, getReferent(), getCondition());
+        }
+    }
+
+    private static final class RightDeferredJoin extends DeferredJoin {
+        private RightDeferredJoin(final TableReference referent, final BooleanExpression condition) {
+            super(referent, condition);
+        }
+        @Override
+        protected TableReference makeJoin(final TableReference referral) {
+            return Symqle.rightJoin(referral, getReferent(), getCondition());
+        }
+    }
+
+    private static final class InnerDeferredJoin extends DeferredJoin {
+        private InnerDeferredJoin(final TableReference referent, final BooleanExpression condition) {
+            super(referent, condition);
+        }
+        @Override
+        protected TableReference makeJoin(final TableReference referral) {
+            return Symqle.innerJoin(referral, getReferent(), getCondition());
+        }
+    }
+
+    private static final class OuterDeferredJoin extends DeferredJoin {
+        private OuterDeferredJoin(final TableReference referent, final BooleanExpression condition) {
+            super(referent, condition);
+        }
+        @Override
+        protected TableReference makeJoin(final TableReference referral) {
+            return Symqle.outerJoin(referral, getReferent(), getCondition());
+        }
+    }
+
 
     private Set<TableOrView> allReachable() {
         final Set<TableOrView> reachable = new HashSet<TableOrView>(referents.keySet());
@@ -54,6 +95,7 @@ public abstract class TableOrView implements TablePrimary,
         }
         return reachable;
     }
+
 
     private void checkJoin(final TableOrView other) {
         if (other.referral != null) {
@@ -73,6 +115,7 @@ public abstract class TableOrView implements TablePrimary,
     }
 
 
+
     /**
      * Use in derived classes to define table columns.
      * @param mapper the mapper to use
@@ -84,6 +127,7 @@ public abstract class TableOrView implements TablePrimary,
         return new Column<T>(mapper, name, this);
     }
 
+
     final String getCorrelationName(final SqlContext context) {
         String name;
         for (name = context.get(TableRegistry.class).getCorrelationName(this);
@@ -93,6 +137,35 @@ public abstract class TableOrView implements TablePrimary,
         }
         return name;
     }
+
+
+    /**
+    * Table name as accepted by database: identifier or quoted identifier.
+    * @return table name
+    */
+    public abstract String getTableName();
+
+
+    /**
+     * Creates {@code this INNER JOIN other ON condition}.
+     * Modifies {@code this}.
+     * @param other the table to join
+     * @param condition join condition
+     * @param <T> type of {@code other}
+     * @return other
+     */
+    public final <T extends TableOrView> T innerJoin(final T other, final BooleanExpression condition) {
+        join(other, new InnerDeferredJoin(other, condition));
+        return other;
+    }
+
+
+    private void join(final TableOrView other, final DeferredJoin join) {
+        checkJoin(other);
+        other.referral = this;
+        referents.put(other, join);
+    }
+
 
 
     final Set<TableOrView> joinedTableParticipants() {
@@ -106,28 +179,11 @@ public abstract class TableOrView implements TablePrimary,
         }
     }
 
+
     final TableOrView joinedTableRoot() {
         return referral == null ? this : referral.joinedTableRoot();
     }
 
-    private void join(final TableOrView other, final int type, final BooleanExpression condition) {
-        checkJoin(other);
-        other.referral = this;
-        referents.put(other, new JoinInfo(type, condition));
-    }
-
-    /**
-     * Creates {@code this INNER JOIN other ON condition}.
-     * Modifies {@code this}.
-     * @param other the table to join
-     * @param condition join condition
-     * @param <T> type of {@code other}
-     * @return other
-     */
-    public final <T extends TableOrView> T innerJoin(final T other, final BooleanExpression condition) {
-        join(other, INNER_JOIN, condition);
-        return other;
-    }
 
     /**
      * Creates {@code this LEFT JOIN other ON condition}.
@@ -138,9 +194,10 @@ public abstract class TableOrView implements TablePrimary,
      * @return other
      */
     public final <T extends TableOrView> T leftJoin(final T other, final BooleanExpression condition) {
-        join(other, LEFT_JOIN, condition);
+        join(other, new LeftDeferredJoin(other, condition));
         return other;
     }
+
 
     /**
      * Creates {@code this OUTER JOIN other ON condition}.
@@ -151,9 +208,10 @@ public abstract class TableOrView implements TablePrimary,
      * @return other
      */
     public final <T extends TableOrView> T outerJoin(final T other, final BooleanExpression condition) {
-        join(other, OUTER_JOIN, condition);
+        join(other, new OuterDeferredJoin(other, condition));
         return other;
     }
+
 
     /**
      * Creates {@code this RIGHT JOIN other ON condition}.
@@ -164,9 +222,10 @@ public abstract class TableOrView implements TablePrimary,
      * @return other
      */
     public final <T extends TableOrView> T rightJoin(final T other, final BooleanExpression condition) {
-        join(other, RIGHT_JOIN, condition);
+        join(other, new RightDeferredJoin(other, condition));
         return other;
     }
+
 
 
     /**
@@ -177,6 +236,7 @@ public abstract class TableOrView implements TablePrimary,
     public final Sql z$sqlOfTableName(final SqlContext context) {
         return new StringSql(getTableName());
     }
+
 
     /**
     * Creates an Sql representing <code>(TablePrimary)this</code>.
@@ -189,6 +249,7 @@ public abstract class TableOrView implements TablePrimary,
                 new StringSql(getCorrelationName(context)));
     }
 
+
     /**
     * Creates an Sql representing <code>(TableReference)this</code>.
     * @param context the Sql construction context
@@ -196,23 +257,8 @@ public abstract class TableOrView implements TablePrimary,
     */
     public final Sql z$sqlOfTableReference(final SqlContext context) {
         TableReference tableReference = Symqle.asTableReference(this);
-        for (Map.Entry<TableOrView, JoinInfo> entry : referents.entrySet()) {
-            final TableOrView referent = entry.getKey();
-            final JoinInfo joinInfo = entry.getValue();
-            switch (joinInfo.joinType) {
-                case LEFT_JOIN :
-                    tableReference = Symqle.leftJoin(tableReference, referent, joinInfo.condition);
-                    break;
-                case RIGHT_JOIN :
-                    tableReference = Symqle.rightJoin(tableReference, referent, joinInfo.condition);
-                    break;
-                case INNER_JOIN :
-                    tableReference = Symqle.innerJoin(tableReference, referent, joinInfo.condition);
-                    break;
-                case OUTER_JOIN :
-                    tableReference = Symqle.outerJoin(tableReference, referent, joinInfo.condition);
-                    break;
-            }
+        for (DeferredJoin join : referents.values()) {
+            tableReference = join.makeJoin(tableReference);
         }
         return tableReference.z$sqlOfTableReference(context);
     }

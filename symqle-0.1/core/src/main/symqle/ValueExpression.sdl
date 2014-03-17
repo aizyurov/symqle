@@ -38,7 +38,7 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
      * @param value initial value of created parameter
      * @return a parameter with given initial value
      */
-    <T> DynamicParameter<T> param(final ValueExpression<T> e, final T value) {
+    <T> DynamicParameter<T> param(final Predicand<T> e, final T value) {
         return DynamicParameter.create(e.getMapper(), value);
     }
 
@@ -47,7 +47,7 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
      * Creates a dynamic parameter with the same mapper as of {@code this}.
      * @return a parameter with initial value {@code null}
      */
-    <T> DynamicParameter<T> param(final ValueExpression<T> e) {
+    <T> DynamicParameter<T> param(final Predicand<T> e) {
         return DynamicParameter.create(e.getMapper());
     }
 

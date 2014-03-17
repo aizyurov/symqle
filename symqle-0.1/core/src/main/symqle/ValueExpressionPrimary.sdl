@@ -50,7 +50,6 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
 
 
 
-import org.symqle.common.SqlParameters;
 /**
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
@@ -59,6 +58,7 @@ import org.symqle.common.SqlParameters;
 public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {}
 
 import org.symqle.common.Mapper;
+import org.symqle.common.SqlParameters;
 /**
 * Mutable dynamic parameter. Constructs SQL as required for
 * DynamicParameterSpecification. Sets current value to OutBox.
@@ -271,10 +271,19 @@ public class SqlFunction<T> implements RoutineName<T> {
         this.functionMapper = mapper;
     }
 
-    public final Sql z$sqlOfRoutineName(SqlContext context) {
+    /**
+    * Creates an Sql representing RoutineName.
+    * @param context the Sql construction context
+    * @return constructed Sql
+    */
+    public final Sql z$sqlOfRoutineName(final SqlContext context) {
         return new StringSql(functionName);
     }
 
+    /**
+     * Mapper for this function.
+     * @return the mapper
+     */
     public final Mapper<T> getMapper() {
         return functionMapper;
     }
