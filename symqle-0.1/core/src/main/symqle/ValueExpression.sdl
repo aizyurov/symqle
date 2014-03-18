@@ -15,13 +15,13 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param newMapper new mapper to use.
-    * @param <A> new associated Java type
+    * @param <R> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractValueExpression<A> map(final ValueExpression<?> e, final Mapper<A> newMapper) {
-    return new AbstractValueExpression<A>() {
+    <R> AbstractValueExpression<R> map(final ValueExpression<?> e, final Mapper<R> newMapper) {
+    return new AbstractValueExpression<R>() {
         @Override
-        public Mapper<A> getMapper() {
+        public Mapper<R> getMapper() {
             return newMapper;
         }
 
@@ -92,13 +92,13 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param newMapper new mapper to use.
-    * @param <A> new associated Java type
+    * @param <R> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractStringExpression<A> map(final StringExpression<?> e, final Mapper<A> newMapper) {
-        return new AbstractStringExpression<A>() {
+    <R> AbstractStringExpression<R> map(final StringExpression<?> e, final Mapper<R> newMapper) {
+        return new AbstractStringExpression<R>() {
             @Override
-            public Mapper<A> getMapper() {
+            public Mapper<R> getMapper() {
                 return newMapper;
             }
 

@@ -31,13 +31,13 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param newMapper new mapper to use.
-    * @param <A> new associated Java type
+    * @param <R> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractValueExpressionPrimary<A> map(final ValueExpressionPrimary<?> e, final Mapper<A> newMapper) {
-        return new AbstractValueExpressionPrimary<A>() {
+    <R> AbstractValueExpressionPrimary<R> map(final ValueExpressionPrimary<?> e, final Mapper<R> newMapper) {
+        return new AbstractValueExpressionPrimary<R>() {
             @Override
-            public Mapper<A> getMapper() {
+            public Mapper<R> getMapper() {
                 return newMapper;
             }
 

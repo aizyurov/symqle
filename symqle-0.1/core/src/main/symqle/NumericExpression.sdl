@@ -42,13 +42,13 @@ NumericExpression<Number> ::=
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param newMapper new mapper to use.
-    * @param <A> new associated Java type
+    * @param <R> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractNumericExpression<A> map(final NumericExpression<?> e, final Mapper<A> newMapper) {
-        return new AbstractNumericExpression<A>() {
+    <R> AbstractNumericExpression<R> map(final NumericExpression<?> e, final Mapper<R> newMapper) {
+        return new AbstractNumericExpression<R>() {
             @Override
-            public Mapper<A> getMapper() {
+            public Mapper<R> getMapper() {
                 return newMapper;
             }
 
@@ -152,13 +152,13 @@ Term<Number> ::=
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param newMapper new mapper to use.
-    * @param <A> new associated Java type
+    * @param <R> new associated Java type
     * @return new AbstractNumericExpression with required mapper.
     */
-    <A> AbstractTerm<A> map(final Term<?> e, final Mapper<A> newMapper) {
-        return new AbstractTerm<A>() {
+    <R> AbstractTerm<R> map(final Term<?> e, final Mapper<R> newMapper) {
+        return new AbstractTerm<R>() {
             @Override
-            public Mapper<A> getMapper() {
+            public Mapper<R> getMapper() {
                 return newMapper;
             }
 
@@ -194,13 +194,13 @@ public class AbstractFactor<T> implements Factor<T> {}
     * The result produces the same SQL but is associated with different Java type.
     * Symqle does not check that the replacement is valid, is is your responsibility.
     * @param newMapper new mapper to use.
-    * @param <A> new associated Java type
+    * @param <R> new associated Java type
     * @return new AbstractFactor with required mapper.
     */
-    <A> AbstractFactor<A> map(final Factor<?> e, final Mapper<A> newMapper) {
-        return new AbstractFactor<A>() {
+    <R> AbstractFactor<R> map(final Factor<?> e, final Mapper<R> newMapper) {
+        return new AbstractFactor<R>() {
             @Override
-            public Mapper<A> getMapper() {
+            public Mapper<R> getMapper() {
                 return newMapper;
             }
 
