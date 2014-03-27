@@ -38,8 +38,10 @@
            <plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>cobertura-maven-plugin</artifactId>
-               <version>2.5</version>
+               <version>2.6</version>
                <configuration>
+                   <!-- http://stackoverflow.com/questions/18084436/unit-tests-passing-through-maven-but-failing-through-cobertura-expecting-a-st -->
+                   <argLine>-XX:-UseSplitVerifier</argLine>
                    <formats>
                        <format>html</format>
                    </formats>
@@ -62,6 +64,26 @@
                    </execution>
                </executions>
            </plugin>
+              <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                  <descriptors>
+                    <descriptor>config/testset-assembly.xml</descriptor>
+                      <descriptor>config/client-assembly.xml</descriptor>
+                  </descriptors>
+                </configuration>
+                <executions>
+                  <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>single</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+
         </plugins>
     </build>
     <reporting>
@@ -69,6 +91,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.12</version>
                 <configuration>
                     <configLocation>${basedir}/config/symqle-checks.xml</configLocation>
                     <suppressionsLocation>${basedir}/config/checkstyle-suppressions.xml</suppressionsLocation>
@@ -76,21 +99,33 @@
                     <sourceDirectory>${project.build.directory}/generated-sources/main/</sourceDirectory>
                 </configuration>
             </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>javancss-maven-plugin</artifactId>
-        <version>2.0</version>
-      </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>javancss-maven-plugin</artifactId>
+            <version>2.0</version>
+          </plugin>
+           <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-site-plugin</artifactId>
+           </plugin>
       </plugins>
     </reporting>
 
    <dependencies>
-     <dependency>
-       <groupId>org.symqle</groupId>
-       <artifactId>symqle-common</artifactId>
-       <version>0.1-SNAPSHOT</version>
-     </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>3.1</version>
+        <scope>test</scope>
+      </dependency>
    </dependencies>
+
 
 
 </project>
