@@ -78,7 +78,11 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
     public void testExcept() throws Exception {
         final String sql = createQuerySpecificationScalar().except(employee.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name IS NOT NULL EXCEPT SELECT T1.id AS C0 FROM employee AS T1", sql);
+    }
 
+    public void testInPredicateValue() throws Exception {
+        final String sql = employee.name.where(employee.id.in(createQuerySpecificationScalar())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM employee AS T1 WHERE T1.id IN(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL)", sql);
     }
 
     public void testExceptAll() throws Exception {

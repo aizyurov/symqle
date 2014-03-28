@@ -128,6 +128,12 @@ public class BooleanExpressionTest extends SqlTestCase implements AbstractBoolea
     }
 
     @Override
+    public void test_where_AggregateQueryBase_WhereClause_1() throws Exception {
+        final String sql = person.id.count().where(createBooleanExpression()).showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(T0.id) AS C0 FROM person AS T0 WHERE T0.alive OR T0.cute", sql);
+    }
+
+    @Override
     public void test_where_UpdateStatementBase_WhereClause_1() {
         final String sql = person.update(person.alive.set(true)).where(createBooleanExpression()).showUpdate(new GenericDialect());
         assertSimilar("UPDATE person SET alive = ? WHERE person.alive OR person.cute", sql);

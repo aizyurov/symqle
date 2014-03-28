@@ -155,15 +155,95 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 EXCEPT SELECT T2.id FROM manager AS T2)", sql);
     }
 
-    public void testContains() throws Exception {
+    public void testContainsExcept() throws Exception {
         final String sql = person.name.where(employee.id.except(manager.id).contains(1L)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 EXCEPT SELECT T2.id FROM manager AS T2)", sql);
     }
 
+    public void testContainsExceptAll() throws Exception {
+        final String sql = person.name.where(employee.id.exceptAll(manager.id).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 EXCEPT ALL SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+    public void testContainsExceptDistinct() throws Exception {
+        final String sql = person.name.where(employee.id.exceptDistinct(manager.id).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 EXCEPT DISTINCT SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+    public void testContainsUnion() throws Exception {
+        final String sql = person.name.where(employee.id.union(manager.id).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 UNION SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+    public void testContainsUnionAll() throws Exception {
+        final String sql = person.name.where(employee.id.unionAll(manager.id).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 UNION ALL SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+    public void testContainsUnionDistinct() throws Exception {
+        final String sql = person.name.where(employee.id.unionDistinct(manager.id).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 UNION DISTINCT SELECT T2.id FROM manager AS T2)", sql);
+    }
 
 
-    public void testList() throws Exception {
+
+
+
+
+    public void testListUnion() throws Exception {
         final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = createQueryExpressionBodyScalar();
+        new Scenario(queryExpressionBodyScalar) {
+            @Override
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(123L), query.list(engine));
+            }
+        }.play();
+    }
+
+    public void testListUnionAll() throws Exception {
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.unionAll(manager.id);
+        new Scenario(queryExpressionBodyScalar) {
+            @Override
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(123L), query.list(engine));
+            }
+        }.play();
+    }
+
+    public void testListUnionDistinct() throws Exception {
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.unionDistinct(manager.id);
+        new Scenario(queryExpressionBodyScalar) {
+            @Override
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(123L), query.list(engine));
+            }
+        }.play();
+    }
+
+    public void testListExcept() throws Exception {
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.except(manager.id);
+        new Scenario(queryExpressionBodyScalar) {
+            @Override
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(123L), query.list(engine));
+            }
+        }.play();
+    }
+
+
+
+    public void testListExceptAll() throws Exception {
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.exceptAll(manager.id);
+        new Scenario(queryExpressionBodyScalar) {
+            @Override
+            void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {
+                assertEquals(Arrays.asList(123L), query.list(engine));
+            }
+        }.play();
+    }
+
+    public void testListExceptDistinct() throws Exception {
+        final AbstractQueryExpressionBodyScalar<Long> queryExpressionBodyScalar = employee.id.exceptDistinct(manager.id);
         new Scenario(queryExpressionBodyScalar) {
             @Override
             void use(AbstractQueryExpressionBodyScalar<Long> query, QueryEngine engine) throws SQLException {

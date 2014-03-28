@@ -140,6 +140,16 @@ public class QueryTermTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
     }
 
+    public void testContainsIntersectAll() throws Exception {
+        final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).intersectAll(manager.id.where(manager.id.eq(person.id))).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT ALL SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
+    }
+
+    public void testContainsIntersectDistinct() throws Exception {
+        final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).intersectDistinct(manager.id.where(manager.id.eq(person.id))).contains(1L)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id INTERSECT DISTINCT SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
+    }
+
     public void testAsInSublist() throws Exception {
         final String sql = person.name.where(person.id.in(createQueryTerm())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);

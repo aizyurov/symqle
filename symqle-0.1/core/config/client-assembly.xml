@@ -11,6 +11,7 @@
     <fileSets>
        <fileSet>
            <directory>${project.basedir}/target/classes</directory>
+           <outputDirectory>/</outputDirectory>
            <includes>
                <include>org/symqle/common/InBox.class</include>
                <include>org/symqle/common/OutBox.class</include>

@@ -37,61 +37,6 @@ public class AggregatesTest extends SqlTestCase  {
         assertEquals(function.getMapper(), adaptor.getMapper());
     }
 
-    public void testDistinct() throws Exception {
-        final String sql = person.id.count().distinct().showQuery(new GenericDialect());
-        assertSimilar("SELECT DISTINCT COUNT(T1.id) AS C1 FROM person AS T1", sql);
-    }
-
-    public void testSelectAll() throws Exception {
-        final String sql = person.id.count().selectAll().showQuery(new GenericDialect());
-        assertSimilar("SELECT ALL COUNT(T1.id) AS C1 FROM person AS T1", sql);
-    }
-
-    public void testUnion() throws Exception {
-        final String show = person.id.count().union(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-
-    public void testUnionAll() throws Exception {
-        final String show = person.id.count().unionAll(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION ALL SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-    public void testUnionDistinct() throws Exception {
-        final String show = person.id.count().unionDistinct(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 UNION DISTINCT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-
-    public void testExcept() throws Exception {
-        final String show = person.id.count().except(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 EXCEPT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-
-    public void testExceptAll() throws Exception {
-        final String show = person.id.count().exceptAll(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 EXCEPT ALL SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final String show = person.id.count().exceptDistinct(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 EXCEPT DISTINCT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-
-    public void testIntersect() throws Exception {
-        final String show = person.id.count().intersect(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 INTERSECT SELECT COUNT(T2.parent_id) AS C1 FROM person AS T2", show);
-    }
-
-    public void testIntersectAll() throws Exception {
-        final String show = person.id.count().intersectAll(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 INTERSECT ALL SELECT COUNT(T2.parent_id) AS C2 FROM person AS T2", show);
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final AbstractAggregateFunction<Integer> count = person.id.count();
-        final String show = count.intersectDistinct(person.parentId.count()).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 INTERSECT DISTINCT SELECT COUNT(T2.parent_id) AS C2 FROM person AS T2", show);
-    }
-
     public void testForUpdate() throws Exception {
         final String sql = person.id.count().forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 FOR UPDATE", sql);
@@ -110,13 +55,6 @@ public class AggregatesTest extends SqlTestCase  {
     public void testLimit2() throws Exception {
         final String sql = person.id.count().limit(1, 2).showQuery(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM person AS T1 OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY", sql);
-    }
-
-    public void testOrderBy() throws Exception {
-        // incorrect statement! must have GROUP BY
-        // will throw SQLException with real database
-        final String sql = person.id.count().orderBy(person.name).showQuery(new GenericDialect());
-        assertSimilar("SELECT COUNT(T0.id) AS C0 FROM person AS T0 ORDER BY T0.name", sql);
     }
 
     public void testWhere() throws Exception {

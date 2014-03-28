@@ -11,6 +11,7 @@
     <fileSets>
        <fileSet>
            <directory>${project.basedir}/target/test-classes</directory>
+           <outputDirectory>/</outputDirectory>
            <includes>
                <include>org/symqle/testset/*</include>
            </includes>

@@ -39,8 +39,6 @@ public interface SelectListScalar<T> extends Scalar<T> : Query<T> {}
 
 <T> SelectListScalar<T> ::=
   sl:SelectSublist<T> :: implicit
-|
-  sl:AggregateSelectSublist<T> :: implicit
 ;
 
 public interface SelectSublist<T> extends Scalar<T> : Query<T> {}

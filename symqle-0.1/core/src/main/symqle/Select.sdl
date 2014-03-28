@@ -216,11 +216,15 @@ public interface QueryExpressionBasic <T> : Query<T> {}
 public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
 
 # <query expression body> [ <order by clause> ]
+# special rule for Aggregates : no Body - Expression - ... - Primary,
+# expands as AggregateQuerySpecification
 
 <T> QueryExpressionBasic<T> ::=
     body:QueryExpressionBody<T> :: implicit
 |
     body:QueryExpressionBody<T> order:OrderByClause :: private AbstractQueryExpressionBasic<T> orderBy
+|
+    body:AggregateQuerySpecification<T> :: implicit
 ;
 
 ::

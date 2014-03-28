@@ -1,13 +1,12 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
-import org.symqle.sql.Params;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
+import org.symqle.sql.Params;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,91 +19,6 @@ public class AggregateQueryExpressionTest extends AbstractIntegrationTestBase {
         final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).list(getEngine());
         assertEquals(Arrays.asList(4), list);
     }
-
-    public void testUnion() throws Exception {
-        final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).union(employee.empId.count()).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(4, 5), list);
-    }
-
-    public void testUnionAll() throws Exception {
-        final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).unionAll(employee.empId.count().where(employee.salary.gt(1900.0))).list(getEngine());
-        assertEquals(Arrays.asList(4, 4), list);
-    }
-    public void testUnionDistinct() throws Exception {
-        final Employee employee = new Employee();
-        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).unionDistinct(employee.empId.count().where(employee.salary.gt(1900.0))).list(getEngine());
-        assertEquals(Arrays.asList(4), list);
-    }
-
-    public void testExcept() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).except(employee.empId.count().where(employee.salary.gt(1900.0))).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testExceptAll() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).exceptAll(employee.empId.count().where(employee.salary.gt(1900.0))).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).exceptDistinct(employee.empId.count().where(employee.salary.gt(1900.0))).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testIntersect() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).intersect(employee.empId.count().where(employee.salary.lt(1800.0))).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testIntersectAll() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).intersectAll(employee.empId.count().where(employee.salary.lt(1800.0))).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).intersectDistinct(employee.empId.count().where(employee.salary.lt(1800.0))).list(getEngine());
-            assertEquals(0, list.size());
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
 
     public void testForUpdate() throws Exception {
             // it is unclear, what 'for update' means when selecting count. Lock the whole table? Nevertheless, some engines allow it.

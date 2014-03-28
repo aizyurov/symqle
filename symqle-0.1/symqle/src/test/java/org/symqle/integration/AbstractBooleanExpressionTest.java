@@ -259,6 +259,17 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
     }
 
     @Override
+    public void test_where_AggregateQueryBase_WhereClause_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractBooleanExpression basicCondition = createBasicCondition(employee);
+        final List<Integer> list = employee.empId.count().
+                where(basicCondition).
+                list(getEngine());
+        assertEquals(Arrays.asList(3),
+                        list);
+    }
+
+    @Override
     public void test_where_UpdateStatementBase_WhereClause_1() throws Exception {
         final InsertTable insertTable = new InsertTable();
         prepareTestData(insertTable);

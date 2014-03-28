@@ -5,6 +5,11 @@ public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
 public interface QuerySpecificationScalar<T> extends Scalar<T> : Query<T> {}
 public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationScalar<T> {}
 
+public interface AggregateQuerySpecification<T> extends Scalar<T> : Query<T> {}
+public class AbstractAggregateQuerySpecification<T> implements AggregateQuerySpecification<T> {}
+
+# same rules for Scalar, Aggregate and regular QuerySpecification
+
 <T> QuerySpecificationScalar<T> ::=
     qb:QueryBaseScalar<T> :: implicit
 |
@@ -25,6 +30,17 @@ public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationSc
     * @return new AbstractQuerySpecification
     */
     qb:QueryBase<T> whereClause:WhereClause :: AbstractQuerySpecification<T> where
+;
+
+<T> AggregateQuerySpecification<T> ::=
+    qb:AggregateQueryBase<T> :: implicit
+|
+    /**
+    * Applies {@code whereClause} to {@code this}.
+    * @param whereClause the condition to apply
+    * @return new AbstractQuerySpecification
+    */
+    qb:AggregateQueryBase<T> whereClause:WhereClause :: AbstractAggregateQuerySpecification<T> where
 ;
 
 
@@ -150,5 +166,22 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     SELECT DISTINCT sl:SelectList<T> fc:FromClause
 ;
 
+public interface AggregateQueryBase<T> extends Scalar<T> : Query<T> {}
+
+<T> AggregateQueryBase<T> ::=
+    SELECT sl:AggregateSelectSublist<T>  :: implicit {
+            public Query<T> z$sqlOfAggregateQueryBase(final SqlContext context) {
+                final Query<T> query = sl.z$sqlOfAggregateSelectSublist(context);
+                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+                final Dialect dialect = context.get(Dialect.class);
+                final Sql sql = fromClauseSql == null
+                        ? dialect.AggregateQueryBase_is_SELECT_AggregateSelectSublist(query)
+                        : dialect.AggregateQueryBase_is_SELECT_AggregateSelectSublist_FromClause(query, fromClauseSql);
+                return new ComplexQuery<T>(query, sql);
+            }
+    }
+|
+    SELECT sl:AggregateSelectSublist<T> fc:FromClause
+;
 
 
