@@ -224,7 +224,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
         insertTable.delete().execute(getEngine());
         insertTable.insert(insertTable.id.set(1).also(insertTable.text.set("one"))).execute(getEngine());
         insertTable.insert(insertTable.id.set(2).also(insertTable.text.set("two"))).execute(getEngine());
-        insertTable.insert(insertTable.id.set(3).also(insertTable.text.set("tree"))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(3).also(insertTable.text.set("three"))).execute(getEngine());
         insertTable.insert(insertTable.id.set(4).also(insertTable.text.set("four"))).execute(getEngine());
         insertTable.insert(insertTable.id.set(5).also(insertTable.text.set("five"))).execute(getEngine());
     }

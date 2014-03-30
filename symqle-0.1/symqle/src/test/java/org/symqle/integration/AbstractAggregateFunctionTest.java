@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author lvovich
  */
-public class AggregatesTest extends AbstractIntegrationTestBase  implements AbstractAggregateFunctionTestSet {
+public class AbstractAggregateFunctionTest extends AbstractIntegrationTestBase  implements AbstractAggregateFunctionTestSet {
 
     @Override
     public void test_adapt_AggregateFunction() throws Exception {
