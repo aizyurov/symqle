@@ -16,4 +16,5 @@ public class InsertTable extends Table {
 
     public final Column<Integer> id = defineColumn(CoreMappers.INTEGER, "id");
     public final Column<String> text = defineColumn(CoreMappers.STRING, "text");
+    public final Column<Boolean> active = defineColumn(CoreMappers.BOOLEAN, "active");
 }
