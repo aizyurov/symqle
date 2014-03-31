@@ -476,6 +476,13 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT SUBSTRING(CAST(T0.id AS CHAR(12)) FROM T0.age) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCharLength() throws Exception {
+        final Column<Long> id  =  person.id;
+        final Column<Long> age = person.age;
+        String sql = id.cast("CHAR(12)").charLength().showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH(CAST(T0.id AS CHAR(12))) AS C0 FROM person AS T0", sql);
+    }
+
     public void testSubstringParam() throws Exception {
         final Column<Long> id  =  person.id;
         String sql = id.cast("CHAR(12)").substring(3).showQuery(new GenericDialect());

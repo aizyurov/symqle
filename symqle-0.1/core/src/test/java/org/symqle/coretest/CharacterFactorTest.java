@@ -250,6 +250,10 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT SUBSTRING(T1.name COLLATE latin1_general_ci FROM ?) AS C1 FROM person AS T1", sql);
     }
 
+    public void testCharLength() throws Exception {
+        final String sql = characterFactor.charLength().showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH(T1.name COLLATE latin1_general_ci) AS C1 FROM person AS T1", sql);
+    }
 
     public void testSubstring2() throws Exception {
         final String sql = characterFactor.substring(person.id, person.id.div(2)).showQuery(new GenericDialect());

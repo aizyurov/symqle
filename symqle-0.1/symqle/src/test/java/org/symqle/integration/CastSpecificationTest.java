@@ -1,19 +1,21 @@
 package org.symqle.integration;
 
+import org.symqle.common.Callback;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractCastSpecification;
-import org.symqle.sql.Label;
-import org.symqle.sql.Mappers;
-import org.symqle.sql.Params;
+import org.symqle.integration.model.InsertTable;
+import org.symqle.integration.model.MyDual;
+import org.symqle.sql.*;
 import org.symqle.testset.AbstractCastSpecificationTestSet;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -84,7 +86,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     @Override
     public void test_asPredicate_() throws Exception {
         final Employee employee = new Employee();
-        final String castTarget = "BOOLEAN";
+        final String castTarget = getDatabaseName().equals("MySQL") ? "DECIMAL(1)" : "BOOLEAN";
         final List<String> list = employee.lastName
                 .where(employee.retired.cast(castTarget).asPredicate())
                 .orderBy(employee.lastName)
@@ -115,6 +117,14 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         final List<Double> list = createCast(employee).cast("DECIMAL(5,1)").list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+
+    @Override
+    public void test_charLength_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.lastName.cast("CHAR(4)").charLength().where(employee.lastName.eq("Redwood")).list(getEngine());
+        assertEquals(Arrays.asList(4), list);
     }
 
     @Override
@@ -273,53 +283,83 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
 
     @Override
     public void test_exceptAll_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = department.manager().salary.exceptAll(createCast(employee)).list(getEngine());
-        assertEquals(0, list.size());
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = department.manager().salary.exceptAll(createCast(employee)).list(getEngine());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // MySQL does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_exceptAll_QueryTerm() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).exceptAll(department.manager().salary).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = createCast(employee).exceptAll(department.manager().salary).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_exceptDistinct_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = department.manager().salary.exceptDistinct(createCast(employee)).list(getEngine());
-        assertEquals(0, list.size());
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = department.manager().salary.exceptDistinct(createCast(employee)).list(getEngine());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // MySQL does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_exceptDistinct_QueryTerm() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).exceptDistinct(department.manager().salary).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(1500.0, 2000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = createCast(employee).exceptDistinct(department.manager().salary).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(1500.0, 2000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_except_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = department.manager().salary.except(createCast(employee)).list(getEngine());
-        assertEquals(0, list.size());
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = department.manager().salary.except(createCast(employee)).list(getEngine());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // MySQL does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_except_QueryTerm() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).except(department.manager().salary).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(1500.0, 2000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = createCast(employee).except(department.manager().salary).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(1500.0, 2000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
@@ -440,50 +480,80 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
 
     @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).intersectAll(department.manager().salary).list(getEngine());
-        assertEquals(Arrays.asList(3000.0, 3000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = createCast(employee).intersectAll(department.manager().salary).list(getEngine());
+            assertEquals(Arrays.asList(3000.0, 3000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support INTERSECT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_intersectAll_QueryTerm_QueryPrimary_1() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = department.manager().salary.intersectAll(createCast(employee)).list(getEngine());
-        assertEquals(Arrays.asList(3000.0, 3000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = department.manager().salary.intersectAll(createCast(employee)).list(getEngine());
+            assertEquals(Arrays.asList(3000.0, 3000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support INTERSECT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_intersectDistinct_QueryPrimary() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).intersectDistinct(department.manager().salary).list(getEngine());
-        assertEquals(Arrays.asList(3000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = createCast(employee).intersectDistinct(department.manager().salary).list(getEngine());
+            assertEquals(Arrays.asList(3000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support INTERSECT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_intersectDistinct_QueryTerm_QueryPrimary_1() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = department.manager().salary.intersectDistinct(createCast(employee)).list(getEngine());
-        assertEquals(Arrays.asList(3000.00), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = department.manager().salary.intersectDistinct(createCast(employee)).list(getEngine());
+            assertEquals(Arrays.asList(3000.00), list);
+        } catch (SQLException e) {
+            // MySQL does not support INTERSECT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_intersect_QueryPrimary() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).intersect(department.manager().salary).list(getEngine());
-        assertEquals(Arrays.asList(3000.0), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = createCast(employee).intersect(department.manager().salary).list(getEngine());
+            assertEquals(Arrays.asList(3000.0), list);
+        } catch (SQLException e) {
+            // MySQL does not support INTERSECT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
     public void test_intersect_QueryTerm_QueryPrimary_1() throws Exception {
-        final Department department = new Department();
-        final Employee employee = new Employee();
-        final List<Double> list = department.manager().salary.intersect(createCast(employee)).list(getEngine());
-        assertEquals(Arrays.asList(3000.00), list);
+        try {
+            final Department department = new Department();
+            final Employee employee = new Employee();
+            final List<Double> list = department.manager().salary.intersect(createCast(employee)).list(getEngine());
+            assertEquals(Arrays.asList(3000.00), list);
+        } catch (SQLException e) {
+            // MySQL does not support INTERSECT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     @Override
@@ -807,408 +877,304 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
 
     @Override
     public void test_pair_SelectList() throws Exception {
-
+        final Employee employee = new Employee();
+        final List<Pair<Double, String>> list = createCast(employee).pair(employee.lastName)
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(Pair.make(3000.0, "First"), list.get(0));
     }
 
     @Override
     public void test_pair_SelectList_SelectList_1() throws Exception {
-
+        final Employee employee = new Employee();
+        final List<Pair<String, Double>> list = employee.lastName.pair(createCast(employee))
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(Pair.make("First", 3000.0), list.get(0));
     }
 
     @Override
     public void test_param_() throws Exception {
-
+        final Employee employee = new Employee();
+        final AbstractCastSpecification<Double> cast = createCast(employee);
+        final DynamicParameter<Double> param = cast.param();
+        param.setValue(2.0);
+        final List<Number> list = cast.mult(param).where(employee.lastName.eq("First")).list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(6000.0, list.get(0).doubleValue());
     }
 
     @Override
     public void test_param_Object() throws Exception {
-
+        final Employee employee = new Employee();
+        final AbstractCastSpecification<Double> cast = createCast(employee);
+        final DynamicParameter<Double> param = cast.param(2.0);
+        final List<Number> list = cast.mult(param).where(employee.lastName.eq("First")).list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(6000.0, list.get(0).doubleValue());
     }
 
     @Override
     public void test_positionOf_String() throws Exception {
-
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.lastName.cast("CHAR(5)").positionOf("rs")
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList(3), list);
     }
 
     @Override
     public void test_positionOf_StringExpression() throws Exception {
-
+        try {
+            final Employee employee = new Employee();
+            final List<Integer> list = employee.lastName.cast("CHAR(5)").positionOf(employee.lastName.substring(3))
+                    .where(employee.lastName.eq("First"))
+                    .list(getEngine());
+            assertEquals(Arrays.asList(3), list);
+        } catch (SQLException e) {
+            // a bug in Apache Derby
+            expectSQLException(e, "Apache Derby");
+        }
     }
 
     @Override
     public void test_positionOf_StringExpression_StringExpression_1() throws Exception {
-
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.lastName.cast("CHAR(5)").positionOf(employee.lastName.cast("CHAR(5)"))
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList(1), list);
     }
 
     @Override
     public void test_queryValue_() throws Exception {
-
+        final Employee employee = new Employee();
+        final MyDual myDual = new MyDual();
+        final List<Pair<String, String>> list = employee.lastName.pair(myDual.dummy.cast("CHAR(1)").queryValue())
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(Pair.make("First", "X"), list.get(0));
     }
 
     @Override
     public void test_scroll_QueryEngine_Callback_Option() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> expected = new ArrayList<>(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0));
+        final int iterations = createCast(employee).scroll(getEngine(), new Callback<Double>() {
+            @Override
+            public boolean iterate(final Double aDouble) throws SQLException {
+                assertTrue(expected.toString(), expected.remove(aDouble));
+                return true;
+            }
+        });
+        assertEquals(5, iterations);
 
     }
 
     @Override
     public void test_selectAll_() throws Exception {
-
-    }
-
-    @Override
-    public void test_set_ColumnName_ValueExpression_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_showQuery_Dialect_Option() throws Exception {
-
-    }
-
-    @Override
-    public void test_sub_Number() throws Exception {
-
-    }
-
-    @Override
-    public void test_sub_NumericExpression_Term_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_sub_Term() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_NumericExpression() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_NumericExpression_NumericExpression() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_StringExpression_NumericExpression_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_int() throws Exception {
-
-    }
-
-    @Override
-    public void test_substring_int_int() throws Exception {
-
-    }
-
-    @Override
-    public void test_sum_() throws Exception {
-
-    }
-
-    @Override
-    public void test_then_BooleanExpression_ValueExpression_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_unionAll_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_unionAll_QueryTerm() throws Exception {
-
-    }
-
-    @Override
-    public void test_unionDistinct_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_unionDistinct_QueryTerm() throws Exception {
-
-    }
-
-    @Override
-    public void test_union_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-
-    }
-
-    @Override
-    public void test_union_QueryTerm() throws Exception {
-
-    }
-
-    @Override
-    public void test_where_WhereClause() throws Exception {
-
-    }
-
-    public void testList() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
-    }
-
-    public void testAll() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = createCast(employee).selectAll().list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
     }
 
-    public void testDistinct() throws Exception {
-    }
-
-    public void testForUpdate() throws Exception {
-    }
-
-    public void testForReadOnly() throws Exception {
-    }
-
-    public void testOrderBy() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).orderBy(employee.lastName).list(getEngine());
-        // Cooper, First, March, Pedersen, Redwood
-        assertEquals(Arrays.asList(1500.0, 3000.0, 2000.0, 2000.0, 3000.0), list);
-    }
-
-    public void testSortSpecification() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .orderBy(createCast(employee), employee.lastName).list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
-    }
-
-    public void testAsc() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .orderBy(createCast(employee).asc(), employee.lastName).list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
-    }
-
-    public void testDesc() throws Exception {
-    }
-
-    public void testNullsFirst() throws Exception {
-        final Employee employee = new Employee();
+    @Override
+    public void test_set_ColumnName_ValueExpression_1() throws Exception {
         try {
-            final List<String> list = employee.lastName.orderBy(employee.deptId.cast("BIGINT").nullsFirst()).list(getEngine());
-            assertEquals(5, list.size());
-            assertEquals("Cooper", list.get(0));
+            final InsertTable insertTable = new InsertTable();
+            insertTable.delete().execute(getEngine());
+            insertTable.insert(insertTable.id.set(1).also(insertTable.text.set("sample"))).execute(getEngine());
+            final AbstractUpdateStatementBase update = insertTable.update(insertTable.text.set(insertTable.text.cast("CHAR(3)")));
+            System.out.println(update.showUpdate(new GenericDialect()));
+            update.execute(getEngine());
+            assertEquals(Arrays.asList("sam"), insertTable.text.list(getEngine()));
         } catch (SQLException e) {
-            // mysql;: does not support NULLS FIRST
+            // com.mysql.jdbc.MysqlDataTruncation: Data truncation: Truncated incorrect CHAR(3) value: 'sample'
             expectSQLException(e, "MySQL");
         }
     }
 
-    public void testNullsLast() throws Exception {
-    }
-
-    public void testPair() throws Exception {
+    @Override
+    public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double,String>> list = createCast(employee).pair(employee.lastName)
-                .orderBy(employee.lastName).list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make(1500.0, "Cooper"),
-                Pair.make(3000.0, "First"),
-                Pair.make(2000.0, "March"),
-                Pair.make(2000.0, "Pedersen"),
-                Pair.make(3000.0, "Redwood")
-                ), list);
+        final String sql = createCast(employee).showQuery(new GenericDialect());
+        Pattern pattern = Pattern.compile("SELECT CAST\\(([A-Z][A-Z0-9]*)\\.salary AS DECIMAL\\(6,2\\)\\) AS [A-Z][A-Z0-9]* FROM employee AS \\1");
+        assertTrue(sql, pattern.matcher(sql).matches());
+
     }
 
-    public void testAsCondition() throws Exception {
-    }
-
-    public void testWhere() throws Exception {
+    @Override
+    public void test_sub_Number() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).where(employee.firstName.eq("James")).orderBy(employee.lastName).list(getEngine());
-        // Cooper, First
-        assertEquals(Arrays.asList(1500.0, 3000.0), list);
-    }
-
-    public void testEq() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).eq(3000.0))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("First", "Redwood"), list);
-    }
-
-    public void testNe() throws Exception {
-    }
-
-    public void testGt() throws Exception {
-    }
-
-    public void testGe() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).ge(2000.0))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
-    }
-
-    public void testLt() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).lt(2000.0))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper"), list);
-    }
-
-    public void testLe() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).le(2000.0))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
-    }
-
-    public void testIsNull() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.deptId.cast("DECIMAL(4)").isNull()).list(getEngine());
-        assertEquals(Arrays.asList("Cooper"), list);
-    }
-
-    public void testIsNotNull() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(employee.deptId.cast("DECIMAL(4)").isNotNull())
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
-    }
-
-    public void testIn() throws Exception {
-        final Employee employee = new Employee();
-        final Employee sample = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).in(sample.salary.where(sample.firstName.eq("James"))))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
-    }
-
-    public void testInList() throws Exception {
-    }
-
-    public void testNotIn() throws Exception {
-        final Employee employee = new Employee();
-        final Employee sample = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).notIn(sample.salary.where(sample.firstName.eq("James"))))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("March", "Pedersen"), list);
-    }
-
-    public void testNotInList() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(createCast(employee).notIn(1500.0, 3000.0))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("March", "Pedersen"), list);
-    }
-
-    public void testInArgument() throws Exception {
-        final Employee employee = new Employee();
-        final Employee another = new Employee();
-        final List<String> list = employee.lastName.where(employee.salary.in(createCast(another)))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
-    }
-
-    public void testAdd() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).add(100).map(CoreMappers.DOUBLE)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(1600.0, 3100.0, 2100.0, 2100.0, 3100.0), list);
-    }
-
-    public void testSub() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).sub(100).map(CoreMappers.DOUBLE)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(1400.0, 2900.0, 1900.0, 1900.0, 2900.0), list);
-    }
-
-    public void testUnionAll() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).unionAll(employee.salary.where(employee.lastName.eq("Redwood")))
-                .list(getEngine());
+        final List<Double> list = createCast(employee).sub(1000.0).map(Mappers.DOUBLE).list(getEngine());
         Collections.sort(list);
-        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0), list);
+        assertEquals(Arrays.asList(500.0, 1000.0, 1000.0, 2000.0, 2000.0), list);
     }
 
-    public void testUnionDistinct() throws Exception {
+    @Override
+    public void test_sub_NumericExpression_Term_1() throws Exception {
         final Employee employee = new Employee();
-        final List<Double> list = createCast(employee).unionDistinct(employee.salary.where(employee.lastName.eq("Redwood")))
+        final List<Double> list = Params.p(4000.0).sub(createCast(employee)).map(Mappers.DOUBLE).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1000.0, 1000.0, 2000.0, 2000.0, 2500.0), list);
+    }
+
+    @Override
+    public void test_sub_Term() throws Exception {
+        final Employee employee = new Employee();
+        final List<Double> list = createCast(employee).sub(employee.salary.mult(2)).map(Mappers.DOUBLE).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    @Override
+    public void test_substring_NumericExpression() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(employee.lastName.positionOf("rs"))
+                .where(employee.lastName.eq("First"))
                 .list(getEngine());
+        assertEquals(Arrays.asList("rst"), list);
+    }
+
+    @Override
+    public void test_substring_NumericExpression_NumericExpression() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)")
+                .substring(employee.lastName.positionOf("rs"), employee.lastName.charLength().div(5))
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("r"), list);
+    }
+
+    @Override
+    public void test_substring_StringExpression_NumericExpression_1() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(employee.salary.div(1000).cast("DECIMAL(3)"))
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("rst"), list);
+
+    }
+
+    @Override
+    public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(employee.salary.div(1000).cast("DECIMAL(3)"), Params.p(2))
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("rs"), list);
+    }
+
+    @Override
+    public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(Params.p(1), employee.salary.div(1000).cast("DECIMAL(3)"))
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("Fir"), list);
+    }
+
+    @Override
+    public void test_substring_int() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(3)
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("rst"), list);
+    }
+
+    @Override
+    public void test_substring_int_int() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(3, 2)
+                .where(employee.lastName.eq("First"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("rs"), list);
+    }
+
+    @Override
+    public void test_sum_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Number> list = createCast(employee).sum().list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(11500.0, list.get(0).doubleValue());
+    }
+
+    @Override
+    public void test_then_BooleanExpression_ValueExpression_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseList<String> whenClauseList = employee.salary.gt(2000.0).then(employee.lastName.cast("CHAR(3)")).orElse(employee.lastName);
+        System.out.println(whenClauseList.showQuery(getEngine().getDialect()));
+        final List<String> list = whenClauseList
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "Fir", "March", "Pedersen", "Red"), list);
+
+    }
+
+    @Override
+    public void test_unionAll_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<Double> list = department.manager().salary.unionAll(createCast(employee)).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0, 3000.0), list);
+    }
+
+    @Override
+    public void test_unionAll_QueryTerm() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<Double> list = createCast(employee).unionAll(department.manager().salary).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0, 3000.0), list);
+    }
+
+    @Override
+    public void test_unionDistinct_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<Double> list = department.manager().salary.unionDistinct(createCast(employee)).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 3000.0), list);
     }
 
-    public void testIntersect() throws Exception {
+    @Override
+    public void test_unionDistinct_QueryTerm() throws Exception {
+        final Department department = new Department();
         final Employee employee = new Employee();
-        try {
-            final List<Double> list = createCast(employee).intersect(employee.salary.where(employee.lastName.eq("Redwood")))
-                    .list(getEngine());
-            Collections.sort(list);
-            assertEquals(Arrays.asList(3000.0), list);
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
+        final List<Double> list = createCast(employee).unionDistinct(department.manager().salary).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 3000.0), list);
     }
 
-    public void testConcat() throws Exception {
+    @Override
+    public void test_union_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
+        final Department department = new Department();
         final Employee employee = new Employee();
-        final List<String> list = employee.firstName.cast("CHAR(5)").concat(employee.lastName)
-                .where(employee.lastName.eq("Cooper"))
-                .list(getEngine());
-        assertEquals(Arrays.asList("JamesCooper"), list);
+        final List<Double> list = department.manager().salary.union(createCast(employee)).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 3000.0), list);
     }
 
-    public void testCollate() throws Exception {
+    @Override
+    public void test_union_QueryTerm() throws Exception {
+        final Department department = new Department();
         final Employee employee = new Employee();
+        final List<Double> list = createCast(employee).union(department.manager().salary).list(getEngine());
+        Collections.sort(list);
+        assertEquals(Arrays.asList(1500.0, 2000.0, 3000.0), list);
+    }
 
-        try {
-            final List<String> list = employee.firstName.cast("CHAR(5)").map(CoreMappers.STRING).collate(validCollationNameForChar())
-                    .where(employee.lastName.eq("Cooper"))
-                    .list(getEngine());
-            assertEquals(Arrays.asList("James"), list);
-        } catch (SQLException e) {
-            // derby: does not support COLLATE
-            System.out.println(getDatabaseName());
-            expectSQLException(e, "Apache Derby");
-        }
+    @Override
+    public void test_where_WhereClause() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.cast("CHAR(3)").where(employee.lastName.eq("First")).list(getEngine());
+        assertEquals(Arrays.asList("Fir"), list);
     }
 
 }

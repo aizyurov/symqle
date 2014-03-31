@@ -392,6 +392,12 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT ? || T0.id AS C0 FROM person AS T0", sql);
     }
 
+    public void testCharLength() throws Exception {
+        final String sql = DynamicParameter.create(CoreMappers.STRING, "abcd").charLength()
+                .pair(person.name).showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH(?) AS C0, T0.name AS C1 FROM person AS T0", sql);
+    }
+
     public void testSubstring() throws Exception {
         final String sql = DynamicParameter.create(CoreMappers.STRING, "abcd").substring(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(? FROM T0.id) AS C0 FROM person AS T0", sql);

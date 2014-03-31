@@ -314,6 +314,11 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT SUBSTRING(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM T0.id) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCharLength() throws Exception {
+        final String sql = createWhenClauseBaseList().charLength().showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END) AS C0 FROM person AS T0", sql);
+    }
+
     public void testSubstring2() throws Exception {
         final String sql = createWhenClauseBaseList().substring(person.id, person.id.div(2)).showQuery(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(CASE WHEN T0.age > ? THEN T0.name WHEN T0.age > ? THEN T0.nick END FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);

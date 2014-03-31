@@ -46,4 +46,9 @@ public class DerbyDialect extends GenericDialect {
     public Sql NumericExpression_is_POSITION_LEFT_PAREN_StringExpression_IN_StringExpression_RIGHT_PAREN(final Sql pattern, final Sql source) {
         return concat(new StringSql("LOCATE"), SqlTerm.LEFT_PAREN, pattern, SqlTerm.COMMA, source, SqlTerm.RIGHT_PAREN);
     }
+
+    @Override
+    public Sql NumericExpression_is_CHAR_LENGTH_LEFT_PAREN_StringExpression_RIGHT_PAREN(final Sql string) {
+        return concat(SqlTerm.LENGTH, SqlTerm.LEFT_PAREN, string, SqlTerm.RIGHT_PAREN);
+    }
 }

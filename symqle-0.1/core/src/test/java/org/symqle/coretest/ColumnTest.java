@@ -467,6 +467,11 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT SUBSTRING(T0.name FROM T0.age) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCharLength() throws Exception {
+        String sql = person.name.charLength().showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH(T0.name) AS C0 FROM person AS T0", sql);
+    }
+
     public void testSubstring2() throws Exception {
         String sql = person.name.substring(person.age, person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT SUBSTRING(T0.name FROM T0.age FOR T0.id) AS C0 FROM person AS T0", sql);

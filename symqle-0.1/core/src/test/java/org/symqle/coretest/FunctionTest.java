@@ -1,6 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.*;
+import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.sql.*;
 
@@ -557,6 +558,11 @@ public class FunctionTest extends SqlTestCase {
                 assertEquals(1, query.compileQuery(engine).scroll(new TestCallback<Long>(123L)));
             }
         }.play();
+    }
+
+    public void testCharLength() throws Exception {
+        final String sql = currentUser().charLength().showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT CHAR_LENGTH(user()) AS C0 FROM dual AS T0", sql);
     }
 
     private static abstract class Scenario extends AbstractQueryScenario<Long, AbstractRoutineInvocation<Long>> {

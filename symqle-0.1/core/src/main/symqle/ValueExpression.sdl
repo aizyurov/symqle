@@ -259,4 +259,17 @@ AbstractNumericExpression<Integer> positionOf(final StringExpression<?> source, 
     return pos(DynamicParameter.create(CoreMappers.STRING, pattern), source);
 }
 
+# CHAR_LENGTH / CHARACTER_LENGTH
+NumericExpression<Integer> ::= CHAR_LENGTH LEFT_PAREN string:StringExpression<?> RIGHT_PAREN
+  /**
+  * Length of {@code this} in character units.
+  * @return the length
+  */
+  :: public AbstractNumericExpression<Integer> charLength {
+      public Mapper<Integer> getMapper() {
+          return CoreMappers.INTEGER;
+      }
+  }
+;
+
 

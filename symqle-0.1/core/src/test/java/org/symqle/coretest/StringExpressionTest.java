@@ -242,6 +242,13 @@ public class StringExpressionTest extends SqlTestCase {
         assertEquals(CoreMappers.STRING, substring.getMapper());
     }
 
+    public void testCharLength() throws Exception {
+        final AbstractNumericExpression<Integer> length = createStringExpression().charLength();
+        String sql = length.showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH(? || T0.id) AS C0 FROM person AS T0", sql);
+        assertEquals(CoreMappers.INTEGER, length.getMapper());
+    }
+
     public void testSubstring2() throws Exception {
         final AbstractStringExpression<String> substring = createStringExpression().substring(person.id, person.id.div(2));
         String sql = substring.showQuery(new GenericDialect());

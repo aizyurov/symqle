@@ -278,6 +278,12 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT SUBSTRING((T0.id + ?) FROM T0.id) AS C0 FROM person AS T0", sql);
     }
 
+    public void testCharLength() throws Exception {
+        String sql = createNumericExpression().charLength().pair(person.id).showQuery(new GenericDialect());
+        assertSimilar("SELECT CHAR_LENGTH((T0.id + ?)) AS C0, T0.id AS C1 FROM person AS T0", sql);
+    }
+
+
     public void testSubstring2() throws Exception {
         String sql = createNumericExpression().substring(person.id, person.id.div(2)).showQuery(new GenericDialect());
         assertSimilar("SELECT SUBSTRING((T0.id + ?) FROM T0.id FOR T0.id / ?) AS C0 FROM person AS T0", sql);
