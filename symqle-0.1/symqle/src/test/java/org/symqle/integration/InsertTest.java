@@ -6,8 +6,13 @@ import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.GeneratedKeysTable;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.integration.model.One;
+import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.GeneratedKeys;
+import org.symqle.sql.AbstractInsertStatement;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.InsertStatement;
 import org.symqle.sql.Params;
+import org.symqle.testset.AbstractInsertStatementTestSet;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -16,7 +21,102 @@ import java.util.List;
 /**
  * @author lvovich
  */
-public class InsertTest extends AbstractIntegrationTestBase {
+public class InsertTest extends AbstractIntegrationTestBase implements AbstractInsertStatementTestSet {
+
+    @Override
+    public void test_adapt_InsertStatement() throws Exception {
+        final InsertTable insertTable = clean();
+        final InsertStatement insertStatement = insertTable
+                .insert(insertTable.id.set(2).also(insertTable.text.set("wow")));
+        final int affectedRows = AbstractInsertStatement.adapt(insertStatement)
+                .execute(getEngine());
+        assertEquals(1, affectedRows);
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
+    }
+
+    @Override
+    public void test_compileUpdate_Engine_Option() throws Exception {
+        final InsertTable insertTable = clean();
+        final int affectedRows = insertTable
+                .insert(insertTable.id.set(2).also(insertTable.text.set("wow")))
+                .compileUpdate(getEngine())
+                .execute();
+        assertEquals(1, affectedRows);
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
+    }
+
+    @Override
+    public void test_compileUpdate_GeneratedKeys_Engine_Option() throws Exception {
+        final GeneratedKeysTable generatedKeysTable = new GeneratedKeysTable();
+        generatedKeysTable.delete().execute(getEngine());
+        final GeneratedKeys<Integer> generatedKeys = GeneratedKeys.create(generatedKeysTable.id().getMapper());
+        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bim")).compileUpdate(generatedKeys, getEngine()).execute());
+        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bom")).compileUpdate(generatedKeys, getEngine()).execute());
+        final List<Integer> allKeys = generatedKeys.all();
+        assertEquals(2, allKeys.size());
+        assertTrue(allKeys.get(1) > allKeys.get(0));
+        final List<String> bimList = generatedKeysTable.text().where(generatedKeysTable.id().eq(allKeys.get(0))).list(getEngine());
+        assertEquals(Arrays.asList("Bim"), bimList);
+    }
+
+    @Override
+    public void test_execute_Engine_Option() throws Exception {
+        final InsertTable insertTable = clean();
+        final int affectedRows = insertTable
+                .insert(insertTable.id.set(2).also(insertTable.text.set("wow")))
+                .execute(getEngine());
+        assertEquals(1, affectedRows);
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
+    }
+
+    @Override
+    public void test_execute_GeneratedKeys_Engine_Option() throws Exception {
+        final GeneratedKeysTable generatedKeysTable = new GeneratedKeysTable();
+        generatedKeysTable.delete().execute(getEngine());
+        final GeneratedKeys<Integer> generatedKeys = GeneratedKeys.create(generatedKeysTable.id().getMapper());
+        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bim")).execute(generatedKeys, getEngine()));
+        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bom")).execute(generatedKeys, getEngine()));
+        final List<Integer> allKeys = generatedKeys.all();
+        assertEquals(2, allKeys.size());
+        assertTrue(allKeys.get(1) > allKeys.get(0));
+        final List<String> bimList = generatedKeysTable.text().where(generatedKeysTable.id().eq(allKeys.get(0))).list(getEngine());
+        assertEquals(Arrays.asList("Bim"), bimList);
+    }
+
+    @Override
+    public void test_showUpdate_Dialect_Option() throws Exception {
+        final InsertTable insertTable = new InsertTable();
+        final String sql = insertTable.insert(insertTable.id.set(2).also(insertTable.text.set("wow")))
+                .showUpdate(getEngine().getDialect());
+        assertEquals("INSERT INTO insert_test(id, text) VALUES(?, ?)", sql);
+
+    }
+
+    @Override
+    public void test_submit_Batcher_Option() throws Exception {
+        final InsertTable insertTable = clean();
+        final DynamicParameter<Integer> idParam = insertTable.id.param();
+        final DynamicParameter<String> textParam = insertTable.text.param();
+        final AbstractInsertStatement insert = insertTable
+                .insert(insertTable.id.set(idParam).also(insertTable.text.set(textParam)));
+        final Batcher batcher = getEngine().newBatcher(10);
+        idParam.setValue(1);
+        textParam.setValue("one");
+        assertEquals(0, insert.submit(batcher).length);
+        idParam.setValue(2);
+        textParam.setValue("two");
+        assertEquals(0, insert.submit(batcher).length);
+        final int[] flushed = batcher.flush();
+        assertTrue(Arrays.toString(flushed), Arrays.equals(new int[] {1, 1}, flushed));
+
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
+        assertEquals(Arrays.asList(Pair.make(1, "one"), Pair.make(2, "tow")), rows);
+    }
 
     public void testInsert() throws Exception {
         final InsertTable insertTable = clean();
@@ -112,19 +212,6 @@ public class InsertTest extends AbstractIntegrationTestBase {
         assertEquals(1, affectedRows);
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
         assertEquals(Arrays.asList(Pair.make(3, "Margaret")), rows);
-
-    }
-
-    public void testGeneratedKeys() throws Exception {
-        final GeneratedKeysTable generatedKeysTable = new GeneratedKeysTable();
-        final GeneratedKeys<Integer> generatedKeys = GeneratedKeys.create(generatedKeysTable.id().getMapper());
-        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bim")).execute(generatedKeys, getEngine()));
-        assertEquals(1, generatedKeysTable.insert(generatedKeysTable.text().set("Bom")).execute(generatedKeys, getEngine()));
-        final List<Integer> allKeys = generatedKeys.all();
-        assertEquals(2, allKeys.size());
-        assertTrue(allKeys.get(1) > allKeys.get(0));
-        final List<String> bimList = generatedKeysTable.text().where(generatedKeysTable.id().eq(allKeys.get(0))).list(getEngine());
-        assertEquals(Arrays.asList("Bim"), bimList);
 
     }
 
