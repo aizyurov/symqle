@@ -115,7 +115,7 @@ public class InsertTest extends AbstractIntegrationTestBase implements AbstractI
         final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text)
                 .orderBy(insertTable.id)
                 .list(getEngine());
-        assertEquals(Arrays.asList(Pair.make(1, "one"), Pair.make(2, "tow")), rows);
+        assertEquals(Arrays.asList(Pair.make(1, "one"), Pair.make(2, "two")), rows);
     }
 
     public void testInsert() throws Exception {
