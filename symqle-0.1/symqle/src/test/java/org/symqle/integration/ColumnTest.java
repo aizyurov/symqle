@@ -1056,6 +1056,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
         final Employee employee = new Employee();
         final String sql = employee.lastName.showQuery(new GenericDialect());
         Pattern pattern = Pattern.compile("SELECT ([A-Z][A-Z0-9]+).last_name AS [A-Z][A-Z0-9]+ FROM employee AS \\1");
+        assertTrue(sql, pattern.matcher(sql).matches());
     }
 
     @Override
@@ -1084,18 +1085,28 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
 
     @Override
     public void test_substring_NumericExpression() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.firstName.substring(employee.firstName.charLength().div(2))
-                .where(employee.lastName.eq("Redwood")).list(getEngine());
-        assertEquals(Arrays.asList("garet"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.firstName.substring(employee.firstName.charLength().div(2))
+                    .where(employee.lastName.eq("Redwood")).list(getEngine());
+            assertEquals(Arrays.asList("garet"), list);
+        } catch (SQLException e) {
+            // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     @Override
     public void test_substring_NumericExpression_NumericExpression() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.firstName.substring(employee.firstName.charLength().div(2), employee.firstName.charLength().div(2))
-                .where(employee.lastName.eq("Redwood")).list(getEngine());
-        assertEquals(Arrays.asList("gare"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.firstName.substring(employee.firstName.charLength().div(2), employee.firstName.charLength().div(2))
+                    .where(employee.lastName.eq("Redwood")).list(getEngine());
+            assertEquals(Arrays.asList("gare"), list);
+        } catch (SQLException e) {
+            // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     @Override
@@ -1108,18 +1119,28 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
 
     @Override
     public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.firstName.substring(employee.empId, employee.firstName.charLength().div(2))
-                .where(employee.lastName.eq("Redwood")).list(getEngine());
-        assertEquals(Arrays.asList("Marg"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.firstName.substring(employee.empId, employee.firstName.charLength().div(2))
+                    .where(employee.lastName.eq("Redwood")).list(getEngine());
+            assertEquals(Arrays.asList("Marg"), list);
+        } catch (SQLException e) {
+            // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     @Override
     public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.firstName.substring(employee.firstName.charLength().div(2), employee.empId)
-                .where(employee.lastName.eq("Redwood")).list(getEngine());
-        assertEquals(Arrays.asList("g"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.firstName.substring(employee.firstName.charLength().div(2), employee.empId)
+                    .where(employee.lastName.eq("Redwood")).list(getEngine());
+            assertEquals(Arrays.asList("g"), list);
+        } catch (SQLException e) {
+            // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
+            expectSQLException(e, "PostgreSQL");
+        }
     }
 
     @Override

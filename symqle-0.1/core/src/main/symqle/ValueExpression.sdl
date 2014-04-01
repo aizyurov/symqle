@@ -265,7 +265,7 @@ NumericExpression<Integer> ::= CHAR_LENGTH LEFT_PAREN string:StringExpression<?>
   * Length of {@code this} in character units.
   * @return the length
   */
-  :: public AbstractNumericExpression<Integer> charLength {
+  :: AbstractNumericExpression<Integer> charLength {
       public Mapper<Integer> getMapper() {
           return CoreMappers.INTEGER;
       }
