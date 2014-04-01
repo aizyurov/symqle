@@ -1,13 +1,12 @@
 package org.symqle.integration;
 
-import org.easymock.EasyMock;
 import org.symqle.common.Callback;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
-import org.symqle.jdbc.PreparedQuery;
-import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.*;
+import org.symqle.sql.AbstractAggregateFunction;
+import org.symqle.sql.AbstractAggregateQuerySpecification;
+import org.symqle.sql.Params;
 import org.symqle.testset.AbstractAggregateQuerySpecificationTestSet;
 
 import java.sql.SQLException;
@@ -157,7 +156,12 @@ public class AbstractAggregateQuerySpecificationTest extends AbstractIntegration
         final AbstractAggregateQuerySpecification<Integer> aggregateQuerySpecification =
                 employee.empId.count().where(employee.salary.gt(1800.0));
         final String sql = aggregateQuerySpecification.showQuery(getEngine().getDialect());
-        Pattern pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE \\1.salary > \\?");
+        final Pattern pattern;
+        if (getDatabaseName().equals("PostgreSQL")) {
+            pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE\\(\\1.salary > \\?\\)");
+        } else {
+            pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE \\1.salary > \\?");
+        }
         assertTrue(sql, pattern.matcher(sql).matches());
 
     }

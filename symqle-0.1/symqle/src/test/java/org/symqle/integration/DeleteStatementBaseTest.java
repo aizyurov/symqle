@@ -4,8 +4,11 @@ import org.symqle.common.CompiledSql;
 import org.symqle.common.SqlParameters;
 import org.symqle.integration.model.DeleteDetail;
 import org.symqle.integration.model.DeleteMaster;
+import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Option;
 import org.symqle.querybuilder.StringSql;
+import org.symqle.sql.AbstractDeleteStatementBase;
+import org.symqle.testset.AbstractDeleteStatementBaseTestSet;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -15,7 +18,7 @@ import java.util.List;
 /**
  * @author lvovich
  */
-public class DeleteTest extends AbstractIntegrationTestBase {
+public class DeleteStatementBaseTest extends AbstractIntegrationTestBase implements AbstractDeleteStatementBaseTestSet {
 
     private final static List<Option> NO_OPTIONS = Collections.<Option>emptyList();
 
@@ -48,22 +51,68 @@ public class DeleteTest extends AbstractIntegrationTestBase {
         });
     }
 
-    public void testDeleteAll() throws Exception {
+    @Override
+    public void test_adapt_DeleteStatementBase() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        System.out.println(master.delete().showUpdate(getEngine().getDialect()));
-        assertEquals(0, master.delete().execute(getEngine()));
-        final CompiledSql one = createInsertIntoDeleteMaster(1, "one");
-        System.out.println(one);
-        getEngine().execute(one, NO_OPTIONS);
+        final AbstractDeleteStatementBase delete = master.delete();
+        master.delete().execute(getEngine());
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
         getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
         assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
-        assertEquals(2, master.delete().execute(getEngine()));
+        assertEquals(2, AbstractDeleteStatementBase.adapt(delete).execute(getEngine()));
         assertEquals(Collections.<Integer>emptyList(), master.masterId.list(getEngine()));
     }
 
-    public void testDeleteSome() throws Exception {
+    @Override
+    public void test_compileUpdate_Engine_Option() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        assertEquals(0, master.delete().execute(getEngine()));
+        final AbstractDeleteStatementBase delete = master.delete();
+        master.delete().execute(getEngine());
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
+        getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
+        assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
+        assertEquals(2, delete.compileUpdate(getEngine()).execute());
+        assertEquals(Collections.<Integer>emptyList(), master.masterId.list(getEngine()));
+    }
+
+    @Override
+    public void test_execute_Engine_Option() throws Exception {
+        final DeleteMaster master = new DeleteMaster();
+        final AbstractDeleteStatementBase delete = master.delete();
+        master.delete().execute(getEngine());
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
+        getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
+        assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
+        assertEquals(2, delete.execute(getEngine()));
+        assertEquals(Collections.<Integer>emptyList(), master.masterId.list(getEngine()));
+    }
+
+    @Override
+    public void test_showUpdate_Dialect_Option() throws Exception {
+        final DeleteMaster master = new DeleteMaster();
+        final AbstractDeleteStatementBase delete = master.delete();
+        assertEquals("DELETE FROM delete_master", delete.showUpdate(getEngine().getDialect()));
+    }
+
+    @Override
+    public void test_submit_Batcher_Option() throws Exception {
+        final DeleteMaster master = new DeleteMaster();
+        final AbstractDeleteStatementBase delete = master.delete();
+        master.delete().execute(getEngine());
+        getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
+        getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
+        final Batcher batcher = getEngine().newBatcher(10);
+        final int[] submitted = delete.submit(batcher);
+        assertEquals(0, submitted.length);
+        assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
+        final int[] flushed = batcher.flush();
+        assertTrue(Arrays.toString(flushed), Arrays.equals(new int[]{2}, flushed));
+    }
+
+    @Override
+    public void test_where_WhereClause() throws Exception {
+        final DeleteMaster master = new DeleteMaster();
+        master.delete().execute(getEngine());
         getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
         getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
         getEngine().execute(createInsertIntoDeleteMaster(3, "three"), NO_OPTIONS);
@@ -74,7 +123,7 @@ public class DeleteTest extends AbstractIntegrationTestBase {
 
     public void testDeleteBySubquery() throws Exception {
         final DeleteMaster master = new DeleteMaster();
-        assertEquals(0, master.delete().execute(getEngine()));
+        master.delete().execute(getEngine());
 
         getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
         getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);

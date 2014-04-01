@@ -1044,16 +1044,22 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     public void test_substring_NumericExpression_NumericExpression() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.cast("CHAR(5)")
-                .substring(employee.lastName.positionOf("rs"), employee.lastName.charLength().div(5))
+                .substring(employee.lastName.positionOf("rs"), employee.lastName.positionOf("rs"))
                 .where(employee.lastName.eq("First"))
                 .list(getEngine());
-        assertEquals(Arrays.asList("r"), list);
+        assertEquals(Arrays.asList("rst"), list);
     }
 
     @Override
     public void test_substring_StringExpression_NumericExpression_1() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.cast("CHAR(5)").substring(employee.salary.div(1000).cast("DECIMAL(3)"))
+        final AbstractCastSpecification<Number> offset;
+        if (getDatabaseName().equals("MySQL")) {
+            offset = employee.salary.div(1000).cast("DECIMAL(3)");
+        } else {
+            offset = employee.salary.div(1000).cast("INTEGER");
+        }
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(offset)
                 .where(employee.lastName.eq("First"))
                 .list(getEngine());
         assertEquals(Arrays.asList("rst"), list);
@@ -1063,7 +1069,13 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     @Override
     public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.cast("CHAR(5)").substring(employee.salary.div(1000).cast("DECIMAL(3)"), Params.p(2))
+        final AbstractCastSpecification<Number> offset;
+        if (getDatabaseName().equals("MySQL")) {
+            offset = employee.salary.div(1000).cast("DECIMAL(3)");
+        } else {
+            offset = employee.salary.div(1000).cast("INTEGER");
+        }
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(offset, Params.p(2))
                 .where(employee.lastName.eq("First"))
                 .list(getEngine());
         assertEquals(Arrays.asList("rs"), list);
@@ -1072,7 +1084,13 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     @Override
     public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.cast("CHAR(5)").substring(Params.p(1), employee.salary.div(1000).cast("DECIMAL(3)"))
+        final AbstractCastSpecification<Number> limit;
+        if (getDatabaseName().equals("MySQL")) {
+            limit = employee.salary.div(1000).cast("DECIMAL(3)");
+        } else {
+            limit = employee.salary.div(1000).cast("INTEGER");
+        }
+        final List<String> list = employee.lastName.cast("CHAR(5)").substring(Params.p(1), limit)
                 .where(employee.lastName.eq("First"))
                 .list(getEngine());
         assertEquals(Arrays.asList("Fir"), list);

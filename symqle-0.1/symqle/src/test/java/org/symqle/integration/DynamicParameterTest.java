@@ -9,6 +9,7 @@ import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.jdbc.Option;
+import org.symqle.sql.AbstractCastSpecification;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Functions;
 import org.symqle.sql.Label;
@@ -1235,7 +1236,14 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     @Override
     public void test_substring_NumericExpression_NumericExpression() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = Params.p("abcdefg").substring(employee.firstName.charLength(), employee.lastName.charLength().div(3))
+        final AbstractCastSpecification<Number> limit;
+        if (getDatabaseName().equals("MySQL")) {
+            limit = employee.lastName.charLength().div(3).cast("DECIMAL(3)");
+        } else {
+            limit = employee.lastName.charLength().div(3).cast("INTEGER");
+        }
+
+        final List<String> list = Params.p("abcdefg").substring(employee.firstName.charLength(), limit)
                 .where(employee.lastName.eq("Cooper"))
                 .list(getEngine());
         assertEquals(Arrays.asList("ef"), list);
