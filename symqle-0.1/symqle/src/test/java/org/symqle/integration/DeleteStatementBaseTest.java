@@ -52,18 +52,6 @@ public class DeleteStatementBaseTest extends AbstractIntegrationTestBase impleme
     }
 
     @Override
-    public void test_adapt_DeleteStatementBase() throws Exception {
-        final DeleteMaster master = new DeleteMaster();
-        final AbstractDeleteStatementBase delete = master.delete();
-        master.delete().execute(getEngine());
-        getEngine().execute(createInsertIntoDeleteMaster(1, "one"), NO_OPTIONS);
-        getEngine().execute(createInsertIntoDeleteMaster(2, "two"), NO_OPTIONS);
-        assertEquals(Arrays.asList(1, 2), master.masterId.list(getEngine()));
-        assertEquals(2, AbstractDeleteStatementBase.adapt(delete).execute(getEngine()));
-        assertEquals(Collections.<Integer>emptyList(), master.masterId.list(getEngine()));
-    }
-
-    @Override
     public void test_compileUpdate_Engine_Option() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         final AbstractDeleteStatementBase delete = master.delete();

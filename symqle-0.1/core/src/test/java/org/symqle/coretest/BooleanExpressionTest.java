@@ -13,8 +13,7 @@ public class BooleanExpressionTest extends SqlTestCase implements AbstractBoolea
         return person.alive.asPredicate().or(person.cute.asPredicate());
     }
 
-    @Override
-    public void test_adapt_BooleanExpression() {
+    public void testAdapt() {
         final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asPredicate();
         final AbstractBooleanExpression abstractBooleanExpression = AbstractBooleanExpression.adapt(abstractBooleanPrimary);
         final String sql1 = person.id.where(abstractBooleanPrimary).showQuery(new GenericDialect());

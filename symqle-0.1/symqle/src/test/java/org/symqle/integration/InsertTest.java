@@ -10,7 +10,6 @@ import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.GeneratedKeys;
 import org.symqle.sql.AbstractInsertStatement;
 import org.symqle.sql.DynamicParameter;
-import org.symqle.sql.InsertStatement;
 import org.symqle.sql.Params;
 import org.symqle.testset.AbstractInsertStatementTestSet;
 
@@ -22,18 +21,6 @@ import java.util.List;
  * @author lvovich
  */
 public class InsertTest extends AbstractIntegrationTestBase implements AbstractInsertStatementTestSet {
-
-    @Override
-    public void test_adapt_InsertStatement() throws Exception {
-        final InsertTable insertTable = clean();
-        final InsertStatement insertStatement = insertTable
-                .insert(insertTable.id.set(2).also(insertTable.text.set("wow")));
-        final int affectedRows = AbstractInsertStatement.adapt(insertStatement)
-                .execute(getEngine());
-        assertEquals(1, affectedRows);
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
-        assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
-    }
 
     @Override
     public void test_compileUpdate_Engine_Option() throws Exception {

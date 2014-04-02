@@ -33,14 +33,6 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_adapt_Factor() throws Exception {
-        final Employee employee = new Employee();
-        final List<Double> list = AbstractFactor.adapt(employee.salary)
-                .where(employee.lastName.eq("Redwood")).list(getEngine());
-        assertEquals(Arrays.asList(3000.0), list);
-    }
-
-    @Override
     public void test_add_Number() throws Exception {
         final Employee employee = new Employee();
         final List<Number> list = createFactor(employee).add(3000.0).list(getEngine());

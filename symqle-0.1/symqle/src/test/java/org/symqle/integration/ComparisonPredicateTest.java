@@ -5,7 +5,6 @@ import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.sql.AbstractPredicate;
 import org.symqle.sql.Params;
-import org.symqle.sql.Predicate;
 import org.symqle.testset.AbstractPredicateTestSet;
 
 import java.sql.SQLException;
@@ -24,16 +23,6 @@ public class ComparisonPredicateTest extends AbstractIntegrationTestBase impleme
      */
     private AbstractPredicate createPredicate(final Employee employee) {
         return employee.lastName.eq("Cooper");
-    }
-
-    @Override
-    public void test_adapt_Predicate() throws Exception {
-        final Employee employee = new Employee();
-        final Predicate predicate = createPredicate(employee);
-        final List<String> list = employee.lastName.where(AbstractPredicate.adapt(predicate).or(employee.lastName.eq("Redwood")))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "Redwood"), list);
     }
 
     @Override

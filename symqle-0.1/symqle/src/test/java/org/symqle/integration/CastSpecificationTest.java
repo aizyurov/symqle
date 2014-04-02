@@ -29,16 +29,6 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_adapt_CastSpecification() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractCastSpecification<Double> cast = createCast(employee);
-        final AbstractCastSpecification<Double> adaptor = AbstractCastSpecification.adapt(cast);
-        final List<Double> list = adaptor.list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
-    }
-
-    @Override
     public void test_add_Number() throws Exception {
         final Employee employee = new Employee();
         final List<Double> list = createCast(employee).add(100).map(CoreMappers.DOUBLE)

@@ -4,9 +4,7 @@ import org.symqle.common.Pair;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.integration.model.MyDual;
-import org.symqle.sql.AbstractBooleanFactor;
 import org.symqle.sql.AbstractLikePredicateBase;
-import org.symqle.sql.LikePredicateBase;
 import org.symqle.sql.Params;
 import org.symqle.testset.AbstractLikePredicateBaseTestSet;
 
@@ -26,16 +24,6 @@ public class LikePredicateBaseTest extends AbstractIntegrationTestBase implement
      */
     private AbstractLikePredicateBase createBasicCondition(final Employee employee) {
         return employee.firstName.like("%es");
-    }
-
-    @Override
-    public void test_adapt_LikePredicateBase() throws Exception {
-        final Employee employee = new Employee();
-        final LikePredicateBase basicCondition = createBasicCondition(employee);
-        // does not compile: basicCondition.negate()
-        final AbstractBooleanFactor condition = AbstractLikePredicateBase.adapt(basicCondition).negate();
-        final List<String> list = employee.lastName.where(condition).orderBy(employee.lastName).list(getEngine());
-        assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
     }
 
     @Override

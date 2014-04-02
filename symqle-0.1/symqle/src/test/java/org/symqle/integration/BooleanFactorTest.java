@@ -1,18 +1,15 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
-import org.symqle.integration.model.InsertTable;
-import org.symqle.sql.AbstractBooleanExpression;
-import org.symqle.sql.AbstractPredicate;
-import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
+import org.symqle.integration.model.InsertTable;
 import org.symqle.sql.AbstractBooleanFactor;
+import org.symqle.sql.Params;
 import org.symqle.testset.AbstractBooleanFactorTestSet;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,17 +24,6 @@ public class BooleanFactorTest extends AbstractIntegrationTestBase implements Ab
      */
     private AbstractBooleanFactor createBooleanFactor(final Employee employee) {
         return employee.hireDate.lt(new Date(108, 9, 1)).negate();
-    }
-
-    @Override
-    public void test_adapt_BooleanFactor() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractPredicate abstractPredicate = employee.hireDate.lt(new Date(108, 9, 1));
-        final AbstractBooleanFactor adaptor = AbstractBooleanFactor.adapt(abstractPredicate);
-        final List<String> list = employee.lastName.where(adaptor)
-                .orderBy(employee.lastName).list(getEngine());
-        assertEquals(Arrays.asList("March", "Redwood"), list);
-
     }
 
     @Override

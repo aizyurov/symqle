@@ -2,7 +2,6 @@ package org.symqle.integration;
 
 import org.symqle.integration.model.DeleteMaster;
 import org.symqle.jdbc.Batcher;
-import org.symqle.sql.AbstractDeleteStatement;
 import org.symqle.testset.AbstractDeleteStatementTestSet;
 
 import java.util.Arrays;
@@ -11,18 +10,6 @@ import java.util.Arrays;
  * @author lvovich
  */
 public class DeleteStatementTest extends AbstractIntegrationTestBase implements AbstractDeleteStatementTestSet {
-
-    @Override
-    public void test_adapt_DeleteStatement() throws Exception {
-        final DeleteMaster master = new DeleteMaster();
-        master.delete().execute(getEngine());
-        master.insert(master.masterId.set(1).also(master.description.set("one"))).execute(getEngine());
-        master.insert(master.masterId.set(2).also(master.description.set("two"))).execute(getEngine());
-        master.insert(master.masterId.set(3).also(master.description.set("three"))).execute(getEngine());
-        assertEquals(Arrays.asList(1, 2, 3), master.masterId.list(getEngine()));
-        assertEquals(3, AbstractDeleteStatement.adapt(master.delete()).execute(getEngine()));
-        assertEquals(0, master.masterId.list(getEngine()).size());
-    }
 
     @Override
     public void test_compileUpdate_Engine_Option() throws Exception {

@@ -451,12 +451,6 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_getMapper_() throws Exception {
-        final Employee employee = new Employee();
-        assertEquals(Mappers.STRING, employee.lastName.getMapper());
-    }
-
-    @Override
     public void test_gt_Object() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.gt("James")).list(getEngine());

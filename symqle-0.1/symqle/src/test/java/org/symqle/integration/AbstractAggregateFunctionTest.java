@@ -4,8 +4,6 @@ import org.symqle.common.Callback;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractAggregateFunction;
-import org.symqle.sql.AggregateFunction;
 import org.symqle.testset.AbstractAggregateFunctionTestSet;
 
 import java.sql.SQLException;
@@ -17,14 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author lvovich
  */
 public class AbstractAggregateFunctionTest extends AbstractIntegrationTestBase  implements AbstractAggregateFunctionTestSet {
-
-    @Override
-    public void test_adapt_AggregateFunction() throws Exception {
-        final Employee employee = new Employee();
-        final AggregateFunction<Integer> count = employee.empId.count();
-        final List<Integer> list = AbstractAggregateFunction.adapt(count).list(getEngine());
-        assertEquals(Arrays.asList(5), list);
-    }
 
     @Override
     public void test_compileQuery_QueryEngine_Option() throws Exception {

@@ -33,19 +33,6 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_adapt_NumericExpression() throws Exception {
-        final Employee employee = new Employee();
-        Label l = new Label();
-        final NumericExpression<Number> term = employee.salary.mult(2);
-        final List<Double> list = AbstractNumericExpression.adapt(term)
-                .map(Mappers.DOUBLE)
-                .label(l)
-                .orderBy(l)
-                .list(getEngine());
-        assertEquals(Arrays.asList(3000.0, 4000.0, 4000.0, 6000.0, 6000.0), list);
-    }
-
-    @Override
     public void test_add_Number() throws Exception {
         final Employee employee = new Employee();
         Label l = new Label();

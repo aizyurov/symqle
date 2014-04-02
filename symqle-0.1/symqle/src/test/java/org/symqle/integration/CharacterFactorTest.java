@@ -42,15 +42,6 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_adapt_CharacterFactor() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = AbstractCharacterFactor.adapt(employee.lastName).where(employee.firstName.eq("Margaret"))
-                .list(getEngine());
-        assertEquals(Arrays.asList("Redwood"), list);
-
-    }
-
-    @Override
     public void test_add_Number() throws Exception {
         try {
             InsertTable insertTable = new InsertTable();

@@ -27,8 +27,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
         return employee.retired.asPredicate().or(employee.hireDate.ge(new Date(108, 9, 1)));
     }
 
-    @Override
-    public void test_adapt_BooleanExpression() throws Exception {
+    public void testAdapt() throws Exception {
         final Employee employee = new Employee();
         final BooleanExpression be = employee.hireDate.ge(new Date(108, 9, 1));
         final List<String> list = employee.lastName.where(AbstractBooleanExpression.adapt(be).and(employee.salary.gt(2500.0))).list(getEngine());

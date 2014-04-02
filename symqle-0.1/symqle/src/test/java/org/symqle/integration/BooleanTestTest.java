@@ -1,11 +1,10 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
-import org.symqle.integration.model.InsertTable;
-import org.symqle.sql.AbstractBooleanTerm;
-import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
+import org.symqle.integration.model.InsertTable;
 import org.symqle.sql.AbstractBooleanTest;
+import org.symqle.sql.Params;
 import org.symqle.testset.AbstractBooleanTestTestSet;
 
 import java.sql.SQLException;
@@ -24,14 +23,6 @@ public class BooleanTestTest extends AbstractIntegrationTestBase implements Abst
      */
     private AbstractBooleanTest createBasicCondition(final Employee employee) {
         return employee.retired.asPredicate().isTrue();
-    }
-
-    @Override
-    public void test_adapt_BooleanTest() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractBooleanTest booleanTest = AbstractBooleanTest.adapt(employee.retired.asPredicate());
-        final List<String> list = employee.lastName.where(booleanTest).list(getEngine());
-        assertEquals(Arrays.asList("Cooper"), list);
     }
 
     @Override

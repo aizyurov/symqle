@@ -245,18 +245,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_create_Mapper() throws Exception {
-        final DynamicParameter<String> parameter = DynamicParameter.create(Mappers.STRING);
-        assertEquals(Mappers.STRING, parameter.getMapper());
-    }
-
-    @Override
-    public void test_create_Mapper_Object() throws Exception {
-        final DynamicParameter<String> parameter = DynamicParameter.create(Mappers.STRING, "abc");
-        assertEquals(Mappers.STRING, parameter.getMapper());
-    }
-
-    @Override
     public void test_desc_() throws Exception {
         final Employee employee = new Employee();
         try {
@@ -501,12 +489,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
-    }
-
-    @Override
-    public void test_getMapper_() throws Exception {
-        final DynamicParameter<String> parameter = DynamicParameter.create(Mappers.STRING);
-        assertEquals(Mappers.STRING, parameter.getMapper());
     }
 
     @Override
@@ -1162,17 +1144,6 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             expectSQLException(e, "Apache Derby");
         }
-    }
-
-    @Override
-    public void test_setValue_Object() throws Exception {
-        final DynamicParameter<String> param = DynamicParameter.create(Mappers.STRING);
-        param.setValue("Margaret");
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName
-                .where(employee.firstName.eq(param))
-                .list(getEngine());
-        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     @Override

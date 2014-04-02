@@ -4,7 +4,6 @@ import org.symqle.common.Callback;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractAggregateFunction;
 import org.symqle.sql.AbstractAggregateQuerySpecification;
 import org.symqle.sql.Params;
 import org.symqle.testset.AbstractAggregateQuerySpecificationTestSet;
@@ -18,14 +17,6 @@ import java.util.regex.Pattern;
  * @author lvovich
  */
 public class AbstractAggregateQuerySpecificationTest extends AbstractIntegrationTestBase implements AbstractAggregateQuerySpecificationTestSet {
-
-    @Override
-    public void test_adapt_AggregateQuerySpecification() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractAggregateFunction<Integer> aggregateFunction = employee.empId.count();
-        final List<Integer> list = AbstractAggregateQuerySpecification.adapt(aggregateFunction).list(getEngine());
-        assertEquals(Arrays.asList(5), list);
-    }
 
     @Override
     public void test_compileQuery_QueryEngine_Option() throws Exception {

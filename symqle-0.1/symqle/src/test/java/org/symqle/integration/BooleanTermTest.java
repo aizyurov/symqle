@@ -1,11 +1,10 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
-import org.symqle.integration.model.InsertTable;
-import org.symqle.sql.AbstractPredicate;
-import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
+import org.symqle.integration.model.InsertTable;
 import org.symqle.sql.AbstractBooleanTerm;
+import org.symqle.sql.Params;
 import org.symqle.testset.AbstractBooleanTermTestSet;
 
 import java.sql.Date;
@@ -25,17 +24,6 @@ public class BooleanTermTest extends AbstractIntegrationTestBase implements Abst
      */
     private AbstractBooleanTerm createBasicCondition(final Employee employee) {
         return employee.hireDate.le(new Date(111, 9, 1)).and(employee.hireDate.ge(new Date(108, 9, 1)));
-    }
-
-    @Override
-    public void test_adapt_BooleanTerm() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractPredicate predicate = employee.hireDate.lt(new Date(108, 9, 1));
-        final AbstractBooleanTerm adaptor = AbstractBooleanTerm.adapt(predicate);
-        final List<String> list = employee.lastName.where(adaptor)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("March", "Redwood"), list);
     }
 
     @Override
