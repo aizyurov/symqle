@@ -213,7 +213,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 ##### QueryExpressionBasic ####
 
 public interface QueryExpressionBasic <T> : Query<T> {}
-public class AbstractQueryExpressionBasic <T> implements QueryExpression<T> {}
+public class AbstractQueryExpressionBasic <T> implements QueryExpressionBasic<T> {}
 
 # <query expression body> [ <order by clause> ]
 # special rule for Aggregates : no Body - Expression - ... - Primary,

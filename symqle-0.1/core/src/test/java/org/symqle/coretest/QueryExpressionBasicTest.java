@@ -28,6 +28,17 @@ public class QueryExpressionBasicTest extends SqlTestCase {
         assertSimilar(sql, sql2);
     }
 
+    public void testLimit() throws Exception {
+        final String sql = person.id.orderBy(person.id).limit(10).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FETCH FIRST 10 ROWS ONLY", sql);
+    }
+
+    public void testLimit2() throws Exception {
+        final String sql = person.id.orderBy(person.id).limit(10, 20).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+    }
+
+
     public void testAdapt() throws Exception {
         final String sql = AbstractQueryExpressionBasic.adapt(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0", sql);

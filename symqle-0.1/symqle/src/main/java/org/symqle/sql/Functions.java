@@ -1,7 +1,6 @@
 package org.symqle.sql;
 
 import org.symqle.common.CoreMappers;
-import org.symqle.querybuilder.SqlTerm;
 
 /**
  * These functions are supported by most dialects
@@ -60,10 +59,6 @@ public class Functions {
     public static AbstractRoutineInvocation<Number> power(
             final ValueExpression<?> base, final Number exponent) {
         return power(base, DynamicParameter.create(CoreMappers.NUMBER, exponent));
-    }
-
-    public static AbstractRoutineInvocation<Integer> charLength(final ValueExpression<?> expression) {
-        return SqlFunction.create(SqlTerm.CHAR_LENGTH.toString(), CoreMappers.INTEGER).apply(expression);
     }
 
 }

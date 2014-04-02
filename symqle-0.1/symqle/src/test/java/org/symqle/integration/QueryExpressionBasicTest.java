@@ -49,6 +49,20 @@ public class QueryExpressionBasicTest extends AbstractIntegrationTestBase implem
     }
 
     @Override
+    public void test_limit_int() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createQueryExpressionBasic(employee).limit(2).list(getEngine());
+        assertEquals(2, list.size());
+    }
+
+    @Override
+    public void test_limit_int_int() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createQueryExpressionBasic(employee).limit(2, 5).list(getEngine());
+        assertEquals(3, list.size());
+    }
+
+    @Override
     public void test_list_QueryEngine_Option() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createQueryExpressionBasic(employee).list(getEngine());
