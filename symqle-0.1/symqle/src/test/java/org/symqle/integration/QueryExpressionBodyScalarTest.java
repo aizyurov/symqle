@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 /**
  * @author lvovich
  */
-public class QueryExpressionScalarTest extends AbstractIntegrationTestBase implements AbstractQueryExpressionBodyScalarTestSet {
+public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase implements AbstractQueryExpressionBodyScalarTestSet {
 
     private AbstractQueryExpressionBodyScalar<Boolean> singleRowTrue() {
         final TrueValue trueValue = new TrueValue();
