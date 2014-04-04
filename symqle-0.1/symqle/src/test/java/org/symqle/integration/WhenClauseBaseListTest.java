@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1137,10 +1138,10 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     @Override
     public void test_orElse_ElseClause() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createWhenClauseBaseList(employee).orElse(Params.p("medium"))
+        final List<String> list = createWhenClauseBaseList(employee).orElse(employee.lastName)
                 .list(getEngine());
-        assertTrue(list.toString(), list.remove("medium"));
-        assertTrue(list.toString(), list.remove("medium"));
+        assertTrue(list.toString(), list.remove("March"));
+        assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("low"));
         assertTrue(list.toString(), list.remove("high"));
         assertTrue(list.toString(), list.remove("high"));
@@ -1372,14 +1373,37 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
 
     @Override
     public void test_set_ColumnName_ValueExpression_1() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(1)
+                        .also(insertTable.text.set("abc")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(2)
+                        .also(insertTable.text.set("def")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(3)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("xyz")))).execute(getEngine());
+        final AbstractSearchedWhenClauseBaseList<Integer> whenClauseBaseList =
+                insertTable.text.eq("abc").then(insertTable.payload)
+                .orWhen(insertTable.text.eq("def").then(insertTable.payload.sub(2).map(Mappers.INTEGER)));
+        insertTable.update(insertTable.payload.set(whenClauseBaseList)).execute(getEngine());
+        final List<Pair<String, Integer>> list = insertTable.text.pair(insertTable.payload)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList(Pair.make("abc", 1), Pair.make("def", 0), Pair.make("xyz", (Integer)null)), list);
     }
 
     @Override
     public void test_showQuery_Dialect_Option() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final String sql = createWhenClauseBaseList(employee).showQuery(getEngine().getDialect());
+        final Pattern expected;
+        if ("PostgreSQL".equals(getDatabaseName())) {
+            expected = Pattern.compile("SELECT CASE WHEN\\(([A-Z][A-Z0-9]*)\\.salary > \\?\\) THEN \\? WHEN\\(\\1\\.salary < \\?\\) THEN \\? END AS [A-Z][A-Z0-9]* FROM employee AS \\1");
+        } else {
+            expected = Pattern.compile("SELECT CASE WHEN ([A-Z][A-Z0-9]*)\\.salary > \\? THEN \\? WHEN \\1\\.salary < \\? THEN \\? END AS [A-Z][A-Z0-9]* FROM employee AS \\1");
+        }
+        assertTrue(sql, expected.matcher(sql).matches());
     }
 
     @Override
@@ -1401,56 +1425,187 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
 
     @Override
     public void test_sub_NumericExpression_Term_1() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
+        final List<Pair<Double, String>> list = employee.salary.sub(whenClauseBaseList).map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make(3000.0, "Cooper"),
+                Pair.make(0.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(0.0, "Redwood")
+        ), list);
     }
 
     @Override
     public void test_sub_Term() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<Double> whenClauseBaseList = createNumericWCBL(employee);
+        final List<Pair<Double, String>> list = whenClauseBaseList.sub(employee.salary).map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make(-3000.0, "Cooper"),
+                Pair.make(0.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(0.0, "Redwood")
+        ), list);
     }
 
     @Override
     public void test_substring_NumericExpression() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        try {
+            final Employee employee = new Employee();
+            InsertTable insertTable = new InsertTable();
+            insertTable.delete().execute(getEngine());
+            insertTable.insert(insertTable.id.set(2)
+                    .also(insertTable.payload.set(2)
+                            .also(insertTable.text.set("abc")))).execute(getEngine());
+            final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList = createWhenClauseBaseList(employee);
+            final List<Pair<String, String>> list = whenClauseBaseList.substring(insertTable.id.queryValue()).pair(employee.lastName)
+                    .orderBy(employee.lastName).list(getEngine());
+            assertEquals(Arrays.asList(
+                    Pair.make("ow", "Cooper"),
+                    Pair.make("igh", "First"),
+                    Pair.make((String) null, "March"),
+                    Pair.make((String) null, "Pedersen"),
+                    Pair.make("igh", "Redwood")
+            ), list);
+        } catch (SQLException e) {
+            // ERROR 22011: The second or third argument of the SUBSTR function is out of range.
+            // TODO seems Derby throws it when substring argument is null - check, fix the test and file a bug
+            expectSQLException(e, "Apache Derby");
+        }
     }
 
     @Override
     public void test_substring_NumericExpression_NumericExpression() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        try {
+            final Employee employee = new Employee();
+            InsertTable insertTable = new InsertTable();
+            insertTable.delete().execute(getEngine());
+            insertTable.insert(insertTable.id.set(2)
+                    .also(insertTable.payload.set(2)
+                            .also(insertTable.text.set("abc")))).execute(getEngine());
+            final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList = createWhenClauseBaseList(employee);
+            final List<Pair<String, String>> list = whenClauseBaseList.substring(insertTable.id.queryValue(), insertTable.payload.queryValue()).pair(employee.lastName)
+                    .orderBy(employee.lastName).list(getEngine());
+            assertEquals(Arrays.asList(
+                    Pair.make("ow", "Cooper"),
+                    Pair.make("ig", "First"),
+                    Pair.make((String) null, "March"),
+                    Pair.make((String) null, "Pedersen"),
+                    Pair.make("ig", "Redwood")
+            ), list);
+        } catch (SQLException e) {
+            // ERROR 22011: The second or third argument of the SUBSTR function is out of range.
+            // TODO seems Derby throws it when substring argument is null - check, fix the test and file a bug
+            expectSQLException(e, "Apache Derby");
+        }
     }
 
     @Override
     public void test_substring_StringExpression_NumericExpression_1() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abc")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("def")))).execute(getEngine());
+        final AbstractSearchedWhenClauseBaseList<Integer> whenClauseBaseList =
+                insertTable.text.eq("abc").then(insertTable.payload)
+                        .orWhen(insertTable.text.eq("def").then(insertTable.id));
+        final List<String> list = insertTable.text.substring(whenClauseBaseList)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList("c", "ef"), list);
+
     }
 
     @Override
     public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abcx")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("defy")))).execute(getEngine());
+        final AbstractSearchedWhenClauseBaseList<Integer> whenClauseBaseList =
+                insertTable.text.eq("abcx").then(insertTable.payload)
+                        .orWhen(insertTable.text.eq("defy").then(insertTable.id));
+        final List<String> list = insertTable.text.substring(whenClauseBaseList, Params.p(2))
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList("cx", "ef"), list);
     }
 
     @Override
     public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abcx")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("defy")))).execute(getEngine());
+        final AbstractSearchedWhenClauseBaseList<Integer> whenClauseBaseList =
+                insertTable.text.eq("abcx").then(insertTable.payload)
+                        .orWhen(insertTable.text.eq("defy").then(insertTable.id));
+        final List<String> list = insertTable.text.substring(Params.p(2), whenClauseBaseList)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList("bcx", "ef"), list);
     }
 
     @Override
     public void test_substring_int() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        try {
+            final Employee employee = new Employee();
+            final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList = createWhenClauseBaseList(employee);
+            final List<Pair<String, String>> list = whenClauseBaseList.substring(2).pair(employee.lastName)
+                    .orderBy(employee.lastName).list(getEngine());
+
+            assertEquals(Arrays.asList(
+                    Pair.make("ow", "Cooper"),
+                    Pair.make("igh", "First"),
+                    Pair.make((String) null, "March"),
+                    Pair.make((String) null, "Pedersen"),
+                    Pair.make("igh", "Redwood")
+            ), list);
+        } catch (SQLException e) {
+            // ERROR 22011: The second or third argument of the SUBSTR function is out of range.
+            // TODO seems Derby throws it when substring argument is null - check, fix the test and file a bug
+            expectSQLException(e, "Apache Derby");
+        }
     }
 
     @Override
     public void test_substring_int_int() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        try {
+            final Employee employee = new Employee();
+            final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList = createWhenClauseBaseList(employee);
+            final List<Pair<String, String>> list = whenClauseBaseList.substring(2, 2).pair(employee.lastName)
+                    .orderBy(employee.lastName).list(getEngine());
+
+            assertEquals(Arrays.asList(
+                    Pair.make("ow", "Cooper"),
+                    Pair.make("ig", "First"),
+                    Pair.make((String) null, "March"),
+                    Pair.make((String) null, "Pedersen"),
+                    Pair.make("ig", "Redwood")
+            ), list);
+        } catch (SQLException e) {
+            // ERROR 22011: The second or third argument of the SUBSTR function is out of range.
+            // TODO seems Derby throws it when substring argument is null - check, fix the test and file a bug
+            expectSQLException(e, "Apache Derby");
+        }
     }
 
     @Override
@@ -1464,8 +1619,20 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
 
     @Override
     public void test_then_BooleanExpression_ValueExpression_1() throws Exception {
-        // TODO implement
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList = createWhenClauseBaseList(employee);
+        final List<Pair<String, String>> list =
+                employee.deptId.isNotNull().then(whenClauseBaseList)
+                        .orElse(employee.lastName)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("Cooper", "Cooper"),
+                Pair.make("high", "First"),
+                Pair.make((String) null, "March"),
+                Pair.make((String) null, "Pedersen"),
+                Pair.make("high", "Redwood")
+        ), list);
     }
 
     @Override
