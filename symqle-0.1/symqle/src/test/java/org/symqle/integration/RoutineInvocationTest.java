@@ -15,6 +15,7 @@ import org.symqle.sql.Params;
 import org.symqle.sql.SqlFunction;
 import org.symqle.sql.ValueExpression;
 import org.symqle.testset.AbstractRoutineInvocationTestSet;
+import org.symqle.testset.SqlFunctionTestSet;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,10 +27,21 @@ import java.util.regex.Pattern;
 /**
  * @author lvovich
  */
-public class RoutineInvocationTest extends AbstractIntegrationTestBase implements AbstractRoutineInvocationTestSet {
+public class RoutineInvocationTest extends AbstractIntegrationTestBase implements AbstractRoutineInvocationTestSet, SqlFunctionTestSet {
 
     private <T> AbstractRoutineInvocation<T> abs(ValueExpression<T> e) {
         return SqlFunction.create("abs", e.getMapper()).apply(e);
+    }
+
+    @Override
+    public void test_apply_ValueExpression() throws Exception {
+        final Employee employee = new Employee();
+        final SqlFunction<Double> abs = SqlFunction.create("abs", Mappers.DOUBLE);
+        final List<Double> list = abs.apply(employee.salary.opposite()).add(400.0)
+                .map(Mappers.DOUBLE)
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(Arrays.asList(1900.0, 3400.0, 2400.0, 2400.0, 3400.0), list);
+
     }
 
     @Override
