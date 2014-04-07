@@ -347,15 +347,9 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
         final Employee employee = new Employee();
         final String sql = firstNames(employee).showQuery(getEngine().getDialect());
         Pattern expected;
-        if (getDatabaseName().equals("PostgreSQL")) {
-            expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                    " UNION ALL SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                    " LEFT JOIN employee AS \\2 ON\\(\\2\\.emp_id = \\3\\.manager_id\\)");
-        } else {
-            expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                    " UNION ALL SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                    " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
-        }
+        expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
+                " UNION ALL SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
+                " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
         assertTrue(sql, expected.matcher(sql).matches());
     }
 

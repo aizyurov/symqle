@@ -1398,11 +1398,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
         final Employee employee = new Employee();
         final String sql = createWhenClauseBaseList(employee).showQuery(getEngine().getDialect());
         final Pattern expected;
-        if ("PostgreSQL".equals(getDatabaseName())) {
-            expected = Pattern.compile("SELECT CASE WHEN\\(([A-Z][A-Z0-9]*)\\.salary > \\?\\) THEN \\? WHEN\\(\\1\\.salary < \\?\\) THEN \\? END AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        } else {
-            expected = Pattern.compile("SELECT CASE WHEN ([A-Z][A-Z0-9]*)\\.salary > \\? THEN \\? WHEN \\1\\.salary < \\? THEN \\? END AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        }
+        expected = Pattern.compile("SELECT CASE WHEN ([A-Z][A-Z0-9]*)\\.salary > \\? THEN \\? WHEN \\1\\.salary < \\? THEN \\? END AS [A-Z][A-Z0-9]* FROM employee AS \\1");
         assertTrue(sql, expected.matcher(sql).matches());
     }
 

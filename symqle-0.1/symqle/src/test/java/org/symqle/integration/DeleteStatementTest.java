@@ -39,11 +39,7 @@ public class DeleteStatementTest extends AbstractIntegrationTestBase implements 
     public void test_showUpdate_Dialect_Option() throws Exception {
         final DeleteMaster master = new DeleteMaster();
         final String sql = master.delete().where(master.masterId.lt(3)).showUpdate(getEngine().getDialect());
-        if (getDatabaseName().equals("PostgreSQL")) {
-            assertEquals("DELETE FROM delete_master WHERE(delete_master.master_id < ?)", sql);
-        } else {
-            assertEquals("DELETE FROM delete_master WHERE delete_master.master_id < ?", sql);
-        }
+        assertEquals("DELETE FROM delete_master WHERE delete_master.master_id < ?", sql);
     }
 
     @Override

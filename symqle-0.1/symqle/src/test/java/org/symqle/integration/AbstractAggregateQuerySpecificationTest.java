@@ -147,12 +147,7 @@ public class AbstractAggregateQuerySpecificationTest extends AbstractIntegration
         final AbstractAggregateQuerySpecification<Integer> aggregateQuerySpecification =
                 employee.empId.count().where(employee.salary.gt(1800.0));
         final String sql = aggregateQuerySpecification.showQuery(getEngine().getDialect());
-        final Pattern pattern;
-        if (getDatabaseName().equals("PostgreSQL")) {
-            pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE\\(\\1.salary > \\?\\)");
-        } else {
-            pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE \\1.salary > \\?");
-        }
+        final Pattern pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE \\1.salary > \\?");
         assertTrue(sql, pattern.matcher(sql).matches());
 
     }

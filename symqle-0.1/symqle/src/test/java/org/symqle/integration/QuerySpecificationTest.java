@@ -119,11 +119,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase implemen
         final Employee employee = new Employee();
         final String sql = querySpec(employee).showQuery(getEngine().getDialect());
         final Pattern expected;
-        if (getDatabaseName().equals("PostgreSQL")) {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]*, \\1\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 WHERE\\(\\1\\.salary > \\?\\)");
-        } else {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]*, \\1\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 WHERE \\1\\.salary > \\?");
-        }
+        expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]*, \\1\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 WHERE \\1\\.salary > \\?");
         assertTrue(sql, expected.matcher(sql).matches());
     }
 

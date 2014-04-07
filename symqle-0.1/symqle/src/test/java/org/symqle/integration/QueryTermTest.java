@@ -251,17 +251,10 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
         final Employee employee = new Employee();
         final String sql = queryTerm(employee).showQuery(getEngine().getDialect());
         final Pattern expected;
-        if (getDatabaseName().equals("PostgreSQL")) {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                    " WHERE\\(\\1\\.first_name = \\?\\)" +
-                    " INTERSECT SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                    " LEFT JOIN employee AS \\2 ON\\(\\2\\.emp_id = \\3\\.manager_id\\)");
-        } else {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                    " WHERE \\1\\.first_name = \\?" +
-                    " INTERSECT SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                    " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
-        }
+        expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
+                " WHERE \\1\\.first_name = \\?" +
+                " INTERSECT SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
+                " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
         assertTrue(sql, expected.matcher(sql).matches());
     }
 
