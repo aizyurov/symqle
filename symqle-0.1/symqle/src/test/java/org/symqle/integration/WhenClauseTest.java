@@ -1,22 +1,23 @@
 package org.symqle.integration;
 
-import junit.framework.AssertionFailedError;
-import net.sf.cglib.core.TypeUtils;
-import org.symqle.common.CoreMappers;
+import org.symqle.common.Callback;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
+import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
+import org.symqle.integration.model.MyDual;
+import org.symqle.sql.AbstractSearchedWhenClause;
+import org.symqle.sql.DynamicParameter;
+import org.symqle.sql.Label;
 import org.symqle.sql.Mappers;
 import org.symqle.sql.Params;
-import org.symqle.integration.model.Employee;
-import org.symqle.sql.AbstractSearchedWhenClause;
 import org.symqle.testset.AbstractSearchedWhenClauseTestSet;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -793,7 +794,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = whenClause.intersectAll(new Employee().firstName).list(getEngine());
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -801,7 +813,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_intersectAll_QueryTerm_QueryPrimary_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = new Employee().firstName.intersectAll(whenClause).list(getEngine());
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -809,7 +832,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_intersectDistinct_QueryPrimary() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = whenClause.intersectDistinct(new Employee().firstName).list(getEngine());
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -817,7 +851,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_intersectDistinct_QueryTerm_QueryPrimary_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = new Employee().firstName.intersectDistinct(whenClause).list(getEngine());
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -825,7 +870,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_intersect_QueryPrimary() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = whenClause.intersect(new Employee().firstName).list(getEngine());
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -833,7 +889,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_intersect_QueryTerm_QueryPrimary_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = new Employee().firstName.intersect(whenClause).list(getEngine());
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -841,7 +908,13 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_isNotNull_() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        final List<String> list = employee.lastName.where(whenClause.isNotNull())
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
     /**
@@ -849,7 +922,13 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_isNull_() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        final List<String> list = employee.lastName.where(whenClause.isNull())
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
     }
 
     /**
@@ -857,7 +936,20 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_label_Label() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        Label label = new Label();
+        final List<String> list = whenClause.label(label).orderBy(label).list(getEngine());
+        final List<String> expected;
+        if ("MySQL".equals(getDatabaseName())) {
+            // database(s) with NULLS FIRST default
+            expected = Arrays.asList(null, null, null, "James", "Margaret");
+        } else {
+            expected = Arrays.asList("James", "Margaret", null, null, null);
+        }
+        assertEquals(expected, list);
+
     }
 
     /**
@@ -865,7 +957,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_le_Object() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createWhenClause(employee).le("James"))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -873,7 +969,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_le_Predicand() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee cooper = new Employee();
+        final List<String> list = employee.lastName
+                .where(createWhenClause(employee)
+                        .le(cooper.firstName.where(cooper.lastName.eq("Cooper")).queryValue()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -881,7 +984,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_le_Predicand_Predicand_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee cooper = new Employee();
+        final List<String> list = employee.lastName
+                .where(cooper.firstName.where(cooper.lastName.eq("Cooper")).queryValue()
+                        .le(createWhenClause(employee)))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
     /**
@@ -889,7 +999,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_like_String() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createWhenClause(employee).like("Jam%"))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -897,7 +1011,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_like_StringExpression() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createWhenClause(employee).like(employee.firstName))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
     /**
@@ -905,7 +1023,10 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_limit_int() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee)
+                .limit(2).list(getEngine());
+        assertEquals(2, list.size());
     }
 
     /**
@@ -913,7 +1034,10 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_limit_int_int() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee)
+                .limit(2, 10).list(getEngine());
+        assertEquals(3, list.size());
     }
 
     /**
@@ -921,7 +1045,15 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_list_QueryEngine_Option() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee)
+                .list(getEngine());
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove("James"));
+        assertTrue(list.toString(), list.remove("Margaret"));
+        assertTrue(list.toString(), list.isEmpty());
     }
 
     /**
@@ -929,7 +1061,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_lt_Object() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createWhenClause(employee).lt("Ken"))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -937,7 +1073,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_lt_Predicand() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee redwood = new Employee();
+        final List<String> list = employee.lastName
+                .where(createWhenClause(employee)
+                        .lt(redwood.firstName.where(redwood.lastName.eq("Redwood")).queryValue()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -945,7 +1088,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_lt_Predicand_Predicand_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee cooper = new Employee();
+        final List<String> list = employee.lastName
+                .where(cooper.firstName.where(cooper.lastName.eq("Cooper")).queryValue()
+                        .lt(createWhenClause(employee)))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     /**
@@ -953,7 +1103,16 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_map_Mapper() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<Long> list = createNumericWC(employee)
+                .map(Mappers.LONG)
+                .list(getEngine());
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(3000L));
+        assertTrue(list.toString(), list.remove(3000L));
+        assertTrue(list.toString(), list.isEmpty());
     }
 
     /**
@@ -961,7 +1120,9 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_max_() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee).max().list(getEngine());
+        assertEquals(Arrays.asList("Margaret"), list);
     }
 
     /**
@@ -969,7 +1130,9 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_min_() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee).min().list(getEngine());
+        assertEquals(Arrays.asList("James"), list);
     }
 
     /**
@@ -977,7 +1140,20 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_mult_Factor() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Pair<Double, String>> list = whenClause.mult(2)
+                .map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(6000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(6000.0, "Redwood")
+        ), list);
     }
 
     /**
@@ -985,7 +1161,20 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_mult_Number() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Pair<Double, String>> list = whenClause.mult(employee.salary.div(1500))
+                .map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(6000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(6000.0, "Redwood")
+        ), list);
     }
 
     /**
@@ -993,7 +1182,20 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_mult_Term_Factor_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Pair<Double, String>> list = employee.salary.div(1500).mult(whenClause)
+                .map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(6000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(6000.0, "Redwood")
+        ), list);
     }
 
     /**
@@ -1001,7 +1203,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_ne_Object() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createWhenClause(employee).ne("James"))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     /**
@@ -1009,7 +1215,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_ne_Predicand() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee redwood = new Employee();
+        final List<String> list = employee.lastName
+                .where(createWhenClause(employee)
+                        .ne(redwood.firstName.where(redwood.lastName.eq("Redwood")).queryValue()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -1017,7 +1230,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_ne_Predicand_Predicand_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee redwood = new Employee();
+        final List<String> list = employee.lastName
+                .where(redwood.firstName.where(redwood.lastName.eq("Redwood")).queryValue()
+                        .ne(createWhenClause(employee)))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -1025,7 +1245,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_notIn_InPredicateValue() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee james = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        final List<String> list = employee.lastName.where(whenClause.notIn(james.firstName.where(james.firstName.like("J%"))))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Redwood"), list);
     }
 
     /**
@@ -1033,7 +1260,28 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_notIn_Object_Object() throws Exception {
-        throw new RuntimeException("Not implemented");
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(createWhenClause(employee).notIn("nobody", "somebody"))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            // for NULLs NOT IN is false
+            assertEquals(Arrays.asList("First", "Redwood"), list);
+        } catch (SQLException e) {
+// java.lang.NullPointerException
+//	at org.apache.derby.exe.acf0e9813dx0145x3c16x92e8x000005a800f831.e4(Unknown Source)
+//	at org.apache.derby.impl.services.reflect.DirectCall.invoke(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.ProjectRestrictResultSet.getNextRowCore(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.ProjectRestrictResultSet.getNextRowCore(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.SortResultSet.getRowFromResultSet(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.SortResultSet.getNextRowFromRS(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.SortResultSet.loadSorter(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.SortResultSet.openCore(Unknown Source)
+//	at org.apache.derby.impl.sql.execute.BasicNoPutResultSetImpl.open(Unknown Source)
+//	at org.apache.derby.impl.sql.GenericPreparedStatement.executeStmt(Unknown Source)
+//	at org.apache.derby.impl.sql.GenericPreparedStatement.execute(Unknown Source)
+            expectSQLException(e, "Apache Derby");
+        }
     }
 
     /**
@@ -1041,7 +1289,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_notIn_Predicand_InPredicateValue_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(overpaid);
+        final List<String> list = employee.lastName.where(employee.firstName.notIn(whenClause))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(0, list.size());
     }
 
     /**
@@ -1049,7 +1304,11 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_notLike_String() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = employee.lastName.where(createWhenClause(employee).notLike("Mar%"))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -1057,7 +1316,14 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_notLike_StringExpression() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final Employee redwood = new Employee();
+        final List<String> list = employee.lastName
+                .where(redwood.firstName.where(redwood.lastName.eq("Redwood")).queryValue()
+                        .notLike(createWhenClause(employee)))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First"), list);
     }
 
     /**
@@ -1065,7 +1331,15 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_nullsFirst_() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.orderBy(createWhenClause(employee).nullsFirst(), employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
+        } catch (SQLException e) {
+            // mysql: does not support NULLS FIRST
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -1073,7 +1347,16 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_nullsLast_() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.orderBy(createWhenClause(employee).nullsLast(), employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
+        } catch (SQLException e) {
+            // mysql: does not support NULLS LAST:
+                // You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'NULLS LAST
+            expectSQLException(e, "MySQL");
+        }
     }
 
     /**
@@ -1081,7 +1364,19 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_opposite_() throws Exception {
-        throw new RuntimeException("Not implemented");
+            final Employee employee = new Employee();
+            final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+            final List<Pair<Double, String>> list = whenClause.opposite()
+                    .pair(employee.lastName)
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList(
+                    Pair.make((Double)null, "Cooper"),
+                    Pair.make(-3000.0, "First"),
+                    Pair.make((Double)null, "March"),
+                    Pair.make((Double)null, "Pedersen"),
+                    Pair.make(-3000.0, "Redwood")
+            ), list);
     }
 
     /**
@@ -1089,7 +1384,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orElse_ElseClause() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = createWhenClause(employee).orElse(employee.lastName)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("Cooper", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make("March", "March"),
+                Pair.make("Pedersen", "Pedersen"),
+                Pair.make("Margaret", "Redwood")
+        ), list);
     }
 
     /**
@@ -1097,7 +1403,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orElse_SearchedWhenClauseBaseList_ElseClause_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = employee.deptId.isNull().then(employee.lastName).orElse(createWhenClause(employee))
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("Cooper", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make((String)null, "March"),
+                Pair.make((String)null, "Pedersen"),
+                Pair.make("Margaret", "Redwood")
+        ), list);
     }
 
     /**
@@ -1105,7 +1422,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orWhen_SearchedWhenClause() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = createWhenClause(employee).orWhen(employee.deptId.isNull().then(employee.lastName))
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("Cooper", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make(null, "March"),
+                Pair.make(null, "Pedersen"),
+                Pair.make("Margaret", "Redwood")
+        ), list);
     }
 
     /**
@@ -1113,7 +1441,18 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orWhen_SearchedWhenClauseBaseList_SearchedWhenClause_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = employee.deptId.isNull().then(employee.lastName).orWhen(createWhenClause(employee))
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("Cooper", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make((String)null, "March"),
+                Pair.make((String)null, "Pedersen"),
+                Pair.make("Margaret", "Redwood")
+        ), list);
     }
 
     /**
@@ -1121,7 +1460,19 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orWhen_ThenNullClause() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = createWhenClause(employee)
+                .orWhen(employee.deptId.isNull().then(employee.lastName))
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("Cooper", "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make(null, "March"),
+                Pair.make(null, "Pedersen"),
+                Pair.make("Margaret", "Redwood")
+        ), list);
     }
 
     /**
@@ -1129,7 +1480,17 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orderBy_QueryExpressionBody_SortSpecification_SortSpecification_1() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> expected;
+        if ("MySQL".equals(getDatabaseName())) {
+            // database(s) with NULLS FIRST default
+            expected = Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood");
+        } else {
+            expected = Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen");
+        }
+        final List<String> list = employee.lastName.orderBy(createWhenClause(employee), employee.lastName)
+                .list(getEngine());
+        assertEquals(expected, list);
     }
 
     /**
@@ -1137,7 +1498,17 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_orderBy_SortSpecification_SortSpecification() throws Exception {
-        throw new RuntimeException("Not implemented");
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                (String)null,
+                "James",
+                (String)null,
+                (String)null,
+                "Margaret"
+        ), list);
     }
 
     /**
@@ -1145,250 +1516,6 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      */
     @Override
     public void test_pair_SelectList() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of <T, U> SelectList#pair(SelectList<U>)
-     */
-    @Override
-    public void test_pair_SelectList_SelectList_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#param()
-     */
-    @Override
-    public void test_param_() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#param(T)
-     */
-    @Override
-    public void test_param_Object() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#positionOf(String)
-     */
-    @Override
-    public void test_positionOf_String() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#positionOf(StringExpression<?>)
-     */
-    @Override
-    public void test_positionOf_StringExpression() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of  StringExpression#positionOf(StringExpression<?>)
-     */
-    @Override
-    public void test_positionOf_StringExpression_StringExpression_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#queryValue()
-     */
-    @Override
-    public void test_queryValue_() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#scroll(QueryEngine, Callback<T>, Option[])
-     */
-    @Override
-    public void test_scroll_QueryEngine_Callback_Option() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#selectAll()
-     */
-    @Override
-    public void test_selectAll_() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of <T> ColumnName#set(ValueExpression<T>)
-     */
-    @Override
-    public void test_set_ColumnName_ValueExpression_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#showQuery(Dialect, Option[])
-     */
-    @Override
-    public void test_showQuery_Dialect_Option() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#sub(Number)
-     */
-    @Override
-    public void test_sub_Number() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of  NumericExpression#sub(Term<?>)
-     */
-    @Override
-    public void test_sub_NumericExpression_Term_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#sub(Term<?>)
-     */
-    @Override
-    public void test_sub_Term() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#substring(NumericExpression<?>)
-     */
-    @Override
-    public void test_substring_NumericExpression() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#substring(NumericExpression<?>, NumericExpression<?>)
-     */
-    @Override
-    public void test_substring_NumericExpression_NumericExpression() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of  StringExpression#substring(NumericExpression<?>)
-     */
-    @Override
-    public void test_substring_StringExpression_NumericExpression_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of  StringExpression#substring(NumericExpression<?>, NumericExpression<?>)
-     */
-    @Override
-    public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 2 of  StringExpression#substring(NumericExpression<?>, NumericExpression<?>)
-     */
-    @Override
-    public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#substring(int)
-     */
-    @Override
-    public void test_substring_int() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#substring(int, int)
-     */
-    @Override
-    public void test_substring_int_int() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#sum()
-     */
-    @Override
-    public void test_sum_() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of <T> BooleanExpression#then(ValueExpression<T>)
-     */
-    @Override
-    public void test_then_BooleanExpression_ValueExpression_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of <T> QueryExpressionBodyScalar#unionAll(QueryTerm<T>)
-     */
-    @Override
-    public void test_unionAll_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#unionAll(QueryTerm<T>)
-     */
-    @Override
-    public void test_unionAll_QueryTerm() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of <T> QueryExpressionBodyScalar#unionDistinct(QueryTerm<T>)
-     */
-    @Override
-    public void test_unionDistinct_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#unionDistinct(QueryTerm<T>)
-     */
-    @Override
-    public void test_unionDistinct_QueryTerm() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause as argument 1 of <T> QueryExpressionBodyScalar#union(QueryTerm<T>)
-     */
-    @Override
-    public void test_union_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#union(QueryTerm<T>)
-     */
-    @Override
-    public void test_union_QueryTerm() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Test AbstractSearchedWhenClause#where(WhereClause)
-     */
-    @Override
-    public void test_where_WhereClause() throws Exception {
-        throw new RuntimeException("Not implemented");
-    }
-
-    public void testPair() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<String,String>> list = createWhenClause(employee)
                 .pair(employee.lastName)
@@ -1403,21 +1530,549 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         ), list);
     }
 
-    public void testOrderBy() throws Exception {
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of <T, U> SelectList#pair(SelectList<U>)
+     */
+    @Override
+    public void test_pair_SelectList_SelectList_1() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee)
+        final List<Pair<String,String>> list = employee.lastName
+                .pair(createWhenClause(employee))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList(
-                (String)null,
-                "James",
-                (String)null,
-                (String)null,
-                "Margaret"
+                Pair.make("Cooper", (String)null),
+                Pair.make("First", "James"),
+                Pair.make("March", (String)null),
+                Pair.make("Pedersen", (String)null),
+                Pair.make("Redwood", "Margaret")
         ), list);
     }
 
-    public void testWhere() throws Exception {
+    /**
+     * Test AbstractSearchedWhenClause#param()
+     */
+    @Override
+    public void test_param_() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final DynamicParameter<String> param = whenClause.param();
+        param.setValue("Margaret");
+        final List<String> list = employee.lastName.where(whenClause.eq(param)).list(getEngine());
+        assertEquals(Arrays.asList("Redwood"), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#param(T)
+     */
+    @Override
+    public void test_param_Object() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final DynamicParameter<String> param = whenClause.param("Margaret");
+        final List<String> list = employee.lastName.where(whenClause.eq(param)).list(getEngine());
+        assertEquals(Arrays.asList("Redwood"), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#positionOf(String)
+     */
+    @Override
+    public void test_positionOf_String() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<Integer> list = whenClause.positionOf("garet").where(employee.lastName.eq("Redwood")).list(getEngine());
+        assertEquals(Arrays.asList(4), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#positionOf(StringExpression<?>)
+     */
+    @Override
+    public void test_positionOf_StringExpression() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<Integer> list = whenClause.positionOf(employee.firstName).where(employee.lastName.eq("Redwood")).list(getEngine());
+        assertEquals(Arrays.asList(1), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of  StringExpression#positionOf(StringExpression<?>)
+     */
+    @Override
+    public void test_positionOf_StringExpression_StringExpression_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<Integer> list = employee.firstName.positionOf(whenClause).where(employee.lastName.eq("Redwood")).list(getEngine());
+        assertEquals(Arrays.asList(1), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#queryValue()
+     */
+    @Override
+    public void test_queryValue_() throws Exception {
+        final MyDual myDual = new MyDual();
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                myDual.dummy.eq("X").then(myDual.dummy);
+        final List<Pair<String, String>> list = employee.lastName.pair(whenClause.queryValue()).
+                where(employee.lastName.eq("Cooper"))
+                .list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(Pair.make("Cooper", "X"), list.get(0));
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#scroll(QueryEngine, Callback<T>, Option[])
+     */
+    @Override
+    public void test_scroll_QueryEngine_Callback_Option() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> expected = new ArrayList<>(Arrays.asList(null, null, null, "James", "Margaret"));
+        createWhenClause(employee)
+                .scroll(getEngine(), new Callback<String>() {
+                    @Override
+                    public boolean iterate(final String s) throws SQLException {
+                        assertTrue(expected.toString(), expected.remove(s));
+                        return true;
+                    }
+                });
+
+        assertTrue(expected.toString(), expected.isEmpty());
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#selectAll()
+     */
+    @Override
+    public void test_selectAll_() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = createWhenClause(employee)
+                .selectAll().list(getEngine());
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove(null));
+        assertTrue(list.toString(), list.remove("James"));
+        assertTrue(list.toString(), list.remove("Margaret"));
+        assertTrue(list.toString(), list.isEmpty());
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of <T> ColumnName#set(ValueExpression<T>)
+     */
+    @Override
+    public void test_set_ColumnName_ValueExpression_1() throws Exception {
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(1)
+                        .also(insertTable.text.set("abc")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(2)
+                        .also(insertTable.text.set("def")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(3)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("xyz")))).execute(getEngine());
+        final AbstractSearchedWhenClause<Integer> whenClause =
+                insertTable.text.eq("abc").then(insertTable.payload);
+        insertTable.update(insertTable.payload.set(whenClause)).execute(getEngine());
+        final List<Pair<String, Integer>> list = insertTable.text.pair(insertTable.payload)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make("abc", 1),
+                Pair.make("def", (Integer)null),
+                Pair.make("xyz", (Integer)null)),
+                list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#showQuery(Dialect, Option[])
+     */
+    @Override
+    public void test_showQuery_Dialect_Option() throws Exception {
+        final Employee employee = new Employee();
+        final String sql = createWhenClause(employee).showQuery(getEngine().getDialect());
+        final Pattern expected;
+        expected = Pattern.compile("SELECT CASE WHEN ([A-Z][A-Z0-9]*)\\.emp_id = ([A-Z][A-Z0-9]*)\\.emp_id THEN \\1\\.first_name END AS [A-Z][A-Z0-9]* FROM employee AS \\1 LEFT JOIN department AS ([A-Z][A-Z0-9]*) LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id ON \\3\\.dept_id = \\1\\.dept_id");
+        assertTrue(sql, expected.matcher(sql).matches());
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#sub(Number)
+     */
+    @Override
+    public void test_sub_Number() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Pair<Double, String>> list = whenClause.sub(100.0).map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(2900.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(2900.0, "Redwood")
+        ), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of  NumericExpression#sub(Term<?>)
+     */
+    @Override
+    public void test_sub_NumericExpression_Term_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Pair<Double, String>> list = employee.salary.div(3).sub(whenClause).map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(-2000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(-2000.0, "Redwood")
+        ), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#sub(Term<?>)
+     */
+    @Override
+    public void test_sub_Term() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Pair<Double, String>> list = whenClause.sub(employee.salary.div(3)).map(Mappers.DOUBLE)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((Double)null, "Cooper"),
+                Pair.make(2000.0, "First"),
+                Pair.make((Double)null, "March"),
+                Pair.make((Double)null, "Pedersen"),
+                Pair.make(2000.0, "Redwood")
+        ), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#substring(NumericExpression<?>)
+     */
+    @Override
+    public void test_substring_NumericExpression() throws Exception {
+        final Employee employee = new Employee();
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(2)
+                        .also(insertTable.text.set("abc")))).execute(getEngine());
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<Pair<String, String>> list = whenClause.substring(insertTable.id.queryValue()).pair(employee.lastName)
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((String) null, "Cooper"),
+                Pair.make("ames", "First"),
+                Pair.make((String) null, "March"),
+                Pair.make((String) null, "Pedersen"),
+                Pair.make("argaret", "Redwood")
+        ), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#substring(NumericExpression<?>, NumericExpression<?>)
+     */
+    @Override
+    public void test_substring_NumericExpression_NumericExpression() throws Exception {
+        final Employee employee = new Employee();
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abc")))).execute(getEngine());
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<Pair<String, String>> list = whenClause.substring(insertTable.id.queryValue(), insertTable.payload.queryValue())
+                .pair(employee.lastName)
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make((String) null, "Cooper"),
+                Pair.make("ame", "First"),
+                Pair.make((String) null, "March"),
+                Pair.make((String) null, "Pedersen"),
+                Pair.make("arg", "Redwood")
+        ), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of  StringExpression#substring(NumericExpression<?>)
+     */
+    @Override
+    public void test_substring_StringExpression_NumericExpression_1() throws Exception {
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abc")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("def")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(3)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("pqrstuv")))).execute(getEngine());
+        final AbstractSearchedWhenClause<Integer> whenClause =
+                insertTable.text.eq("abc").then(insertTable.payload);
+        final List<String> list = insertTable.text.substring(whenClause)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList("c", null, null), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of  StringExpression#substring(NumericExpression<?>, NumericExpression<?>)
+     */
+    @Override
+    public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abc012")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("def345")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(3)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("pqrstuv")))).execute(getEngine());
+        final AbstractSearchedWhenClause<Integer> whenClause =
+                insertTable.text.eq("abc012").then(insertTable.payload);
+        final List<String> list = insertTable.text.substring(whenClause, insertTable.payload)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList("c01", null, null), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 2 of  StringExpression#substring(NumericExpression<?>, NumericExpression<?>)
+     */
+    @Override
+    public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
+        InsertTable insertTable = new InsertTable();
+        insertTable.delete().execute(getEngine());
+        insertTable.insert(insertTable.id.set(1)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("abc012")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(2)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("def345")))).execute(getEngine());
+        insertTable.insert(insertTable.id.set(3)
+                .also(insertTable.payload.set(3)
+                        .also(insertTable.text.set("pqrstuv")))).execute(getEngine());
+        final AbstractSearchedWhenClause<Integer> whenClause =
+                insertTable.text.eq("abc012").then(insertTable.payload);
+        final List<String> list = insertTable.text.substring(insertTable.payload, whenClause)
+                .orderBy(insertTable.text).list(getEngine());
+        assertEquals(Arrays.asList("c01", null, null), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#substring(int)
+     */
+    @Override
+    public void test_substring_int() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<String> list = whenClause.substring(4).where(employee.lastName.eq("Redwood")).list(getEngine());
+        assertEquals(Arrays.asList("garet"), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#substring(int, int)
+     */
+    @Override
+    public void test_substring_int_int() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause = createWhenClause(employee);
+        final List<String> list = whenClause.substring(4, 3).where(employee.lastName.eq("Redwood")).list(getEngine());
+        assertEquals(Arrays.asList("gar"), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#sum()
+     */
+    @Override
+    public void test_sum_() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
+        final List<Number> list = whenClause.sum().list(getEngine());
+        assertEquals(1, list.size());
+        assertEquals(6000.0, list.get(0).doubleValue());
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of <T> BooleanExpression#then(ValueExpression<T>)
+     */
+    @Override
+    public void test_then_BooleanExpression_ValueExpression_1() throws Exception {
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = employee.firstName.eq("James").then(createWhenClause(employee)).orElse(employee.lastName)
+                .pair(employee.lastName)
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(
+                Pair.make(null, "Cooper"),
+                Pair.make("James", "First"),
+                Pair.make("March", "March"),
+                Pair.make("Pedersen", "Pedersen"),
+                Pair.make("Redwood", "Redwood")
+        ), list);
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of <T> QueryExpressionBodyScalar#unionAll(QueryTerm<T>)
+     */
+    @Override
+    public void test_unionAll_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = new Employee().firstName.unionAll(whenClause).list(getEngine());
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove("Bill"));
+            assertTrue(list.toString(), list.remove("Alex"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#unionAll(QueryTerm<T>)
+     */
+    @Override
+    public void test_unionAll_QueryTerm() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = whenClause.unionAll(new Employee().firstName).list(getEngine());
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove("Bill"));
+            assertTrue(list.toString(), list.remove("Alex"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of <T> QueryExpressionBodyScalar#unionDistinct(QueryTerm<T>)
+     */
+    @Override
+    public void test_unionDistinct_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = new Employee().firstName.unionDistinct(whenClause).list(getEngine());
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove("Bill"));
+            assertTrue(list.toString(), list.remove("Alex"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#unionDistinct(QueryTerm<T>)
+     */
+    @Override
+    public void test_unionDistinct_QueryTerm() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = whenClause.unionDistinct(new Employee().firstName).list(getEngine());
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove("Bill"));
+            assertTrue(list.toString(), list.remove("Alex"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
+    }
+    /**
+     * Test AbstractSearchedWhenClause as argument 1 of <T> QueryExpressionBodyScalar#union(QueryTerm<T>)
+     */
+    @Override
+    public void test_union_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = new Employee().firstName.union(whenClause).list(getEngine());
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove("Bill"));
+            assertTrue(list.toString(), list.remove("Alex"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#union(QueryTerm<T>)
+     */
+    @Override
+    public void test_union_QueryTerm() throws Exception {
+        final Employee employee = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(employee);
+        try {
+            final List<String> list = whenClause.union(new Employee().firstName).list(getEngine());
+            assertTrue(list.toString(), list.remove(null));
+            assertTrue(list.toString(), list.remove("Bill"));
+            assertTrue(list.toString(), list.remove("Alex"));
+            assertTrue(list.toString(), list.remove("James"));
+            assertTrue(list.toString(), list.remove("Margaret"));
+            assertTrue(list.toString(), list.isEmpty());
+        } catch (SQLException e) {
+            // mysql: does not support EXCEPT
+            expectSQLException(e, "MySQL");
+        }
+    }
+
+    /**
+     * Test AbstractSearchedWhenClause#where(WhereClause)
+     */
+    @Override
+    public void test_where_WhereClause() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClause(employee)
                 .where(employee.firstName.eq("James"))
@@ -1429,482 +2084,4 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         ), list);
     }
 
-    public void testMap() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee).map(CoreMappers.STRING)
-                .list(getEngine());
-
-        assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
-    }
-
-    public void testList() throws Exception {
-    }
-
-    public void testCast() throws Exception {
-    }
-
-    public void testAll() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee)
-                .selectAll()
-                .list(getEngine());
-
-        assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
-    }
-
-    public void testDistinct() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee)
-                .distinct()
-                .list(getEngine());
-        final List<String> noNulls = replaceNullsAndSort(list);
-
-        assertEquals(Arrays.asList("(null)", "James", "Margaret"), replaceNullsAndSort(list));
-    }
-
-    private List<String> replaceNullsAndSort(final List<String> list) {
-        final List<String> noNulls = new ArrayList<String>(list.size());
-        for (String s: list) {
-            noNulls.add(s == null ? "(null)" : s);
-        }
-        Collections.sort(noNulls);
-        return noNulls;
-    }
-
-    public void testForUpdate() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        try {
-            final List<String> list = whenClause.forUpdate().list(getEngine());
-            assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            //derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            //org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE cannot be applied to the nullable side of an outer join
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
-        }
-
-    }
-
-    public void testForReadOnly() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-            final List<String> list = whenClause.forReadOnly().list(getEngine());
-            assertEquals(Arrays.asList("(null)", "(null)", "(null)", "James", "Margaret"), replaceNullsAndSort(list));
-    }
-
-
-    public void testElseParam() throws Exception {
-    final Employee employee = new Employee();
-        final List<Pair<String,String>> list = createWhenClause(employee).orElse(Params.p("Anonymous"))
-                .pair(employee.lastName)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make("Anonymous", "Cooper"),
-                Pair.make("James", "First"),
-                Pair.make("Anonymous", "March"),
-                Pair.make("Anonymous", "Pedersen"),
-                Pair.make("Margaret", "Redwood")
-        ), list);
-    }
-
-    public void testElse() throws Exception {
-    final Employee employee = new Employee();
-        final List<Pair<String,String>> list = createWhenClause(employee).orElse(employee.firstName.concat("+"))
-                .pair(employee.lastName)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make("James+", "Cooper"),
-                Pair.make("James", "First"),
-                Pair.make("Bill+", "March"),
-                Pair.make("Alex+", "Pedersen"),
-                Pair.make("Margaret", "Redwood")
-        ), list);
-    }
-
-    public void testEq() throws Exception {
-    }
-
-    public void testNe() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createWhenClause(employee).ne("James"))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Redwood"), list);
-    }
-
-    public void testGt() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createWhenClause(employee).gt("James"))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Redwood"), list);
-    }
-
-    public void testGe() throws Exception {
-    }
-
-    public void testLt() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createWhenClause(employee).lt("James"))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(), list);
-    }
-
-    public void testLe() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(createWhenClause(employee).le("James"))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("First"), list);
-    }
-
-    public void testInArgument() throws Exception {
-        final Employee pattern = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(pattern);
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.in(whenClause))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
-    }
-
-    public void testExists() throws Exception {
-    }
-
-    public void testContains() throws Exception {
-        final Employee pattern = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(pattern);
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(whenClause.contains("Margaret"))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
-
-        final List<String> emptyList = employee.lastName.where(whenClause.contains("Bill"))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(0, emptyList.size());
-
-    }
-
-    public void testIn() throws Exception {
-    }
-
-    public void testNotIn() throws Exception {
-        final Employee employee = new Employee();
-        final Employee james = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        final List<String> list = employee.lastName.where(whenClause.notIn(james.firstName.where(james.firstName.like("J%"))))
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList("Redwood"), list);
-    }
-    public void testInList() throws Exception {
-    }
-
-    public void testNotInList() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<String> list = employee.lastName.where(createWhenClause(employee).notIn("nobody", "somebody"))
-                    .orderBy(employee.lastName)
-                    .list(getEngine());
-            // for NULLs NOT IN is false
-            assertEquals(Arrays.asList("First", "Redwood"), list);
-        } catch (SQLException e) {
-            // derby bug: java.sql.SQLException: The exception 'java.lang.NullPointerException' was thrown while evaluating an expression.
-                // Caused by: java.lang.NullPointerException
-//                	at org.apache.derby.exe.aceeb1411ax013fx57f9xd00cx00000670c5f00.e4(Unknown Source)
-//                	at org.apache.derby.impl.services.reflect.DirectCall.invoke(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.ProjectRestrictResultSet.getNextRowCore(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.ProjectRestrictResultSet.getNextRowCore(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.SortResultSet.getRowFromResultSet(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.SortResultSet.getNextRowFromRS(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.SortResultSet.loadSorter(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.SortResultSet.openCore(Unknown Source)
-//                	at org.apache.derby.impl.sql.execute.BasicNoPutResultSetImpl.open(Unknown Source)
-//                	at org.apache.derby.impl.sql.GenericPreparedStatement.executeStmt(Unknown Source)
-//                	at org.apache.derby.impl.sql.GenericPreparedStatement.execute(Unknown Source)
-            expectSQLException(e, "Apache Derby");
-        }
-    }
-
-    public void testAsElseArgument() throws Exception {
-        final Employee employee = new Employee();
-        final List<Pair<String, String>> list = employee.firstName.eq("Bill").then(employee.firstName)
-                .orElse(createWhenClause(employee))
-                .pair(employee.lastName)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make((String)null, "Cooper"),
-                Pair.make("James", "First"),
-                Pair.make("Bill", "March"),
-                Pair.make((String)null, "Pedersen"),
-                Pair.make("Margaret", "Redwood")
-        ), list);
-    }
-
-    public void testAsSortSpec() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.orderBy(createWhenClause(employee), employee.lastName)
-                .list(getEngine());
-        // order is unspecified;
-        // assume NULLS LAST by default
-        // first sort field is "James", "Margaret", NULL, NULL, NULL,
-        try {
-            assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
-        } catch (AssertionFailedError e) {
-            // mysql: default is NULLS FIRST
-            if ("MySQL".equals(getDatabaseName())) {
-                assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    public void testNullsFirst() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<String> list = employee.lastName.orderBy(createWhenClause(employee).nullsFirst(), employee.lastName)
-                    .list(getEngine());
-            assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
-        } catch (SQLException e) {
-            // mysql: does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testNullsLast() throws Exception {
-        final Employee employee = new Employee();
-        try {
-            final List<String> list = employee.lastName.orderBy(createWhenClause(employee).nullsLast(), employee.lastName)
-                    .list(getEngine());
-            assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
-        } catch (SQLException e) {
-            // mysql: does not support NULLS LAST:
-                // You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'NULLS LAST
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testAsc() throws Exception {
-    }
-
-    public void testDesc() throws Exception {
-    }
-
-    // TODO: derby objects if the argument of second THEN is ?
-    public void testOpposite() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
-        final List<Pair<Double, String>> list = whenClause.opposite().pair(employee.lastName)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make((Double)null, "Cooper"),
-                Pair.make(-3000.0, "First"),
-                Pair.make((Double)null, "March"),
-                Pair.make((Double)null, "Pedersen"),
-                Pair.make(-3000.0, "Redwood")
-        ), list);
-    }
-
-    public void testAdd() throws Exception {
-    }
-
-    public void testSub() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
-        final List<Pair<Number, String>> list = whenClause.sub(100.0).pair(employee.lastName)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make((Double)null, "Cooper"),
-                Pair.make(2900.0, "First"),
-                Pair.make((Double)null, "March"),
-                Pair.make((Double)null, "Pedersen"),
-                Pair.make(2900.0, "Redwood")
-        ), convertToDoubleStringPairList(list));
-    }
-
-    public void testMult() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
-        final List<Pair<Number, String>> list = whenClause.mult(2).pair(employee.lastName)
-                .orderBy(employee.lastName)
-                .list(getEngine());
-        assertEquals(Arrays.asList(
-                Pair.make((Double)null, "Cooper"),
-                Pair.make(6000.0, "First"),
-                Pair.make((Double)null, "March"),
-                Pair.make((Double)null, "Pedersen"),
-                Pair.make(6000.0, "Redwood")
-        ), convertToDoubleStringPairList(list));
-    }
-
-    public void testDiv() throws Exception {
-    }
-
-    private List<Pair<Double, String>> convertToDoubleStringPairList(List<Pair<Number, String>> source) {
-        final List<Pair<Double, String>> result = new ArrayList<Pair<Double, String>>();
-        for (Pair<Number, String> p : source) {
-            result.add(Pair.make(p.first() == null ? null : p.first().doubleValue(), p.second()));
-        }
-        return result;
-    }
-
-    public void testConcat() throws Exception {
-    }
-
-    public void testCollate() throws Exception {
-    }
-
-
-    public void testUnionAll() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        final List<String> list = whenClause.unionAll(new Employee().firstName).list(getEngine());
-        assertEquals(Arrays.asList(
-                "(null)", "(null)", "(null)", "Alex", "Bill", "James", "James", "James", "Margaret", "Margaret"
-        ), replaceNullsAndSort(list));
-    }
-
-    public void testUnionDistinct() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        final List<String> list = whenClause.unionDistinct(new Employee().firstName).list(getEngine());
-        assertEquals(Arrays.asList(
-                "(null)", "Alex", "Bill", "James", "Margaret"
-        ), replaceNullsAndSort(list));
-    }
-
-
-    public void testUnion() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        final List<String> list = whenClause.union(new Employee().firstName).list(getEngine());
-        assertEquals(Arrays.asList(
-                "(null)", "Alex", "Bill", "James", "Margaret"
-        ), replaceNullsAndSort(list));
-    }
-
-    public void testExceptAll() throws Exception {
-    }
-
-    public void testExceptDistinct() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        try {
-            final List<String> list = whenClause.exceptDistinct(new Employee().firstName).list(getEngine());
-            assertEquals(Arrays.asList(
-                    "(null)"
-            ), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testExcept() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        try {
-            final List<String> list = whenClause.except(new Employee().firstName).list(getEngine());
-            assertEquals(Arrays.asList(
-                    "(null)"
-            ), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testIntersectAll() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        try {
-            final List<String> list = whenClause.intersectAll(new Employee().firstName).list(getEngine());
-            assertEquals(Arrays.asList(
-                    "James", "Margaret"
-            ), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testIntersectDistinct() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        try {
-            final List<String> list = whenClause.intersectDistinct(new Employee().firstName).list(getEngine());
-            assertEquals(Arrays.asList(
-                    "James", "Margaret"
-            ), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testIntersect() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<String> whenClause =
-                createWhenClause(employee);
-        try {
-            final List<String> list = whenClause.intersect(new Employee().firstName).list(getEngine());
-            assertEquals(Arrays.asList(
-                    "James", "Margaret"
-            ), replaceNullsAndSort(list));
-        } catch (SQLException e) {
-            // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
-        }
-    }
-
-    public void testCount() throws Exception {
-    }
-
-    public void testCountDistinct() throws Exception {
-    }
-
-    public void testMin() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee).min().list(getEngine());
-        assertEquals(Arrays.asList("James"), list);
-    }
-
-    public void testMax() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = createWhenClause(employee).max().list(getEngine());
-        assertEquals(Arrays.asList("Margaret"), list);
-    }
-
-    public void testSum() throws Exception {
-        final Employee employee = new Employee();
-        final AbstractSearchedWhenClause<Double> whenClause = createNumericWC(employee);
-        final List<Number> list = whenClause.sum().list(getEngine());
-        assertEquals(1, list.size());
-        assertEquals(6000.0, list.get(0).doubleValue());
-
-    }
-
-    public void testAvg() throws Exception {
-    }
 }
