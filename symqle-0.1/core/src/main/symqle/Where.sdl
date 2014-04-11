@@ -1,4 +1,4 @@
-public interface WhereClause : Sql {}
+public interface WhereClause : SqlBuilder {}
 
 WhereClause ::= WHERE cond:BooleanExpression :: implicit
 ;

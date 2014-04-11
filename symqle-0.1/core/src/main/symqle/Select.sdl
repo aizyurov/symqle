@@ -9,7 +9,7 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
 import org.symqle.jdbc.PreparedQuery;
 import org.symqle.common.Callback;
-public interface SelectStatement<T> : Query<T> {
+public interface SelectStatement<T> : QueryBuilder<T> {
 }
 
 public class AbstractSelectStatement<T> implements SelectStatement<T> {}
@@ -61,7 +61,7 @@ import org.symqle.jdbc.PreparedQuery;
         for (Option option : allOptions) {
             option.apply(configuration);
         }
-        final Query<T> query = prepareQuery(statement, dialect, configuration);
+        final QueryBuilder<T> query = prepareQuery(statement, dialect, configuration);
         return new PreparedQuery<T>(engine, query, allOptions);
     }
 
@@ -107,7 +107,7 @@ import org.symqle.jdbc.Option;
         return stringBuilder.toString();
     }
 
-:: private static <T> Query<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
+:: private static <T> QueryBuilder<T> prepareQuery(final SelectStatement<T> statement, final Dialect dialect, final Configuration configuration) {
     final SelectTableRegistry tableRegistry = new RootSelectTableRegistry();
     final SqlContext context = new SqlContext.Builder().
             put(ColumnNameGenerator.class, new UniqueColumnNameGenerator()).
@@ -151,7 +151,7 @@ import org.symqle.jdbc.Option;
 
 ##### QueryExpression ####
 
-public interface QueryExpression<T> : Query<T> {}
+public interface QueryExpression<T> : QueryBuilder<T> {}
 public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 
 # <query expression> ::= [ <with clause> ] <query expression body> [ <order by clause> ] [ <result offset clause> ] [ <fetch first clause> ]
@@ -163,7 +163,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 # offset only is not allowed (mysql limitation)
 # additional non-terminals
 #     QueryExpressionBasic for <query expression body> [ <order by clause> ]
-# two flavors: QueryExpressionBody and QueryExpressionBodyScalar
+# two flavors: QueryBuilderExpressionBody and QueryExpressionBodyScalar
 # [<result offset clause>] ::= OFFSET <offset row count> { ROW | ROWS }
 # <offset row count> ::= <simple value specification>
 # <fetch first clause> ::= FETCH { FIRST | NEXT } [ <fetch first row count> ] { ROW | ROWS } ONLY
@@ -212,7 +212,7 @@ public class AbstractQueryExpression<T> implements QueryExpression<T> {}
 
 ##### QueryExpressionBasic ####
 
-public interface QueryExpressionBasic <T> : Query<T> {}
+public interface QueryExpressionBasic <T> : QueryBuilder<T> {}
 public class AbstractQueryExpressionBasic <T> implements QueryExpressionBasic<T> {}
 
 # <query expression body> [ <order by clause> ]
@@ -253,9 +253,9 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpressionBasic<T>
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface Literal : Sql {}
+public interface Literal : SqlBuilder {}
 
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 class IntLiteral implements Literal {
     private final int value;
 
@@ -264,12 +264,12 @@ class IntLiteral implements Literal {
     }
 
     /**
-    * Creates an Sql representing Literal.
+    * Creates an SqlBuilder representing Literal.
     * @param context the Sql construction context
     * @return constructed Sql
     */
-    public Sql z$sqlOfLiteral(final SqlContext context) {
-        return new StringSql(String.valueOf(value));
+    public SqlBuilder z$sqlOfLiteral(final SqlContext context) {
+        return new StringSqlBuilder(String.valueOf(value));
     }
 
 }

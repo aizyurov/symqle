@@ -39,7 +39,7 @@ public final class Symqle  {
 }
 
 
-import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 /** This interface declares methods for construction of SQL nonterminal symbols.
 *   Each method corresponds to one syntactic rule. Method arguments are nonterminal symbols
 * from the right part. Terminal symbols are not parameters; they have fixed values.
@@ -62,8 +62,8 @@ public interface Dialect  {
 }
 
 
-import org.symqle.common.Sql;
-import org.symqle.common.CompositeSql;
+import org.symqle.common.SqlBuilder;
+import org.symqle.common.CompositeSqlBuilder;
 import org.symqle.common.MalformedStatementException;
 import static org.symqle.querybuilder.SqlTerm.*;
 /**
@@ -71,7 +71,7 @@ import static org.symqle.querybuilder.SqlTerm.*;
 * Each nonterminal symbol is constructed exactly as required by the rule.
 * Subclasses may override methods preserving semantics.
 * e.g. replace {@code concat(qe, EXCEPT, qt)} for {@code concat(qe, MINUS, qt)}
-* in {@link #QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(org.symqle.common.Sql, org.symqle.common.Sql)}
+* in {@link #QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(org.symqle.common.SqlBuilder, org.symqle.common.SqlBuilder)}
 */
 public class GenericDialect implements Dialect {
 
@@ -95,13 +95,13 @@ public class GenericDialect implements Dialect {
     }
 
     /**
-    * A shortcut for new CompositeSql(first, other).
+    * A shortcut for new CompositeSqlBuilder(first, other).
     * @param first the first Sql
     * @param other zero or more other Sqls
     * @return concatenation of arguments
     */
-    protected final Sql concat(final Sql first, final Sql... other) {
-        return new CompositeSql(first, other);
+    protected final SqlBuilder concat(final SqlBuilder first, final SqlBuilder... other) {
+        return new CompositeSqlBuilder(first, other);
     }
 
 }

@@ -1,4 +1,4 @@
-public interface NumericExpression<T> extends Scalar<T>: Sql {}
+public interface NumericExpression<T> extends Scalar<T>: SqlBuilder {}
 
 public class AbstractNumericExpression<T> implements NumericExpression<T> {}
 
@@ -53,7 +53,7 @@ NumericExpression<Number> ::=
             }
 
             @Override
-            public Sql z$sqlOfNumericExpression(final SqlContext context) {
+            public SqlBuilder z$sqlOfNumericExpression(final SqlContext context) {
                 return e.z$sqlOfNumericExpression(context);
             }
         };
@@ -86,7 +86,7 @@ NumericExpression<Number> ::=
     }
 
 
-public interface Term<T> extends Scalar<T> : Sql {}
+public interface Term<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractTerm<T> implements Term<T> {}
 
@@ -163,14 +163,14 @@ Term<Number> ::=
             }
 
             @Override
-            public Sql z$sqlOfTerm(final SqlContext context) {
+            public SqlBuilder z$sqlOfTerm(final SqlContext context) {
                 return e.z$sqlOfTerm(context);
             }
         };
     }
 
 
-public interface Factor<T> extends Scalar<T> : Sql {}
+public interface Factor<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractFactor<T> implements Factor<T> {}
 
@@ -205,7 +205,7 @@ public class AbstractFactor<T> implements Factor<T> {}
             }
 
             @Override
-            public Sql z$sqlOfFactor(final SqlContext context) {
+            public SqlBuilder z$sqlOfFactor(final SqlContext context) {
                 return e.z$sqlOfFactor(context);
             }
         };

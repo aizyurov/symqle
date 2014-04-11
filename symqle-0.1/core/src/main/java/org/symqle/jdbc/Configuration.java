@@ -35,7 +35,7 @@ public interface Configuration {
 
     /**
      * Defines whether implicit cross joins are allowed,
-     * Query builder will throw an exception if this method returns false
+     * QueryBuilder builder will throw an exception if this method returns false
      * and implicit cross join is present.
      * @return true if implicit cross joins are OK.
      */

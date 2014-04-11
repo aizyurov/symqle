@@ -1,4 +1,4 @@
-public interface FromClause : Sql {}
+public interface FromClause : SqlBuilder {}
 
 # <from clause> ::= FROM <table reference list>
 #
@@ -7,7 +7,7 @@ public interface FromClause : Sql {}
 FromClause ::= FROM t:TableReferenceList :: protected FromClause createFrom {}
 ;
 
-public interface TableReferenceList : Sql {}
+public interface TableReferenceList : SqlBuilder {}
 
 # used by FromClauseBuilder, protected methods
 TableReferenceList ::= r:TableReference :: protected TableReferenceList createTableReferenceList {}
@@ -42,7 +42,7 @@ TableReferenceList ::= r:TableReference :: protected TableReferenceList createTa
 # methods are used internally by TableOrView, they are not public
 
 
-public interface TableReference : Sql {}
+public interface TableReference : SqlBuilder {}
 
 TableReference ::=
     t:TablePrimary :: protected TableReference asTableReference {}
@@ -57,7 +57,7 @@ TableReference ::=
 ;
 
 # unused
-# public interface JoinedTable : Sql {}
+# public interface JoinedTable : SqlBuilder {}
 
 # <table primary> ::=
 #		<table or query name> [ [ AS ] <correlation name> [ <left paren> <derived column list> <right paren> ] ]
@@ -70,7 +70,7 @@ TableReference ::=
 #
 # only the first one is supported, AS <correlation name> is always used <correlation name> is just Identifier
 
-public interface TablePrimary : Sql {}
+public interface TablePrimary : SqlBuilder {}
 
 TablePrimary ::= t:TableName AS id:Identifier
 ;
@@ -79,7 +79,7 @@ TablePrimary ::= t:TableName AS id:Identifier
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface TableName : Sql {}
+public interface TableName : SqlBuilder {}
 
 
 

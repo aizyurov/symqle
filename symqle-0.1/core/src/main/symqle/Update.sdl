@@ -33,10 +33,10 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.PreparedUpdate;
-public interface DataChangeStatement : Sql {}
+public interface DataChangeStatement : SqlBuilder {}
 
 ::
-private static Sql prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final List<Option> options) {
+private static SqlBuilder prepareUpdate(final DataChangeStatement statement, final Builder contextBuilder, final List<Option> options) {
         final UpdatableConfiguration configuration = new UpdatableConfiguration();
         for (final Option option : options) {
            option.apply(configuration);
@@ -95,7 +95,7 @@ import org.symqle.jdbc.PreparedUpdate;
          final SqlContext.Builder contextBuilder = new SqlContext.Builder().put(Dialect.class, engine.getDialect());
          List<Option> allOptions = new ArrayList<Option>(engine.getOptions());
          allOptions.addAll(Arrays.asList(options));
-         final Sql sql = prepareUpdate(statement, contextBuilder, allOptions);
+         final SqlBuilder sql = prepareUpdate(statement, contextBuilder, allOptions);
          return new PreparedUpdate(engine, sql, allOptions, null);
     }
 
@@ -123,7 +123,7 @@ DataChangeStatement ::=
     s:DeleteStatement :: implicit
 ;
 
-public interface UpdateStatement : Sql {}
+public interface UpdateStatement : SqlBuilder {}
 
 public class AbstractUpdateStatement implements UpdateStatement {}
 
@@ -138,7 +138,7 @@ UpdateStatement ::=
     b:UpdateStatementBase condition:WhereClause :: AbstractUpdateStatement where
 ;
 
-public interface UpdateStatementBase : Sql {}
+public interface UpdateStatementBase : SqlBuilder {}
 
 public class AbstractUpdateStatementBase implements UpdateStatementBase {}
 
@@ -156,9 +156,9 @@ UpdateStatementBase ::=
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface TargetTable : Sql {}
+public interface TargetTable : SqlBuilder {}
 
-public interface SetClauseList extends InsertColumnList, ContextuallyTypedRowValueList : Sql {}
+public interface SetClauseList extends InsertColumnList, ContextuallyTypedRowValueList : SqlBuilder {}
 
 SetClauseList ::=
     c:SetClause :: implicit
@@ -170,33 +170,33 @@ SetClauseList ::=
      */
     l:SetClauseList COMMA other:SetClauseList :: SetClauseList also {
             /**
-            * Creates an Sql representing ContextuallyTypedRowValueList.
+            * Creates an SqlBuilder representing ContextuallyTypedRowValueList.
             * @param context the Sql construction context
             * @return constructed Sql
             */
-            public Sql z$sqlOfContextuallyTypedRowValueList(final SqlContext context) {
+            public SqlBuilder z$sqlOfContextuallyTypedRowValueList(final SqlContext context) {
                 return combineRowValueLists(l, other).z$sqlOfContextuallyTypedRowValueList(context);
             }
             /**
-            * Creates an Sql representing InsertColumnList.
+            * Creates an SqlBuilder representing InsertColumnList.
             * @param context the Sql construction context
             * @return constructed Sql
             */
-            public Sql z$sqlOfInsertColumnList(final SqlContext context) {
+            public SqlBuilder z$sqlOfInsertColumnList(final SqlContext context) {
                 return combineInsertColumnLists(l, other).z$sqlOfInsertColumnList(context);
             }
     }
 ;
 
-public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElement : Sql {}
+public interface SetClause extends InsertColumn, ContextuallyTypedRowValueElement : SqlBuilder {}
 
 public class AbstractSetClause implements SetClause {
               /**
-              * Creates an Sql representing InsertColumnList.
+              * Creates an SqlBuilder representing InsertColumnList.
               * @param context the Sql construction context
               * @return constructed Sql
               */
-              public final Sql z$sqlOfInsertColumnList(final SqlContext context) {
+              public final SqlBuilder z$sqlOfInsertColumnList(final SqlContext context) {
                   return Symqle.z$InsertColumnList$from$InsertColumn(this).z$sqlOfInsertColumnList(context);
               }
 }
@@ -219,11 +219,11 @@ public class AbstractSetClause implements SetClause {
        * @return new AbstractSetClause representing {@code this = value}.
        */
       c:ColumnName<T> EQ value:ValueExpression<T> :: AbstractSetClause set {
-            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+            public SqlBuilder z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return value.z$sqlOfValueExpression(context);
             }
 
-            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+            public SqlBuilder z$sqlOfInsertColumn(final SqlContext context) {
                 return c.z$sqlOfColumnName(context);
             }
     }
@@ -235,10 +235,10 @@ SetClause ::=
      * @return new AbstractSetClause representing {@code this = NULL}.
      */
     c:ColumnName<?> EQ NULL :: AbstractSetClause setNull {
-            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+            public SqlBuilder z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.NULL;
             }
-            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+            public SqlBuilder z$sqlOfInsertColumn(final SqlContext context) {
                 return c.z$sqlOfColumnName(context);
             }
     }
@@ -248,10 +248,10 @@ SetClause ::=
      * @return new AbstractSetClause representing {@code this = DEFAULT}.
      */
     c:ColumnName<?> EQ DEFAULT :: AbstractSetClause setDefault {
-            public Sql z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
+            public SqlBuilder z$sqlOfContextuallyTypedRowValueElement(final SqlContext context) {
                 return SqlTerm.DEFAULT;
             }
-            public Sql z$sqlOfInsertColumn(final SqlContext context) {
+            public SqlBuilder z$sqlOfInsertColumn(final SqlContext context) {
                 return c.z$sqlOfColumnName(context);
             }
     }
@@ -263,11 +263,11 @@ SetClause ::=
 * Implementing classes are responsible for correct lexis and semantics.
 * @param <T> Java type of this column values
 */
-public interface ColumnName<T> extends Scalar<T> : Sql {}
+public interface ColumnName<T> extends Scalar<T> : SqlBuilder {}
 
 
 import java.util.Collections;
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.querybuilder.TableNameGenerator;
 /**
  * Base class representing a notion of database table.
@@ -277,15 +277,15 @@ import org.symqle.querybuilder.TableNameGenerator;
 public abstract class Table extends TableOrView implements TargetTable {
 
     /**
-    * Creates an Sql representing TargetTable.
+    * Creates an SqlBuilder representing TargetTable.
     * @param context the Sql construction context
     * @return constructed Sql
     */
-    public final Sql z$sqlOfTargetTable(final SqlContext context) {
+    public final SqlBuilder z$sqlOfTargetTable(final SqlContext context) {
         context.get(TableRegistry.class).addAll(
             Collections.<TableOrView>singleton(this),
             context.get(TableNameGenerator.class));
-        return new StringSql(getTableName());
+        return new StringSqlBuilder(getTableName());
     }
 }
 
@@ -295,7 +295,7 @@ import org.symqle.jdbc.Option;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.GeneratedKeys;
 import org.symqle.jdbc.PreparedUpdate;
-public interface InsertStatement : Sql {}
+public interface InsertStatement : SqlBuilder {}
 public class AbstractInsertStatement implements InsertStatement {}
 
 # TODO <override clause> not implemented
@@ -328,9 +328,9 @@ InsertStatement ::=
         return insert(targetTable, createFromConstructor(list, createTableValueConstructor(list)));
     }
 
-# interface FromSubquery : Sql {}
+# interface FromSubquery : SqlBuilder {}
 
-interface FromConstructor : Sql {}
+interface FromConstructor : SqlBuilder {}
 
 # FromSubquery ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN e:QueryExpression
 #         :: protected FromSubquery createFromSubquery {}
@@ -340,11 +340,11 @@ interface FromConstructor : Sql {}
 FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstructor
          :: private FromConstructor createFromConstructor {
             /**
-            * Creates an Sql representing FromConstructor.
+            * Creates an SqlBuilder representing FromConstructor.
             * @param context the Sql construction context
             * @return constructed Sql
             */
-            public Sql z$sqlOfFromConstructor(final SqlContext context) {
+            public SqlBuilder z$sqlOfFromConstructor(final SqlContext context) {
                 final SqlContext innerContext = context.newBuilder()
                         .put(TableRegistry.class, new NoTablesRegistry(context.get(TableRegistry.class)))
                         .put(TableNameGenerator.class, new TableNameGenerator())
@@ -356,7 +356,7 @@ FromConstructor ::= LEFT_PAREN l:InsertColumnList RIGHT_PAREN t:TableValueConstr
          }
 ;
 
-interface InsertColumnList : Sql {}
+interface InsertColumnList : SqlBuilder {}
 
 InsertColumnList ::=
     c:InsertColumn :: implicit
@@ -368,9 +368,9 @@ InsertColumnList ::=
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface InsertColumn : Sql {}
+public interface InsertColumn : SqlBuilder {}
 
-interface TableValueConstructor : Sql {}
+interface TableValueConstructor : SqlBuilder {}
 
 # only one row is supported so far. The syntax is not that of SQL-2011, but is supported by all major databases
 # (standard define
@@ -383,7 +383,7 @@ TableValueConstructor ::= VALUES LEFT_PAREN l:ContextuallyTypedRowValueList RIGH
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-interface ContextuallyTypedRowValueList : Sql {}
+interface ContextuallyTypedRowValueList : SqlBuilder {}
 
 ContextuallyTypedRowValueList ::=
     e:ContextuallyTypedRowValueElement
@@ -393,9 +393,9 @@ ContextuallyTypedRowValueList ::=
         :: private ContextuallyTypedRowValueList combineRowValueLists
 ;
 
-public interface ContextuallyTypedRowValueElement : Sql {}
+public interface ContextuallyTypedRowValueElement : SqlBuilder {}
 
-public interface DeleteStatement : Sql {}
+public interface DeleteStatement : SqlBuilder {}
 
 public class AbstractDeleteStatement implements DeleteStatement {}
 
@@ -409,7 +409,7 @@ DeleteStatement ::= b:DeleteStatementBase :: implicit
     b:DeleteStatementBase condition:WhereClause :: AbstractDeleteStatement where
 ;
 
-public interface DeleteStatementBase : Sql {}
+public interface DeleteStatementBase : SqlBuilder {}
 
 public class AbstractDeleteStatementBase implements DeleteStatementBase {}
 
@@ -453,11 +453,11 @@ import org.symqle.jdbc.GeneratedKeys;
          allOptions.addAll(Arrays.asList(options));
            final DataChangeStatement dataChange = new AbstractInsertStatement() {
                @Override
-               public Sql z$sqlOfInsertStatement(final SqlContext context) {
+               public SqlBuilder z$sqlOfInsertStatement(final SqlContext context) {
                    return statement.z$sqlOfInsertStatement(context);
                }
            };
-          final Sql sql = prepareUpdate(dataChange, contextBuilder, allOptions);
+          final SqlBuilder sql = prepareUpdate(dataChange, contextBuilder, allOptions);
           return new PreparedUpdate(engine, sql, allOptions, generatedKeys);
     }
 

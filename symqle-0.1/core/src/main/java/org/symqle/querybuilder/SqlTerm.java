@@ -16,7 +16,7 @@
 
 package org.symqle.querybuilder;
 
-import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;
 
 import java.sql.SQLException;
@@ -26,7 +26,7 @@ import java.sql.SQLException;
  *
  * @author Alexander Izyurov
  */
-public enum SqlTerm implements Sql {
+public enum SqlTerm implements SqlBuilder {
 
     /**************************
      * Special characters

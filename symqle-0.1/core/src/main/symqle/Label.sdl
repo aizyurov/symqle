@@ -1,7 +1,7 @@
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 
 /**
  * Label can be used as SortKey.
@@ -21,16 +21,16 @@ public class Label implements SortKey {
     }
 
     /**
-    * Creates an Sql representing SortKey.
-    * @param context the Sql construction context
-    * @return constructed Sql
+    * Creates an SqlBuilder representing SortKey.
+    * @param context the SqlBuilder construction context
+    * @return constructed SqlBuilder
     */
     @Override
-    public final Sql z$sqlOfSortKey(final SqlContext context) {
+    public final SqlBuilder z$sqlOfSortKey(final SqlContext context) {
         if (labelOwner == null) {
             throw new MalformedStatementException("Unassigned label: " + this);
         }
-        return new StringSql(labelName);
+        return new StringSqlBuilder(labelName);
     }
 
 }

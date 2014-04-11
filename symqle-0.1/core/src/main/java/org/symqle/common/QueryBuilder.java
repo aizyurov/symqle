@@ -17,22 +17,14 @@
 package org.symqle.common;
 
 /**
- * This interface represents text of a syntax element of SQL language, which may contain dynamic parameters.
- * The interface also provides values for the parameters.
- * For better performance the access tp SQL text is provided by {@link #appendTo}.
+ * This interface extends both SqlBuilder and RowMapper<JavaType>.
+ * Instances of this interface are associated with SqlBuilder syntax elements, which can appear in
+ * SELECT clause. These elements provide QueryBuilder, which can construct objects of JavaType class
+ * from the values returned in result set. RowMapper part should be in sync with SqlBuilder one:
+ * it accesses elements by labels (or positions) defined in the sql.
+ * @author Alexander Izyurov
+ * @version 0.1
+ * @param <JavaType> the type of associated Java objects
  */
-public interface Sql extends Parameterizer {
-
-    /**
-     * Appends the text of this Sql to an SqlBuilder.
-     * The text may contain dynamic parameters (?).
-     */
-    void appendTo(StringBuilder builder);
-
-    /**
-     * The first character of (@code this} text
-     * @return the first character
-     */
-    char firstChar();
-
+public abstract class QueryBuilder<JavaType> implements SqlBuilder, RowMapper<JavaType> {
 }

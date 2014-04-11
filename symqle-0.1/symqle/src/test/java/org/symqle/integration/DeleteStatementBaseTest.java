@@ -6,7 +6,7 @@ import org.symqle.integration.model.DeleteDetail;
 import org.symqle.integration.model.DeleteMaster;
 import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Option;
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.sql.AbstractDeleteStatementBase;
 import org.symqle.testset.AbstractDeleteStatementBaseTestSet;
 
@@ -24,12 +24,12 @@ public class DeleteStatementBaseTest extends AbstractIntegrationTestBase impleme
 
     @Override
     protected void onSetUp() throws Exception {
-        getEngine().execute(new CompiledSql(new StringSql("DELETE FROM delete_detail")), NO_OPTIONS);
-        getEngine().execute(new CompiledSql(new StringSql("DELETE FROM delete_master")), NO_OPTIONS);
+        getEngine().execute(new CompiledSql(new StringSqlBuilder("DELETE FROM delete_detail")), NO_OPTIONS);
+        getEngine().execute(new CompiledSql(new StringSqlBuilder("DELETE FROM delete_master")), NO_OPTIONS);
     }
 
     private CompiledSql createInsertIntoDeleteMaster(final int id, final String description) {
-        return new CompiledSql(new StringSql("INSERT INTO delete_master (master_id, description) values (?, ?)") {
+        return new CompiledSql(new StringSqlBuilder("INSERT INTO delete_master (master_id, description) values (?, ?)") {
 
             @Override
             public void setParameters(SqlParameters p) throws SQLException {
@@ -40,7 +40,7 @@ public class DeleteStatementBaseTest extends AbstractIntegrationTestBase impleme
     }
 
     private CompiledSql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
-        return new CompiledSql(new StringSql("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)") {
+        return new CompiledSql(new StringSqlBuilder("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)") {
 
             @Override
             public void setParameters(SqlParameters p) throws SQLException {

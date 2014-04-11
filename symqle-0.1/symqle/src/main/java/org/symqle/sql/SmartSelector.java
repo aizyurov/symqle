@@ -35,7 +35,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     }
 
     @Override
-    public Query<D> z$sqlOfSelectList(final SqlContext context) {
+    public QueryBuilder<D> z$sqlOfSelectList(final SqlContext context) {
         currentRowMap = new ProbeRowMap(context);
         try {
             create();
@@ -43,8 +43,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
             // never expected from ProbeRowMap
             Bug.reportException(e);
         }
-        final Sql sql = result.z$sqlOfSelectList(context);
-        return new Query<D>() {
+        final SqlBuilder sql = result.z$sqlOfSelectList(context);
+        return new QueryBuilder<D>() {
             @Override
             public D extract(final Row row) throws SQLException {
                 currentRowMap = new ResultSetRowMap(row);
@@ -96,7 +96,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
                 result = result.pair(new ProbeSelectList<T>(selectList));
             }
             SqlContext context = probeContext();
-            final Query<T> query = selectList.z$sqlOfSelectList(context);
+            final QueryBuilder<T> query = selectList.z$sqlOfSelectList(context);
             return query.extract(probeRow);
         }
 
@@ -114,8 +114,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public Query<T> z$sqlOfSelectList(final SqlContext context) {
-            final Query<T> query = sl.z$sqlOfSelectList(context);
+        public QueryBuilder<T> z$sqlOfSelectList(final SqlContext context) {
+            final QueryBuilder<T> query = sl.z$sqlOfSelectList(context);
             mappers.put(key(sl), query);
             return query;
         }
@@ -144,7 +144,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     private final Map<String, RowMapper<?>> mappers = new HashMap<String, RowMapper<?>>();
 
     private String key(final SelectList<?> selectList) {
-        final Query<?> query = selectList.z$sqlOfSelectList(probeContext());
+        final QueryBuilder<?> query = selectList.z$sqlOfSelectList(probeContext());
         final StringBuilder builder = new StringBuilder();
         query.appendTo(builder);
         return builder.toString();

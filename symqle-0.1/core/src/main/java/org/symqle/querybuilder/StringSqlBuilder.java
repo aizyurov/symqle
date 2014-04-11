@@ -16,23 +16,23 @@
 
 package org.symqle.querybuilder;
 
-import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;
 
 import java.sql.SQLException;
 
 /**
- * Text-only Sql, no parameters,
+ * Text-only SqlBuilder, no parameters,
  * The  text is provided in the constructor.
  */
-public class StringSql implements Sql {
+public class StringSqlBuilder implements SqlBuilder {
     private final String text;
 
     /**
      * Constructs from a given text.
-     * @param text the Sql text
+     * @param text the SqlBuilder text
      */
-    public StringSql(String text) {
+    public StringSqlBuilder(String text) {
         this.text = text;
     }
 

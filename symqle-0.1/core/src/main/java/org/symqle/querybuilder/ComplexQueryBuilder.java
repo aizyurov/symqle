@@ -16,29 +16,29 @@
 
 package org.symqle.querybuilder;
 
-import org.symqle.common.Query;
+import org.symqle.common.QueryBuilder;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
-import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;
 
 import java.sql.SQLException;
 
 /**
- * A query, which is constructed from a RowMapper and Sql.
+ * A query, which is constructed from a RowMapper and SqlBuilder.
  * It delegates its methods to the constructor arguments.
  * @param <T> type of objects created by row mapper.
  */
-public class ComplexQuery<T> extends Query<T> {
+public class ComplexQueryBuilder<T> extends QueryBuilder<T> {
     private final RowMapper<T> extractor;
-    private final Sql sql;
+    private final SqlBuilder sql;
 
     /**
      * Constructs from components.
      * @param rowMapper RowMapper to use for {@link #extract(org.symqle.common.Row)}
      * @param sql provides SQL text and {@link #setParameters(org.symqle.common.SqlParameters)}
      */
-    public ComplexQuery(final RowMapper<T> rowMapper, final Sql sql) {
+    public ComplexQueryBuilder(final RowMapper<T> rowMapper, final SqlBuilder sql) {
         this.extractor = rowMapper;
         this.sql = sql;
     }

@@ -1,6 +1,6 @@
 
 import org.symqle.common.Pair;
-public interface SelectList<T> : Query<T> {}
+public interface SelectList<T> : QueryBuilder<T> {}
 public class AbstractSelectList<T> implements SelectList<T> {}
 
 <T> SelectList<T> ::= sl:SelectSublist<T> :: implicit
@@ -21,34 +21,34 @@ import org.symqle.common.Pair;
             * @param context the Sql construction context
             * @return query conforming to <code>this</code> syntax
             */
-            public Query<Pair<T, U>> z$sqlOfSelectList(final SqlContext context) {
-                final Query<T> query1 = self.z$sqlOfSelectList(context);
-                final Query<U> query2 = other.z$sqlOfSelectList(context);
+            public QueryBuilder<Pair<T, U>> z$sqlOfSelectList(final SqlContext context) {
+                final QueryBuilder<T> query1 = self.z$sqlOfSelectList(context);
+                final QueryBuilder<U> query2 = other.z$sqlOfSelectList(context);
                 RowMapper<Pair<T, U>> extractor = new RowMapper<Pair<T, U>>() {
                     @Override
                     public Pair<T, U> extract(final Row row) throws SQLException {
                         return Pair.make(query1.extract(row), query2.extract(row));
                     }
                 };
-                return new ComplexQuery<Pair<T, U>>(extractor, context.get(Dialect.class).SelectList_is_SelectList_COMMA_SelectList(query1, query2));
+                return new ComplexQueryBuilder<Pair<T, U>>(extractor, context.get(Dialect.class).SelectList_is_SelectList_COMMA_SelectList(query1, query2));
             }
     }
 ;
 
-public interface SelectListScalar<T> extends Scalar<T> : Query<T> {}
+public interface SelectListScalar<T> extends Scalar<T> : QueryBuilder<T> {}
 
 <T> SelectListScalar<T> ::=
   sl:SelectSublist<T> :: implicit
 ;
 
-public interface SelectSublist<T> extends Scalar<T> : Query<T> {}
+public interface SelectSublist<T> extends Scalar<T> : QueryBuilder<T> {}
 public class AbstractSelectSublist<T> implements SelectSublist<T> {}
 
 /**
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface Identifier : Sql {}
+public interface Identifier : SqlBuilder {}
 
 <T> SelectSublist<T> ::= ve:ValueExpression<T> ::
     implicit {
@@ -57,20 +57,20 @@ public interface Identifier : Sql {}
             * @param context the Sql construction context
             * @return query conforming to <code>this</code> syntax
             */
-            public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
+            public QueryBuilder<T> z$sqlOfSelectSublist(final SqlContext context) {
                 final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
-                final Sql veSql = ve.z$sqlOfValueExpression(context);
+                final SqlBuilder veSql = ve.z$sqlOfValueExpression(context);
                 if (nameProvider == null) {
-                    return new ComplexQuery<T>(new NullRowMapper<T>(),
+                    return new ComplexQueryBuilder<T>(new NullRowMapper<T>(),
                     context.get(Dialect.class).SelectSublist_is_ValueExpression(veSql));
                 } else {
                     final String name = nameProvider.getUniqueName();
-                    return new ComplexQuery<T>(new RowMapper<T>() {
+                    return new ComplexQueryBuilder<T>(new RowMapper<T>() {
                                 @Override
                                 public T extract(final Row row) throws SQLException {
                                     return ve.getMapper().value(row.getValue(name));
                                 }
-                            }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSql(name)));
+                            }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSqlBuilder(name)));
                 }
             }
     }
@@ -88,20 +88,20 @@ public interface Identifier : Sql {}
 */
 <T> AbstractSelectSublist<T> label(final ValueExpression<T> ve, final Label label) {
   return new AbstractSelectSublist<T>() {
-          public Query<T> z$sqlOfSelectSublist(final SqlContext context) {
+          public QueryBuilder<T> z$sqlOfSelectSublist(final SqlContext context) {
               final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
-              final Sql veSql = ve.z$sqlOfValueExpression(context);
+              final SqlBuilder veSql = ve.z$sqlOfValueExpression(context);
               if (nameProvider == null) {
                   throw new MalformedStatementException("Label cannot be used in this context");
               } else {
                   final String name = nameProvider.getUniqueName();
                   label.setName(ve, name);
-                  return new ComplexQuery<T>(new RowMapper<T>() {
+                  return new ComplexQueryBuilder<T>(new RowMapper<T>() {
                               @Override
                               public T extract(final Row row) throws SQLException {
                                   return ve.getMapper().value(row.getValue(name));
                               }
-                          }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSql(name)));
+                          }, context.get(Dialect.class).SelectSublist_is_ValueExpression_AS_Identifier(veSql, new StringSqlBuilder(name)));
               }
           }
         @Override
@@ -111,7 +111,7 @@ public interface Identifier : Sql {}
   };
 }
 
-public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
+public interface AggregateSelectSublist<T> extends Scalar<T> : QueryBuilder<T> {}
 
 <T> AggregateSelectSublist<T> ::= aggr:AggregateFunction<T> ::
     implicit {
@@ -120,20 +120,20 @@ public interface AggregateSelectSublist<T> extends Scalar<T> : Query<T> {}
             * @param context the Sql construction context
             * @return query conforming to <code>this</code> syntax
             */
-            public Query<T> z$sqlOfAggregateSelectSublist(final SqlContext context) {
+            public QueryBuilder<T> z$sqlOfAggregateSelectSublist(final SqlContext context) {
                 final ColumnNameGenerator nameProvider = context.get(ColumnNameGenerator.class);
-                final Sql aggrSql = aggr.z$sqlOfAggregateFunction(context);
+                final SqlBuilder aggrSql = aggr.z$sqlOfAggregateFunction(context);
                 if (nameProvider == null) {
-                    return new ComplexQuery<T>(new NullRowMapper<T>(),
+                    return new ComplexQueryBuilder<T>(new NullRowMapper<T>(),
                     context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction(aggrSql));
                 } else {
                     final String name = nameProvider.getUniqueName();
-                    return new ComplexQuery<T>(new RowMapper<T>() {
+                    return new ComplexQueryBuilder<T>(new RowMapper<T>() {
                                 @Override
                                 public T extract(final Row row) throws SQLException {
                                     return aggr.getMapper().value(row.getValue(name));
                                 }
-                            }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new StringSql(name)));
+                            }, context.get(Dialect.class).AggregateSelectSublist_is_AggregateFunction_AS_Identifier(aggrSql, new StringSqlBuilder(name)));
                 }
             }
     }

@@ -1,4 +1,4 @@
-public interface BooleanExpression : Sql {}
+public interface BooleanExpression : SqlBuilder {}
 
 public class AbstractBooleanExpression implements BooleanExpression {}
 
@@ -15,7 +15,7 @@ BooleanExpression ::=
     bve:BooleanExpression OR other:BooleanTerm :: AbstractBooleanExpression or
 ;
 
-public interface BooleanTerm : Sql {}
+public interface BooleanTerm : SqlBuilder {}
 
 public class AbstractBooleanTerm implements BooleanTerm {}
 
@@ -30,7 +30,7 @@ BooleanTerm ::=
     bt:BooleanTerm AND other:BooleanFactor :: AbstractBooleanTerm and
 ;
 
-public interface BooleanFactor : Sql {}
+public interface BooleanFactor : SqlBuilder {}
 
 public class AbstractBooleanFactor implements BooleanFactor {}
 
@@ -44,7 +44,7 @@ BooleanFactor ::=
     NOT bt:BooleanTest :: AbstractBooleanFactor negate
 ;
 
-public interface BooleanTest : Sql {}
+public interface BooleanTest : SqlBuilder {}
 
 public class AbstractBooleanTest implements BooleanTest {}
 
@@ -88,7 +88,7 @@ BooleanTest ::=
     bp:BooleanPrimary  IS  UNKNOWN :: AbstractBooleanTest isUnknown
 ;
 
-interface BooleanPrimary : Sql {}
+interface BooleanPrimary : SqlBuilder {}
 
 public class AbstractBooleanPrimary implements BooleanPrimary {}
 

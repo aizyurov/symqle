@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mapper;
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.querybuilder.TableNameGenerator;
 
 /**
@@ -229,33 +229,33 @@ public abstract class TableOrView implements TablePrimary,
 
 
     /**
-    * Creates an Sql representing <code>(TableName)this</code>.
+    * Creates an SqlBuilder representing <code>(TableName)this</code>.
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
-    public final Sql z$sqlOfTableName(final SqlContext context) {
-        return new StringSql(getTableName());
+    public final SqlBuilder z$sqlOfTableName(final SqlContext context) {
+        return new StringSqlBuilder(getTableName());
     }
 
 
     /**
-    * Creates an Sql representing <code>(TablePrimary)this</code>.
+    * Creates an SqlBuilder representing <code>(TablePrimary)this</code>.
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
-    public final Sql z$sqlOfTablePrimary(final SqlContext context) {
+    public final SqlBuilder z$sqlOfTablePrimary(final SqlContext context) {
         return context.get(Dialect.class)
               .TablePrimary_is_TableName_AS_Identifier(this.z$sqlOfTableName(context),
-                new StringSql(getCorrelationName(context)));
+                new StringSqlBuilder(getCorrelationName(context)));
     }
 
 
     /**
-    * Creates an Sql representing <code>(TableReference)this</code>.
+    * Creates an SqlBuilder representing <code>(TableReference)this</code>.
     * @param context the Sql construction context
     * @return sql conforming to <code>this</code> syntax
     */
-    public final Sql z$sqlOfTableReference(final SqlContext context) {
+    public final SqlBuilder z$sqlOfTableReference(final SqlContext context) {
         TableReference tableReference = Symqle.asTableReference(this);
         for (DeferredJoin join : referents.values()) {
             tableReference = join.makeJoin(tableReference);

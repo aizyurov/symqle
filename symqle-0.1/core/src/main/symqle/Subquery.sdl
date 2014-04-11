@@ -1,8 +1,8 @@
-public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
+public interface ScalarSubquery<T> extends Scalar<T> : SqlBuilder {}
 
 <T> ScalarSubquery<T> ::=
   LEFT_PAREN qe:QueryExpressionBodyScalar<T> RIGHT_PAREN :: implicit {
-       public Sql z$sqlOfScalarSubquery(final SqlContext context) {
+       public SqlBuilder z$sqlOfScalarSubquery(final SqlContext context) {
        final TableRegistry innerRegistry = new ChildSelectTableRegistry(context.get(TableRegistry.class));
        final SqlContext innerContext = context.newBuilder().
                 put(ColumnNameGenerator.class, null).
@@ -10,14 +10,14 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
 
          // learning
        qe.z$sqlOfQueryExpressionBodyScalar(makeLearningContext(innerContext));
-       // real Sql generation
-           final Sql base = qe.z$sqlOfQueryExpressionBodyScalar(innerContext);
+       // real SqlBuilder generation
+           final SqlBuilder base = qe.z$sqlOfQueryExpressionBodyScalar(innerContext);
            return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_QueryExpressionBodyScalar_RIGHT_PAREN(base);
       }
     }
 |
   LEFT_PAREN qe:AggregateQuerySpecification<T> RIGHT_PAREN :: implicit {
-       public Sql z$sqlOfScalarSubquery(final SqlContext context) {
+       public SqlBuilder z$sqlOfScalarSubquery(final SqlContext context) {
        final TableRegistry innerRegistry = new ChildSelectTableRegistry(context.get(TableRegistry.class));
        final SqlContext innerContext = context.newBuilder().
                 put(ColumnNameGenerator.class, null).
@@ -25,8 +25,8 @@ public interface ScalarSubquery<T> extends Scalar<T> : Sql {}
 
          // learning
        qe.z$sqlOfAggregateQuerySpecification(makeLearningContext(innerContext));
-       // real Sql generation
-           final Sql base = qe.z$sqlOfAggregateQuerySpecification(innerContext);
+       // real SqlBuilder generation
+           final SqlBuilder base = qe.z$sqlOfAggregateQuerySpecification(innerContext);
            return context.get(Dialect.class).ScalarSubquery_is_LEFT_PAREN_AggregateQuerySpecification_RIGHT_PAREN(base);
       }
     }

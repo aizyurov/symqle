@@ -2,7 +2,7 @@ package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
 import org.symqle.common.CompiledSql;
-import org.symqle.common.Query;
+import org.symqle.common.QueryBuilder;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
 
@@ -20,7 +20,7 @@ public class PreparedQuery<T> {
     private final RowMapper<T> rowMapper;
     private final List<Option> options;
 
-    public PreparedQuery(final QueryEngine engine, final Query<T> query, final List<Option> options) {
+    public PreparedQuery(final QueryEngine engine, final QueryBuilder<T> query, final List<Option> options) {
         this.engine = engine;
         this.compiledSql = new CompiledSql(query);
         this.rowMapper = query;

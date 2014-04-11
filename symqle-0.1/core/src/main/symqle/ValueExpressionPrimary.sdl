@@ -1,4 +1,4 @@
-public interface ValueExpressionPrimary<T> extends Scalar<T> : Sql {}
+public interface ValueExpressionPrimary<T> extends Scalar<T> : SqlBuilder {}
 
 <T> ValueExpressionPrimary<T> ::=
     LEFT_PAREN e:ValueExpression<T> RIGHT_PAREN :: implicit
@@ -42,7 +42,7 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
             }
 
             @Override
-            public Sql z$sqlOfValueExpressionPrimary(final SqlContext context) {
+            public SqlBuilder z$sqlOfValueExpressionPrimary(final SqlContext context) {
                 return e.z$sqlOfValueExpressionPrimary(context);
             }
         };
@@ -55,7 +55,7 @@ public class AbstractValueExpressionPrimary<T> implements ValueExpressionPrimary
 * Implementing classes are responsible for correct lexis and semantics.
 * @param <T> Java type of parameter value
 */
-public interface DynamicParameterSpecification<T> extends Scalar<T> : Sql {}
+public interface DynamicParameterSpecification<T> extends Scalar<T> : SqlBuilder {}
 
 import org.symqle.common.Mapper;
 import org.symqle.common.SqlParameters;
@@ -110,12 +110,12 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
      }
 
       /**
-      * Creates an Sql representing <code>this</code>.
+      * Creates an SqlBuilder representing <code>this</code>.
       * @param context the Sql construction context
       * @return sql conforming to <code>this</code> syntax
       */
-      public final Sql z$sqlOfDynamicParameterSpecification(final SqlContext context) {
-          return new Sql() {
+      public final SqlBuilder z$sqlOfDynamicParameterSpecification(final SqlContext context) {
+          return new SqlBuilder() {
               @Override
               public void appendTo(final StringBuilder builder) {
                   builder.append("?");
@@ -143,13 +143,13 @@ public class DynamicParameter<T> implements DynamicParameterSpecification<T> {
 
 }
 
-public interface ColumnReference<T> extends Scalar<T> : Sql {}
+public interface ColumnReference<T> extends Scalar<T> : SqlBuilder {}
 
 <T> ColumnReference<T> ::=
     tableRef:Identifier PERIOD columnName:ColumnName<T>
 ;
 
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.common.Mapper;
 /**
  * This class represents a database column.
@@ -171,14 +171,14 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
      }
 
     /**
-    * Creates an Sql representing ColumnReference.
+    * Creates an SqlBuilder representing ColumnReference.
     * @param context the Sql construction context
     * @return constructed Sql
     */
-    public final Sql z$sqlOfColumnReference(final SqlContext context) {
+    public final SqlBuilder z$sqlOfColumnReference(final SqlContext context) {
         final String correlationName = owner.getCorrelationName(context);
         return context.get(Dialect.class).ColumnReference_is_Identifier_PERIOD_ColumnName(
-                new StringSql(correlationName),
+                new StringSqlBuilder(correlationName),
                 z$sqlOfColumnName(context));
     }
 
@@ -187,11 +187,11 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
     * @param context the Sql construction context
     * @return constructed Sql
     */
-    public final Sql z$sqlOfColumnName(final SqlContext context) {
+    public final SqlBuilder z$sqlOfColumnName(final SqlContext context) {
         // make sure that owner is valid in the context
         // by getting correlation name; the result is not used
         owner.getCorrelationName(context);
-        return new StringSql(columnName);
+        return new StringSqlBuilder(columnName);
     }
 
     /**
@@ -204,7 +204,7 @@ public class Column<T> implements ColumnReference<T>, ColumnName<T> {
 }
 
 
-public interface RoutineInvocation<T> extends Scalar<T> : Sql {}
+public interface RoutineInvocation<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
 
@@ -241,9 +241,9 @@ public class AbstractRoutineInvocation<T> implements RoutineInvocation<T> {}
 * Implementing classes are responsible for correct lexis and semantics.
 * @param <T> Java type of returned value
 */
-public interface RoutineName<T> extends Scalar<T> : Sql {}
+public interface RoutineName<T> extends Scalar<T> : SqlBuilder {}
 
-public interface ArgumentList : Sql {}
+public interface ArgumentList : SqlBuilder {}
 
 ArgumentList ::=
     e:ValueExpression<?> :: private ArgumentList createArgument {}
@@ -252,7 +252,7 @@ ArgumentList ::=
         :: private ArgumentList appendArgument {}
 ;
 
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 /**
  * An implementation of RoutineName.
  * @param <T> Java type of returned value
@@ -272,12 +272,12 @@ public class SqlFunction<T> implements RoutineName<T> {
     }
 
     /**
-    * Creates an Sql representing RoutineName.
+    * Creates an SqlBuilder representing RoutineName.
     * @param context the Sql construction context
     * @return constructed Sql
     */
-    public final Sql z$sqlOfRoutineName(final SqlContext context) {
-        return new StringSql(functionName);
+    public final SqlBuilder z$sqlOfRoutineName(final SqlContext context) {
+        return new StringSqlBuilder(functionName);
     }
 
     /**
@@ -301,7 +301,7 @@ public class SqlFunction<T> implements RoutineName<T> {
 }
 
 
-public interface CaseExpression<T> extends Scalar<T> : Sql {}
+public interface CaseExpression<T> extends Scalar<T> : SqlBuilder {}
 
 # Case abbreviations are not included here (considering them as functions, e.g nullIf)
 # only <searched case> is supported
@@ -310,7 +310,7 @@ public interface CaseExpression<T> extends Scalar<T> : Sql {}
 <T> CaseExpression<T> ::= CASE l:SearchedWhenClauseList<T> END :: implicit
 ;
 
-public interface SearchedWhenClauseList<T> extends Scalar<T> : Sql {}
+public interface SearchedWhenClauseList<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractSearchedWhenClauseList<T> implements SearchedWhenClauseList<T> {}
 
@@ -325,12 +325,12 @@ public class AbstractSearchedWhenClauseList<T> implements SearchedWhenClauseList
     l:SearchedWhenClauseBaseList<T> elseValue:ElseClause<T> :: AbstractSearchedWhenClauseList<T> orElse
 ;
 
-public interface ElseClause<T> extends Scalar<T> : Sql {}
+public interface ElseClause<T> extends Scalar<T> : SqlBuilder {}
 
 <T> ElseClause<T> ::= ELSE e:ValueExpression<T> :: implicit {}
 ;
 
-public interface SearchedWhenClauseBaseList<T> extends Scalar<T> : Sql {}
+public interface SearchedWhenClauseBaseList<T> extends Scalar<T> : SqlBuilder {}
 public class AbstractSearchedWhenClauseBaseList<T> implements SearchedWhenClauseBaseList<T> {}
 
 <T> SearchedWhenClauseBaseList<T> ::=
@@ -352,7 +352,7 @@ public class AbstractSearchedWhenClauseBaseList<T> implements SearchedWhenClause
     l:SearchedWhenClauseBaseList<T> whenClause:ThenNullClause :: AbstractSearchedWhenClauseBaseList<T> orWhen
 ;
 
-public interface SearchedWhenClause<T> extends Scalar<T> : Sql {}
+public interface SearchedWhenClause<T> extends Scalar<T> : SqlBuilder {}
 public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
 
 <T> SearchedWhenClause<T> ::=
@@ -370,7 +370,7 @@ public class AbstractSearchedWhenClause<T> implements SearchedWhenClause<T> {}
     }
 ;
 
-public interface ThenNullClause : Sql {}
+public interface ThenNullClause : SqlBuilder {}
 
 ThenNullClause ::=
     /**
@@ -380,7 +380,7 @@ ThenNullClause ::=
     WHEN condition:BooleanExpression THEN NULL :: ThenNullClause thenNull {}
 ;
 
-public interface CastSpecification<T> extends Scalar<T> : Sql {}
+public interface CastSpecification<T> extends Scalar<T> : SqlBuilder {}
 
 public abstract class AbstractCastSpecification<T> implements CastSpecification<T> {}
 
@@ -400,8 +400,8 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
     <T> AbstractCastSpecification<T> cast(final ValueExpression<T> e, final String castTarget) {
          return cast(e, new CastTarget() {
              @Override
-             public Sql z$sqlOfCastTarget(final SqlContext context) {
-                 return new StringSql(castTarget);
+             public SqlBuilder z$sqlOfCastTarget(final SqlContext context) {
+                 return new StringSqlBuilder(castTarget);
              }
          });
     }
@@ -410,7 +410,7 @@ public abstract class AbstractCastSpecification<T> implements CastSpecification<
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface CastTarget : Sql {}
+public interface CastTarget : SqlBuilder {}
 
 # Special ValueExpressionPrimary, which may have different names in dialects
 import java.sql.Date;

@@ -1,6 +1,6 @@
 package org.symqle.sql;
 
-import org.symqle.common.Query;
+import org.symqle.common.QueryBuilder;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
 import org.symqle.common.SqlContext;
@@ -25,7 +25,7 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
     protected abstract D create(final Row row) throws SQLException;
 
     @Override
-    public final Query<D> z$sqlOfSelectList(final SqlContext context) {
+    public final QueryBuilder<D> z$sqlOfSelectList(final SqlContext context) {
         keysLocked.set(true);
         if (keys.isEmpty()) {
             throw new IllegalStateException("No mappings defined");
@@ -34,8 +34,8 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         for (int i=1; i<keys.size(); i++) {
             result = result.pair(keys.get(i).selectList);
         }
-        final Query<?> query = result.z$sqlOfSelectList(context);
-        return new InnerQuery(query);
+        final QueryBuilder<?> query = result.z$sqlOfSelectList(context);
+        return new InnerQueryBuilder(query);
     }
 
     public final <E> RowMapper<E> map(final SelectList<E> selectList) {
@@ -55,8 +55,8 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         private KeyImpl(final SelectList<E> selectList) {
             this.selectList = new AbstractSelectList<E>() {
                 @Override
-                public Query<E> z$sqlOfSelectList(final SqlContext context) {
-                    final Query<E> query = selectList.z$sqlOfSelectList(context);
+                public QueryBuilder<E> z$sqlOfSelectList(final SqlContext context) {
+                    final QueryBuilder<E> query = selectList.z$sqlOfSelectList(context);
                     rowMapper = query;
                     return query;
                 }
@@ -71,10 +71,10 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
 
     }
 
-    private class InnerQuery extends Query<D> {
-        private final Query<?> query;
+    private class InnerQueryBuilder extends QueryBuilder<D> {
+        private final QueryBuilder<?> query;
 
-        public InnerQuery(final Query<?> query) {
+        public InnerQueryBuilder(final QueryBuilder<?> query) {
             this.query = query;
         }
 

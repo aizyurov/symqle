@@ -19,20 +19,20 @@ package org.symqle.common;
 import java.sql.SQLException;
 
 /**
- * Represents an Sql element composed from a list of sub-elements.
+ * Represents an SqlBuilder element composed from a list of sub-elements.
  * Provides implementation of {@link #appendTo(StringBuilder)} ()} and {@link #setParameters(SqlParameters)}
  * @author Alexander Izyurov
  */
-public class CompositeSql implements Sql {
-    private final Sql first;
-    private final Sql[] other;
+public class CompositeSqlBuilder implements SqlBuilder {
+    private final SqlBuilder first;
+    private final SqlBuilder[] other;
 
     /**
-     * Constructs composite Sql from elements.
+     * Constructs composite SqlBuilder from elements.
      * @param first the first element of sequence, not null
      * @param other elements, optional (but each not null)
      */
-    public CompositeSql(final Sql first, final Sql... other) {
+    public CompositeSqlBuilder(final SqlBuilder first, final SqlBuilder... other) {
         this.first = first;
         this.other = other;
     }
@@ -40,7 +40,7 @@ public class CompositeSql implements Sql {
     @Override
     public void appendTo(final StringBuilder builder) {
         first.appendTo(builder);
-        for (Sql element: other) {
+        for (SqlBuilder element: other) {
             final char lastChar = builder.charAt(builder.length() - 1);
             final char nextChar = element.firstChar();
 //            if (lastChar != '(' &&
@@ -65,7 +65,7 @@ public class CompositeSql implements Sql {
      */
     public final void setParameters(final SqlParameters p) throws SQLException {
         first.setParameters(p);
-        for (Sql element : this.other) {
+        for (SqlBuilder element : this.other) {
             element.setParameters(p);
         }
     }

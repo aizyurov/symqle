@@ -8,12 +8,12 @@
 # rephrased in trivial manner - see below
 # 
 
-public interface OrderByClause : Sql {}
+public interface OrderByClause : SqlBuilder {}
 
 OrderByClause ::= ORDER BY ssl:SortSpecificationList :: private OrderByClause createOrderByClause
 ;
 
-public interface SortSpecificationList : Sql {}
+public interface SortSpecificationList : SqlBuilder {}
 
 #
 SortSpecificationList ::=
@@ -22,7 +22,7 @@ SortSpecificationList ::=
     ssl:SortSpecificationList COMMA ss:SortSpecification :: private SortSpecificationList appendSortSpecification
 ;
 
-public interface SortSpecification : Sql {}
+public interface SortSpecification : SqlBuilder {}
 
 public class AbstractSortSpecification implements SortSpecification {}
 
@@ -42,11 +42,11 @@ SortSpecification ::=
     sos:SortOrderingSpecification NULLS LAST :: AbstractSortSpecification nullsLast {}
 ;
 
-public interface SortOrderingSpecification : Sql {}
+public interface SortOrderingSpecification : SqlBuilder {}
 
 public class AbstractSortOrderingSpecification implements SortOrderingSpecification {}
 
-public interface SortKey : Sql {}
+public interface SortKey : SqlBuilder {}
 
 SortKey ::= ve:ValueExpression<?> :: implicit
 ;
@@ -59,7 +59,7 @@ SortOrderingSpecification ::=
      * @return resulting sort ordering specification with ascending order
      */
     key:SortKey ASC :: AbstractSortOrderingSpecification asc {
-        public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
+        public SqlBuilder z$sqlOfSortOrderingSpecification(final SqlContext context) {
              return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_ASC(key.z$sqlOfSortKey(context));
         }
     }
@@ -70,11 +70,11 @@ SortOrderingSpecification ::=
      */
     key:SortKey DESC :: AbstractSortOrderingSpecification desc {
         /**
-        * Creates an Sql representing SortOrderingSpecification
+        * Creates an SqlBuilder representing SortOrderingSpecification
         * @param context the Sql construction context
         * @return constructed Sql
         */
-        public Sql z$sqlOfSortOrderingSpecification(final SqlContext context) {
+        public SqlBuilder z$sqlOfSortOrderingSpecification(final SqlContext context) {
              return context.get(Dialect.class).SortOrderingSpecification_is_SortKey_DESC(key.z$sqlOfSortKey(context));
         }
      }

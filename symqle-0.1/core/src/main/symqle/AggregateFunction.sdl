@@ -1,4 +1,4 @@
-public interface AggregateFunction<T> extends Scalar<T> : Sql {}
+public interface AggregateFunction<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractAggregateFunction<T> implements AggregateFunction<T> {}
 

@@ -10,7 +10,7 @@ public class CompiledSql implements Parameterizer {
     private String text;
     private Parameterizer parameterizer;
 
-    public CompiledSql(final Sql source) {
+    public CompiledSql(final SqlBuilder source) {
         final StringBuilder stringBuilder = new StringBuilder();
         source.appendTo(stringBuilder);
         this.text = stringBuilder.toString();

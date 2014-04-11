@@ -1,4 +1,4 @@
-public interface Predicate : Sql {}
+public interface Predicate : SqlBuilder {}
 public class AbstractPredicate implements Predicate {}
 
 # we do not need intermediate interfaces for predicate types: they do not add any functionality
@@ -18,7 +18,7 @@ public class AbstractPredicate implements Predicate {}
 # All predicates use Predicand (<row value predicand>)
 # in current version of Symqle it can be only scalar
 
-public interface Predicand<T> extends Scalar<T> : Sql {}
+public interface Predicand<T> extends Scalar<T> : SqlBuilder {}
 
 <T> Predicand<T> ::=
     e:NumericExpression<T> :: implicit
@@ -167,7 +167,7 @@ public interface Predicand<T> extends Scalar<T> : Sql {}
         p:Predicand<T> NOT IN values:InPredicateValue<T> :: AbstractPredicate notIn
 ;
 
-public interface InPredicateValue<T> : Sql {}
+public interface InPredicateValue<T> : SqlBuilder {}
 
 <T> InPredicateValue<T> ::=
     s:ScalarSubquery<T> :: implicit
@@ -175,7 +175,7 @@ public interface InPredicateValue<T> : Sql {}
     LEFT_PAREN l:InValueList<T> RIGHT_PAREN :: implicit
 ;
 
-public interface InValueList<T> : Sql {}
+public interface InValueList<T> : SqlBuilder {}
 public class AbstractInValueList<T> implements InValueList<T> {}
 
 <T>  InValueList<T> ::=
@@ -231,7 +231,7 @@ public class AbstractInValueList<T> implements InValueList<T> {}
     <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, final T value) {
         return DynamicParameter.create(subquery.getMapper(), value).in(new InPredicateValue<T>() {
             @Override
-            public Sql z$sqlOfInPredicateValue(final SqlContext context) {
+            public SqlBuilder z$sqlOfInPredicateValue(final SqlContext context) {
                 return z$InPredicateValue$from$ScalarSubquery(subquery).z$sqlOfInPredicateValue(context);
             }
         });
@@ -298,7 +298,7 @@ Predicate ::=
         return escape(base, DynamicParameter.create(CoreMappers.STRING, new String(new char[] {escapeCharacter})));
     }
 
-public interface LikePredicateBase : Sql {}
+public interface LikePredicateBase : SqlBuilder {}
 public class AbstractLikePredicateBase implements LikePredicateBase {}
 
 LikePredicateBase ::=

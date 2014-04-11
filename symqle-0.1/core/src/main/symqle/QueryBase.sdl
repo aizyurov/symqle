@@ -1,11 +1,11 @@
 
-public interface QuerySpecification<T> : Query<T> {}
+public interface QuerySpecification<T> : QueryBuilder<T> {}
 public class AbstractQuerySpecification<T> implements QuerySpecification<T> {}
 
-public interface QuerySpecificationScalar<T> extends Scalar<T> : Query<T> {}
+public interface QuerySpecificationScalar<T> extends Scalar<T> : QueryBuilder<T> {}
 public class AbstractQuerySpecificationScalar<T> implements QuerySpecificationScalar<T> {}
 
-public interface AggregateQuerySpecification<T> extends Scalar<T> : Query<T> {}
+public interface AggregateQuerySpecification<T> extends Scalar<T> : QueryBuilder<T> {}
 public class AbstractAggregateQuerySpecification<T> implements AggregateQuerySpecification<T> {}
 
 # same rules for Scalar, Aggregate and regular QuerySpecification
@@ -46,7 +46,7 @@ public class AbstractAggregateQuerySpecification<T> implements AggregateQuerySpe
 
 # QueryBase and QueryBaseScalar
 
-public interface QueryBase<T> : Query<T> {}
+public interface QueryBase<T> : QueryBuilder<T> {}
 
 public class AbstractQueryBase<T> implements QueryBase<T> {}
 
@@ -54,7 +54,7 @@ public class AbstractQueryBase<T> implements QueryBase<T> {}
 # all methods derived from syntax are protected
 # public methods do not include FromClause
 
-public interface QueryBaseScalar<T> extends Scalar<T> :  Query<T> {}
+public interface QueryBaseScalar<T> extends Scalar<T> :  QueryBuilder<T> {}
 
 public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 
@@ -62,14 +62,14 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 
 <T> QueryBaseScalar<T> ::=
     SELECT sl:SelectListScalar<T>  :: implicit {
-            public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfSelectListScalar(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+            public QueryBuilder<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfSelectListScalar(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.QueryBaseScalar_is_SELECT_SelectListScalar(query)
                         : dialect.QueryBaseScalar_is_SELECT_SelectListScalar_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
             }
     }
 |
@@ -80,14 +80,14 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     * @return new AbstractQueryBaseScalar
     */
     SELECT ALL sl:SelectListScalar<T>  :: AbstractQueryBaseScalar<T> selectAll  {
-            public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfSelectListScalar(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+            public QueryBuilder<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfSelectListScalar(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.QueryBaseScalar_is_SELECT_ALL_SelectListScalar(query)
                         : dialect.QueryBaseScalar_is_SELECT_ALL_SelectListScalar_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
             }
     }
 |
@@ -98,14 +98,14 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     * @return new AbstractQueryBaseScalar
     */
     SELECT DISTINCT sl:SelectListScalar<T>  :: AbstractQueryBaseScalar<T> distinct {
-            public Query<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfSelectListScalar(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+            public QueryBuilder<T> z$sqlOfQueryBaseScalar(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfSelectListScalar(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.QueryBaseScalar_is_SELECT_DISTINCT_SelectListScalar(query)
                         : dialect.QueryBaseScalar_is_SELECT_DISTINCT_SelectListScalar_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
             }
     }
 |
@@ -116,14 +116,14 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
 
 <T> QueryBase<T> ::=
     SELECT sl:SelectList<T> :: implicit {
-        public Query<T> z$sqlOfQueryBase(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfSelectList(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+        public QueryBuilder<T> z$sqlOfQueryBase(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfSelectList(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.QueryBase_is_SELECT_SelectList(query)
                         : dialect.QueryBase_is_SELECT_SelectList_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
         }
     }
 |
@@ -134,14 +134,14 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     * @return new AbstractQueryBase
     */
     SELECT ALL sl:SelectList<T> :: AbstractQueryBase<T> selectAll {
-        public Query<T> z$sqlOfQueryBase(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfSelectList(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+        public QueryBuilder<T> z$sqlOfQueryBase(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfSelectList(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.QueryBase_is_SELECT_ALL_SelectList(query)
                         : dialect.QueryBase_is_SELECT_ALL_SelectList_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
         }
     }
 |
@@ -152,32 +152,32 @@ public class AbstractQueryBaseScalar<T> implements QueryBaseScalar<T> {}
     * @return new AbstractQueryBase
     */
     SELECT DISTINCT sl:SelectList<T> :: AbstractQueryBase<T> distinct {
-        public Query<T> z$sqlOfQueryBase(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfSelectList(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+        public QueryBuilder<T> z$sqlOfQueryBase(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfSelectList(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.QueryBase_is_SELECT_DISTINCT_SelectList(query)
                         : dialect.QueryBase_is_SELECT_DISTINCT_SelectList_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
         }
     }
 |
     SELECT DISTINCT sl:SelectList<T> fc:FromClause
 ;
 
-public interface AggregateQueryBase<T> extends Scalar<T> : Query<T> {}
+public interface AggregateQueryBase<T> extends Scalar<T> : QueryBuilder<T> {}
 
 <T> AggregateQueryBase<T> ::=
     SELECT sl:AggregateSelectSublist<T>  :: implicit {
-            public Query<T> z$sqlOfAggregateQueryBase(final SqlContext context) {
-                final Query<T> query = sl.z$sqlOfAggregateSelectSublist(context);
-                final Sql fromClauseSql = new FromClauseBuilder().build(context);
+            public QueryBuilder<T> z$sqlOfAggregateQueryBase(final SqlContext context) {
+                final QueryBuilder<T> query = sl.z$sqlOfAggregateSelectSublist(context);
+                final SqlBuilder fromClauseSql = new FromClauseBuilder().build(context);
                 final Dialect dialect = context.get(Dialect.class);
-                final Sql sql = fromClauseSql == null
+                final SqlBuilder sql = fromClauseSql == null
                         ? dialect.AggregateQueryBase_is_SELECT_AggregateSelectSublist(query)
                         : dialect.AggregateQueryBase_is_SELECT_AggregateSelectSublist_FromClause(query, fromClauseSql);
-                return new ComplexQuery<T>(query, sql);
+                return new ComplexQueryBuilder<T>(query, sql);
             }
     }
 |

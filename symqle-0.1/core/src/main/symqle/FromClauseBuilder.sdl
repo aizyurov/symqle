@@ -1,10 +1,10 @@
 
-import org.symqle.common.CompositeSql;
+import org.symqle.common.CompositeSqlBuilder;
 import org.symqle.common.MalformedStatementException;
-import org.symqle.common.Sql;
+import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlContext;
 import org.symqle.jdbc.Configuration;
-import org.symqle.querybuilder.StringSql;
+import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.querybuilder.TableNameGenerator;
 
@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Set;
 class FromClauseBuilder {
     /**
-     * Builds a Sql of FromClause from local scope tables.
+     * Builds a SqlBuilder of FromClause from local scope tables.
      * @param context
      * @return null if FROM CLAUSE is not applicable (no tables and supported by dialect and options)
      */
-    Sql build(final SqlContext context) {
+    SqlBuilder build(final SqlContext context) {
         SelectTableRegistry registry = (SelectTableRegistry) context.get(TableRegistry.class);
         final Configuration configuration = context.get(Configuration.class);
         final boolean allowNoFrom = configuration.allowNoFrom();
@@ -47,18 +47,18 @@ class FromClauseBuilder {
     }
 
 
-    private Sql generateEmptyFromClause(final SqlContext context) {
+    private SqlBuilder generateEmptyFromClause(final SqlContext context) {
         final Dialect dialect = context.get(Dialect.class);
         final String fallbackTableName = dialect.fallbackTableName();
         if (fallbackTableName == null) {
             return null;
         } else {
             // need a unique correlation name for fallback table
-            return new CompositeSql(
+            return new CompositeSqlBuilder(
               SqlTerm.FROM,
-              new StringSql(fallbackTableName),
+              new StringSqlBuilder(fallbackTableName),
               SqlTerm.AS,
-              new StringSql(context.get(TableNameGenerator.class).generate("DUMMY")));
+              new StringSqlBuilder(context.get(TableNameGenerator.class).generate("DUMMY")));
         }
     }
 }

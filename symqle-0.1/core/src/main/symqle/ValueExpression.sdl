@@ -1,4 +1,4 @@
-public interface ValueExpression<T> extends Scalar<T> : Sql {}
+public interface ValueExpression<T> extends Scalar<T> : SqlBuilder {}
 
 // public class AbstractValue<T> implements ValueExpression<T> {}
 
@@ -26,7 +26,7 @@ public class AbstractValueExpression<T> implements ValueExpression<T> {}
         }
 
         @Override
-        public Sql z$sqlOfValueExpression(final SqlContext context) {
+        public SqlBuilder z$sqlOfValueExpression(final SqlContext context) {
             return e.z$sqlOfValueExpression(context);
         }
     };
@@ -80,9 +80,9 @@ ValueExpression<Boolean> ::=
     ;
 
 # no abstract class: no methods - removed as unnecessary
-// public interface CommonValueExpression<T> extends Scalar<T> : Sql {}
+// public interface CommonValueExpression<T> extends Scalar<T> : SqlBuilder {}
 
-public interface StringExpression<T> extends Scalar<T> : Sql {}
+public interface StringExpression<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractStringExpression<T> implements StringExpression<T> {}
 
@@ -103,7 +103,7 @@ public class AbstractStringExpression<T> implements StringExpression<T> {}
             }
 
             @Override
-            public Sql z$sqlOfStringExpression(final SqlContext context) {
+            public SqlBuilder z$sqlOfStringExpression(final SqlContext context) {
                 return e.z$sqlOfStringExpression(context);
             }
         };
@@ -193,7 +193,7 @@ AbstractStringExpression<String> substring(final StringExpression<?> source, fin
     return substring(source, DynamicParameter.create(CoreMappers.INTEGER, start), DynamicParameter.create(CoreMappers.INTEGER, len));
 }
 
-public interface CharacterFactor<T> extends Scalar<T> : Sql {}
+public interface CharacterFactor<T> extends Scalar<T> : SqlBuilder {}
 
 public class AbstractCharacterFactor<T> implements CharacterFactor<T> {}
 
@@ -201,7 +201,7 @@ public class AbstractCharacterFactor<T> implements CharacterFactor<T> {}
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.
 */
-public interface CollationName : Sql {}
+public interface CollationName : SqlBuilder {}
 
 <T> CharacterFactor<T> ::=
     e:ValueExpressionPrimary<T> :: implicit
@@ -219,8 +219,8 @@ public interface CollationName : Sql {}
     <T> AbstractCharacterFactor<T> collate (final ValueExpressionPrimary<T> e, final String collationName) {
          return collate(e, new CollationName() {
              @Override
-             public Sql z$sqlOfCollationName(final SqlContext context) {
-                 return new StringSql(collationName);
+             public SqlBuilder z$sqlOfCollationName(final SqlContext context) {
+                 return new StringSqlBuilder(collationName);
              }
          });
     }
