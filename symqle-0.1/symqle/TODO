@@ -24,3 +24,5 @@ SelectStatement#compile(Engine, Option...)
 (done different way) refactoring of DynamicParameter: make abstract; ConstantParameter and MutableParameter.
 static DynamicParameter.constant(Mapper<T>,T) and DynamicParameter.mutable(Mapper>T>).
 resp. Params.p() and Params.mutableXxx();
+
+Functions: add toUpper/toLower

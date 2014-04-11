@@ -60,7 +60,7 @@ insertFrom: t.insert(t.rows(t.x.set(s.x), t.y.set(s.z).where(s.w.eq(0)))).execut
 
 (done_ Rename Element -> Inbox, SqlParameter -> OutBox, move to symqle-client.
 
-Generator: generate client (primary keys, DTO, FullDTO)
+Generator: generate client (primary keys, DTO, FullDTO, saver)
 
 (discarded) Compiler: push methods to interfaces; if there are conflicting interfaces, implement nearest only
 impossible: e.g map(), which is in multiple interfaces, would block all but one.
