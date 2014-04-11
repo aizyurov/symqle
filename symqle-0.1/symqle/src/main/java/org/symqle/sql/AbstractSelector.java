@@ -71,7 +71,7 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
 
     }
 
-    private class InnerQueryBuilder extends QueryBuilder<D> {
+    private class InnerQueryBuilder implements QueryBuilder<D> {
         private final QueryBuilder<?> query;
 
         public InnerQueryBuilder(final QueryBuilder<?> query) {

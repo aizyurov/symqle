@@ -1,5 +1,6 @@
 package org.symqle.jdbc;
 
+import org.symqle.common.CompiledSql;
 import org.symqle.common.Sql;
 import org.symqle.common.SqlBuilder;
 
@@ -21,7 +22,7 @@ public class PreparedUpdate {
         final StringBuilder sourceSql = new StringBuilder();
         update.appendTo(sourceSql);
 
-        this.update = new Sql(update);
+        this.update = new CompiledSql(update);
         this.options = options;
         this.generatedKeys = generatedKeys;
     }

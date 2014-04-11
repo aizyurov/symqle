@@ -26,5 +26,5 @@ package org.symqle.common;
  * @version 0.1
  * @param <JavaType> the type of associated Java objects
  */
-public abstract class QueryBuilder<JavaType> implements SqlBuilder, RowMapper<JavaType> {
+public interface QueryBuilder<JavaType> extends SqlBuilder, RowMapper<JavaType> {
 }

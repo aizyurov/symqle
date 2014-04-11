@@ -2,10 +2,10 @@ package org.symqle.integration;
 
 import junit.framework.AssertionFailedError;
 import org.symqle.common.Callback;
-import org.symqle.common.Sql;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.common.SqlParameters;
+import org.symqle.common.StringSql;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
@@ -15,7 +15,6 @@ import org.symqle.integration.model.MyDual;
 import org.symqle.jdbc.Batcher;
 import org.symqle.jdbc.Engine;
 import org.symqle.jdbc.Option;
-import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.sql.AbstractQuerySpecificationScalar;
 import org.symqle.sql.AbstractSelectList;
 import org.symqle.sql.DynamicParameter;
@@ -1366,19 +1365,19 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             return;
         }
         final Engine engine = getEngine();
-        engine.execute(new Sql(new StringSqlBuilder("delete from big_table")), NO_OPTIONS);
+        engine.execute(new StringSql("delete from big_table"), NO_OPTIONS);
 
         final Batcher batcher = engine.newBatcher(1000);
 
         for (int i=0; i<2000000; i++) {
             final int value = i;
-            batcher.submit(new Sql(new StringSqlBuilder("insert into big_table (num) values(?)") {
+            batcher.submit(new StringSql("insert into big_table (num) values(?)") {
 
                 @Override
                 public void setParameters(SqlParameters p) throws SQLException {
                     p.next().setInt(value);
                 }
-            }), NO_OPTIONS);
+            }, NO_OPTIONS);
         }
         batcher.flush();
 

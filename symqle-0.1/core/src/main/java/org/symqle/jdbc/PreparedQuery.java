@@ -1,10 +1,11 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
-import org.symqle.common.Sql;
+import org.symqle.common.CompiledSql;
 import org.symqle.common.QueryBuilder;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
+import org.symqle.common.Sql;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class PreparedQuery<T> {
 
     public PreparedQuery(final QueryEngine engine, final QueryBuilder<T> query, final List<Option> options) {
         this.engine = engine;
-        this.sql = new Sql(query);
+        this.sql = new CompiledSql(query);
         this.rowMapper = query;
         this.options = options;
     }
