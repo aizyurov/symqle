@@ -208,7 +208,7 @@ public class BooleanTermTest extends AbstractIntegrationTestBase implements Abst
         prepareTestData(insertTable);
         final AbstractBooleanTerm booleanTerm = insertTable.text.like("t%").and(insertTable.id.gt(2));
         insertTable.delete().where(booleanTerm).execute(getEngine());
-        assertEquals(Arrays.asList(1,2,4,5), insertTable.id.list(getEngine()));
+        assertEquals(Arrays.asList(1,2,4,5), insertTable.id.orderBy(insertTable.id).list(getEngine()));
     }
 
     @Override

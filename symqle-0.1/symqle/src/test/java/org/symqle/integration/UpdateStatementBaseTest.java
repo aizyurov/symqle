@@ -26,12 +26,16 @@ public class UpdateStatementBaseTest extends AbstractIntegrationTestBase impleme
                 .execute(getEngine());
         insertTable.insert(insertTable.id.set(2).also(insertTable.text.set("two")))
                 .execute(getEngine());
-        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> rows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "one"), Pair.make(2, "two")), rows);
 
         final AbstractUpdateStatementBase updateStatementBase = insertTable.update(insertTable.text.set("changed"));
         updateStatementBase.compileUpdate(getEngine()).execute();
-        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "changed"), Pair.make(2, "changed")), newRows);
     }
 
@@ -47,7 +51,9 @@ public class UpdateStatementBaseTest extends AbstractIntegrationTestBase impleme
 
         final AbstractUpdateStatementBase updateStatementBase = insertTable.update(insertTable.text.set("changed"));
         updateStatementBase.execute(getEngine());
-        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "changed"), Pair.make(2, "changed")), newRows);
     }
 
@@ -74,7 +80,9 @@ public class UpdateStatementBaseTest extends AbstractIntegrationTestBase impleme
         assertEquals(0, affected.length);
         final int[] flushed = batcher.flush();
         assertTrue(Arrays.toString(flushed), Arrays.equals(new int[]{2}, flushed));
-        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "changed"), Pair.make(2, "changed")), newRows);
     }
 
@@ -90,7 +98,9 @@ public class UpdateStatementBaseTest extends AbstractIntegrationTestBase impleme
 
         final AbstractUpdateStatementBase updateStatementBase = insertTable.update(insertTable.text.set("changed"));
         updateStatementBase.where(insertTable.id.eq(1)).execute(getEngine());
-        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(1, "changed"), Pair.make(2, "two")), newRows);
     }
 
@@ -124,7 +134,9 @@ public class UpdateStatementBaseTest extends AbstractIntegrationTestBase impleme
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         insertTable.update(insertTable.text.setNull()).execute(getEngine());
-        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, (String) null)), newRows);
 
     }
@@ -139,7 +151,9 @@ public class UpdateStatementBaseTest extends AbstractIntegrationTestBase impleme
         assertEquals(Arrays.asList(Pair.make(2, "wow")), rows);
 
         insertTable.update(insertTable.text.setDefault()).execute(getEngine());
-        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text).list(getEngine());
+        final List<Pair<Integer,String>> newRows = insertTable.id.pair(insertTable.text)
+                .orderBy(insertTable.id)
+                .list(getEngine());
         assertEquals(Arrays.asList(Pair.make(2, "nothing")), newRows);
     }
 
