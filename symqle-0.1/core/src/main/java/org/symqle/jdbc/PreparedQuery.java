@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.QueryBuilder;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
@@ -16,13 +16,13 @@ import java.util.List;
 public class PreparedQuery<T> {
 
     private final QueryEngine engine;
-    private final CompiledSql compiledSql;
+    private final Sql sql;
     private final RowMapper<T> rowMapper;
     private final List<Option> options;
 
     public PreparedQuery(final QueryEngine engine, final QueryBuilder<T> query, final List<Option> options) {
         this.engine = engine;
-        this.compiledSql = new CompiledSql(query);
+        this.sql = new Sql(query);
         this.rowMapper = query;
         this.options = options;
     }
@@ -40,7 +40,7 @@ public class PreparedQuery<T> {
     }
 
     public int scroll(final Callback<T> callback) throws SQLException {
-        return engine.scroll(compiledSql, new Callback<Row>() {
+        return engine.scroll(sql, new Callback<Row>() {
             @Override
             public boolean iterate(final Row row) throws SQLException {
                 return callback.iterate(rowMapper.extract(row));

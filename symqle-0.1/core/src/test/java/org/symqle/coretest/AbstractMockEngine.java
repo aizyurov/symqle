@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
 import junit.framework.Assert;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
 import org.symqle.jdbc.Option;
@@ -36,7 +36,7 @@ public class AbstractMockEngine extends Assert {
     public List<Option> getOptions() {
         return Collections.emptyList();
     }
-    protected final void verify(final CompiledSql query, final List<Option> options)
+    protected final void verify(final Sql query, final List<Option> options)
             throws SQLException {
         assertEquals(statement, query.text());
         assertEquals(this.options, options);

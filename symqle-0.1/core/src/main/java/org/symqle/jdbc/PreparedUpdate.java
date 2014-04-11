@@ -1,6 +1,6 @@
 package org.symqle.jdbc;
 
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.SqlBuilder;
 
 import java.sql.SQLException;
@@ -12,7 +12,7 @@ import java.util.List;
 public class PreparedUpdate {
 
     private final Engine engine;
-    private final CompiledSql update;
+    private final Sql update;
     private final List<Option> options;
     private final GeneratedKeys<?> generatedKeys;
 
@@ -21,7 +21,7 @@ public class PreparedUpdate {
         final StringBuilder sourceSql = new StringBuilder();
         update.appendTo(sourceSql);
 
-        this.update = new CompiledSql(update);
+        this.update = new Sql(update);
         this.options = options;
         this.generatedKeys = generatedKeys;
     }

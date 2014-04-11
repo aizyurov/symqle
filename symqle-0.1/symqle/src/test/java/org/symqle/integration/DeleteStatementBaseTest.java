@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
 import org.symqle.integration.model.DeleteDetail;
 import org.symqle.integration.model.DeleteMaster;
@@ -24,12 +24,12 @@ public class DeleteStatementBaseTest extends AbstractIntegrationTestBase impleme
 
     @Override
     protected void onSetUp() throws Exception {
-        getEngine().execute(new CompiledSql(new StringSqlBuilder("DELETE FROM delete_detail")), NO_OPTIONS);
-        getEngine().execute(new CompiledSql(new StringSqlBuilder("DELETE FROM delete_master")), NO_OPTIONS);
+        getEngine().execute(new Sql(new StringSqlBuilder("DELETE FROM delete_detail")), NO_OPTIONS);
+        getEngine().execute(new Sql(new StringSqlBuilder("DELETE FROM delete_master")), NO_OPTIONS);
     }
 
-    private CompiledSql createInsertIntoDeleteMaster(final int id, final String description) {
-        return new CompiledSql(new StringSqlBuilder("INSERT INTO delete_master (master_id, description) values (?, ?)") {
+    private Sql createInsertIntoDeleteMaster(final int id, final String description) {
+        return new Sql(new StringSqlBuilder("INSERT INTO delete_master (master_id, description) values (?, ?)") {
 
             @Override
             public void setParameters(SqlParameters p) throws SQLException {
@@ -39,8 +39,8 @@ public class DeleteStatementBaseTest extends AbstractIntegrationTestBase impleme
         });
     }
 
-    private CompiledSql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
-        return new CompiledSql(new StringSqlBuilder("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)") {
+    private Sql createInsertIntoDeleteDetail(final int id, final int masterId, final String description) {
+        return new Sql(new StringSqlBuilder("INSERT INTO delete_detail (detail_id, master_id, detail) values (?, ?, ?)") {
 
             @Override
             public void setParameters(SqlParameters p) throws SQLException {

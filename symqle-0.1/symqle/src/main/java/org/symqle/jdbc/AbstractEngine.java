@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.Parameterizer;
 import org.symqle.common.Row;
 import org.symqle.sql.Dialect;
@@ -32,12 +32,12 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     protected abstract void releaseConnection(Connection connection) throws SQLException;
 
     @Override
-    public int execute(final CompiledSql statement, final List<Option> options) throws SQLException {
+    public int execute(final Sql statement, final List<Option> options) throws SQLException {
         return execute(statement, null, options);
     }
 
     @Override
-    public int execute(final CompiledSql statement, final GeneratedKeys<?> keyHolder, final List<Option> options) throws SQLException {
+    public int execute(final Sql statement, final GeneratedKeys<?> keyHolder, final List<Option> options) throws SQLException {
         final Connection connection = getConnection();
         try {
             final PreparedStatement preparedStatement = keyHolder != null ?
@@ -68,7 +68,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         final Connection connection = getConnection();
         try {
             return scroll(connection, query, callback, options);
@@ -108,7 +108,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         }
 
         @Override
-        public synchronized int[] submit(final CompiledSql sql, final List<Option> options) throws SQLException {
+        public synchronized int[] submit(final Sql sql, final List<Option> options) throws SQLException {
             int[] rowsAffected = new int[0];
 
             final StatementKey newKey = new StatementKey(sql.text(), options);

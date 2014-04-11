@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Callback;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.Row;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
@@ -28,7 +28,7 @@ public class MockQueryEngine extends AbstractMockEngine implements QueryEngine {
     }
 
     @Override
-    public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         verify(query, options);
         int count = 0;
         for (Row result: resultSet) {

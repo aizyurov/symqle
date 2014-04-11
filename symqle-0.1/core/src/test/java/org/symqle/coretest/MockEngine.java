@@ -1,7 +1,7 @@
 package org.symqle.coretest;
 
 import org.symqle.common.Callback;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.Row;
 import org.symqle.common.SqlContext;
 import org.symqle.common.SqlParameters;
@@ -40,13 +40,13 @@ public class MockEngine extends AbstractMockEngine implements Engine {
     }
 
     @Override
-    public int execute(final CompiledSql sql, final List<Option> options) throws SQLException {
+    public int execute(final Sql sql, final List<Option> options) throws SQLException {
         verify(sql, options);
         return affectedRows;
     }
 
     @Override
-    public int execute(final CompiledSql sql, final GeneratedKeys<?> keys, final List<Option> options) throws SQLException {
+    public int execute(final Sql sql, final GeneratedKeys<?> keys, final List<Option> options) throws SQLException {
         verify(sql, options);
         return affectedRows;
     }
@@ -54,7 +54,7 @@ public class MockEngine extends AbstractMockEngine implements Engine {
     public Batcher newBatcher(int ignored) {
         return new Batcher() {
             @Override
-            public int[] submit(final CompiledSql sql, final List<Option> options) throws SQLException {
+            public int[] submit(final Sql sql, final List<Option> options) throws SQLException {
                 verify(sql, options);
                 final int[] result = new int[affectedRows];
                 Arrays.fill(result, 1);
@@ -78,7 +78,7 @@ public class MockEngine extends AbstractMockEngine implements Engine {
 
 
     @Override
-    public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         // TODO implement
         throw new RuntimeException("Not implemented");
     }

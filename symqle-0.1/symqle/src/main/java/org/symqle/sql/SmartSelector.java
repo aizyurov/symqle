@@ -263,7 +263,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public int scroll(final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+        public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
             return 0;
         }
 

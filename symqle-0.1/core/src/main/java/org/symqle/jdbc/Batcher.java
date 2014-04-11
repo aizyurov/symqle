@@ -1,6 +1,6 @@
 package org.symqle.jdbc;
 
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,7 +20,7 @@ public interface Batcher {
      * empty array if nothing flushed.
      * @throws SQLException
      */
-    int[] submit(CompiledSql sql, List<Option> options) throws SQLException;
+    int[] submit(Sql sql, List<Option> options) throws SQLException;
 
     /**
      * flushes all pending updates to database

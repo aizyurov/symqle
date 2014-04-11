@@ -4,7 +4,7 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.Row;
 import org.symqle.sql.Dialect;
 
@@ -18,7 +18,7 @@ public interface QueryEngine  {
 
     List<Option> getOptions();
 
-    int scroll(CompiledSql query, Callback<Row> callback, List<Option> options) throws SQLException;
+    int scroll(Sql query, Callback<Row> callback, List<Option> options) throws SQLException;
 
     String getDatabaseName();
 }

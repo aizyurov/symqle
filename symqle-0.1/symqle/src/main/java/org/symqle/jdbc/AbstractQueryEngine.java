@@ -1,7 +1,7 @@
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
-import org.symqle.common.CompiledSql;
+import org.symqle.common.Sql;
 import org.symqle.common.Parameterizer;
 import org.symqle.common.Row;
 import org.symqle.common.SqlParameters;
@@ -59,7 +59,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
         return Collections.unmodifiableList(Arrays.asList(options));
     }
 
-    protected final  int scroll(final Connection connection, final CompiledSql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
         final PreparedStatement preparedStatement = connection.prepareStatement(query.text());
         try {
             setupStatement(preparedStatement, query, options);
