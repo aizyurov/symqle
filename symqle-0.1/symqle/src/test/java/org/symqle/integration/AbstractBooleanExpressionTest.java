@@ -24,7 +24,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
      * @return
      */
     private AbstractBooleanExpression createBasicCondition(final Employee employee) {
-        return employee.retired.asPredicate().or(employee.hireDate.ge(new Date(108, 9, 1)));
+        return employee.retired.asBoolean().or(employee.hireDate.ge(new Date(108, 9, 1)));
     }
 
     public void testAdapt() throws Exception {
@@ -77,7 +77,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("March", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "FALSE" at line 1, column 92
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -92,7 +92,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Cooper", "First", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -107,7 +107,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("March", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 96.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -122,7 +122,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 96.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -137,7 +137,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Cooper", "First", "Pedersen"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -152,7 +152,7 @@ public class AbstractBooleanExpressionTest extends AbstractIntegrationTestBase i
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 

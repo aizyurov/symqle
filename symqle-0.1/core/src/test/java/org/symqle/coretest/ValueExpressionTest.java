@@ -62,7 +62,7 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testWhere() throws Exception {
-        final String sql = createValueExpression().where(person.married.asPredicate()).showQuery(new GenericDialect());
+        final String sql = createValueExpression().where(person.married.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name = T0.nick AS C0 FROM person AS T0 WHERE T0.married", sql);
     }
 
@@ -132,7 +132,7 @@ public class ValueExpressionTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(createValueExpression().asPredicate()).showQuery(new GenericDialect());
+        final String sql = person.id.where(createValueExpression().asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.name = T0.nick)", sql);
     }
 

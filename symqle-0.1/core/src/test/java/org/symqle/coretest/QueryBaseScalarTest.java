@@ -46,7 +46,7 @@ public class QueryBaseScalarTest extends SqlTestCase {
 
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(employee.id.selectAll().queryValue().asPredicate()).showQuery(new GenericDialect());
+        final String sql = person.id.where(employee.id.selectAll().queryValue().asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT ALL T1.id FROM employee AS T1)", sql);
     }
 

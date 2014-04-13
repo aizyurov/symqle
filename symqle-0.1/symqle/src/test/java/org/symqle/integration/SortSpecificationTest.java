@@ -29,7 +29,7 @@ public class SortSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(null, "xyz", "abc"), list);
         } catch (SQLException e) {
             // MySQL does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 }

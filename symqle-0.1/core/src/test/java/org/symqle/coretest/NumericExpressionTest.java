@@ -234,7 +234,7 @@ public class NumericExpressionTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(createNumericExpression().asPredicate()).showQuery(new GenericDialect());
+        String sql = person.id.where(createNumericExpression().asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.id + ?)", sql);
     }
 

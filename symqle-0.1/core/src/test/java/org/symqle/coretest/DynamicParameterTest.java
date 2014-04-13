@@ -88,14 +88,14 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testAsFunctionArgument() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
         final Column<Long> id = person.id;
-        final String sql = SqlFunction.create("abs", CoreMappers.LONG).apply(param).where(id.asPredicate()).showQuery(new GenericDialect());
+        final String sql = SqlFunction.create("abs", CoreMappers.LONG).apply(param).where(id.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT abs(?) AS C1 FROM person AS T1 WHERE T1.id", sql);
     }
 
     public void testAsCondition() throws Exception {
         final Column<Long> id = person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
-        final String sql = id.where(param.asPredicate()).showQuery(new GenericDialect());
+        final String sql = id.where(param.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ?", sql);
     }
 
@@ -318,14 +318,14 @@ public class DynamicParameterTest extends SqlTestCase {
     public void testOpposite() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
-        String sql = param.opposite().where(id.asPredicate()).showQuery(new GenericDialect());
+        String sql = param.opposite().where(id.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT - ? AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
     public void testCast() throws Exception {
         final Column<Long> id  =  person.id;
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
-        String sql = param.cast("INTEGER").where(id.asPredicate()).showQuery(new GenericDialect());
+        String sql = param.cast("INTEGER").where(id.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT CAST(? AS INTEGER) AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 

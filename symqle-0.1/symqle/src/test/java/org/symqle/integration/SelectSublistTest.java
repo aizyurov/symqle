@@ -64,7 +64,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -80,7 +80,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -96,7 +96,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -112,7 +112,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -128,7 +128,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -144,7 +144,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -203,7 +203,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -219,7 +219,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -235,7 +235,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -251,7 +251,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -267,7 +267,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -283,7 +283,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 

@@ -124,10 +124,10 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
     }
 
     /**
-     * Test AbstractSearchedWhenClause#asPredicate()
+     * Test AbstractSearchedWhenClause#asBoolean()
      */
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         try {
             InsertTable insertTable = new InsertTable();
             insertTable.delete().execute(getEngine());
@@ -142,7 +142,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
                             .also(insertTable.text.set("xyz")))).execute(getEngine());
             final AbstractSearchedWhenClause<Integer> whenClauseBaseList =
                     insertTable.text.eq("abc").then(insertTable.payload);;
-            final List<String> list = insertTable.text.where(whenClauseBaseList.asPredicate()).list(getEngine());
+            final List<String> list = insertTable.text.where(whenClauseBaseList.asBoolean()).list(getEngine());
             // "abc" -> 1 -> true
             // "def" -> null -> false
             // "xyz" -> null -> false
@@ -150,7 +150,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         } catch (SQLException e) {
             // ERROR 42846: Cannot convert types 'INTEGER' to 'BOOLEAN'
             // org.postgresql.util.PSQLException: ERROR: cannot cast type numeric to boolean
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -161,7 +161,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
     public void test_asc_() throws Exception {
         final Employee employee = new Employee();
         final List<String> expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             // database(s) with NULLS FIRST default
             expected = Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood");
         } else {
@@ -199,7 +199,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         assertTrue(list.toString(), list.remove(null));
         assertTrue(list.toString(), list.remove(null));
         assertTrue(list.toString(), list.remove("Margaret"));
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             // no extra spaces added when casted to CHAR
             assertTrue(list.toString(), list.remove("James"));
         } else {
@@ -244,7 +244,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -367,7 +367,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
     public void test_desc_() throws Exception {
         final Employee employee = new Employee();
         final List<String> expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             // database(s) with NULLS FIRST default - DESC with nulls last
             expected = Arrays.asList("Redwood", "First", "Cooper", "March", "Pedersen");
         } else {
@@ -511,7 +511,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -531,7 +531,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -550,7 +550,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -568,7 +568,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -587,7 +587,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -605,7 +605,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -658,7 +658,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         } catch (SQLException e) {
             //derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
             //org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE cannot be applied to the nullable side of an outer join
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -804,7 +804,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -823,7 +823,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -842,7 +842,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -861,7 +861,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -880,7 +880,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -899,7 +899,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -942,7 +942,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         Label label = new Label();
         final List<String> list = whenClause.label(label).orderBy(label).list(getEngine());
         final List<String> expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             // database(s) with NULLS FIRST default
             expected = Arrays.asList(null, null, null, "James", "Margaret");
         } else {
@@ -1280,7 +1280,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
 //	at org.apache.derby.impl.sql.execute.BasicNoPutResultSetImpl.open(Unknown Source)
 //	at org.apache.derby.impl.sql.GenericPreparedStatement.executeStmt(Unknown Source)
 //	at org.apache.derby.impl.sql.GenericPreparedStatement.execute(Unknown Source)
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1338,7 +1338,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertEquals(Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1355,7 +1355,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
         } catch (SQLException e) {
             // mysql: does not support NULLS LAST:
                 // You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'NULLS LAST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1482,7 +1482,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
     public void test_orderBy_QueryExpressionBody_SortSpecification_SortSpecification_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             // database(s) with NULLS FIRST default
             expected = Arrays.asList("Cooper", "March", "Pedersen", "First", "Redwood");
         } else {
@@ -1950,7 +1950,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1977,7 +1977,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1999,7 +1999,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -2021,7 +2021,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
     /**
@@ -2042,7 +2042,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -2064,7 +2064,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 

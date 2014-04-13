@@ -117,9 +117,9 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     protected String validCollationNameForVarchar() {
         final String collationName;
         final String databaseName = getEngine().getDatabaseName();
-        if (databaseName.equals("MySQL")) {
+        if (databaseName.equals(SupportedDb.MYSQL)) {
             collationName = "utf8_unicode_ci";
-        } else if (databaseName.equals("PostgreSQL")) {
+        } else if (databaseName.equals(SupportedDb.POSTGRESQL)) {
             collationName = "\"en_US.utf8\"";
         } else {
             collationName = "default";
@@ -130,9 +130,9 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     protected String validCollationNameForChar() {
         final String collationName;
         final String databaseName = getEngine().getDatabaseName();
-        if (databaseName.equals("MySQL")) {
+        if (databaseName.equals(SupportedDb.MYSQL)) {
             collationName = "utf8mb4_unicode_ci";
-        } else if (databaseName.equals("PostgreSQL")) {
+        } else if (databaseName.equals(SupportedDb.POSTGRESQL)) {
             collationName = "\"en_US.utf8\"";
         } else {
             collationName = "default";
@@ -143,9 +143,9 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     protected String validCollationNameForNumber() {
         final String collationName;
         final String databaseName = getEngine().getDatabaseName();
-        if (databaseName.equals("MySQL")) {
+        if (databaseName.equals(SupportedDb.MYSQL)) {
             collationName = "latin1_general_ci";
-        } else if (databaseName.equals("PostgreSQL")) {
+        } else if (databaseName.equals(SupportedDb.POSTGRESQL)) {
             collationName = "\"en_US\"";
         } else {
             collationName = "default";

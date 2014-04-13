@@ -75,7 +75,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(121.0), list);
         } catch (SQLException e) {
             // Derby: ERROR 42Y03: 'POWER' is not recognized as a function or procedure.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -88,7 +88,7 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
             assertEquals(Arrays.asList(1331.0), list);
         } catch (SQLException e) {
             // Derby: ERROR 42Y03: 'POWER' is not recognized as a function or procedure.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 

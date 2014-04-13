@@ -27,7 +27,7 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
 
 
     public void testQueryValueBooleanValue() throws Exception {
-        final String sql = person.id.where(createQueryExpressionBodyScalar().queryValue().asPredicate()).showQuery(new GenericDialect());
+        final String sql = person.id.where(createQueryExpressionBodyScalar().queryValue().asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1 UNION SELECT T2.id FROM manager AS T2)", sql);
     }
 

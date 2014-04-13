@@ -119,9 +119,9 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.retired.asPredicate()).list(getEngine());
+        final List<String> list = employee.lastName.where(employee.retired.asBoolean()).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
@@ -150,7 +150,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
         try {
             assertEquals(Arrays.asList("Cooper  ", "First   ", "March   ", "Pedersen", "Redwood "), list);
         } catch (AssertionFailedError e) {
-            if ("MySQL".equals(getDatabaseName())) {
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
                 // mysql trheats CHAR as VARCHAR, blanks are not appended
                 assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
             } else {
@@ -175,7 +175,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(Arrays.asList("Margaret"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 63
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -319,7 +319,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -332,7 +332,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -348,7 +348,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertTrue(list.toString(), list.contains("Alex"));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -364,7 +364,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertTrue(list.toString(), list.contains("Alex"));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -377,7 +377,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -390,7 +390,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "Cooper")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -511,7 +511,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -524,7 +524,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -537,7 +537,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -550,7 +550,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -563,7 +563,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -576,7 +576,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -830,7 +830,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -842,7 +842,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals("Cooper", list.get(list.size()-1));
         } catch (SQLException e) {
             // mysql does not support NULLS LAST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -946,7 +946,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(Arrays.asList(4), list);
         } catch (SQLException e) {
             // java.sql.SQLException: The exception 'java.lang.NoSuchMethodError: org.apache.derby.iapi.types.ConcatableDataValue.locate(Lorg/apache/derby/iapi/types/StringDataValue;Lorg/apache/derby/iapi/types/NumberDataValue;Lorg/apache/derby/iapi/types/NumberDataValue;)Lorg/apache/derby/iapi/types/NumberDataValue;' was thrown while evaluating an expression.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1085,7 +1085,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(Arrays.asList("garet"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1098,7 +1098,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(Arrays.asList("gare"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1119,7 +1119,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(Arrays.asList("Marg"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1132,7 +1132,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(Arrays.asList("g"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1335,7 +1335,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
             assertEquals(expected, list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: Operation requires a scrollable ResultSet, but this ResultSet is FORWARD_ONLY
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1349,7 +1349,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
         Collections.sort(list);
         // some database engines to not honor setMaxFieldSize
         // mysql,...
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             assertEquals(fullNames, list);
         } else {
             assertEquals(truncatedNames, list);
@@ -1360,8 +1360,8 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
         // derby: does not honor queryTimeout
         // org.postgresql.util.PSQLException: Method org.postgresql.jdbc4.Jdbc4PreparedStatement.setQueryTimeout(int) is not yet implemented
         // skip this test
-        if ("Apache Derby".equals(getDatabaseName())
-                || "PostgreSQL".equals(getDatabaseName())) {
+        if (SupportedDb.APACHE_DERBY.equals(getDatabaseName())
+                || SupportedDb.POSTGRESQL.equals(getDatabaseName())) {
             return;
         }
         final Engine engine = getEngine();

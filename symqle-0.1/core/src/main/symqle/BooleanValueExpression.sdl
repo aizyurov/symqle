@@ -98,13 +98,13 @@ BooleanPrimary ::=
     LEFT_PAREN bve:BooleanExpression RIGHT_PAREN :: implicit
 |
     /**
-     * Converts {@code this} to logical expression.
+     * Converts {@code this} to boolean primary.
      * {@code this} should have database type convertable to BOOLEAN,
      * consult your database documentation for available implicit conversions.
      * @return {@code this} as logical expression, which can be used in conditions and in
      * logical operations.
      */
-    value:ValueExpressionPrimary<?> :: AbstractBooleanPrimary asPredicate
+    value:ValueExpressionPrimary<?> :: AbstractBooleanPrimary asBoolean
 ;
 
 

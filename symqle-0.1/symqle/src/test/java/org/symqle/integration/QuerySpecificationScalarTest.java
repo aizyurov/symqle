@@ -52,7 +52,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -66,7 +66,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -80,7 +80,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -94,7 +94,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -108,7 +108,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -122,7 +122,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -176,7 +176,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -190,7 +190,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -204,7 +204,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -218,7 +218,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -232,7 +232,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -246,7 +246,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 

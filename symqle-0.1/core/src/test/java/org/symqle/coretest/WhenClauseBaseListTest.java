@@ -264,7 +264,7 @@ public class WhenClauseBaseListTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        String sql = person.id.where(person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).asPredicate()).showQuery(new GenericDialect());
+        String sql = person.id.where(person.age.gt(20L).then(person.id).orWhen(person.age.gt(1L).then(person.age)).asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.id WHEN T0.age > ? THEN T0.age END", sql);
     }
 

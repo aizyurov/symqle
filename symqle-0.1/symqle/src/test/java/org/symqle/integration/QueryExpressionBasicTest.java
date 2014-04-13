@@ -44,7 +44,7 @@ public class QueryExpressionBasicTest extends AbstractIntegrationTestBase implem
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 

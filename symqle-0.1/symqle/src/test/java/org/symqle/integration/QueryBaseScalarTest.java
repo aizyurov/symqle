@@ -62,7 +62,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -76,7 +76,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -90,7 +90,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -104,7 +104,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -118,7 +118,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -132,7 +132,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -182,7 +182,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -196,7 +196,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -210,7 +210,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -224,7 +224,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -238,7 +238,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -252,7 +252,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -418,7 +418,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42879: The ORDER BY clause may not contain column 'LAST_NAME', since the query specifies DISTINCT and that column does not appear in the query result
             // org.postgresql.util.PSQLException: ERROR: for SELECT DISTINCT, ORDER BY expressions must appear in select list
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 

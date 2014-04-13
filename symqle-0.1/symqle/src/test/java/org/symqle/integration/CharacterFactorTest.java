@@ -36,7 +36,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
 
     @Override
     protected void runTest() throws Throwable {
-        if (!getDatabaseName().equals("Apache Derby")) {
+        if (!getDatabaseName().equals(SupportedDb.APACHE_DERBY)) {
             super.runTest();
         }
     }
@@ -52,7 +52,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(7, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -67,7 +67,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(6, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -82,7 +82,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(6, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -107,11 +107,11 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         InsertTable insertTable = new InsertTable();
         insertTable.delete().execute(getEngine());
         insertTable.insert(insertTable.id.set(1).also(insertTable.text.set("1"))).execute(getEngine());
-        final List<Integer> list = insertTable.id.where(insertTable.text.collate(validCollationNameForVarchar()).asPredicate()).list(getEngine());
+        final List<Integer> list = insertTable.id.where(insertTable.text.collate(validCollationNameForVarchar()).asBoolean()).list(getEngine());
         assertEquals(Arrays.asList(1), list);
     }
 
@@ -137,7 +137,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(2.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function avg(character varying) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -147,7 +147,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
         final List<String> list = employee.lastName.collate(validCollationNameForVarchar()).cast("CHAR(10)")
                 .orderBy(employee.lastName)
                 .list(getEngine());
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } else {
             assertEquals(Arrays.asList("Cooper    ", "First     ", "March     ", "Pedersen  ", "Redwood   "), list);
@@ -270,7 +270,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(3, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -285,7 +285,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(3, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -300,7 +300,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(3, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -345,7 +345,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -360,7 +360,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -376,7 +376,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -391,7 +391,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -407,7 +407,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -422,7 +422,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -563,7 +563,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -579,7 +579,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -595,7 +595,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -611,7 +611,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -627,7 +627,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -643,7 +643,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -806,7 +806,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("c"), list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function max(character varying) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -822,7 +822,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("a"), list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function max(character varying) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -837,7 +837,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(12, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -852,7 +852,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(12, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -867,7 +867,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(12, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -965,7 +965,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(3, 2), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -982,7 +982,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(2, 3), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -996,7 +996,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("-5"), list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1091,7 +1091,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(4), list);
         } catch (SQLException e) {
             //org.postgresql.util.PSQLException: ERROR: syntax error at or near "COLLATE"
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1105,7 +1105,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(4), list);
         } catch (SQLException e) {
             //org.postgresql.util.PSQLException: ERROR: syntax error at or near "COLLATE"
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1119,7 +1119,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(8), list);
         } catch (SQLException e) {
             //org.postgresql.util.PSQLException: ERROR: syntax error at or near "COLLATE"
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1189,7 +1189,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(3, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1204,7 +1204,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(4, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1219,7 +1219,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(4, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: character varying + numeric
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1233,7 +1233,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("garet"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1247,7 +1247,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("gare"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1263,7 +1263,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("bcd"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1280,7 +1280,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("bc"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1297,7 +1297,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("bc"), list);
         } catch (SQLException e) {
             // ERROR: function pg_catalog.substring(character varying, numeric) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1332,7 +1332,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
             assertEquals(6, list.get(0).intValue());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function sum(character varying) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 

@@ -89,7 +89,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             //  org.postgresql.util.PSQLException: ERROR: aggregates not allowed in WHERE clause
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -109,24 +109,24 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
         } catch (SQLException e) {
             // ERROR 42X01: Syntax error: Encountered "," at line 1, column 350.
             //  org.postgresql.util.PSQLException: ERROR: aggregates not allowed in WHERE clause
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         final Employee employee = new Employee();
         InsertTable insertTable = new InsertTable();
         insertTable.delete().execute(getEngine());
-        final String trueText = "MySQL".equals(getDatabaseName()) ? "1" : "true";
+        final String trueText = SupportedDb.MYSQL.equals(getDatabaseName()) ? "1" : "true";
         insertTable.insert(insertTable.id.set(0).also(insertTable.text.set(trueText))).execute(getEngine());
         final AbstractValueExpressionPrimary<String> primary = insertTable.text.queryValue();
 
-        final List<Integer> list = employee.empId.count().where(primary.asPredicate()).list(getEngine());
+        final List<Integer> list = employee.empId.count().where(primary.asBoolean()).list(getEngine());
         assertEquals(Arrays.asList(5), list);
 
         insertTable.update(insertTable.text.set("false")).execute(getEngine());
-        final List<Integer> list2 = employee.empId.count().where(primary.asPredicate()).list(getEngine());
+        final List<Integer> list2 = employee.empId.count().where(primary.asBoolean()).list(getEngine());
         assertEquals(Arrays.asList(0), list2);
     }
 
@@ -155,7 +155,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
         final List<Pair<String, String>> list = createPrimary(department).cast("CHAR(6)").pair(department.deptName).orderBy(department.deptName)
                 .list(getEngine());
         final List<Pair<String, String>> expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             expected = Arrays.asList(Pair.make("First", "DEV"), Pair.make("March", "HR"));
         } else {
             expected = Arrays.asList(Pair.make("First ", "DEV"), Pair.make("March ", "HR"));
@@ -186,7 +186,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -355,7 +355,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -375,7 +375,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Jones"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -395,7 +395,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -415,7 +415,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Jones"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -435,7 +435,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -455,7 +455,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Jones"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -480,7 +480,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -590,7 +590,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -610,7 +610,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -630,7 +630,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -650,7 +650,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -670,7 +670,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -690,7 +690,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -979,7 +979,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -993,7 +993,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList("DEV", "HR"), list);
         } catch (SQLException e) {
             // mysql does not support NULLS LAST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1094,7 +1094,7 @@ test_limit_int();    }
             assertEquals(Arrays.asList(4), list);
         } catch (SQLException e) {
             // Caused by: java.lang.NoSuchMethodError: org.apache.derby.iapi.types.ConcatableDataValue.locate(Lorg/apache/derby/iapi/types/StringDataValue;Lorg/apache/derby/iapi/types/NumberDataValue;Lorg/apache/derby/iapi/types/NumberDataValue;)Lorg/apache/derby/iapi/types/
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1158,7 +1158,7 @@ test_limit_int();    }
         final One one = new One();
         final String sql = one.id.queryValue().showQuery(getEngine().getDialect(), Option.allowNoTables(true));
         final Pattern expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             expected = Pattern.compile("SELECT\\(SELECT ([A-Z][A-Z0-9]*)\\.id FROM one AS \\1\\) AS [A-Z][A-Z0-9]*");
         } else {
             expected = Pattern.compile("SELECT\\(SELECT ([A-Z][A-Z0-9]*)\\.id FROM one AS \\1\\) AS [A-Z][A-Z0-9]* FROM\\(VALUES\\(1\\)\\) AS [A-Z][A-Z0-9]*");

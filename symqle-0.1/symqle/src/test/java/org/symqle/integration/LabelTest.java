@@ -52,7 +52,7 @@ public class LabelTest extends AbstractIntegrationTestBase implements LabelTestS
             assertEquals(Arrays.asList(Pair.make((String) null, "Cooper"), Pair.make("DEV", "First")), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -70,7 +70,7 @@ public class LabelTest extends AbstractIntegrationTestBase implements LabelTestS
             assertEquals(Arrays.asList(Pair.make("DEV", "First"), Pair.make((String) null, "Cooper")), list);
         } catch (SQLException e) {
             // mysql does not support NULLS LAST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 

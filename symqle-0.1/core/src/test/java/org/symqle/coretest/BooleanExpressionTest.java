@@ -10,11 +10,11 @@ import org.symqle.testset.AbstractBooleanExpressionTestSet;
 public class BooleanExpressionTest extends SqlTestCase implements AbstractBooleanExpressionTestSet {
 
     private AbstractBooleanExpression createBooleanExpression() {
-        return person.alive.asPredicate().or(person.cute.asPredicate());
+        return person.alive.asBoolean().or(person.cute.asBoolean());
     }
 
     public void testAdapt() {
-        final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asPredicate();
+        final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asBoolean();
         final AbstractBooleanExpression abstractBooleanExpression = AbstractBooleanExpression.adapt(abstractBooleanPrimary);
         final String sql1 = person.id.where(abstractBooleanPrimary).showQuery(new GenericDialect());
         final String sql2 = person.id.where(abstractBooleanExpression).showQuery(new GenericDialect());
@@ -23,13 +23,13 @@ public class BooleanExpressionTest extends SqlTestCase implements AbstractBoolea
 
     @Override
     public void test_and_BooleanFactor() {
-        final String sql = person.id.where(createBooleanExpression().and(person.smart.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(createBooleanExpression().and(person.smart.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.cute) AND T0.smart", sql);
     }
 
     @Override
     public void test_and_BooleanTerm_BooleanFactor_1() {
-        final BooleanTerm abstractBooleanPrimary = person.smart.asPredicate();
+        final BooleanTerm abstractBooleanPrimary = person.smart.asBoolean();
         final String sql = person.id.where(abstractBooleanPrimary.and(createBooleanExpression())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.smart AND(T0.alive OR T0.cute)", sql);
     }
@@ -85,13 +85,13 @@ public class BooleanExpressionTest extends SqlTestCase implements AbstractBoolea
 
     @Override
     public void test_or_BooleanExpression_BooleanTerm_1() {
-        final String sql = person.id.where(person.alive.asPredicate().or(person.smart.asPredicate()).or(createBooleanExpression())).showQuery(new GenericDialect());
+        final String sql = person.id.where(person.alive.asBoolean().or(person.smart.asBoolean()).or(createBooleanExpression())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive OR T0.smart OR(T0.alive OR T0.cute)", sql);
     }
 
     @Override
     public void test_or_BooleanTerm() {
-        final String sql = person.id.where(createBooleanExpression().or(person.smart.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(createBooleanExpression().or(person.smart.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive OR T0.cute OR T0.smart", sql);
     }
 

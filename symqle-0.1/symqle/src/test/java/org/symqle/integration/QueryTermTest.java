@@ -26,7 +26,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
 
     @Override
     protected void runTest() throws Throwable {
-        if (!getDatabaseName().equals("MySQL")) {
+        if (!getDatabaseName().equals(SupportedDb.MYSQL)) {
             super.runTest();
         }
     }
@@ -121,7 +121,7 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
             // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with UNION/INTERSECT/EXCEPT
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 

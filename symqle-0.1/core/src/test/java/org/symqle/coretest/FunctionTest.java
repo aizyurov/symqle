@@ -74,7 +74,7 @@ public class FunctionTest extends SqlTestCase {
 
     public void testAsCondition() throws Exception {
         final Column<Long> id = person.id;
-        final String sql = id.where(abs(id).asPredicate()).showQuery(new GenericDialect());
+        final String sql = id.where(abs(id).asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id)", sql);
     }
 

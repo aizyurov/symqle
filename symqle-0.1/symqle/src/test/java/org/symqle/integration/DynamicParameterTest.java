@@ -39,7 +39,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(3000.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // ERROR 42X35: It is not allowed for both operands of '+' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -84,11 +84,11 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         final Employee employee = new Employee();
         final DynamicParameter<Boolean> param = DynamicParameter.create(Mappers.BOOLEAN, true);
         final List<String> list = employee.lastName
-                .where(employee.firstName.eq("Margaret").and(param.asPredicate()))
+                .where(employee.firstName.eq("Margaret").and(param.asBoolean()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("Redwood"), list);
@@ -103,7 +103,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -116,7 +116,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'AVG' operator is not allowed to take a ? parameter as an operand.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -130,7 +130,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1, 1, 1, 1, 1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -144,7 +144,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(3, 3, 3, 3, 3), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -156,7 +156,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Success"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 10.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -169,7 +169,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -190,7 +190,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Ms. Redwood"), list);
         } catch (SQLException e) {
             // ERROR 42X35: It is not allowed for both operands of '||' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -212,7 +212,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("FRA", "RUS", "USA"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -226,7 +226,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'COUNT' operator is not allowed to take a ? parameter as an operand
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -240,7 +240,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(2), list);
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'COUNT' operator is not allowed to take a ? parameter as an operand
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -253,7 +253,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -268,7 +268,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -289,7 +289,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(2.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -309,7 +309,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '=' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -339,7 +339,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -353,7 +353,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -369,7 +369,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -385,7 +385,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -401,7 +401,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -417,7 +417,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support EXCEPT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -431,7 +431,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("FRA", "RUS", "USA"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -442,7 +442,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -453,7 +453,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -467,7 +467,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '>=' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -501,7 +501,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '>' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -545,7 +545,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
            // derby: ERROR 42X35: It is not allowed for both operands of 'IN' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -559,7 +559,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First"), list);
         } catch (SQLException e) {
            // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -572,7 +572,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -585,7 +585,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -598,7 +598,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -611,7 +611,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -624,7 +624,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -637,7 +637,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support INTERSECT
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -669,7 +669,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("abc"), list);
         } catch (SQLException e) {
             // Apache Derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -683,7 +683,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '<=' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -736,7 +736,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -749,7 +749,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -760,7 +760,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -772,7 +772,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '<' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -816,7 +816,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'MAX' operator is not allowed to take a ? parameter as an operand.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -831,7 +831,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(1, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'MAX' operator is not allowed to take a ? parameter as an operand.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -852,7 +852,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(12000.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // ERROR 42X35: It is not allowed for both operands of '*' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -874,7 +874,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X35: It is not allowed for both operands of '<>' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -921,7 +921,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
            // derby: ERROR 42X35: It is not allowed for both operands of 'IN' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -935,7 +935,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
            // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -967,7 +967,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -981,7 +981,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
             // mysql: does not support NULLS FIRST
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 
@@ -993,7 +993,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(-1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
 
         }
     }
@@ -1017,7 +1017,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Cooper", "First"), list);
         } catch (SQLException e) {
             // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1030,7 +1030,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1, 1, 1, 1, 1), list);
         } catch (SQLException e) {
             // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1042,7 +1042,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(Pair.make(1, "Margaret")), redwood);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1054,7 +1054,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(Pair.make("Margaret", 1)), redwood);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1111,7 +1111,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(Pair.make("X", "Cooper"), Pair.make("X", "First"), Pair.make("X", "March"), Pair.make("X", "Pedersen"), Pair.make("X", "Redwood")), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1130,7 +1130,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
 
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1142,7 +1142,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1173,7 +1173,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(2000.0, list.get(0).doubleValue());
         } catch (SQLException e) {
             // ERROR 42X35: It is not allowed for both operands of '-' to be ? parameters.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1208,7 +1208,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     public void test_substring_NumericExpression_NumericExpression() throws Exception {
         final Employee employee = new Employee();
         final AbstractCastSpecification<Number> limit;
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             limit = employee.lastName.charLength().div(3).cast("DECIMAL(3)");
         } else {
             limit = employee.lastName.charLength().div(3).cast("INTEGER");
@@ -1270,7 +1270,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(2, list.get(0).intValue());
         } catch (SQLException e) {
             // derby: ERROR 42X36: The 'MAX' operator is not allowed to take a ? parameter as an operand.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1295,7 +1295,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1311,7 +1311,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1327,7 +1327,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1343,7 +1343,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1359,7 +1359,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1374,7 +1374,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1386,7 +1386,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("abc"), list);
         } catch (SQLException e) {
             // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1404,7 +1404,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(new HashSet<String>(Arrays.asList("RUS", "USA")), new HashSet<String>(list));
         } catch (SQLException e) {
             // derby: ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
 
     }
@@ -1423,7 +1423,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(expected, list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: integer ~~ character varying
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -1437,7 +1437,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: integer ~~ character varying
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 

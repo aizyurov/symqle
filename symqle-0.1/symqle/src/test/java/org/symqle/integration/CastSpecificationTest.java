@@ -74,11 +74,11 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         final Employee employee = new Employee();
-        final String castTarget = getDatabaseName().equals("MySQL") ? "DECIMAL(1)" : "BOOLEAN";
+        final String castTarget = getDatabaseName().equals(SupportedDb.MYSQL) ? "DECIMAL(1)" : "BOOLEAN";
         final List<String> list = employee.lastName
-                .where(employee.retired.cast(castTarget).asPredicate())
+                .where(employee.retired.cast(castTarget).asBoolean())
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
@@ -129,7 +129,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         } catch (SQLException e) {
             // derby: does not support COLLATE
             System.out.println(getDatabaseName());
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -280,7 +280,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -294,7 +294,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -307,7 +307,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -321,7 +321,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -334,7 +334,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -348,7 +348,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -477,7 +477,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -490,7 +490,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -503,7 +503,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -516,7 +516,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.00), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -529,7 +529,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -542,7 +542,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.00), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -813,7 +813,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals("Cooper", list.get(0));
         } catch (SQLException e) {
             // mysql;: does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -826,7 +826,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals("Cooper", list.get(4));
         } catch (SQLException e) {
             // mysql;: does not support NULLS LAST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -925,7 +925,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3), list);
         } catch (SQLException e) {
             // a bug in Apache Derby
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -984,7 +984,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList("sam"), insertTable.text.list(getEngine()));
         } catch (SQLException e) {
             // com.mysql.jdbc.MysqlDataTruncation: Data truncation: Truncated incorrect CHAR(3) value: 'sample'
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1044,7 +1044,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     public void test_substring_StringExpression_NumericExpression_1() throws Exception {
         final Employee employee = new Employee();
         final AbstractCastSpecification<Number> offset;
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             offset = employee.salary.div(1000).cast("DECIMAL(3)");
         } else {
             offset = employee.salary.div(1000).cast("INTEGER");
@@ -1060,7 +1060,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     public void test_substring_StringExpression_NumericExpression_NumericExpression_1() throws Exception {
         final Employee employee = new Employee();
         final AbstractCastSpecification<Number> offset;
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             offset = employee.salary.div(1000).cast("DECIMAL(3)");
         } else {
             offset = employee.salary.div(1000).cast("INTEGER");
@@ -1075,7 +1075,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     public void test_substring_StringExpression_NumericExpression_NumericExpression_2() throws Exception {
         final Employee employee = new Employee();
         final AbstractCastSpecification<Number> limit;
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             limit = employee.salary.div(1000).cast("DECIMAL(3)");
         } else {
             limit = employee.salary.div(1000).cast("INTEGER");

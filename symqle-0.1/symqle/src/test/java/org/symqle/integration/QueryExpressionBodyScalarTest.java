@@ -57,7 +57,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -71,7 +71,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -87,7 +87,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -101,7 +101,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -117,7 +117,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -131,7 +131,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -163,7 +163,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
             // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with UNION/INTERSECT/EXCEPT
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -186,7 +186,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -202,7 +202,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -216,7 +216,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -232,7 +232,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -246,7 +246,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -262,7 +262,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -363,7 +363,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James", "James", "James", "Margaret", "Margaret"), list);
         } catch (SQLException e) {
             // MySQL bug
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -386,7 +386,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
             // MySQL bug
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -409,7 +409,7 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
         } catch (SQLException e) {
             // MySQL bug
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 

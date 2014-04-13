@@ -443,7 +443,7 @@ public class CharacterFactorTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(characterFactor.asPredicate()).showQuery(new GenericDialect());
+        final String sql = person.id.where(characterFactor.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.name COLLATE latin1_general_ci)", sql);
     }
 

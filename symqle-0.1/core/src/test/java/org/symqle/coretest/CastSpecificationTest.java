@@ -93,7 +93,7 @@ public class CastSpecificationTest extends SqlTestCase {
 
     public void testAsCondition() throws Exception {
         final AbstractCastSpecification<Long> id = createCast();
-        final String sql = id.where(person.id.asPredicate()).showQuery(new GenericDialect());
+        final String sql = id.where(person.id.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT CAST(T0.id AS NUMBER(12,0)) AS C0 FROM person AS T0 WHERE T0.id", sql);
     }
 
@@ -565,7 +565,7 @@ public class CastSpecificationTest extends SqlTestCase {
     }
 
     public void testBooleanValue() throws Exception {
-        final String sql = person.id.where(person.name.cast("BOOLEAN").asPredicate()).showQuery(new GenericDialect());
+        final String sql = person.id.where(person.name.cast("BOOLEAN").asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.name AS BOOLEAN)", sql);
     }
 

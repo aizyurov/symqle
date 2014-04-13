@@ -87,18 +87,18 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         try {
             InsertTable insertTable = new InsertTable();
             insertTable.delete().execute(getEngine());
             insertTable.insert(insertTable.id.set(0).also(insertTable.text.set("zero"))).execute(getEngine());
             insertTable.insert(insertTable.id.set(-1).also(insertTable.text.set("one"))).execute(getEngine());
-            final List<String> list = insertTable.text.where(insertTable.id.mult(-1).asPredicate()).list(getEngine());
+            final List<String> list = insertTable.text.where(insertTable.id.mult(-1).asBoolean()).list(getEngine());
             assertEquals(Arrays.asList("one"), list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: cannot cast type numeric to boolean
             // ERROR 42846: Cannot convert types 'INTEGER' to 'BOOLEAN'
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -141,7 +141,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertTrue("Not expected: " + value, value > 4 && value < 10);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function char_length(double precision) does not exist
-            expectSQLException(e, "PostgreSQL");
+            expectSQLException(e, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -158,7 +158,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 23.
             // org.postgresql.util.PSQLException: ERROR: collations are not supported by type double precision
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -180,7 +180,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList("-1500Cooper", "-3000First", "-2000March", "-2000Pedersen", "-3000Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -194,7 +194,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -208,7 +208,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList("Cooper-1500", "First-3000", "March-2000", "Pedersen-2000", "Redwood-3000"), list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -337,7 +337,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -351,7 +351,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -365,7 +365,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -379,7 +379,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -393,7 +393,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -407,7 +407,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -550,7 +550,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0, -3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -564,7 +564,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0, -3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -578,7 +578,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -592,7 +592,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -606,7 +606,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -620,7 +620,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -696,7 +696,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: double precision ~~ character varying
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -714,7 +714,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: double precision ~~ character varying
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -917,7 +917,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: double precision !~ character varying
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -935,7 +935,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // derby: ERROR 42884: No authorized routine named 'LIKE' of type 'FUNCTION' having compatible arguments was found.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: double precision ~~ character varying
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -953,7 +953,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(2, 1, 3), list);
         } catch (SQLException e) {
             // mysql does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -971,7 +971,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(1, 3, 2), list);
         } catch (SQLException e) {
             // mysql does not support NULLS LAST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1022,7 +1022,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     @Override
     public void test_pair_SelectList() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.asPredicate()).list(getEngine());
+        final List<Pair<Number, String>> list = createTerm(employee).pair(employee.lastName).where(employee.retired.asBoolean()).list(getEngine());
         assertEquals(1, list.size());
         assertEquals(-1500, list.get(0).first().intValue());
         assertEquals("Cooper", list.get(0).second());
@@ -1031,7 +1031,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     @Override
     public void test_pair_SelectList_SelectList_1() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<String, Number>> list = employee.lastName.pair(createTerm(employee)).where(employee.retired.asPredicate()).list(getEngine());
+        final List<Pair<String, Number>> list = employee.lastName.pair(createTerm(employee)).where(employee.retired.asBoolean()).list(getEngine());
         assertEquals(1, list.size());
         assertEquals(-1500, list.get(0).second().intValue());
         assertEquals("Cooper", list.get(0).first());
@@ -1066,7 +1066,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.position(double precision, character varying) does not exist
             // apache Derby: ava.sql.SQLException: Java exception: ': java.lang.NullPointerException'.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1080,7 +1080,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.position(double precision, character varying) does not exist
             // apache Derby: ava.sql.SQLException: Java exception: ': java.lang.NullPointerException'.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1094,7 +1094,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.position(double precision, character varying) does not exist
             // apache Derby: ava.sql.SQLException: Java exception: ': java.lang.NullPointerException'.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1208,7 +1208,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(numeric, integer) does not exist
             // Apache Derby: ERROR 42X25: The 'SUBSTR' function is not allowed on the 'INTEGER' type.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1231,7 +1231,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(numeric, integer) does not exist
             // Apache Derby: ERROR 42X25: The 'SUBSTR' function is not allowed on the 'INTEGER' type.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1308,7 +1308,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(numeric, integer) does not exist
             // Apache Derby: ERROR 42X25: The 'SUBSTR' function is not allowed on the 'INTEGER' type.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -1331,7 +1331,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(numeric, integer) does not exist
             // Apache Derby: ERROR 42X25: The 'SUBSTR' function is not allowed on the 'INTEGER' type.
-            expectSQLException(e, "PostgreSQL", "Apache Derby");
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
         }
     }
 

@@ -22,7 +22,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
      * @return
      */
     private AbstractBooleanPrimary createBasicCondition(final Employee employee) {
-        return employee.retired.asPredicate();
+        return employee.retired.asBoolean();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "FALSE" at line 1, column 92
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -83,7 +83,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -98,7 +98,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
             assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 96.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -113,7 +113,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 96.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -128,7 +128,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column 92
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -143,7 +143,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -206,7 +206,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
     public void test_where_DeleteStatementBase_WhereClause_1() throws Exception {
         final InsertTable insertTable = new InsertTable();
         prepareTestData(insertTable);
-        final AbstractBooleanPrimary booleanPrimary = insertTable.active.asPredicate();
+        final AbstractBooleanPrimary booleanPrimary = insertTable.active.asBoolean();
         insertTable.delete().where(booleanPrimary).execute(getEngine());
         assertEquals(Arrays.asList("two"), insertTable.text.list(getEngine()));
     }
@@ -229,7 +229,7 @@ public class BooleanPrimaryTest extends AbstractIntegrationTestBase implements A
     public void test_where_UpdateStatementBase_WhereClause_1() throws Exception {
         final InsertTable insertTable = new InsertTable();
         prepareTestData(insertTable);
-        final AbstractBooleanPrimary booleanPrimary = insertTable.active.asPredicate();
+        final AbstractBooleanPrimary booleanPrimary = insertTable.active.asBoolean();
         insertTable.update(insertTable.text.set("modified")).where(booleanPrimary).execute(getEngine());
         final List<Pair<Integer, String>> list = insertTable.id.pair(insertTable.text).orderBy(insertTable.id).list(getEngine());
         assertEquals(Arrays.asList(

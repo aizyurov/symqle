@@ -28,7 +28,7 @@ public class SortOrderingSpecificationTest extends AbstractIntegrationTestBase i
             final List<String> list = insertTable.text.orderBy(sos.nullsFirst()).list(getEngine());
             assertEquals(Arrays.asList(null, "xyz", "abc"), list);
         } catch (SQLException e) {
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -47,7 +47,7 @@ public class SortOrderingSpecificationTest extends AbstractIntegrationTestBase i
             final List<String> list = insertTable.text.orderBy(sos.nullsLast()).list(getEngine());
             assertEquals(Arrays.asList( "xyz", "abc", null), list);
         } catch (SQLException e) {
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -64,7 +64,7 @@ public class SortOrderingSpecificationTest extends AbstractIntegrationTestBase i
         final AbstractSortOrderingSpecification sos = insertTable.text.desc();
         final List<String> list = insertTable.text.orderBy(sos).list(getEngine());
         final List<String> expected;
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             expected = Arrays.asList("xyz", "abc", null);
         } else {
             expected = Arrays.asList(null, "xyz", "abc");

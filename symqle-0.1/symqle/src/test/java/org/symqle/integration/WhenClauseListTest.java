@@ -29,7 +29,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     private AbstractSearchedWhenClauseList<Double> createNumericWCL(final Employee employee) {
-        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.asPredicate().then(employee.salary.opposite())).orElse(employee.department().manager().salary);
+        return employee.empId.eq(employee.department().manager().empId).then(employee.salary).orWhen(employee.retired.asBoolean().then(employee.salary.opposite())).orElse(employee.department().manager().salary);
     }
 
     private AbstractSearchedWhenClauseList<String> createNamesWCL(final Employee employee) {
@@ -111,7 +111,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_asPredicate_() throws Exception {
+    public void test_asBoolean_() throws Exception {
         try {
             InsertTable insertTable = new InsertTable();
             insertTable.delete().execute(getEngine());
@@ -128,7 +128,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
                     insertTable.text.eq("abc").then(insertTable.payload)
                     .orWhen(insertTable.text.eq("def").then(insertTable.payload.sub(2).map(Mappers.INTEGER)))
                     .orElse(insertTable.payload.sub(3).map(Mappers.INTEGER));
-            final List<String> list = insertTable.text.where(whenClauseBaseList.asPredicate()).list(getEngine());
+            final List<String> list = insertTable.text.where(whenClauseBaseList.asBoolean()).list(getEngine());
             // "abc" -> 1 -> true
             // "def" -> 2 - 2 = 0 -> false
             // "xyz" -> 3 - 3 = 0 -> false
@@ -136,7 +136,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         } catch (SQLException e) {
             // ERROR 42846: Cannot convert types 'INTEGER' to 'BOOLEAN'
             // org.postgresql.util.PSQLException: ERROR: cannot cast type numeric to boolean
-            expectSQLException(e, "Apache Derby", "PostgreSQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
         }
     }
 
@@ -168,7 +168,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
                 .orderBy(label)
                 .list(getEngine());
         final List<String> expected;
-        if ("MySQL".equals(getDatabaseName())) {
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             expected = Arrays.asList("Alex", "Bill", "high", "high", "low");
         } else {
             expected = Arrays.asList("Alex", "Bill", "high", "high", "low ");
@@ -203,7 +203,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -413,7 +413,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -429,7 +429,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -445,7 +445,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -460,7 +460,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -476,7 +476,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -491,7 +491,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -643,7 +643,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -658,7 +658,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -673,7 +673,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -688,7 +688,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -703,7 +703,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -718,7 +718,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -759,7 +759,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         final List<String> list = whenClauseList.label(label)
                 .orderBy(label).list(getEngine());
         final List<String> expected;
-        final List<String> databasesWithDefaultCaseInsensitiveCollation = Arrays.asList("MySQL", "PostgreSQL");
+        final List<String> databasesWithDefaultCaseInsensitiveCollation = Arrays.asList(SupportedDb.MYSQL, SupportedDb.POSTGRESQL);
         if (databasesWithDefaultCaseInsensitiveCollation.contains(getDatabaseName())) {
             // case insensitive
             expected = Arrays.asList("First", "James", "nobody", "nobody", "Redwood");
@@ -1049,7 +1049,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertEquals(Arrays.asList("def", "xyz", "abc"), list);
         } catch (SQLException e) {
             // MySQL does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 
@@ -1077,7 +1077,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertEquals(Arrays.asList("xyz", "abc", "def"), list);
         } catch (SQLException e) {
             // MySQL does not support NULLS FIRST
-            expectSQLException(e, "MySQL");
+            expectSQLException(e, SupportedDb.MYSQL);
         }
     }
 

@@ -24,12 +24,12 @@ public class PredicateTest extends SqlTestCase {
     }
 
     public void testAnd() throws Exception {
-        final String sql = person.id.where(createComparisonPredicate().and(person.smart.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().and(person.smart.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute AND T0.smart", sql);
     }
 
     public void testOr() throws Exception {
-        final String sql = person.id.where(createComparisonPredicate().or(person.smart.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(createComparisonPredicate().or(person.smart.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.cute OR T0.smart", sql);
     }
 
@@ -74,7 +74,7 @@ public class PredicateTest extends SqlTestCase {
     }
 
     public void testOrPredicate() throws Exception {
-        final String sql = person.id.where(person.alive.eq(person.smart).or(person.friendly.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(person.alive.eq(person.smart).or(person.friendly.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.smart OR T0.friendly", sql);
     }
 

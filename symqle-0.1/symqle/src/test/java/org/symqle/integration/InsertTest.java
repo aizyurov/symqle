@@ -131,7 +131,7 @@ public class InsertTest extends AbstractIntegrationTestBase implements AbstractI
         } catch (SQLException e) {
             // mysql: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'DEFAULT VALUES'
             // derby: ERROR 42X01: Syntax error: Encountered "DEFAULT" at line 1, column 25
-            expectSQLException(e, "Apache Derby", "MySQL");
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
     }
 

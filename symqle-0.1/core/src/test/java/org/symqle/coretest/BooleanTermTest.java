@@ -14,11 +14,11 @@ import org.symqle.sql.TableOrView;
 public class BooleanTermTest extends SqlTestCase {
 
     private AbstractBooleanTerm createBooleanTerm() {
-        return person.alive.asPredicate().and(person.cute.asPredicate());
+        return person.alive.asBoolean().and(person.cute.asBoolean());
     }
 
     public void testAdapt() throws Exception {
-        final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asPredicate();
+        final AbstractBooleanPrimary abstractBooleanPrimary = person.alive.asBoolean();
         final AbstractBooleanTerm adaptor = AbstractBooleanTerm.adapt(abstractBooleanPrimary);
         final String sql1 = person.id.where(abstractBooleanPrimary).showQuery(new GenericDialect());
         final String sql2 = person.id.where(adaptor).showQuery(new GenericDialect());
@@ -27,12 +27,12 @@ public class BooleanTermTest extends SqlTestCase {
     }
 
     public void testAnd() throws Exception {
-        final String sql = person.id.where(createBooleanTerm().and(person.smart.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(createBooleanTerm().and(person.smart.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive AND T0.cute AND T0.smart", sql);
     }
 
     public void testOr() throws Exception {
-        final String sql = person.id.where(createBooleanTerm().or(person.smart.asPredicate())).showQuery(new GenericDialect());
+        final String sql = person.id.where(createBooleanTerm().or(person.smart.asBoolean())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive AND T0.cute OR T0.smart", sql);
     }
 
@@ -74,12 +74,12 @@ public class BooleanTermTest extends SqlTestCase {
 
 
     public void testOrAnd() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().or(person.smart.asPredicate()).and(person.friendly.asPredicate().and(person.cute.asPredicate()))).showQuery(new GenericDialect());
+        final String sql = person.id.where(person.alive.asBoolean().or(person.smart.asBoolean()).and(person.friendly.asBoolean().and(person.cute.asBoolean()))).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(T0.alive OR T0.smart) AND(T0.friendly AND T0.cute)", sql);
     }
 
     public void testOrOr() throws Exception {
-        final String sql = person.id.where(person.alive.asPredicate().or(person.smart.asPredicate()).or(person.friendly.asPredicate().and(person.cute.asPredicate()))).showQuery(new GenericDialect());
+        final String sql = person.id.where(person.alive.asBoolean().or(person.smart.asBoolean()).or(person.friendly.asBoolean().and(person.cute.asBoolean()))).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive OR T0.smart OR T0.friendly AND T0.cute", sql);
     }
 

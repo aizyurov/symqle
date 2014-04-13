@@ -44,7 +44,7 @@ public class QueryExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Cooper"), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement
-            expectSQLException(e, "Apache Derby");
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
 
@@ -74,7 +74,7 @@ public class QueryExpressionTest extends AbstractIntegrationTestBase implements 
         final Employee employee = new Employee();
         final String sql = createQueryExpression(employee).showQuery(getEngine().getDialect());
         final Pattern expected;
-        if (getDatabaseName().equals("MySQL")) {
+        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
             expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 ORDER BY \\1.last_name LIMIT 0, 1");
         } else {
             expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 ORDER BY \\1.last_name FETCH FIRST 1 ROWS ONLY");
