@@ -14,6 +14,8 @@ drop table if exists delete_master
 
 drop table if exists one, insert_test, true_value, join_test_left, join_test_right, arithmetics, generated_keys, update_test
 
+drop table if exists item, attribute
+
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 
 create table country (country_id INTEGER PRIMARY KEY, name VARCHAR(100), code varchar(3))
@@ -135,6 +137,20 @@ create table all_types (
   t_LONGNVARCHAR tinytext,
   t_NCLOB text
 );
+
+create table item (
+  id bigint primary key,
+  name varchar(100)
+)
+
+create table attribute (
+  item_id bigint,
+  name varchar(50),
+  value varchar(100),
+  primary key (item_id, name),
+  foreign key (item_id) references item (id)
+)
+
 
 
 

@@ -141,3 +141,20 @@ create table all_types (t_BIT bigint,
   t_LONGNVARCHAR text,
   t_NCLOB text
 )
+
+drop table if exists attribute cascade
+
+drop table if exists item cascade
+
+create table item (
+  id bigint primary key,
+  name varchar(100)
+)
+
+create table attribute (
+  item_id bigint,
+  name varchar(50),
+  value varchar(100),
+  primary key (item_id, name),
+  foreign key (item_id) references item
+)

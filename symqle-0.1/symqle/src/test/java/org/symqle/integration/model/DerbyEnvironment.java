@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author lvovich
@@ -14,13 +15,14 @@ import java.util.Properties;
 public class DerbyEnvironment extends AbstractTestEnvironment {
     private final String url = "jdbc:derby:memory:symqle";
 
-    public DataSource prepareDataSource(Properties properties) throws Exception {
+    public DataSource prepareDataSource(final Properties properties, final AtomicReference<String> userNameHolder) throws Exception {
         final Connection connection = DriverManager.getConnection(url + ";create=true");
         initDatabase(connection, "defaultDbSetup.sql");
         connection.close();
         final ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(url);
         dataSource.setDriverClass(EmbeddedDriver.class.getName());
+        userNameHolder.set("APP");
         return dataSource;
     }
 

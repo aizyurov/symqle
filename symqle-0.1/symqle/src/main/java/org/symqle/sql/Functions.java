@@ -61,4 +61,14 @@ public class Functions {
         return power(base, DynamicParameter.create(CoreMappers.NUMBER, exponent));
     }
 
+    public static AbstractRoutineInvocation<String> toUpper(
+            final ValueExpression<String> arg) {
+        return SqlFunction.create("UPPER", Mappers.STRING).apply(arg);
+    }
+
+    public static AbstractRoutineInvocation<String> toLower(
+            final ValueExpression<String> arg) {
+        return SqlFunction.create("LOWER", Mappers.STRING).apply(arg);
+    }
+
 }

@@ -3,6 +3,7 @@ package org.symqle.integration;
 import org.symqle.common.CoreMappers;
 import org.symqle.integration.model.Arithmetics;
 import org.symqle.integration.model.Employee;
+import org.symqle.sql.Functions;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -90,6 +91,20 @@ public class FunctionsTest extends AbstractIntegrationTestBase {
             // Derby: ERROR 42Y03: 'POWER' is not recognized as a function or procedure.
             expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
+    }
+
+    public void testToUpper() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = Functions.toUpper(employee.lastName).where(employee.firstName.eq("Margaret"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("REDWOOD"), list);
+    }
+
+    public void testToLower() throws Exception {
+        final Employee employee = new Employee();
+        final List<String> list = Functions.toLower(employee.lastName).where(employee.firstName.eq("Margaret"))
+                .list(getEngine());
+        assertEquals(Arrays.asList("redwood"), list);
     }
 
 }

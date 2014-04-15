@@ -452,4 +452,17 @@ ValueExpressionPrimary<Time> ::=
     }
 ;
 
+ValueExpressionPrimary<String> ::=
+   /**
+    * {@code current_user}.
+    * @return ValueExpressionPrimary, which SQL code is {@code current_user}
+    */
+    CURRENT_USER :: public AbstractValueExpressionPrimary<String> currentUser {
+       public Mapper<String> getMapper() {
+           return CoreMappers.STRING;
+       }
+    }
+;
+
+
 

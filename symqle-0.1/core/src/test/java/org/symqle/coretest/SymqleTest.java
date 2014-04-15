@@ -7,7 +7,7 @@ import org.symqle.sql.Symqle;
 /**
  * @author lvovich
  */
-public class DateFunctionsTest extends SqlTestCase {
+public class SymqleTest extends SqlTestCase {
 
     public void testCurrentDate() throws Exception {
         final String sql = Symqle.currentDate().showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
@@ -25,6 +25,12 @@ public class DateFunctionsTest extends SqlTestCase {
         final String sql = Symqle.currentTime().showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
         assertSimilar("SELECT CURRENT_TIME AS C0 FROM dual AS T1", sql);
         assertEquals(CoreMappers.TIME, Symqle.currentTime().getMapper());
+    }
+
+    public void testCurrentUser() throws Exception {
+        final String sql = Symqle.currentUser().showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT CURRENT_USER AS C0 FROM dual AS T1", sql);
+        assertEquals(CoreMappers.STRING, Symqle.currentUser().getMapper());
     }
 
 }

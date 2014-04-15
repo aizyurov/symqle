@@ -6,6 +6,7 @@ import org.symqle.jdbc.DatabaseUtils;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author lvovich
@@ -13,11 +14,13 @@ import java.util.Properties;
 public class ExternalDbEnvironment extends AbstractTestEnvironment {
 
     @Override
-    public DataSource prepareDataSource(Properties properties) throws Exception {
+    public DataSource prepareDataSource(Properties properties, AtomicReference<String> userNameHolder) throws Exception {
         final ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(properties.getProperty("symqle.jdbc.url"));
         dataSource.setDriverClass(properties.getProperty("symqle.jdbc.driverClass"));
-        dataSource.setUser(properties.getProperty("symqle.jdbc.user"));
+        final String userName = properties.getProperty("symqle.jdbc.user");
+        dataSource.setUser(userName);
+        userNameHolder.set(userName);
         dataSource.setPassword(properties.getProperty("symqle.jdbc.password"));
         final String databaseName = DatabaseUtils.getDatabaseName(dataSource);
         String resource = databaseName + "DbSetup.sql";

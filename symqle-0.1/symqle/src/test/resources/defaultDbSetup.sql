@@ -123,3 +123,16 @@ create table all_types (
   t_NCLOB clob
 )
 
+create table item (
+  id bigint primary key,
+  name varchar(100)
+)
+
+create table attribute (
+  item_id bigint,
+  name varchar(50),
+  value varchar(100),
+  primary key (item_id, name),
+  foreign key (item_id) references item
+)
+

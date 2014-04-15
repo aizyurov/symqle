@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Base class for integration tests.
@@ -32,6 +33,8 @@ import java.util.Properties;
 public abstract class AbstractIntegrationTestBase extends TestCase {
 
     private static DataSource dataSource;
+
+    private static AtomicReference<String> userNameHolder = new AtomicReference<>();
 
     protected final DataSource getDataSource() {
         try {
@@ -59,18 +62,18 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
     protected final DataSource prepareDataSource() throws Exception {
         final String config = System.getProperty("org.symqle.integration.config");
         if (config == null) {
-            return new DerbyEnvironment().prepareDataSource(new Properties());
+            return new DerbyEnvironment().prepareDataSource(new Properties(), userNameHolder);
         } else {
             Properties properties = new Properties();
             final File propertiesFile = new File(config);
             properties.load(new FileInputStream(propertiesFile));
             final String environment = properties.getProperty("org.symqle.integration.environment");
             if (environment == null) {
-                return new ExternalDbEnvironment().prepareDataSource(properties);
+                return new ExternalDbEnvironment().prepareDataSource(properties, userNameHolder);
             } else {
                 try {
                     final TestEnvironment testEnvironment = (TestEnvironment) Class.forName(environment).newInstance();
-                    return testEnvironment.prepareDataSource(properties);
+                    return testEnvironment.prepareDataSource(properties, userNameHolder);
                 } catch (InstantiationException e) {
                     throw new RuntimeException("Misconfiguration error", e);
                 } catch (IllegalAccessException e) {
@@ -151,6 +154,10 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
             collationName = "default";
         }
         return collationName;
-}
+    }
+
+    public String currentUser() {
+        return userNameHolder.get();
+    }
 
 }

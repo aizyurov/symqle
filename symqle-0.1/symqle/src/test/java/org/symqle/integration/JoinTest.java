@@ -1,6 +1,8 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
+import org.symqle.integration.model.Attribute;
+import org.symqle.integration.model.Item;
 import org.symqle.integration.model.JoinTestTable;
 
 import java.sql.SQLException;
@@ -90,6 +92,43 @@ public class JoinTest extends AbstractIntegrationTestBase {
             // org.postgresql.util.PSQLException: ERROR: syntax error at or near "OUTER"
             expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
         }
+    }
+
+    public void testJoinWithParameter() throws Exception {
+        prepareItemAttributeData();
+
+        {
+            Item item = new Item();
+            Attribute attribute = new Attribute();
+            item.leftJoin(attribute, item.id.eq(attribute.itemId).and(attribute.name.eq("shape")));
+            final List<Pair<String, String>> list = item.name.pair(attribute.value).orderBy(item.name).list(getEngine());
+            assertEquals(Arrays.asList(Pair.make("redCube", "cube"), Pair.make("sphere", "sphere")), list);
+        }
+
+        {
+            Item item = new Item();
+            Attribute attribute = new Attribute();
+            item.leftJoin(attribute, item.id.eq(attribute.itemId).and(attribute.name.eq("color")));
+            final List<Pair<String, String>> list = item.name.pair(attribute.value).orderBy(item.name).list(getEngine());
+            assertEquals(Arrays.asList(Pair.make("redCube", "red"), Pair.make("sphere", (String)null)), list);
+        }
+
+    }
+
+    private void prepareItemAttributeData() throws SQLException {
+        new Attribute().delete().execute(getEngine());
+        new Item().delete().execute(getEngine());
+        Attribute attribute = new Attribute();
+        Item item = new Item();
+        item.delete().execute(getEngine());
+        item.insert(item.id.set(1L).also(item.name.set("redCube"))).execute(getEngine());
+        attribute.insert(attribute.itemId.set(1L).also(attribute.name.set("shape")).also(attribute.value.set("cube")))
+                .execute(getEngine());
+        attribute.insert(attribute.itemId.set(1L).also(attribute.name.set("color")).also(attribute.value.set("red")))
+                .execute(getEngine());
+        item.insert(item.id.set(2L).also(item.name.set("sphere"))).execute(getEngine());
+        attribute.insert(attribute.itemId.set(2L).also(attribute.name.set("shape")).also(attribute.value.set("sphere")))
+                .execute(getEngine());
     }
 
 }
