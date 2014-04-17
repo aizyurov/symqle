@@ -553,7 +553,7 @@ public class DynamicParameterTest extends SqlTestCase {
         }
     }
 
-    public void testConains() throws Exception {
+    public void testContains() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
         try {
             person.id.where(param.contains(1L)).showQuery(new GenericDialect());
@@ -561,6 +561,30 @@ public class DynamicParameterTest extends SqlTestCase {
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
+    }
+
+    public void testAll() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
+        final String sql = person.id
+                .where(person.id.lt(param.all()))
+                .showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id < ALL(SELECT ? FROM dual AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
+        final String sql = person.id
+                .where(person.id.lt(param.any()))
+                .showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id < ANY(SELECT ? FROM dual AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
+        final String sql = person.id
+                .where(person.id.lt(param.some()))
+                .showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id < SOME(SELECT ? FROM dual AS T1)", sql);
     }
 
     public void testQueryValue() throws Exception {

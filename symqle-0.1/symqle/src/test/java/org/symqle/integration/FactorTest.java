@@ -301,7 +301,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).eq(employee.salary.sub(6000.0).map(Mappers.DOUBLE)))
@@ -311,7 +311,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.sub(6000.0).map(Mappers.DOUBLE).eq(createFactor(employee)))
@@ -439,7 +439,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).ge(employee.salary.sub(4000).map(Mappers.DOUBLE)))
@@ -449,7 +449,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.sub(4000).map(Mappers.DOUBLE).ge(createFactor(employee)))
@@ -469,7 +469,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).gt(employee.salary.sub(4000).map(Mappers.DOUBLE)))
@@ -479,7 +479,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.sub(4000).map(Mappers.DOUBLE).gt(createFactor(employee)))
@@ -515,6 +515,39 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
         final Department department = new Department();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).in(department.manager().salary.opposite()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createFactor(employee).eq(department.manager().salary.opposite().all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createFactor(employee).ne(department.manager().salary.opposite().any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createFactor(employee).eq(department.manager().salary.opposite().some()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -640,7 +673,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).le(employee.salary.sub(4000).map(Mappers.DOUBLE)))
@@ -650,7 +683,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.sub(4000).map(Mappers.DOUBLE).le(createFactor(employee)))
@@ -722,7 +755,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).lt(employee.salary.sub(4000).map(Mappers.DOUBLE)))
@@ -732,7 +765,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.sub(4000).map(Mappers.DOUBLE).lt(createFactor(employee)))
@@ -813,7 +846,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createFactor(employee).ne(employee.salary.sub(6000.0).map(Mappers.DOUBLE)))
@@ -823,7 +856,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.sub(6000.0).map(Mappers.DOUBLE).ne(createFactor(employee)))

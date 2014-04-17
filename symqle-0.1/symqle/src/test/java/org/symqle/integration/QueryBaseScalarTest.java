@@ -173,6 +173,36 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.lt(distinctFirstNames(department.manager()).all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("March", "Pedersen"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.ne(distinctFirstNames(department.manager()).any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.lt(distinctFirstNames(department.manager()).some()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen"), list);
+    }
+
+    @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();

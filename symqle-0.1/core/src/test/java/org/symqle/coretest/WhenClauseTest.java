@@ -111,6 +111,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END = T0.nick", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final String sql = person.id.where(person.nick.eq(createWhenClause())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.nick = CASE WHEN T0.age > ? THEN T0.name END", sql);
+    }
+
     public void testNe() throws Exception {
         final String sql = person.id.where(createWhenClause().ne(person.nick)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name END <> T0.nick", sql);
@@ -194,6 +199,21 @@ public class WhenClauseTest extends SqlTestCase {
     public void testContains() throws Exception {
         final String sql = person2.id.where(createWhenClause().contains("Jim")).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? IN(SELECT CASE WHEN T0.age > ? THEN T0.name END FROM person AS T0)", sql);
+    }
+
+    public void testAll() throws Exception {
+        final String sql = person2.id.where(person2.name.lt(createWhenClause().all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.name < ALL(SELECT CASE WHEN T0.age > ? THEN T0.name END FROM person AS T0)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = person2.id.where(person2.name.lt(createWhenClause().any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.name < ANY(SELECT CASE WHEN T0.age > ? THEN T0.name END FROM person AS T0)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = person2.id.where(person2.name.lt(createWhenClause().some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T1.name < SOME(SELECT CASE WHEN T0.age > ? THEN T0.name END FROM person AS T0)", sql);
     }
 
     public void testAsElseArgument() throws Exception {

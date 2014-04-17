@@ -78,6 +78,12 @@ public class PredicateTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.alive = T0.smart OR T0.friendly", sql);
     }
 
+    public void testPredicate2Mapper() throws Exception {
+        assertEquals(person.id.getMapper(), person.id.all().getMapper());
+        assertEquals(person.id.getMapper(), person.id.any().getMapper());
+        assertEquals(person.id.getMapper(), person.id.some().getMapper());
+    }
+
 
     private static class Person extends TableOrView {
         @Override

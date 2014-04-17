@@ -226,6 +226,42 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractCharacterFactor<String> characterFactor =
+                department.manager().lastName.collate(validCollationNameForVarchar());
+        final List<String> list = employee.lastName.where(employee.lastName.lt(characterFactor.all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractCharacterFactor<String> characterFactor =
+                department.manager().lastName.collate(validCollationNameForVarchar());
+        final List<String> list = employee.lastName.where(employee.lastName.eq(characterFactor.any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractCharacterFactor<String> characterFactor =
+                department.manager().lastName.collate(validCollationNameForVarchar());
+        final List<String> list = employee.lastName.where(employee.lastName.eq(characterFactor.some()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
     public void test_countDistinct_() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = employee.firstName.collate(validCollationNameForVarchar())
@@ -314,7 +350,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.collate(validCollationNameForVarchar()).eq(employee.department().manager().firstName))
@@ -324,7 +360,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName.eq(employee.firstName.collate(validCollationNameForVarchar())))
@@ -467,7 +503,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.collate(validCollationNameForVarchar())
@@ -478,7 +514,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName
@@ -499,7 +535,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.collate(validCollationNameForVarchar())
@@ -510,7 +546,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName
@@ -690,7 +726,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.collate(validCollationNameForVarchar())
@@ -701,7 +737,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName
@@ -763,7 +799,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.collate(validCollationNameForVarchar())
@@ -774,7 +810,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName
@@ -882,7 +918,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.collate(validCollationNameForVarchar())
@@ -893,7 +929,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName

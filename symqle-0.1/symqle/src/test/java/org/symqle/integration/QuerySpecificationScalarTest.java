@@ -163,7 +163,45 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
                 .where(employee.firstName.in(overpaidNames))
                 .orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+    }
 
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+
+        final AbstractQuerySpecificationScalar<String> overpaidNames =
+                overpaid.firstName.where(overpaid.salary.gt(2500.0));
+        final List<String> list = employee.lastName
+                .where(employee.firstName.eq(overpaidNames.all()))
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(0, list.size());
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+
+        final AbstractQuerySpecificationScalar<String> overpaidNames =
+                overpaid.firstName.where(overpaid.salary.gt(2500.0));
+        final List<String> list = employee.lastName
+                .where(employee.firstName.eq(overpaidNames.any()))
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+
+        final AbstractQuerySpecificationScalar<String> overpaidNames =
+                overpaid.firstName.where(overpaid.salary.gt(2500.0));
+        final List<String> list = employee.lastName
+                .where(employee.firstName.eq(overpaidNames.some()))
+                .orderBy(employee.lastName).list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
     }
 
     @Override

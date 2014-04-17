@@ -74,6 +74,12 @@ public class SelectSublistTest extends SqlTestCase {
         }
     }
 
+    public void testExistsPositive() throws Exception {
+        final AbstractPredicate predicate = AbstractSelectSublist.adapt(employee.id).exists();
+        final String sql = person.id.where(predicate).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE EXISTS(SELECT T2.id FROM employee AS T2)", sql);
+    }
+
     public void testContains() throws Exception {
         final Label l = new Label();
         final AbstractPredicate predicate = employee.id.label(l).contains(1L);
@@ -83,6 +89,30 @@ public class SelectSublistTest extends SqlTestCase {
         } catch (MalformedStatementException e) {
             // ok
         }
+    }
+
+    public void testContainsPositive() throws Exception {
+        final AbstractPredicate predicate = AbstractSelectSublist.adapt(employee.id).contains(1L);
+        final String sql = person.id.where(predicate).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE ? IN(SELECT T2.id FROM employee AS T2)", sql);
+    }
+
+    public void testAll() throws Exception {
+        final AbstractSelectSublist<Long> selectSublist = AbstractSelectSublist.adapt(employee.id);
+        final String sql = person.id.where(person.id.lt(selectSublist.all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T0.id < ALL(SELECT T2.id FROM employee AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final AbstractSelectSublist<Long> selectSublist = AbstractSelectSublist.adapt(employee.id);
+        final String sql = person.id.where(person.id.lt(selectSublist.any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T0.id < ANY(SELECT T2.id FROM employee AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final AbstractSelectSublist<Long> selectSublist = AbstractSelectSublist.adapt(employee.id);
+        final String sql = person.id.where(person.id.lt(selectSublist.some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE T0.id < SOME(SELECT T2.id FROM employee AS T2)", sql);
     }
 
     public void testWhere() throws Exception {

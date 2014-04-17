@@ -34,7 +34,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
 
     private AbstractSearchedWhenClauseList<String> createNamesWCL(final Employee employee) {
         return employee.salary.gt(2500.0).then(employee.lastName)
-                .orWhen(employee.salary.lt(1800.0).then(employee.firstName)).orElse(Params.p("nobody"));
+                .orWhen(employee.salary.lt(1800.0).then(employee.firstName)).orElse(Params.p("Nobody"));
     }
 
     @Override
@@ -383,7 +383,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseList(employee).eq(employee.firstName))
                 .orderBy(employee.lastName)
@@ -392,7 +392,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.eq(createWhenClauseList(employee)))
                 .orderBy(employee.lastName)
@@ -424,8 +424,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         try {
             final List<String> list = whenClauseList.exceptAll(new Employee().lastName).list(getEngine());
             assertTrue(list.toString(), list.remove("James"));
-            assertTrue(list.toString(), list.remove("nobody"));
-            assertTrue(list.toString(), list.remove("nobody"));
+            assertTrue(list.toString(), list.remove("Nobody"));
+            assertTrue(list.toString(), list.remove("Nobody"));
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -456,7 +456,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         try {
             final List<String> list = whenClauseList.exceptDistinct(new Employee().lastName).list(getEngine());
             assertTrue(list.toString(), list.remove("James"));
-            assertTrue(list.toString(), list.remove("nobody"));
+            assertTrue(list.toString(), list.remove("Nobody"));
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -487,7 +487,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         try {
             final List<String> list = whenClauseList.exceptDistinct(new Employee().lastName).list(getEngine());
             assertTrue(list.toString(), list.remove("James"));
-            assertTrue(list.toString(), list.remove("nobody"));
+            assertTrue(list.toString(), list.remove("Nobody"));
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
@@ -552,7 +552,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseList(employee).ge(employee.firstName.substring(2)))
                 .orderBy(employee.lastName)
@@ -562,7 +562,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.substring(2).ge(createWhenClauseList(employee)))
                 .orderBy(employee.lastName)
@@ -581,7 +581,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseList(employee).gt(employee.firstName.substring(2)))
                 .orderBy(employee.lastName)
@@ -591,7 +591,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.substring(2).gt(createWhenClauseList(employee)))
                 .orderBy(employee.lastName)
@@ -610,6 +610,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
                 .list(getEngine());
         assertEquals(Arrays.asList("First"), list);
     }
+
 
     @Override
     public void test_in_Object_Object() throws Exception {
@@ -632,6 +633,41 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertEquals(Arrays.asList("First", "Redwood"), list);
     }
 
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee target = new Employee();
+        final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
+        // James, First, Redwood, Nobody, Nobody
+        final List<String> list = target.lastName.where(target.lastName.lt(whenClauseList.all()))
+                .orderBy(target.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee target = new Employee();
+        final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
+        // James, First, Redwood, Nobody, Nobody
+        final List<String> list = target.lastName.where(target.lastName.ne(whenClauseList.any()))
+                .orderBy(target.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee target = new Employee();
+        final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
+        // James, First, Redwood, Nobody, Nobody
+        final List<String> list = target.lastName.where(target.lastName.eq(whenClauseList.some()))
+                .orderBy(target.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
     @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
         final Employee employee = new Employee();
@@ -726,7 +762,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     public void test_isNotNull_() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseList<String> whenClauseList = employee.salary.gt(2500.0).then(employee.lastName)
-                .orWhen(employee.salary.lt(1800.0).thenNull()).orElse(Params.p("nobody"));
+                .orWhen(employee.salary.lt(1800.0).thenNull()).orElse(Params.p("Nobody"));
         final List<String> list = employee.lastName
                 .where(whenClauseList.isNotNull())
                 .orderBy(employee.lastName).list(getEngine());
@@ -742,7 +778,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     public void test_isNull_() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseList<String> whenClauseList = employee.salary.gt(2500.0).then(employee.lastName)
-                .orWhen(employee.salary.lt(1800.0).thenNull()).orElse(Params.p("nobody"));
+                .orWhen(employee.salary.lt(1800.0).thenNull()).orElse(Params.p("Nobody"));
         final List<String> list = employee.lastName
                 .where(whenClauseList.isNull())
                 .orderBy(employee.lastName).list(getEngine());
@@ -758,15 +794,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         final Label label = new Label();
         final List<String> list = whenClauseList.label(label)
                 .orderBy(label).list(getEngine());
-        final List<String> expected;
-        final List<String> databasesWithDefaultCaseInsensitiveCollation = Arrays.asList(SupportedDb.MYSQL, SupportedDb.POSTGRESQL);
-        if (databasesWithDefaultCaseInsensitiveCollation.contains(getDatabaseName())) {
-            // case insensitive
-            expected = Arrays.asList("First", "James", "nobody", "nobody", "Redwood");
-        } else {
-            expected = Arrays.asList("First", "James", "Redwood", "nobody", "nobody");
-        }
-        assertEquals(expected, list);
+        assertEquals(Arrays.asList("First", "James", "Nobody", "Nobody", "Redwood"), list);
     }
 
     @Override
@@ -779,7 +807,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseList(employee).le(employee.firstName.substring(2)))
                 .orderBy(employee.lastName)
@@ -789,7 +817,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.substring(2).le(createWhenClauseList(employee)))
                 .orderBy(employee.lastName)
@@ -855,7 +883,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseList(employee).lt(employee.firstName.substring(2)))
                 .orderBy(employee.lastName)
@@ -865,7 +893,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.substring(2).lt(createWhenClauseList(employee)))
                 .orderBy(employee.lastName)
@@ -958,7 +986,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createWhenClauseList(employee).ne(employee.firstName))
                 .orderBy(employee.lastName)
@@ -967,7 +995,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.ne(createWhenClauseList(employee)))
                 .orderBy(employee.lastName)
@@ -1541,8 +1569,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("Redwood"));
         assertTrue(list.toString(), list.remove("Redwood"));
-        assertTrue(list.toString(), list.remove("nobody"));
-        assertTrue(list.toString(), list.remove("nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
         assertTrue(list.toString(), list.isEmpty());
     }
 
@@ -1559,8 +1587,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("Redwood"));
         assertTrue(list.toString(), list.remove("Redwood"));
-        assertTrue(list.toString(), list.remove("nobody"));
-        assertTrue(list.toString(), list.remove("nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
         assertTrue(list.toString(), list.isEmpty());
     }
 
@@ -1575,7 +1603,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("March"));
         assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("Redwood"));
-        assertTrue(list.toString(), list.remove("nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
         assertTrue(list.toString(), list.isEmpty());
     }
 
@@ -1590,7 +1618,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("March"));
         assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("Redwood"));
-        assertTrue(list.toString(), list.remove("nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
         assertTrue(list.toString(), list.isEmpty());
     }
 
@@ -1605,7 +1633,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("March"));
         assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("Redwood"));
-        assertTrue(list.toString(), list.remove("nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
         assertTrue(list.toString(), list.isEmpty());
     }
 
@@ -1620,7 +1648,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("March"));
         assertTrue(list.toString(), list.remove("Pedersen"));
         assertTrue(list.toString(), list.remove("Redwood"));
-        assertTrue(list.toString(), list.remove("nobody"));
+        assertTrue(list.toString(), list.remove("Nobody"));
         assertTrue(list.toString(), list.isEmpty());
     }
 

@@ -134,6 +134,30 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee another = new Employee();
+        final List<Double> list = employee.salary.where(employee.lastName.eq(queryTerm(another).all())).list(getEngine());
+        assertEquals(Arrays.asList(3000.0), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee another = new Employee();
+        final List<Double> list = employee.salary.where(employee.lastName.eq(queryTerm(another).any())).list(getEngine());
+        assertEquals(Arrays.asList(3000.0), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee another = new Employee();
+        final List<Double> list = employee.salary.where(employee.lastName.eq(queryTerm(another).some())).list(getEngine());
+        assertEquals(Arrays.asList(3000.0), list);
+    }
+
+    @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = queryTerm(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());

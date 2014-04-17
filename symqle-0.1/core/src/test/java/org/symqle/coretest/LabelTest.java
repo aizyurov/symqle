@@ -31,7 +31,7 @@ public class LabelTest extends SqlTestCase {
     public void testUnion() throws Exception {
         Label l = new Label();
         final String sql = person.name.label(l).union(employee.name).orderBy(l).showQuery(new GenericDialect());
-        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 UNION SELECT T0.name AS C0 FROM employee AS T0 ORDER BY C0", sql);
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 UNION SELECT T1.name AS C0 FROM employee AS T1 ORDER BY C0", sql);
     }
 
     public void testUnassigned() throws Exception {

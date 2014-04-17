@@ -453,6 +453,30 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT MAX(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
+    public void testAll() throws Exception {
+        final AbstractNumericExpression<Number> numericExpression = employee.id.add(2);
+        final String sql = person.name
+                .where(person.id.map(CoreMappers.NUMBER).lt(numericExpression.all()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id < ALL(SELECT T2.id + ? FROM employee AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final AbstractNumericExpression<Number> numericExpression = employee.id.add(2);
+        final String sql = person.name
+                .where(person.id.map(CoreMappers.NUMBER).lt(numericExpression.any()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id < ANY(SELECT T2.id + ? FROM employee AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final AbstractNumericExpression<Number> numericExpression = employee.id.add(2);
+        final String sql = person.name
+                .where(person.id.map(CoreMappers.NUMBER).lt(numericExpression.some()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id < SOME(SELECT T2.id + ? FROM employee AS T2)", sql);
+    }
+
     public void testListAdd() throws Exception {
         new Scenario(person.id.add(2)) {
             @Override

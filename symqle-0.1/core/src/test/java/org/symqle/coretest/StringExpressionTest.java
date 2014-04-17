@@ -81,6 +81,11 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id = ?", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final String sql = person.id.where(numberSign.eq(createStringExpression())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? = ? || T0.id", sql);
+    }
+
     public void testNe() throws Exception {
         final String sql = person.id.where(createStringExpression().ne(numberSign)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? || T0.id <> ?", sql);
@@ -381,6 +386,21 @@ public class StringExpressionTest extends SqlTestCase {
     public void testContains() throws Exception {
         final String sql = person.id.where(person2.id.concat(" test").contains("my test")).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id || ? FROM person AS T1)", sql);
+    }
+
+    public void testAll() throws Exception {
+        final String sql = person.id.where(person.name.lt(person2.name.concat(".").all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name < ALL(SELECT T1.name || ? FROM person AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = person.id.where(person.name.lt(person2.name.concat(".").any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name < ANY(SELECT T1.name || ? FROM person AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = person.id.where(person.name.lt(person2.name.concat(".").some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.name < SOME(SELECT T1.name || ? FROM person AS T1)", sql);
     }
 
     public void testForUpdate() throws Exception {

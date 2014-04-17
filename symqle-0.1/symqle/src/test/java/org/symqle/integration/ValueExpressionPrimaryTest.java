@@ -320,7 +320,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(createPrimary(department).eq(department.manager().lastName))
@@ -330,7 +330,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.eq(createPrimary(department)))
@@ -495,7 +495,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(createPrimary(department).ge(department.manager().lastName))
@@ -505,7 +505,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.ge(createPrimary(department)))
@@ -525,7 +525,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(createPrimary(department).gt(department.manager().lastName))
@@ -535,7 +535,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.gt(createPrimary(department)))
@@ -569,6 +569,36 @@ test_limit_int();    }
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.in(createPrimary(department)))
+                .orderBy(department.deptName)
+                .list(getEngine(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList("DEV"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Department department = new Department();
+        final List<String> list = department.deptName
+                .where(department.manager().lastName.eq(createPrimary(department).all()))
+                .orderBy(department.deptName)
+                .list(getEngine(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList("DEV"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Department department = new Department();
+        final List<String> list = department.deptName
+                .where(department.manager().lastName.ne(createPrimary(department).any()))
+                .orderBy(department.deptName)
+                .list(getEngine(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList("HR"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Department department = new Department();
+        final List<String> list = department.deptName
+                .where(department.manager().lastName.eq(createPrimary(department).some()))
                 .orderBy(department.deptName)
                 .list(getEngine(), Option.allowNoTables(true));
         assertEquals(Arrays.asList("DEV"), list);
@@ -734,7 +764,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(createPrimary(department).le(department.manager().lastName))
@@ -744,7 +774,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.le(createPrimary(department)))
@@ -805,7 +835,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(createPrimary(department).lt(department.manager().lastName))
@@ -815,7 +845,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.lt(createPrimary(department)))
@@ -900,7 +930,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(createPrimary(department).ne(department.manager().lastName))
@@ -910,7 +940,7 @@ test_limit_int();    }
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Department department = new Department();
         final List<String> list = department.deptName
                 .where(department.manager().lastName.ne(createPrimary(department)))

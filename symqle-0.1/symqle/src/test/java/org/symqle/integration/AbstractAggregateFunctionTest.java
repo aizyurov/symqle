@@ -74,6 +74,30 @@ public class AbstractAggregateFunctionTest extends AbstractIntegrationTestBase  
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee allEmployees = new Employee();
+        final List<String> list = employee.lastName.where(employee.empId.eq(allEmployees.deptId.count().all())).list(getEngine());
+        assertEquals(Arrays.asList("Pedersen"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee allEmployees = new Employee();
+        final List<String> list = employee.lastName.where(employee.empId.eq(allEmployees.deptId.count().any())).list(getEngine());
+        assertEquals(Arrays.asList("Pedersen"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee allEmployees = new Employee();
+        final List<String> list = employee.lastName.where(employee.empId.eq(allEmployees.deptId.count().some())).list(getEngine());
+        assertEquals(Arrays.asList("Pedersen"), list);
+    }
+
+    @Override
     public void test_limit_int() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = employee.empId.count().limit(1).list(getEngine());

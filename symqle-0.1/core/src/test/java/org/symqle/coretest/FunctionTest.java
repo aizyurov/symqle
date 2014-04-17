@@ -85,6 +85,13 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE abs(T0.id) = T0.age", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final Column<Long> id = person.id;
+        final Column<Long> age = person.age;
+        final String sql = id.where(age.eq(abs(id))).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age = abs(T0.id)", sql);
+    }
+
     public void testNe() throws Exception {
         final Column<Long> column = person.id;
         final Column<Long> age = person.age;
@@ -530,6 +537,21 @@ public class FunctionTest extends SqlTestCase {
     public void testMax() throws Exception {
         final String sql = abs(person.id).max().showQuery(new GenericDialect());
         assertSimilar("SELECT MAX(abs(T1.id)) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testAll() throws Exception {
+        final String sql = person.name.where(person.id.lt(abs(employee.id).all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id < ALL(SELECT abs(T1.id) FROM employee AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = person.name.where(person.id.lt(abs(employee.id).any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id < ANY(SELECT abs(T1.id) FROM employee AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = person.name.where(person.id.lt(abs(employee.id).some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id < SOME(SELECT abs(T1.id) FROM employee AS T1)", sql);
     }
 
     public void testList() throws Exception {

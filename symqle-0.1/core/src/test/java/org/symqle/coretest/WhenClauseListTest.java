@@ -87,6 +87,11 @@ public class WhenClauseListTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END = T0.nick", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final String sql = person.id.where(person.nick.eq(createWhenClauseList())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.nick = CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END", sql);
+    }
+
     public void testNe() throws Exception {
         final String sql = person.id.where(createWhenClauseList().ne(person.nick)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CASE WHEN T0.age > ? THEN T0.name ELSE T0.nick END <> T0.nick", sql);
@@ -382,12 +387,27 @@ public class WhenClauseListTest extends SqlTestCase {
 
     public void testExists() throws Exception {
         final String sql = employee.id.where(createWhenClauseList().exists()).showQuery(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T0.nick END FROM person AS T1)", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T1.nick END FROM person AS T1)", sql);
     }
 
     public void testContains() throws Exception {
         final String sql = employee.id.where(createWhenClauseList().contains("Jim")).showQuery(new GenericDialect());
-        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T0.nick END FROM person AS T1)", sql);
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T1.nick END FROM person AS T1)", sql);
+    }
+
+    public void testAll() throws Exception {
+        final String sql = employee.id.where(employee.name.lt(createWhenClauseList().all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.name < ALL(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T1.nick END FROM person AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = employee.id.where(employee.name.lt(createWhenClauseList().any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.name < ANY(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T1.nick END FROM person AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = employee.id.where(employee.name.lt(createWhenClauseList().some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.name < SOME(SELECT CASE WHEN T1.age > ? THEN T1.name ELSE T1.nick END FROM person AS T1)", sql);
     }
 
     public void testForUpdate() throws Exception {

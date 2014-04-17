@@ -353,14 +353,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createVE(employee).eq(employee.firstName.eq("James").asValue())).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First"), list);
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createVE(employee).eq(employee.firstName.eq("James").asValue())).orderBy(employee.lastName).list(getEngine());
         assertEquals(Arrays.asList("First"), list);
@@ -482,7 +482,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).ge(employee.firstName.eq("James").asValue()))
@@ -491,7 +491,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).ge(employee.firstName.eq("James").asValue()))
@@ -508,7 +508,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).gt(employee.firstName.eq("James").asValue()))
@@ -517,7 +517,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).gt(employee.firstName.eq("James").asValue()))
@@ -556,6 +556,39 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createVE(employee).eq(department.manager().firstName.eq("Bill").asValue().all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createVE(employee).ne(department.manager().firstName.ne("Bill").asValue().any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createVE(employee).eq(department.manager().firstName.eq("James").asValue().some()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
     }
 
     @Override
@@ -681,7 +714,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).le(employee.firstName.eq("James").asValue()))
@@ -690,7 +723,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).le(employee.firstName.eq("James").asValue()))
@@ -766,7 +799,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).lt(employee.firstName.eq("James").asValue()))
@@ -775,7 +808,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).lt(employee.firstName.eq("James").asValue()))
@@ -883,7 +916,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).ne(employee.firstName.eq("James").asValue()))
@@ -892,7 +925,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createVE(employee).ne(employee.firstName.eq("James").asValue()))

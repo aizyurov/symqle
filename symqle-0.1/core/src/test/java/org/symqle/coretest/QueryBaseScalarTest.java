@@ -146,7 +146,27 @@ public class QueryBaseScalarTest extends SqlTestCase {
     public void testContains() throws Exception {
         final String sql = createQueryBaseScalar().where(employee.name.selectAll().contains("Jim")).showQuery(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT ALL T1.name FROM employee AS T1)", sql);
+    }
 
+    public void testAll() {
+        final String sql = employee.name
+                .where(employee.id.lt(createQueryBaseScalar().all()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < ALL(SELECT ALL T1.id FROM person AS T1)", sql);
+    }
+
+    public void testAny() {
+        final String sql = employee.name
+                .where(employee.id.lt(createQueryBaseScalar().any()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < ANY(SELECT ALL T1.id FROM person AS T1)", sql);
+    }
+
+    public void testSome() {
+        final String sql = employee.name
+                .where(employee.id.lt(createQueryBaseScalar().some()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < SOME(SELECT ALL T1.id FROM person AS T1)", sql);
     }
 
     public void testQueryValue() throws Exception {

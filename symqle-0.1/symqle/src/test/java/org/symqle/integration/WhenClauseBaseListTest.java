@@ -401,7 +401,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
                 employee.salary.gt(2500.0).then(employee.lastName)
@@ -414,7 +414,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
                 employee.salary.gt(2500.0).then(employee.lastName)
@@ -587,7 +587,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createNumericWCBL(employee).ge(employee.salary.div(2).map(Mappers.DOUBLE)))
                 .orderBy(employee.lastName)
@@ -596,7 +596,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.ge(createNumericWCBL(employee)))
                 .orderBy(employee.lastName)
@@ -614,7 +614,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createNumericWCBL(employee).gt(employee.salary.div(2).map(Mappers.DOUBLE)))
                 .orderBy(employee.lastName)
@@ -623,7 +623,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.mult(2).map(Mappers.DOUBLE).gt(createNumericWCBL(employee)))
                 .orderBy(employee.lastName)
@@ -822,7 +822,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createNumericWCBL(employee).le(employee.salary.mult(2).map(Mappers.DOUBLE)))
                 .orderBy(employee.lastName)
@@ -831,7 +831,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.div(2).map(Mappers.DOUBLE).lt(createNumericWCBL(employee)))
                 .orderBy(employee.lastName)
@@ -909,7 +909,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createNumericWCBL(employee).lt(employee.salary))
                 .orderBy(employee.lastName)
@@ -918,7 +918,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.mult(0.5).map(Mappers.DOUBLE).lt(createNumericWCBL(employee)))
                 .orderBy(employee.lastName)
@@ -1012,7 +1012,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createNumericWCBL(employee).ne(employee.salary))
                 .orderBy(employee.lastName)
@@ -1021,7 +1021,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.ne(createNumericWCBL(employee)))
                 .orderBy(employee.lastName)
@@ -1732,6 +1732,57 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        // if employee is in current department, than that employee name
+        // else if employee does not belong to any department, then current dept manager name
+        // else null
+        // for "HR" department it is "Redwood", null, "March",null, "Redwood"
+        // for "DEV" department : "First", "First, null, "Pedersen", null
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.deptId.eq(department.deptId).then(employee.lastName)
+                        .orWhen(employee.deptId.isNull().then(department.manager().lastName));
+        final List<String> list = department.deptName.where(department.manager().lastName.lt(whenClauseBaseList.all()))
+                .list(getEngine());
+        assertEquals(0, list.size());
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        // if employee is in current department, than that employee name
+        // else if employee does not belong to any department, then current dept manager name
+        // else null
+        // for "HR" department it is "Redwood", null, "March",null, "Redwood"
+        // for "DEV" department : "First", "First, null, "Pedersen", null
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.deptId.eq(department.deptId).then(employee.lastName)
+                        .orWhen(employee.deptId.isNull().then(department.manager().lastName));
+        final List<String> list = department.deptName.where(department.manager().lastName.lt(whenClauseBaseList.any()))
+                .list(getEngine());
+        assertEquals(Arrays.asList("DEV"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        // if employee is in current department, than that employee name
+        // else if employee does not belong to any department, then current dept manager name
+        // else null
+        // for "HR" department it is "Redwood", null, "March",null, "Redwood"
+        // for "DEV" department : "First", "First, null, "Pedersen", null
+        final AbstractSearchedWhenClauseBaseList<String> whenClauseBaseList =
+                employee.deptId.eq(department.deptId).then(employee.lastName)
+                        .orWhen(employee.deptId.isNull().then(department.manager().lastName));
+        final List<String> list = department.deptName.where(department.manager().lastName.eq(whenClauseBaseList.some()))
+                .list(getEngine());
+        assertEquals(Arrays.asList("HR", "DEV"), list);
+    }
+
+    @Override
     public void test_where_WhereClause() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = createWhenClauseBaseList(employee)
@@ -1743,5 +1794,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
                 "high"
         ), list);
     }
+
+
 
 }

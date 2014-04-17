@@ -11,7 +11,6 @@ import org.symqle.sql.AbstractNumericExpression;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Label;
 import org.symqle.sql.Mappers;
-import org.symqle.sql.NumericExpression;
 import org.symqle.sql.Params;
 import org.symqle.testset.AbstractNumericExpressionTestSet;
 
@@ -326,14 +325,14 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.add(1500).eq(employee.salary.mult(2))).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.mult(2).eq(employee.salary.add(1500))).list(getEngine());
         assertEquals(Arrays.asList("Cooper"), list);
@@ -489,7 +488,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).ge(employee.salary.add(200)))
@@ -499,7 +498,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).ge(employee.salary.add(200)))
@@ -519,7 +518,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).gt(employee.salary.add(200)))
@@ -529,7 +528,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).gt(employee.salary.add(200)))
@@ -565,6 +564,39 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
         final Department department = new Department();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).in(createExpression(department.manager())))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createExpression(employee).eq(createExpression(department.manager()).all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createExpression(employee).ge(createExpression(department.manager()).any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(createExpression(employee).eq(createExpression(department.manager()).some()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -710,7 +742,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).le(employee.salary.add(200)))
@@ -720,7 +752,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).le(employee.salary.add(200)))
@@ -800,7 +832,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).lt(employee.salary.add(200)))
@@ -810,7 +842,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createExpression(employee).lt(employee.salary.add(200)))
@@ -893,7 +925,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.add(1500).ne(employee.salary.mult(2)))
@@ -903,7 +935,7 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.mult(2).ne(employee.salary.add(1500)))

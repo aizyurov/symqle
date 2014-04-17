@@ -291,7 +291,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
             final Employee employee = new Employee();
             final List<String> list = employee.lastName
                     .where(employee.firstName.eq(employee.department().manager().firstName))
@@ -301,7 +301,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName.eq(employee.firstName))
@@ -436,14 +436,14 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.ge(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("First", "Redwood")), new HashSet<String>(list));
@@ -457,14 +457,14 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.gt(employee.department().manager().firstName)).list(getEngine());
         assertEquals(Collections.emptyList(), list);
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.gt(employee.department().manager().firstName)).list(getEngine());
         assertEquals(Collections.emptyList(), list);
@@ -500,6 +500,36 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
         Collections.sort(expected);
         Collections.sort(list);
         assertEquals(expected, list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.lt(department.manager().firstName.all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("March", "Pedersen"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.ne(department.manager().firstName.any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName.where(employee.firstName.lt(department.manager().firstName.some()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen"), list);
     }
 
     @Override
@@ -614,14 +644,14 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Redwood")), new HashSet<String>(list));
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.le(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen", "First", "Redwood")), new HashSet<String>(list));
@@ -681,14 +711,14 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.lt(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.lt(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
@@ -752,14 +782,14 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.ne(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.ne(employee.department().manager().firstName)).list(getEngine());
         assertEquals(new HashSet<String>(Arrays.asList("March", "Pedersen")), new HashSet<String>(list));

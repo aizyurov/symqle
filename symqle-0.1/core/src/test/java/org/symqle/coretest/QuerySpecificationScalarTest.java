@@ -116,7 +116,6 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
     public void testExists() throws Exception {
         final String sql = employee.id.where(person.id.where(person.name.eq(employee.name)).exists()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
-
     }
 
     public void testContains() throws Exception {
@@ -124,6 +123,26 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name)", sql);
     }
 
+    public void testAll() throws Exception {
+        final String sql = employee.name
+                .where(employee.id.lt(createQuerySpecificationScalar().all()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < ALL(SELECT T1.id FROM person AS T1 WHERE T1.name IS NOT NULL)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = employee.name
+                .where(employee.id.lt(createQuerySpecificationScalar().any()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < ANY(SELECT T1.id FROM person AS T1 WHERE T1.name IS NOT NULL)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = employee.name
+                .where(employee.id.lt(createQuerySpecificationScalar().some()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < SOME(SELECT T1.id FROM person AS T1 WHERE T1.name IS NOT NULL)", sql);
+    }
 
     public void testList() throws Exception {
         new Scenario123<AbstractQuerySpecificationScalar<Long>>(person.id.where(person.name.isNull())) {

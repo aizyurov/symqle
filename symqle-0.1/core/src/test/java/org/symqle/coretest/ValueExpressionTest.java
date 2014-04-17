@@ -51,7 +51,7 @@ public class ValueExpressionTest extends SqlTestCase {
 
     }
 
-    public void testAll() throws Exception {
+    public void testSelectAll() throws Exception {
         final String sql = createValueExpression().selectAll().showQuery(new GenericDialect());
         assertSimilar("SELECT ALL T0.name = T0.nick AS C0 FROM person AS T0", sql);
     }
@@ -74,6 +74,11 @@ public class ValueExpressionTest extends SqlTestCase {
     public void testEq() throws Exception {
         final String sql = createValueExpression().eq(person.married).asValue().showQuery(new GenericDialect());
         assertSimilar("SELECT(T0.name = T0.nick) = T0.married AS C0 FROM person AS T0", sql);
+    }
+
+    public void testEqArg() throws Exception {
+        final String sql = person.married.eq(createValueExpression()).asValue().showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.married =(T0.name = T0.nick) AS C0 FROM person AS T0", sql);
     }
 
     public void testNe() throws Exception {
@@ -395,6 +400,21 @@ public class ValueExpressionTest extends SqlTestCase {
     public void testContains() throws Exception {
         final String sql = employee.id.where(person.name.eq(employee.name).asValue().contains(true)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.name = T0.name FROM person AS T1)", sql);
+    }
+
+    public void testAll() throws Exception {
+        final String sql = employee.id.where(employee.remote.lt(createValueExpression().all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.remote < ALL(SELECT T1.name = T1.nick FROM person AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = employee.id.where(employee.remote.lt(createValueExpression().any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.remote < ANY(SELECT T1.name = T1.nick FROM person AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = employee.id.where(employee.remote.lt(createValueExpression().some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.remote < SOME(SELECT T1.name = T1.nick FROM person AS T1)", sql);
     }
 
     public void testAsInArgument() throws Exception {

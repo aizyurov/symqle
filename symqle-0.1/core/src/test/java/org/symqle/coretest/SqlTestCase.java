@@ -40,7 +40,7 @@ public abstract class SqlTestCase extends TestCase {
                 assertEquals("Group " + i +" does not match: expected "+ mapped +" but was " + actualMatcher.group(i),
                         mapped, actualMatcher.group(i));
             } else {
-                knownMappings.put(expectedAlias, mapped);
+                knownMappings.put(expectedAlias, actualMatcher.group(i));
             }
         }
     }

@@ -91,6 +91,29 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar("SELECT T1.name AS C1,(SELECT COUNT(T2.id) FROM person AS T2) AS C2 FROM person AS T1", sql);
     }
 
+    public void testAll() throws Exception {
+        final Person person = new Person();
+        final Person senior = new Person();
+        final String sql = person.name.where(person.age.eq(senior.age.max().all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.age = ALL(SELECT MAX(T2.age) FROM person AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final Person person = new Person();
+        final Person senior = new Person();
+        final String sql = person.name.where(person.age.eq(senior.age.max().any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.age = ANY(SELECT MAX(T2.age) FROM person AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final Person person = new Person();
+        final Person senior = new Person();
+        final String sql = person.name.where(person.age.eq(senior.age.max().some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.age = SOME(SELECT MAX(T2.age) FROM person AS T2)", sql);
+    }
+
+
+
     public void testList() throws Exception {
         new Scenario(person.id.count()) {
             @Override

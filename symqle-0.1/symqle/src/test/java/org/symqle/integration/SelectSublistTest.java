@@ -183,9 +183,41 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
     public void test_in_Predicand_InPredicateValue_1() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
-        final Label label = new Label();
         final AbstractSelectSublist<Double> selectSublist = AbstractSelectSublist.adapt(department.manager().salary);
         final List<String> list = employee.lastName.where(employee.salary.in(selectSublist))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractSelectSublist<Double> selectSublist = AbstractSelectSublist.adapt(department.manager().salary);
+        final List<String> list = employee.lastName.where(employee.salary.eq(selectSublist.all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractSelectSublist<Double> selectSublist = AbstractSelectSublist.adapt(department.manager().salary);
+        final List<String> list = employee.lastName.where(employee.salary.eq(selectSublist.any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final AbstractSelectSublist<Double> selectSublist = AbstractSelectSublist.adapt(department.manager().salary);
+        final List<String> list = employee.lastName.where(employee.salary.eq(selectSublist.some()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);

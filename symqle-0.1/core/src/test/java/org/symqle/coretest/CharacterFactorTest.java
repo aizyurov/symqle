@@ -82,7 +82,7 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 FOR READ ONLY", sql);
     }
 
-    public void testAll() throws Exception {
+    public void testSelectAll() throws Exception {
         final String sql = characterFactor.selectAll().showQuery(new GenericDialect());
         assertSimilar("SELECT ALL T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1", sql);
     }
@@ -136,6 +136,11 @@ public class CharacterFactorTest extends SqlTestCase {
     public void testEqValue() throws Exception {
         final String sql = characterFactor.where(characterFactor.eq("abc")).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 WHERE T1.name COLLATE latin1_general_ci = ?", sql);
+    }
+
+    public void testEqArg() throws Exception {
+        final String sql = characterFactor.where(person.name.param("abc").eq(characterFactor)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name COLLATE latin1_general_ci AS C1 FROM person AS T1 WHERE ? = T1.name COLLATE latin1_general_ci", sql);
     }
 
     public void testNeValue() throws Exception {
@@ -446,6 +451,31 @@ public class CharacterFactorTest extends SqlTestCase {
         final String sql = person.id.where(characterFactor.asBoolean()).showQuery(new GenericDialect());
         assertSimilar("SELECT T1.id AS C1 FROM person AS T1 WHERE(T1.name COLLATE latin1_general_ci)", sql);
     }
+
+    public void testAll() throws Exception {
+        final Person person = new Person();
+        final Person all = new Person();
+        final AbstractCharacterFactor<String> characterFactor1 = all.name.collate("latin1_general_ci");
+        final String sql = person.name.where(person.name.eq(characterFactor1.all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.name = ALL(SELECT T2.name COLLATE latin1_general_ci FROM person AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final Person person = new Person();
+        final Person all = new Person();
+        final AbstractCharacterFactor<String> characterFactor1 = all.name.collate("latin1_general_ci");
+        final String sql = person.name.where(person.name.eq(characterFactor1.any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.name = ANY(SELECT T2.name COLLATE latin1_general_ci FROM person AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final Person person = new Person();
+        final Person all = new Person();
+        final AbstractCharacterFactor<String> characterFactor1 = all.name.collate("latin1_general_ci");
+        final String sql = person.name.where(person.name.eq(characterFactor1.some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.name = SOME(SELECT T2.name COLLATE latin1_general_ci FROM person AS T2)", sql);
+    }
+
 
 
     public void testList() throws Exception {

@@ -473,7 +473,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause#eq(Predicand<T>)
      */
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createWhenClause(employee).eq(employee.firstName))
@@ -486,7 +486,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause as argument 1 of <T> Predicand#eq(Predicand<T>)
      */
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.eq(createWhenClause(employee)))
@@ -678,7 +678,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause#ge(Predicand<T>)
      */
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -693,7 +693,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause as argument 1 of <T> Predicand#ge(Predicand<T>)
      */
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -720,7 +720,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause#gt(Predicand<T>)
      */
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -735,7 +735,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause as argument 1 of <T> Predicand#gt(Predicand<T>)
      */
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -788,6 +788,50 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
                 .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
     }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(overpaid);
+        final List<String> list = employee.lastName.where(employee.firstName.ge(whenClause.all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+            // //ignores nulls for all()
+            assertEquals(Arrays.asList("Redwood"), list);
+        } else {
+            // whenClause contains nulls, so >= is false for them
+            assertEquals(0, list.size());
+        }
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(overpaid);
+        final List<String> list = employee.lastName.where(employee.firstName.ne(whenClause.any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee overpaid = new Employee();
+        final AbstractSearchedWhenClause<String> whenClause =
+                createWhenClause(overpaid);
+        final List<String> list = employee.lastName.where(employee.firstName.eq(whenClause.some()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "Redwood"), list);
+    }
+
+
 
     /**
      * Test AbstractSearchedWhenClause#intersectAll(QueryPrimary<T>)
@@ -968,7 +1012,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause#le(Predicand<T>)
      */
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -983,7 +1027,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause as argument 1 of <T> Predicand#le(Predicand<T>)
      */
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -1072,7 +1116,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause#lt(Predicand<T>)
      */
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final List<String> list = employee.lastName
@@ -1087,7 +1131,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause as argument 1 of <T> Predicand#lt(Predicand<T>)
      */
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         final List<String> list = employee.lastName
@@ -1214,7 +1258,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause#ne(Predicand<T>)
      */
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final List<String> list = employee.lastName
@@ -1229,7 +1273,7 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
      * Test AbstractSearchedWhenClause as argument 1 of <T> Predicand#ne(Predicand<T>)
      */
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final List<String> list = employee.lastName

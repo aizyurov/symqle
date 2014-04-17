@@ -304,7 +304,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -316,7 +316,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -449,7 +449,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -461,7 +461,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -484,7 +484,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -496,7 +496,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -514,6 +514,39 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         final Department department = new Department();
             final List<String> list = employee.lastName
                     .where(createTerm(employee).in(createTerm(department.manager())))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+            final List<String> list = employee.lastName
+                    .where(createTerm(employee).eq(createTerm(department.manager()).all()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+            final List<String> list = employee.lastName
+                    .where(createTerm(employee).ne(createTerm(department.manager()).any()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+            final List<String> list = employee.lastName
+                    .where(createTerm(employee).eq(createTerm(department.manager()).some()))
                     .orderBy(employee.lastName)
                     .list(getEngine());
             assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -661,7 +694,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -674,7 +707,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -751,7 +784,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -764,7 +797,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -849,7 +882,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =
@@ -862,7 +895,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee redwood = new Employee();
         final AbstractValueExpressionPrimary<Number> subqueryValue =

@@ -83,6 +83,11 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? = T0.id + ?", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final String sql = person.id.where(person.id.add(0).eq(person.id.mult(two))).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id + ? = T0.id * ?", sql);
+    }
+
     public void testNe() throws Exception {
         final String sql = person.id.where(person.id.mult(two).ne(person.id.add(0))).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id * ? <> T0.id + ?", sql);
@@ -371,6 +376,21 @@ public class TermTest extends SqlTestCase {
     public void testContains() throws Exception {
         final String sql = employee.id.where(person.id.mult(2).contains(20)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id * ? FROM person AS T1)", sql);
+    }
+
+    public void testAll() throws Exception {
+        final String sql = employee.id.where(employee.id.map(CoreMappers.NUMBER).lt(person.id.mult(2).all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.id < ALL(SELECT T1.id * ? FROM person AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = employee.id.where(employee.id.map(CoreMappers.NUMBER).lt(person.id.mult(2).any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.id < ANY(SELECT T1.id * ? FROM person AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = employee.id.where(employee.id.map(CoreMappers.NUMBER).lt(person.id.mult(2).some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.id < SOME(SELECT T1.id * ? FROM person AS T1)", sql);
     }
 
     public void testForUpdate() throws Exception {

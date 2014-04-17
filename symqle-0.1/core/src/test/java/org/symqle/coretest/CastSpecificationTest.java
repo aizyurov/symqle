@@ -104,6 +104,13 @@ public class CastSpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE CAST(T0.id AS NUMBER(12,0)) = T0.age", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final AbstractCastSpecification<Long> id = createCast();
+        final Column<Long> age = person.age;
+        final String sql = person.id.where(age.eq(id)).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age = CAST(T0.id AS NUMBER(12,0))", sql);
+    }
+
     public void testNe() throws Exception {
         final AbstractCastSpecification<Long> column = createCast();
         final Column<Long> age = person.age;
@@ -592,6 +599,27 @@ public class CastSpecificationTest extends SqlTestCase {
     public void testLimit2() throws Exception {
         final String sql = createCast().limit(1, 2).showQuery(new GenericDialect());
         assertSimilar("SELECT CAST(T1.id AS NUMBER(12,0)) AS C1 FROM person AS T1 OFFSET 1 ROWS FETCH FIRST 2 ROWS ONLY", sql);
+    }
+
+    public void testAll() throws Exception {
+        final Person person = new Person();
+        final Person all = new Person();
+        final String sql = person.name.where(person.name.eq(all.name.cast("CHAR(10)").all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.name = ALL(SELECT CAST(T2.name AS CHAR(10)) FROM person AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final Person person = new Person();
+        final Person all = new Person();
+        final String sql = person.name.where(person.name.eq(all.name.cast("CHAR(10)").any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.name = ANY(SELECT CAST(T2.name AS CHAR(10)) FROM person AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final Person person = new Person();
+        final Person all = new Person();
+        final String sql = person.name.where(person.name.eq(all.name.cast("CHAR(10)").some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.name = SOME(SELECT CAST(T2.name AS CHAR(10)) FROM person AS T2)", sql);
     }
 
 

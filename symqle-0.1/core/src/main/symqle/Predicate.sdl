@@ -20,6 +20,8 @@ public class AbstractPredicate implements Predicate {}
 
 public interface Predicand<T> extends Scalar<T> : SqlBuilder {}
 
+public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
+
 <T> Predicand<T> ::=
     e:NumericExpression<T> :: implicit
 |
@@ -31,7 +33,22 @@ public interface Predicand<T> extends Scalar<T> : SqlBuilder {}
 # skipped Predicand<Boolean> ::= LEFT_PAREN b:BooleanExpression RIGHT_PAREN
 # because we can do it better vila ValueExpressionPrimary using asValue()
 
-# ComparisonPredicate
+# ComparisonPredicate and QualifiedComparisonPredicate (combined)
+# <quantified comparison predicate> ::=
+#  <row value predicand> <quantified comparison predicate part 2>
+#  <quantified comparison predicate part 2> ::=
+#  <comp op> <quantifier> <table subquery>
+
+<T> Predicand2<T> ::=
+     p:Predicand<T> :: implicit
+|
+     ALL s:ScalarSubquery<T> :: Predicand2<T> all
+|
+     ANY s:ScalarSubquery<T> :: Predicand2<T> any
+|
+     SOME s:ScalarSubquery<T> :: Predicand2<T> some
+;
+
 
 <T> Predicate ::=
     /**
@@ -39,42 +56,42 @@ public interface Predicand<T> extends Scalar<T> : SqlBuilder {}
      * @param other the second predicand
      * @return constructed predicate
      */
-     p1:Predicand<T> EQ other:Predicand<T> :: AbstractPredicate eq
+     p1:Predicand<T> EQ other:Predicand2<T> :: AbstractPredicate eq
 |
     /**
      * Constructs predicate {@code this <> other}.
      * @param other the second predicand
      * @return constructed predicate
      */
-     p1:Predicand<T> NE other:Predicand<T> :: AbstractPredicate ne
+     p1:Predicand<T> NE other:Predicand2<T> :: AbstractPredicate ne
 |
     /**
      * Constructs predicate {@code this > other}.
      * @param other the second predicand
      * @return constructed predicate
      */
-     p1:Predicand<T> GT other:Predicand<T> :: AbstractPredicate gt
+     p1:Predicand<T> GT other:Predicand2<T> :: AbstractPredicate gt
 |
     /**
      * Constructs predicate {@code this >= other}.
      * @param other the second predicand
      * @return constructed predicate
      */
-     p1:Predicand<T> GE other:Predicand<T> :: AbstractPredicate ge {}
+     p1:Predicand<T> GE other:Predicand2<T> :: AbstractPredicate ge {}
 |
     /**
      * Constructs predicate {@code this < other}.
      * @param other the second predicand
      * @return constructed predicate
      */
-     p1:Predicand<T> LT other:Predicand<T> :: AbstractPredicate lt
+     p1:Predicand<T> LT other:Predicand2<T> :: AbstractPredicate lt
 |
     /**
      * Constructs predicate {@code this <= other}.
      * @param other the second predicand
      * @return constructed predicate
      */
-     p1:Predicand<T> LE other:Predicand<T> :: AbstractPredicate le
+     p1:Predicand<T> LE other:Predicand2<T> :: AbstractPredicate le
 ;
 
 ::
@@ -341,3 +358,5 @@ LikePredicateBase ::=
     AbstractLikePredicateBase notLike(final ValueExpression<?> expr, final String pattern) {
           return notLike(expr, DynamicParameter.create(CoreMappers.STRING, pattern));
     }
+
+

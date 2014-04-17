@@ -81,6 +81,39 @@ public class AbstractAggregateQuerySpecificationTest extends AbstractIntegration
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<String> list = department.deptName
+                .where(Params.p(2).eq(employee.empId.count().where(employee.deptId.eq(department.deptId)).all()))
+                .orderBy(department.deptName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<String> list = department.deptName
+                .where(Params.p(2).eq(employee.empId.count().where(employee.deptId.eq(department.deptId)).any()))
+                .orderBy(department.deptName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        final List<String> list = department.deptName
+                .where(Params.p(2).eq(employee.empId.count().where(employee.deptId.eq(department.deptId)).some()))
+                .orderBy(department.deptName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("DEV", "HR"), list);
+    }
+
+    @Override
     public void test_limit_int() throws Exception {
         final Employee employee = new Employee();
         final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).

@@ -252,7 +252,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createCast(employee).eq(employee.salary))
@@ -262,7 +262,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.eq(createCast(employee)))
@@ -387,7 +387,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createCast(employee).ge(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE)))
@@ -397,7 +397,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE).ge(createCast(employee)))
@@ -417,7 +417,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createCast(employee).gt(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE)))
@@ -427,7 +427,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE).gt(createCast(employee)))
@@ -463,6 +463,39 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         final Department department = new Department();
         final List<String> list = employee.lastName
                 .where(employee.salary.in(department.manager().salary.cast("DECIMAL(6,2)")))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(employee.salary.eq(department.manager().salary.cast("DECIMAL(6,2)").all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(employee.salary.ne(department.manager().salary.cast("DECIMAL(6,2)").any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(employee.salary.eq(department.manager().salary.cast("DECIMAL(6,2)").some()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -583,7 +616,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createCast(employee).le(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE)))
@@ -593,7 +626,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE).le(createCast(employee)))
@@ -653,7 +686,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createCast(employee).lt(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE)))
@@ -663,7 +696,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE).lt(createCast(employee)))
@@ -734,7 +767,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(createCast(employee).ne(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE)))
@@ -744,7 +777,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.mult(2).sub(2000).map(Mappers.DOUBLE).ne(createCast(employee)))

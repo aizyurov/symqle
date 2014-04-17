@@ -295,7 +295,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(abs(employee.salary.opposite()).eq(employee.salary))
                 .orderBy(employee.lastName)
@@ -304,7 +304,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.salary.eq(abs(employee.salary.opposite())))
                 .orderBy(employee.lastName)
@@ -438,7 +438,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(abs(employee.salary.opposite()).ge(employee.department().manager().salary))
@@ -448,7 +448,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.ge(abs(employee.department().manager().salary.opposite())))
@@ -467,7 +467,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(abs(employee.salary.sub(4000).opposite().map(Mappers.DOUBLE)).gt(employee.salary))
@@ -477,7 +477,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.gt(abs(employee.salary.sub(4000).opposite().map(Mappers.DOUBLE))))
@@ -511,6 +511,39 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
         final Department department = new Department();
         final List<String> list = employee.lastName
                 .where(employee.salary.in(abs(department.manager().salary.opposite())))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(employee.salary.eq(abs(department.manager().salary.opposite()).all()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(employee.salary.eq(abs(department.manager().salary.opposite()).any()))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Department department = new Department();
+        final List<String> list = employee.lastName
+                .where(employee.salary.eq(abs(department.manager().salary.opposite()).some()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -640,7 +673,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(abs(employee.salary.opposite()).le(employee.department().manager().salary))
@@ -650,7 +683,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.opposite().le(abs(employee.department().manager().salary.opposite())))
@@ -721,7 +754,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(abs(employee.salary.opposite()).lt(employee.department().manager().salary))
@@ -731,7 +764,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.lt(abs(employee.department().manager().salary.opposite())))
@@ -807,7 +840,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(abs(employee.salary.opposite()).ne(employee.department().manager().salary))
@@ -817,7 +850,7 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.salary.ne(abs(employee.department().manager().salary.opposite())))

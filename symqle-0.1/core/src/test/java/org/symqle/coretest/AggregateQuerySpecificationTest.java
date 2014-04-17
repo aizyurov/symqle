@@ -84,6 +84,30 @@ public class AggregateQuerySpecificationTest extends SqlTestCase {
         }.play();
     }
 
+    public void testAll() throws Exception {
+        final Employee employee = new Employee();
+        final Employee a = new Employee();
+        final AbstractAggregateQuerySpecification<String> aggregateQuerySpecification = a.name.max().where(a.name.like("A"));
+        final String sql = employee.name.where(employee.name.eq(aggregateQuerySpecification.all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T2.name AS C2 FROM employee AS T2 WHERE T2.name = ALL(SELECT MAX(T1.name) FROM employee AS T1 WHERE T1.name LIKE ?)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final Employee employee = new Employee();
+        final Employee a = new Employee();
+        final AbstractAggregateQuerySpecification<String> aggregateQuerySpecification = a.name.max().where(a.name.like("A"));
+        final String sql = employee.name.where(employee.name.eq(aggregateQuerySpecification.any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T2.name AS C2 FROM employee AS T2 WHERE T2.name = ANY(SELECT MAX(T1.name) FROM employee AS T1 WHERE T1.name LIKE ?)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final Employee employee = new Employee();
+        final Employee a = new Employee();
+        final AbstractAggregateQuerySpecification<String> aggregateQuerySpecification = a.name.max().where(a.name.like("A"));
+        final String sql = employee.name.where(employee.name.eq(aggregateQuerySpecification.some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T2.name AS C2 FROM employee AS T2 WHERE T2.name = SOME(SELECT MAX(T1.name) FROM employee AS T1 WHERE T1.name LIKE ?)", sql);
+    }
+
     public void testScroll() throws Exception {
         new Scenario(aggregateQuery) {
             @Override

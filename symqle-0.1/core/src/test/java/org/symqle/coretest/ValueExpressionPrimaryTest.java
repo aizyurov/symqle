@@ -66,7 +66,7 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         assertEquals(CoreMappers.STRING, remapped.getMapper());
     }
 
-    public void testAll() throws Exception {
+    public void testSelectAll() throws Exception {
         final String sql = createValueExpressionPrimary().selectAll().orderBy(employee.name).showQuery(new GenericDialect());
         assertSimilar("SELECT ALL(SELECT T4.id FROM person AS T4 WHERE T4.name = T3.name) AS C1 FROM employee AS T3 ORDER BY T3.name", sql);
     }
@@ -90,6 +90,11 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     public void testEq() throws Exception {
         final String sql = createValueExpressionPrimary().eq(employee.id).asValue().showQuery(new GenericDialect());
         assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) = T1.id AS C0 FROM employee AS T1", sql);
+    }
+
+    public void testEqArg() throws Exception {
+        final String sql = employee.id.eq(createValueExpressionPrimary()).asValue().showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.id =(SELECT T0.id FROM person AS T0 WHERE T0.name = T1.name) AS C0 FROM employee AS T1", sql);
     }
 
     public void testNe() throws Exception {
@@ -280,13 +285,14 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
     public void testLimit() throws Exception {
         final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = person.id.where(person.name.isNotNull()).queryValue();
         final String sql = valueExpressionPrimary.limit(20).showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
-        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL) AS C0 FROM dual AS T0 FETCH FIRST 20 ROWS ONLY", sql);
+        System.out.println(sql);
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL) AS C0 FROM dual AS T1 FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testLimit2() throws Exception {
         final AbstractValueExpressionPrimary<Long> valueExpressionPrimary = person.id.where(person.name.isNotNull()).queryValue();
         final String sql = valueExpressionPrimary.limit(10, 20).showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
-        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL) AS C0 FROM dual AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
+        assertSimilar("SELECT(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL) AS C0 FROM dual AS T1 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
     public void testLabel() throws Exception {
@@ -469,6 +475,31 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         } catch (MalformedStatementException e) {
             assertEquals("At least one table is required for FROM clause", e.getMessage());
         }
+        final AbstractValueExpressionPrimary<Long> vep = createValueExpressionPrimary();
+        final String sql = employee.id.where(vep.contains(1L)).showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name) FROM dual AS T2)", sql);
+        System.out.println(sql);
+    }
+
+    public void testAll() throws Exception {
+        final AbstractValueExpressionPrimary<Long> vep = createValueExpressionPrimary();
+        final String sql = employee.id.where(employee.id.lt(vep.all())).showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.id < ALL(SELECT(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name) FROM dual AS T2)", sql);
+        System.out.println(sql);
+    }
+
+    public void testAny() throws Exception {
+        final AbstractValueExpressionPrimary<Long> vep = createValueExpressionPrimary();
+        final String sql = employee.id.where(employee.id.lt(vep.any())).showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.id < ANY(SELECT(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name) FROM dual AS T2)", sql);
+        System.out.println(sql);
+    }
+
+    public void testSome() throws Exception {
+        final AbstractValueExpressionPrimary<Long> vep = createValueExpressionPrimary();
+        final String sql = employee.id.where(employee.id.lt(vep.some())).showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE T0.id < SOME(SELECT(SELECT T1.id FROM person AS T1 WHERE T1.name = T0.name) FROM dual AS T2)", sql);
+        System.out.println(sql);
     }
 
     public void testQueryValue() throws Exception {

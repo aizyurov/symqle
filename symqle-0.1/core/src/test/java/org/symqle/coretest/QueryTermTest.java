@@ -155,6 +155,26 @@ public class QueryTermTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id IN(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
     }
 
+    public void testAll() throws Exception {
+        final String sql = person.name
+                .where(person.id.lt(createQueryTerm().all()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id < ALL(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final String sql = person.name
+                .where(person.id.lt(createQueryTerm().any()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id < ANY(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final String sql = person.name
+                .where(person.id.lt(createQueryTerm().some()))
+                .showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE T0.id < SOME(SELECT T1.id FROM employee AS T1 INTERSECT SELECT T2.id FROM manager AS T2)", sql);
+    }
 
     public void testList() throws Exception {
         new Scenario(createQueryTerm()) {

@@ -177,6 +177,33 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
     }
 
     @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee staff = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.eq(firstNames(staff).all())).orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(0, list.size());
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee staff = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.ne(firstNames(staff).any())).orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        final Employee staff = new Employee();
+        final List<String> list = employee.lastName.where(employee.firstName.eq(firstNames(staff).some())).orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();

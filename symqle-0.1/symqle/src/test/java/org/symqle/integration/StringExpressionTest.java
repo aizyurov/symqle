@@ -366,7 +366,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -387,7 +387,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -550,7 +550,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -571,7 +571,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -611,7 +611,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -632,7 +632,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -668,6 +668,54 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
                 // If collation does not match, a possible solution is to
                 // cast operands to force them to the default collation
                 // (e.g. SELECT tablename FROM sys.systables WHERE CAST(tablename AS VARCHAR(128)) = 'T1')
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
+        }
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(stringExpression(employee).eq(stringExpression(department.manager()).all()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(0, list.size());
+        } catch (SQLException e) {
+            // derby:  ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
+        }
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(stringExpression(employee).ne(stringExpression(department.manager()).any()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+        } catch (SQLException e) {
+            // derby:  ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
+        }
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Department department = new Department();
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName
+                    .where(stringExpression(employee).eq(stringExpression(department.manager()).some()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine());
+            assertEquals(Arrays.asList("Cooper", "First","Redwood"), list);
+        } catch (SQLException e) {
+            // derby:  ERROR 42818: Comparisons between 'LONG VARCHAR (UCS_BASIC)' and 'LONG VARCHAR (UCS_BASIC)' are not supported.
             expectSQLException(e, SupportedDb.APACHE_DERBY);
         }
     }
@@ -874,7 +922,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -895,7 +943,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -983,7 +1031,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -1004,7 +1052,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -1130,7 +1178,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {
@@ -1151,7 +1199,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final Employee cooper = new Employee();
         try {

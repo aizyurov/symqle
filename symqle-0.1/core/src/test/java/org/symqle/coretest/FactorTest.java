@@ -96,6 +96,11 @@ public class FactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id = T0.id", sql);
     }
 
+    public void testEqArg() throws Exception {
+        final String sql = person.id.where(person.id.eq(person.id.opposite())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.id = - T0.id", sql);
+    }
+
     public void testNe() throws Exception {
         final String sql = person.id.where(person.id.opposite().ne(person.id)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE - T0.id <> T0.id", sql);
@@ -449,6 +454,27 @@ public class FactorTest extends SqlTestCase {
     public void testMax() throws Exception {
         final String sql = person.id.opposite().max().showQuery(new GenericDialect());
         assertSimilar("SELECT MAX(- T1.id) AS C1 FROM person AS T1", sql);
+    }
+
+    public void testAll() throws Exception {
+        Person all = new Person();
+        final AbstractFactor<Number> factor = all.id.sub(20).opposite();
+        final String sql = person.name.where(person.id.map(CoreMappers.NUMBER).eq(factor.all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id = ALL(SELECT -(T2.id - ?) FROM person AS T2)", sql);
+    }
+
+    public void testAny() throws Exception {
+        Person all = new Person();
+        final AbstractFactor<Number> factor = all.id.sub(20).opposite();
+        final String sql = person.name.where(person.id.map(CoreMappers.NUMBER).eq(factor.any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id = ANY(SELECT -(T2.id - ?) FROM person AS T2)", sql);
+    }
+
+    public void testSome() throws Exception {
+        Person all = new Person();
+        final AbstractFactor<Number> factor = all.id.sub(20).opposite();
+        final String sql = person.name.where(person.id.map(CoreMappers.NUMBER).eq(factor.some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE T1.id = SOME(SELECT -(T2.id - ?) FROM person AS T2)", sql);
     }
 
     public void testList() throws Exception {

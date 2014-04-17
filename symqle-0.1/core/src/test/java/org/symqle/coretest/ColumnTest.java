@@ -245,6 +245,30 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.age FROM person AS T1)", sql);
     }
 
+    public void testAll() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> age2 = person2.age;
+        String sql = id.where(person.age.lt(age2.all())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age < ALL(SELECT T1.age FROM person AS T1)", sql);
+    }
+
+    public void testAny() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> age2 = person2.age;
+        String sql = id.where(person.age.lt(age2.any())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age < ANY(SELECT T1.age FROM person AS T1)", sql);
+    }
+
+    public void testSome() throws Exception {
+        final Column<Long> id  =  person.id;
+        // find all but the most old
+        final Column<Long> age2 = person2.age;
+        String sql = id.where(person.age.lt(age2.some())).showQuery(new GenericDialect());
+        assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE T0.age < SOME(SELECT T1.age FROM person AS T1)", sql);
+    }
+
     public void testExistsWithCondition() throws Exception {
         final Column<Long> id  =  person.id;
         final Column<Long> age = person.age;

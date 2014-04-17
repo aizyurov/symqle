@@ -314,14 +314,14 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_eq_Predicand() throws Exception {
+    public void test_eq_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(Params.p("Margaret").eq(employee.firstName)).list(getEngine());
         assertEquals(Arrays.asList("Redwood"), list);
     }
 
     @Override
-    public void test_eq_Predicand_Predicand_1() throws Exception {
+    public void test_eq_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.firstName.eq(Params.p("Margaret"))).list(getEngine());
         assertEquals(Arrays.asList("Redwood"), list);
@@ -472,7 +472,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ge_Predicand() throws Exception {
+    public void test_ge_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(Params.p("James").ge(employee.department().manager().firstName))
@@ -482,7 +482,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ge_Predicand_Predicand_1() throws Exception {
+    public void test_ge_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName.ge(Params.p("James")))
@@ -506,7 +506,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_gt_Predicand() throws Exception {
+    public void test_gt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(Params.p("K").gt(employee.department().manager().firstName))
                 .orderBy(employee.lastName)
@@ -515,7 +515,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_gt_Predicand_Predicand_1() throws Exception {
+    public void test_gt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(employee.department().manager().firstName.gt(Params.p("K")))
                 .orderBy(employee.lastName)
@@ -554,6 +554,48 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
         final Employee employee = new Employee();
         try {
             final List<String> list = employee.lastName.where(employee.firstName.in(Params.p("James")))
+                    .orderBy(employee.lastName)
+                    .list(getEngine(), Option.allowNoTables(true));
+            assertEquals(Arrays.asList("Cooper", "First"), list);
+        } catch (SQLException e) {
+           // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
+        }
+    }
+
+    @Override
+    public void test_all_() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(employee.firstName.eq(Params.p("James").all()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine(), Option.allowNoTables(true));
+            assertEquals(Arrays.asList("Cooper", "First"), list);
+        } catch (SQLException e) {
+           // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
+        }
+    }
+
+    @Override
+    public void test_any_() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(employee.firstName.ne(Params.p("James").any()))
+                    .orderBy(employee.lastName)
+                    .list(getEngine(), Option.allowNoTables(true));
+            assertEquals(Arrays.asList("March", "Pedersen", "Redwood"), list);
+        } catch (SQLException e) {
+           // ERROR 42X34: There is a ? parameter in the select list.  This is not allowed.
+            expectSQLException(e, SupportedDb.APACHE_DERBY);
+        }
+    }
+
+    @Override
+    public void test_some_() throws Exception {
+        final Employee employee = new Employee();
+        try {
+            final List<String> list = employee.lastName.where(employee.firstName.eq(Params.p("James").some()))
                     .orderBy(employee.lastName)
                     .list(getEngine(), Option.allowNoTables(true));
             assertEquals(Arrays.asList("Cooper", "First"), list);
@@ -688,7 +730,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_le_Predicand() throws Exception {
+    public void test_le_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(Params.p("Margaret").le(employee.department().manager().firstName))
@@ -698,7 +740,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_le_Predicand_Predicand_1() throws Exception {
+    public void test_le_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName.le(Params.p("Margaret")))
@@ -777,7 +819,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_lt_Predicand() throws Exception {
+    public void test_lt_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(Params.p("K").lt(employee.department().manager().firstName))
@@ -787,7 +829,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_lt_Predicand_Predicand_1() throws Exception {
+    public void test_lt_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.department().manager().firstName.lt(Params.p("K")))
@@ -879,7 +921,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ne_Predicand() throws Exception {
+    public void test_ne_Predicand2() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(Params.p("Margaret").ne(employee.firstName))
@@ -889,7 +931,7 @@ public class DynamicParameterTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
-    public void test_ne_Predicand_Predicand_1() throws Exception {
+    public void test_ne_Predicand_Predicand2_1() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName
                 .where(employee.firstName.ne(Params.p("Margaret")))
