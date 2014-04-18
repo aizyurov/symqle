@@ -202,15 +202,15 @@ public class JdbcBenchmark extends AbstractIntegrationTestBase {
     private void jdbcInsert() throws SQLException {
         final long start = System.nanoTime();
         final Connection connection = getDataSource().getConnection();
-        final PreparedStatement insert = connection.prepareStatement("INSERT INTO insert_test(id, text, active, payload) VALUES(?,?,?,?)");
         for (int i=0; i<NUM_ITERATIONS; i++) {
+            final PreparedStatement insert = connection.prepareStatement("INSERT INTO insert_test(id, text, active, payload) VALUES(?,?,?,?)");
             insert.setInt(1, i);
             insert.setString(2, String.valueOf(i));
             insert.setBoolean(3, (i & 1) == 0);
             insert.setInt(4, i);
             insert.execute();
+            insert.close();
         }
-        insert.close();
         connection.close();
         final long end = System.nanoTime();
         System.out.println("Plain JDBC: " + (end - start) / NUM_ITERATIONS  + " nanos");
@@ -227,7 +227,7 @@ public class JdbcBenchmark extends AbstractIntegrationTestBase {
     private void symqleBatching() throws Exception {
         final long start = System.nanoTime();
         final Engine engine = getEngine();
-        final Batcher batcher = engine.newBatcher(100);
+        final Batcher batcher = engine.newBatcher(1000);
         final InsertTable insertTable = new InsertTable();
         for (int i=0; i<NUM_ITERATIONS; i++) {
             insertTable.insert(
@@ -257,7 +257,7 @@ public class JdbcBenchmark extends AbstractIntegrationTestBase {
                         .also(insertTable.payload.set(payloadParam))
         );
         final PreparedUpdate preparedUpdate = insert.compileUpdate(engine);
-        final Batcher batcher = engine.newBatcher(100);
+        final Batcher batcher = engine.newBatcher(1000);
         for (int i=0; i<NUM_ITERATIONS; i++) {
             idParam.setValue(i);
             textParam.setValue(String.valueOf(i));
