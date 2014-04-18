@@ -65,7 +65,8 @@ public class AbstractAggregateQuerySpecificationTest extends AbstractIntegration
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
             // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with aggregate functions
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "FOR UPDATE && GROUP"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -136,6 +137,13 @@ public class AbstractAggregateQuerySpecificationTest extends AbstractIntegration
         final Employee employee = new Employee();
         final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).list(getEngine());
         assertEquals(Arrays.asList(4), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.empId.count().where(employee.salary.gt(1800.0)).countRows().list(getEngine());
+        assertEquals(Arrays.asList(1), list);
     }
 
     @Override

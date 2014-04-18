@@ -106,6 +106,11 @@ public class PairTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 ORDER BY T0.name FOR READ ONLY", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createSelectList().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T0.id, T0.name FROM person AS T0) AS T3", sql);
+    }
+
     public void testImplicitCrossJoin() throws Exception {
         final Person person1 = new Person();
         final Person person2 = new Person();

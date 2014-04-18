@@ -56,6 +56,11 @@ public class AggregateQuerySpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T2.name AS C2 FROM employee AS T2 WHERE EXISTS(SELECT COUNT(T1.id) FROM employee AS T1 WHERE T1.name LIKE ?)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = aggregateQuery.countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT COUNT(T1.id) FROM employee AS T1 WHERE T1.name LIKE ?) AS T0", sql);
+    }
+
     public void testForReadOnly() throws Exception {
         final String sql = aggregateQuery.forReadOnly().showQuery(new GenericDialect());
         assertSimilar("SELECT COUNT(T1.id) AS C1 FROM employee AS T1 WHERE T1.name LIKE ? FOR READ ONLY", sql);
@@ -78,6 +83,19 @@ public class AggregateQuerySpecificationTest extends SqlTestCase {
             void use(AbstractAggregateQuerySpecification<Integer> query, QueryEngine engine) throws SQLException {
                 final List<Integer> expected = Arrays.asList(123);
                 final List<Integer> list = aggregateQuery.list(
+                        engine);
+                assertEquals(expected, list);
+            }
+        }.play();
+    }
+
+    public void testListCountRows() throws Exception {
+        final AbstractAggregateQuerySpecification<Integer> rowCount = employee.id.where(employee.name.like("A%")).countRows();
+        new Scenario(rowCount) {
+            @Override
+            void use(AbstractAggregateQuerySpecification<Integer> query, QueryEngine engine) throws SQLException {
+                final List<Integer> expected = Arrays.asList(123);
+                final List<Integer> list = rowCount.list(
                         engine);
                 assertEquals(expected, list);
             }

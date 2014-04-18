@@ -127,7 +127,8 @@ public class BooleanTestTest extends AbstractIntegrationTestBase implements Abst
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Column "UNKNOWN" not found
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -156,8 +157,9 @@ public class BooleanTestTest extends AbstractIntegrationTestBase implements Abst
                     .list(getEngine());
             assertEquals(0, list.size());
         } catch (SQLException e) {
-            // derby: ERROR 42X01: Syntax error: Encountered "TRUE" at line 1, column ...
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column ...
+            // org.h2.jdbc.JdbcSQLException: Column "UNKNOWN" not found
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 

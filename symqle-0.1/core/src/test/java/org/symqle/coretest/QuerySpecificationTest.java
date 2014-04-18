@@ -60,6 +60,11 @@ public class QuerySpecificationTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 WHERE T0.name IS NOT NULL ORDER BY T0.name", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createQuerySpecification().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C1 FROM(SELECT T0.id, T0.name FROM person AS T0 WHERE T0.name IS NOT NULL) AS T1", sql);
+    }
+
     public void testList() throws Exception {
         new PairScenario<AbstractQuerySpecification<Pair<Long, String>>>(createQuerySpecification()) {
             @Override

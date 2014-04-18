@@ -45,7 +45,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '+' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean + numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "BOOLEAN +"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -145,7 +146,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42Y22: Aggregate AVG cannot operate on type BOOLEAN.
             // org.postgresql.util.PSQLException: ERROR: function avg(boolean) does not exist
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "BOOLEAN +"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -154,9 +156,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         final Employee employee = new Employee();
         final List<String> list = createVE(employee).cast("CHAR(5)").map(CoreMappers.STRING).list(getEngine());
         Collections.sort(list);
-        final List<String> expected = SupportedDb.MYSQL.equals(getDatabaseName()) ?
-                Arrays.asList("0", "1", "1", "1", "1") :
-                Arrays.asList("false", "true ", "true ", "true ", "true ");
+        final List<String> expected;
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+            expected = Arrays.asList("0", "1", "1", "1", "1");
+        } else if (SupportedDb.H2.equals(getDatabaseName())) {
+            expected = Arrays.asList("FALSE", "TRUE", "TRUE", "TRUE", "TRUE");
+        } else {
+            expected = Arrays.asList("false", "true ", "true ", "true ", "true ");
+        }
         assertEquals(expected, list);
     }
 
@@ -164,9 +171,20 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     public void test_charLength_() throws Exception {
         try {
             final Employee employee = new Employee();
+            final int expectedLength;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                // "0"
+                expectedLength = 1;
+            } else if (SupportedDb.APACHE_DERBY.equals(getDatabaseName())) {
+                // do not know why
+                expectedLength = 1;
+            } else {
+                // "TRUE" or "true"
+                expectedLength = 4;
+            }
             final List<Integer> list = createVE(employee).charLength().where(employee.lastName.eq("Redwood"))
                     .list(getEngine());
-            assertEquals(Arrays.asList(1), list);
+            assertEquals(Arrays.asList(expectedLength), list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function char_length(boolean) does not exist
             expectSQLException(e, SupportedDb.POSTGRESQL);
@@ -193,7 +211,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 34.
             // org.postgresql.util.PSQLException: ERROR: collations are not supported by type boolean
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -216,6 +235,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         final List<String> expected;
         if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             expected = Arrays.asList("0Cooper");
+        } else if (SupportedDb.H2.equals(getDatabaseName())) {
+            expected = Arrays.asList("FALSECooper");
         } else {
             expected = Arrays.asList("falseCooper");
         }
@@ -232,6 +253,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         final List<String> expected;
         if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             expected = Arrays.asList("0-");
+        } else if (SupportedDb.H2.equals(getDatabaseName())) {
+            expected = Arrays.asList("FALSE-");
         } else {
             expected = Arrays.asList("false-");
         }
@@ -248,6 +271,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         final List<String> expected;
         if (SupportedDb.MYSQL.equals(getDatabaseName())) {
             expected = Arrays.asList("Cooper0");
+        } else if (SupportedDb.H2.equals(getDatabaseName())) {
+            expected = Arrays.asList("CooperFALSE");
         } else {
             expected = Arrays.asList("Cooperfalse");
         }
@@ -323,7 +348,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean / numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "BOOLEAN /"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -376,7 +402,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(false, true, true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -390,7 +417,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(false, true, true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -404,7 +432,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -418,7 +447,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -601,7 +631,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(true, true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -615,7 +646,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(true, true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -629,7 +661,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -643,7 +676,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList(false), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -652,9 +686,9 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         try {
             final Employee employee = new Employee();
             final Department department = new Department();
-            final List<Boolean> list = createVE(employee).except(createVE(department.manager())).list(getEngine());
+            final List<Boolean> list = createVE(employee).intersect(createVE(department.manager())).list(getEngine());
             Collections.sort(list);
-            assertEquals(Arrays.asList(false), list);
+            assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
             expectSQLException(e, SupportedDb.MYSQL);
@@ -666,9 +700,9 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         try {
             final Employee employee = new Employee();
             final Department department = new Department();
-            final List<Boolean> list = createVE(employee).except(createVE(department.manager())).list(getEngine());
+            final List<Boolean> list = createVE(employee).intersect(createVE(department.manager())).list(getEngine());
             Collections.sort(list);
-            assertEquals(Arrays.asList(false), list);
+            assertEquals(Arrays.asList(true), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
             expectSQLException(e, SupportedDb.MYSQL);
@@ -735,7 +769,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     public void test_like_String() throws Exception {
         final Employee employee = new Employee();
         try {
-            final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "0%" : "fa%";
+            final String pattern;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                pattern = "0%";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                pattern = "FA%";
+            } else {
+                pattern = "fa%";
+            }
             final List<String> list = employee.lastName
                     .where(createVE(employee).like(pattern))
                     .orderBy(employee.lastName)
@@ -750,7 +791,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
 
     @Override
     public void test_like_StringExpression() throws Exception {
-        final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "0%" : "fa%";
+        final String pattern;
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+            pattern = "0%";
+        } else if (SupportedDb.H2.equals(getDatabaseName())) {
+            pattern = "FA%";
+        } else {
+            pattern = "fa%";
+        }
         final Employee employee = new Employee();
         InsertTable insertTable = new InsertTable();
         insertTable.delete().execute(getEngine());
@@ -792,6 +840,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     }
 
     @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createVE(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
+
+    }
+
+    @Override
     public void test_lt_Object() throws Exception {
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.where(createVE(employee).lt(true)).orderBy(employee.lastName).list(getEngine());
@@ -825,6 +881,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
                 assertEquals(Arrays.asList("0", "1", "1", "1", "1"), list);
             } else if (getDatabaseName().equals(SupportedDb.POSTGRESQL)) {
                 assertEquals(Arrays.asList("f", "t", "t", "t", "t"), list);
+            } else if (getDatabaseName().equals(SupportedDb.H2)) {
+                assertEquals(Arrays.asList("FALSE", "TRUE", "TRUE", "TRUE", "TRUE"), list);
             } else {
                 assertEquals(Arrays.asList("false", "true", "true", "true", "true"), list);
             }
@@ -886,7 +944,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '*' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean * numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "BOOLEAN *"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -969,7 +1028,15 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     public void test_notLike_String() throws Exception {
         final Employee employee = new Employee();
         try {
-            final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "1%" : "tr%";
+            final String pattern;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                pattern = "1%";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                pattern = "TR%";
+            } else {
+                pattern = "tr%";
+            }
+
             final List<String> list = employee.lastName
                     .where(createVE(employee).notLike(pattern))
                     .orderBy(employee.lastName)
@@ -984,7 +1051,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
 
     @Override
     public void test_notLike_StringExpression() throws Exception {
-        final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "1%" : "tr%";
+        final String pattern;
+        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+            pattern = "1%";
+        } else if (SupportedDb.H2.equals(getDatabaseName())) {
+            pattern = "TR%";
+        } else {
+            pattern = "tr%";
+        }
         final Employee employee = new Employee();
         InsertTable insertTable = new InsertTable();
         insertTable.delete().execute(getEngine());
@@ -1034,13 +1108,20 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         // what is the opposite to Boolean? many databases may not support it
         // but mysql allows it: - FALSE == FALSE; - TRUE == TRUE (conversion to 0/1, apply '-', convert back to Boolean -
         // everything not zero is true (like in C)
+        // in H2 opposite of Boolean is equivalent of negate
         try {
             final Employee employee = new Employee();
             final List<Pair<Boolean, String>> list = createVE(employee).opposite().pair(employee.lastName)
                     .where(employee.firstName.eq("James"))
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First")), list);
+            final List<Pair<Boolean, String>> expected;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                expected = Arrays.asList(Pair.make(false, "Cooper"), Pair.make(true, "First"));
+            } else {
+                expected = Arrays.asList(Pair.make(true, "Cooper"), Pair.make(false, "First"));
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // Apache Derby: ERROR 42X37: The unary '-' operator is not allowed on the 'BOOLEAN' type.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: - boolean
@@ -1127,7 +1208,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     @Override
     public void test_positionOf_String() throws Exception {
         try {
-            final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String pattern;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                pattern = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                pattern = "F";
+            } else {
+                pattern = "f";
+            }
             final Employee employee = new Employee();
             final List<Integer> list = createVE(employee).positionOf(pattern).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
@@ -1142,7 +1230,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     @Override
     public void test_positionOf_StringExpression() throws Exception {
         try {
-            final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String pattern;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                pattern = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                pattern = "FALSE";
+            } else {
+                pattern = "f";
+            }
             InsertTable insertTable = new InsertTable();
             insertTable.delete().execute(getEngine());
             insertTable.insert(insertTable.id.set(0).also(insertTable.text.set(pattern))).execute(getEngine());
@@ -1160,7 +1255,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     @Override
     public void test_positionOf_StringExpression_StringExpression_1() throws Exception {
         try {
-            final String pattern = SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String pattern;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                pattern = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                pattern = "F";
+            } else {
+                pattern = "f";
+            }
             InsertTable insertTable = new InsertTable();
             insertTable.delete().execute(getEngine());
             insertTable.insert(insertTable.id.set(0).also(insertTable.text.set(pattern))).execute(getEngine());
@@ -1227,7 +1329,7 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         final Employee employee = new Employee();
         final String sql = createVE(employee).showQuery(getEngine().getDialect());
         final Pattern expected;
-        if (SupportedDb.POSTGRESQL.equals(getDatabaseName())) {
+        if (SupportedDb.POSTGRESQL.equals(getDatabaseName()) || SupportedDb.H2.equals(getDatabaseName())) {
             expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).dept_id IS NOT NULL AS [A-Z][A-Z0-9]* FROM employee AS \\1");
         } else {
             expected = Pattern.compile("SELECT\\(([A-Z][A-Z0-9]*).dept_id IS NOT NULL\\) AS [A-Z][A-Z0-9]* FROM employee AS \\1");
@@ -1249,7 +1351,8 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42Y95: The '-' operator with a left operand type of 'BOOLEAN' and a right operand type of 'DOUBLE' is not supported
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: boolean - numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "BOOLEAN -"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -1296,7 +1399,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         insertTable.insert(insertTable.id.set(1).also(insertTable.payload.set(1))).execute(getEngine());
 
         try {
-            final String expected= SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String expected;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                expected = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = "FALSE";
+            } else {
+                expected = "f";
+            }
             final Employee employee = new Employee();
             final List<String> list = createVE(employee).substring(insertTable.payload.queryValue()).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
@@ -1316,7 +1426,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
         insertTable.insert(insertTable.id.set(1).also(insertTable.payload.set(1))).execute(getEngine());
 
         try {
-            final String expected= SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String expected;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                expected = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = "F";
+            } else {
+                expected = "f";
+            }
             final Employee employee = new Employee();
             final List<String> list = createVE(employee)
                     .substring(insertTable.payload.queryValue(), insertTable.payload.queryValue())
@@ -1375,7 +1492,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     @Override
     public void test_substring_int() throws Exception {
         try {
-            final String expected= SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String expected;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                expected = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = "FALSE";
+            } else {
+                expected = "f";
+            }
             final Employee employee = new Employee();
             final List<String> list = createVE(employee).substring(1).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
@@ -1390,7 +1514,14 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     @Override
     public void test_substring_int_int() throws Exception {
         try {
-            final String expected= SupportedDb.MYSQL.equals(getDatabaseName()) ? "0" : "f";
+            final String expected;
+            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+                expected = "0";
+            } else if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = "F";
+            } else {
+                expected = "f";
+            }
             final Employee employee = new Employee();
             final List<String> list = createVE(employee).substring(1, 1).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());

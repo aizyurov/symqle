@@ -14,7 +14,11 @@ public class TableNameGenerator {
 
     private final Set<String> used = new HashSet<String>();
 
-    public String generate(final String prefix) {
+    public String generate(final String suggestedPrefix) {
+        final String trimmedPrefix = suggestedPrefix.trim();
+        final int spaceIndex = trimmedPrefix.indexOf(" ");
+        final String truncatedPrefix = spaceIndex > 0 ? trimmedPrefix.substring(0, spaceIndex) : trimmedPrefix;
+        final String prefix = truncatedPrefix.replaceAll("[^a-zA-Z0-9_]", "");
         final String shortPrefix =
                 (prefix.length() < MAX_PREFIX_LENGTH ? prefix: prefix.substring(0, MAX_PREFIX_LENGTH))
                         .toUpperCase();

@@ -128,8 +128,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // derby: does not support COLLATE
-            System.out.println(getDatabaseName());
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // H2: does not support COLLATE
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -175,7 +175,13 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         final List<String> list = employee.lastName.where(createCast(another).contains(2000.0))
                 .orderBy(employee.lastName)
                 .list(getEngine());
-        assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+        final List<String> expected;
+        if (SupportedDb.H2.equals(getDatabaseName())) {
+            expected = Collections.emptyList();
+        } else {
+            expected = Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood");
+        }
+        assertEquals(expected, list);
     }
 
     @Override
@@ -280,7 +286,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -294,7 +301,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -307,7 +315,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -321,7 +330,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // MySQL does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -462,7 +472,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         final Employee employee = new Employee();
         final Department department = new Department();
         final List<String> list = employee.lastName
-                .where(employee.salary.in(department.manager().salary.cast("DECIMAL(6,2)")))
+                .where(employee.salary.cast("DECIMAL(6,2)").in(department.manager().salary.cast("DECIMAL(6,2)")))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -495,7 +505,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         final Employee employee = new Employee();
         final Department department = new Department();
         final List<String> list = employee.lastName
-                .where(employee.salary.eq(department.manager().salary.cast("DECIMAL(6,2)").some()))
+                .where(employee.salary.cast("DECIMAL(6,2)").eq(department.manager().salary.cast("DECIMAL(6,2)").some()))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("First", "Redwood"), list);
@@ -510,7 +520,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -523,7 +534,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -536,7 +548,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -549,7 +562,8 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.00), list);
         } catch (SQLException e) {
             // MySQL does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -673,6 +687,13 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
         final List<Double> list = createCast(employee).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createCast(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override
@@ -812,8 +833,10 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     public void test_notIn_Predicand_InPredicateValue_1() throws Exception {
         final Employee employee = new Employee();
         final Department department = new Department();
+        // note: some databases (H2) require both predicands of same database type, so cast first operand as well
+        //
         final List<String> list = employee.lastName
-                .where(employee.salary.notIn(department.manager().salary.cast("DECIMAL(6,2)")))
+                .where(employee.salary.cast("DECIMAL(6,2)").notIn(department.manager().salary.cast("DECIMAL(6,2)")))
                 .orderBy(employee.lastName)
                 .list(getEngine());
         assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);

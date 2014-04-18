@@ -100,6 +100,13 @@ public class PairTest extends AbstractIntegrationTestBase implements AbstractSel
     }
 
     @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = makePair(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    @Override
     public void test_orderBy_SortSpecification_SortSpecification() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<Double, String>> list = makePair(employee).orderBy(employee.lastName).list(getEngine());

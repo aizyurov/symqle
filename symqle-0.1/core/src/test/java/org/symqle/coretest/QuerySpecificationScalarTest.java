@@ -144,6 +144,11 @@ public class QuerySpecificationScalarTest extends SqlTestCase {
         assertSimilar("SELECT T0.name AS C0 FROM employee AS T0 WHERE T0.id < SOME(SELECT T1.id FROM person AS T1 WHERE T1.name IS NOT NULL)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createQuerySpecificationScalar().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T0.id FROM person AS T0 WHERE T0.name IS NOT NULL) AS T1", sql);
+    }
+
     public void testList() throws Exception {
         new Scenario123<AbstractQuerySpecificationScalar<Long>>(person.id.where(person.name.isNull())) {
             @Override

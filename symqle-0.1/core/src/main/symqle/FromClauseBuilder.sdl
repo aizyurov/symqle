@@ -8,9 +8,12 @@ import org.symqle.querybuilder.StringSqlBuilder;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.querybuilder.TableNameGenerator;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 class FromClauseBuilder {
     /**
@@ -35,7 +38,14 @@ class FromClauseBuilder {
         for (TableOrView t : localTables) {
             roots.add(t.joinedTableRoot());
         }
-        final Iterator<TableOrView> iterator = roots.iterator();
+        final List<TableOrView> orderedRoots = new ArrayList<TableOrView>(roots);
+        Collections.sort(orderedRoots, new Comparator<TableOrView>() {
+            @Override
+            public int compare(final TableOrView o1, final TableOrView o2) {
+                return o1.getCorrelationName(context).compareTo(o2.getCorrelationName(context));
+            }
+        });
+        final Iterator<TableOrView> iterator = orderedRoots.iterator();
         TableReferenceList tableReferenceList = Symqle.createTableReferenceList(iterator.next());
         while (iterator.hasNext()) {
             if (!allowImplicitCrossJoins) {

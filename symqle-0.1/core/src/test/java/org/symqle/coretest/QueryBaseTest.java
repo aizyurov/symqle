@@ -62,6 +62,11 @@ public class QueryBaseTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT T0.id AS C0, T0.name AS C1 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createQueryBase().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT DISTINCT T0.id, T0.name FROM person AS T0) AS T1", sql);
+    }
+
     public void testList() throws Exception {
         new PairScenario<AbstractQueryBase<Pair<Long, String>>>(createQueryBase()) {
             @Override

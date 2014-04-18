@@ -8,4 +8,5 @@ public interface SupportedDb {
     String APACHE_DERBY = "Apache Derby";
     String MYSQL = "MySQL";
     String POSTGRESQL = "PostgreSQL";
+    String H2 = "H2";
 }

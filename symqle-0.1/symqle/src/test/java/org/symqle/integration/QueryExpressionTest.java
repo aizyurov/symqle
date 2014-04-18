@@ -82,4 +82,10 @@ public class QueryExpressionTest extends AbstractIntegrationTestBase implements 
         assertTrue(sql, expected.matcher(sql).matches());
     }
 
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createQueryExpression(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(1), list);
+    }
 }

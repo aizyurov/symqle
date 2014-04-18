@@ -225,6 +225,11 @@ public class CharacterFactorTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.name COLLATE latin1_general_ci FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = characterFactor.countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.name COLLATE latin1_general_ci FROM person AS T1) AS T0", sql);
+    }
+
     public void testContains() throws Exception {
         final String sql = new Person().id.where(characterFactor.contains("abc")).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.name COLLATE latin1_general_ci FROM person AS T1)", sql);

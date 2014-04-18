@@ -147,7 +147,13 @@ public class QueryExpressionBodyScalarTest extends SqlTestCase {
     public void testExists() throws Exception {
         final String sql = person.name.where(employee.id.where(employee.id.eq(person.id)).union(manager.id.where(manager.id.eq(person.id))).exists()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.name AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id FROM employee AS T1 WHERE T1.id = T0.id UNION SELECT T2.id FROM manager AS T2 WHERE T2.id = T0.id)", sql);
+    }
 
+    public void testCountRows() throws Exception {
+        final String sql = employee.id
+                .union(manager.id)
+                .countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.id FROM employee AS T1 UNION SELECT T2.id FROM manager AS T2) AS T0", sql);
     }
 
     public void testAsInSublist() throws Exception {

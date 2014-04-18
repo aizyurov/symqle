@@ -373,6 +373,11 @@ public class TermTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.id * ? FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.id.mult(2).countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.id * ? FROM person AS T1) AS T0", sql);
+    }
+
     public void testContains() throws Exception {
         final String sql = employee.id.where(person.id.mult(2).contains(20)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.id * ? FROM person AS T1)", sql);

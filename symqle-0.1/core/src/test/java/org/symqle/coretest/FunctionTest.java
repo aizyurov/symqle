@@ -48,6 +48,12 @@ public class FunctionTest extends SqlTestCase {
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0 OFFSET 10 ROWS FETCH FIRST 20 ROWS ONLY", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = abs(person.id).countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT abs(T0.id) FROM person AS T0) AS T1", sql);
+    }
+
+
     public void testMap() throws Exception {
         final Column<Long> col = person.id;
         final AbstractValueExpressionPrimary<Long> remapped = abs(col).map(CoreMappers.LONG);

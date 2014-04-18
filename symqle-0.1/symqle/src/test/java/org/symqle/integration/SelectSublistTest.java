@@ -1,6 +1,7 @@
 package org.symqle.integration;
 
 import org.symqle.common.Callback;
+import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
@@ -64,7 +65,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -80,7 +82,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -96,7 +99,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -112,7 +116,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(1500.0, 2000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -235,7 +240,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -251,7 +257,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -267,7 +274,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -283,7 +291,8 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -310,7 +319,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
         try {
             final Label label = new Label();
             final AbstractSelectSublist<Double> selectSublist = department.manager().salary.label(label);
-            final List<Double> list = employee.salary.intersectDistinct(selectSublist).list(getEngine());
+            final List<Double> list = employee.salary.intersect(selectSublist).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
@@ -345,6 +354,19 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
         final List<Double> list = selectSublist.forUpdate().list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final Label label = new Label();
+        final AbstractSelectSublist<Double> selectSublist = employee.salary.label(label);
+        try {
+            selectSublist.countRows().list(getEngine());
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
+            // ok
+        }
     }
 
     @Override

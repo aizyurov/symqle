@@ -2,7 +2,6 @@ package org.symqle.misctest;
 
 import junit.framework.TestCase;
 import org.symqle.common.CoreMappers;
-import org.symqle.dialect.FastGenericDialect;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.Table;
@@ -25,24 +24,6 @@ public class SqlBuilderPerformanceTest extends TestCase {
             final long start = System.nanoTime();
             final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
                 .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
-            System.out.println("Time: " + (System.nanoTime() - start) /1000 + " micros");
-        }
-
-    }
-
-    public void testFastGeneric() throws Exception {
-        Person person = new Person();
-        Department department = new Department();
-        Person manager = new Person();
-        department.innerJoin(manager, department.managerId.eq(manager.id));
-        {
-            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).showQuery(new FastGenericDialect());
-        }
-        {
-            final long start = System.nanoTime();
-            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).showQuery(new FastGenericDialect());
             System.out.println("Time: " + (System.nanoTime() - start) /1000 + " micros");
         }
 

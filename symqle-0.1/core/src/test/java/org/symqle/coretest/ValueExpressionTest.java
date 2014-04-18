@@ -397,6 +397,11 @@ public class ValueExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT T1.name = T0.name FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.name.eq(person.nickName).asValue().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.name = T1.nick FROM person AS T1) AS T0", sql);
+    }
+
     public void testContains() throws Exception {
         final String sql = employee.id.where(person.name.eq(employee.name).asValue().contains(true)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT T1.name = T0.name FROM person AS T1)", sql);

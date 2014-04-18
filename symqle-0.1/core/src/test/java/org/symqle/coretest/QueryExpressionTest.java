@@ -35,6 +35,11 @@ public class QueryExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0 FETCH FIRST 10 ROWS ONLY FOR READ ONLY", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createQueryExpression().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C1 FROM(SELECT T0.id, T0.name FROM person AS T0 FETCH FIRST 10 ROWS ONLY) AS T1", sql);
+    }
+
     public void testAdapt() throws Exception {
         final String sql = AbstractQueryExpression.adapt(person.id.pair(person.name)).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0, T0.name AS C1 FROM person AS T0", sql);

@@ -49,34 +49,54 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
 
     @Override
     public void test_exceptAll_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).exceptAll(queryTerm(employee)).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList("Cooper"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(employee.firstName.eq("James")).exceptAll(queryTerm(employee)).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList("Cooper"), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
     public void test_exceptAll_QueryTerm() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).exceptAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = queryTerm(employee).exceptAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
     public void test_exceptDistinct_QueryExpressionBodyScalar_QueryTerm_1() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).exceptDistinct(queryTerm(employee)).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList("Cooper"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(employee.firstName.eq("James")).exceptDistinct(queryTerm(employee)).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList("Cooper"), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
     public void test_exceptDistinct_QueryTerm() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).exceptDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList(), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = queryTerm(employee).exceptDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList(), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
@@ -121,7 +141,8 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
             // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with UNION/INTERSECT/EXCEPT
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "FOR UPDATE && DISTINCT
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -159,34 +180,54 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
 
     @Override
     public void test_intersectAll_QueryPrimary() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList("First"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = queryTerm(employee).intersectAll(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList("First"), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
     public void test_intersectAll_QueryTerm_QueryPrimary_1() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).intersectAll(queryTerm(employee)).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList("First"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(employee.firstName.eq("James")).intersectAll(queryTerm(employee)).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList("First"), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
     public void test_intersectDistinct_QueryPrimary() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = queryTerm(employee).intersectDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList("First"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = queryTerm(employee).intersectDistinct(employee.lastName.where(employee.firstName.eq("James"))).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList("First"), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
     public void test_intersectDistinct_QueryTerm_QueryPrimary_1() throws Exception {
-        final Employee employee = new Employee();
-        final List<String> list = employee.lastName.where(employee.firstName.eq("James")).intersectDistinct(queryTerm(employee)).list(getEngine());
-        Collections.sort(list);
-        assertEquals(Arrays.asList("First"), list);
+        try {
+            final Employee employee = new Employee();
+            final List<String> list = employee.lastName.where(employee.firstName.eq("James")).intersectDistinct(queryTerm(employee)).list(getEngine());
+            Collections.sort(list);
+            assertEquals(Arrays.asList("First"), list);
+        } catch (SQLException e) {
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.H2);
+        }
     }
 
     @Override
@@ -224,6 +265,13 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
         final Employee employee = new Employee();
         final List<String> list = queryTerm(employee).list(getEngine());
         assertEquals(Arrays.asList("First"), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = queryTerm(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(1), list);
     }
 
     @Override

@@ -143,6 +143,12 @@ public class QueryBaseScalarTest extends SqlTestCase {
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT ALL T1.name FROM employee AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = employee.name.distinct().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT DISTINCT T1.name FROM employee AS T1) AS T0", sql);
+
+    }
+
     public void testContains() throws Exception {
         final String sql = createQueryBaseScalar().where(employee.name.selectAll().contains("Jim")).showQuery(new GenericDialect());
         assertSimilar("SELECT ALL T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT ALL T1.name FROM employee AS T1)", sql);

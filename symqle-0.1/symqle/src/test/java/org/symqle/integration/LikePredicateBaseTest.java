@@ -136,7 +136,8 @@ public class LikePredicateBaseTest extends AbstractIntegrationTestBase implement
             assertEquals(5, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 96.
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Column "UNKNOWN" not found
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -166,7 +167,8 @@ public class LikePredicateBaseTest extends AbstractIntegrationTestBase implement
             assertEquals(0, list.size());
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "UNKNOWN" at line 1, column 92.
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Column "UNKNOWN" not found
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 

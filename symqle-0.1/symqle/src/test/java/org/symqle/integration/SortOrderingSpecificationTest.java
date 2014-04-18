@@ -64,7 +64,8 @@ public class SortOrderingSpecificationTest extends AbstractIntegrationTestBase i
         final AbstractSortOrderingSpecification sos = insertTable.text.desc();
         final List<String> list = insertTable.text.orderBy(sos).list(getEngine());
         final List<String> expected;
-        if (getDatabaseName().equals(SupportedDb.MYSQL)) {
+        if (NULLS_FIRST_DEFAULT.contains(getDatabaseName())) {
+            // nulls will be last: desc()
             expected = Arrays.asList("xyz", "abc", null);
         } else {
             expected = Arrays.asList(null, "xyz", "abc");

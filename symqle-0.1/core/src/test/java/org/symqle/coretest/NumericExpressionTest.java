@@ -453,6 +453,11 @@ public class NumericExpressionTest extends SqlTestCase {
         assertSimilar("SELECT MAX(T1.id + ?) AS C1 FROM person AS T1", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.id.add(1).countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.id + ? FROM person AS T1) AS T2", sql);
+    }
+
     public void testAll() throws Exception {
         final AbstractNumericExpression<Number> numericExpression = employee.id.add(2);
         final String sql = person.name

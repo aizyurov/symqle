@@ -46,7 +46,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: text + numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "VARCHAR +"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -152,7 +153,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // ERROR 42Y22: Aggregate AVG cannot operate on type LONG VARCHAR.
             // org.postgresql.util.PSQLException: ERROR: function avg(character varying) does not exist
-            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: SUM or AVG on wrong data type for "AVG(INSERT_TEST0.TEXT || ?1)
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -162,7 +164,7 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         final List<String> list = stringExpression(employee).cast("CHAR(20)").list(getEngine());
         Collections.sort(list);
         final List<String> expected;
-        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+        if (NO_PADDING_ON_CAST_TO_CHAR.contains(getDatabaseName())) {
             // mysql treats CHAR as VARCHAR, does not append blanks
             expected = new ArrayList<>(
                     Arrays.asList("Alex, my friend", "Bill, my friend", "James, my friend", "James, my friend", "Margaret, my friend"));
@@ -192,7 +194,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             assertEquals(Arrays.asList("Margaret, my friend"), list);
         } catch (SQLException e) {
             // Apache Derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 35.
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
 
     }
@@ -326,7 +329,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: text / numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "VARCHAR /"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -419,7 +423,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: EXCEPT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -434,8 +439,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
-            // mysql: EXCEPT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -451,7 +456,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -467,7 +473,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -773,7 +780,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -791,7 +799,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -808,7 +817,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -825,7 +835,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
             // derby: ERROR X0X67: Columns of type 'LONG VARCHAR' may not be used in CREATE INDEX, ORDER BY,
                 // GROUP BY, UNION, INTERSECT, EXCEPT or DISTINCT statements because comparisons are not supported for that type.
             // mysql: INTERSECT not supported
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -1012,6 +1023,13 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
     }
 
     @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = stringExpression(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
+    }
+
+    @Override
     public void test_lt_Object() throws Exception {
         final Employee employee = new Employee();
         try {
@@ -1137,7 +1155,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: text * numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "VARCHAR *"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -1351,7 +1370,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: - text
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "VARCHAR NEG"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -1553,7 +1573,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'INTEGER' to 'VARCHAR'.
             // org.postgresql.util.PSQLException: ERROR: operator does not exist: text - numeric
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "VARCHAR -"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -1697,7 +1718,8 @@ public class StringExpressionTest extends AbstractIntegrationTestBase implements
         } catch (SQLException e) {
             // ERROR 42Y22: Aggregate AVG cannot operate on type LONG VARCHAR.
             // org.postgresql.util.PSQLException: ERROR: function avg(character varying) does not exist
-            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: SUM or AVG on wrong data type for "AVG(INSERT_TEST0.TEXT || ?1)
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 

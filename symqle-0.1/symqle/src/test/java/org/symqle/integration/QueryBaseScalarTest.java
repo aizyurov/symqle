@@ -62,7 +62,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -76,7 +77,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -90,7 +92,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -104,7 +107,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -212,7 +216,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -226,7 +231,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -240,7 +246,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -254,7 +261,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -277,7 +285,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
         final Employee employee = new Employee();
         final Department department = new Department();
         try {
-            final List<String> list = allFirstNames(employee).intersectDistinct(allFirstNames(department.manager())).list(getEngine());
+            final List<String> list = allFirstNames(employee).intersect(allFirstNames(department.manager())).list(getEngine());
             Collections.sort(list);
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
@@ -308,6 +316,13 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
         final List<String> list = distinctFirstNames(employee).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret"), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = distinctFirstNames(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(4), list);
     }
 
     @Override
@@ -448,7 +463,8 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
         } catch (SQLException e) {
             // derby: ERROR 42879: The ORDER BY clause may not contain column 'LAST_NAME', since the query specifies DISTINCT and that column does not appear in the query result
             // org.postgresql.util.PSQLException: ERROR: for SELECT DISTINCT, ORDER BY expressions must appear in select list
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Order by expression "EMPLOYEE0.LAST_NAME" must be in the result list in this case
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 

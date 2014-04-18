@@ -54,6 +54,11 @@ public class QueryExpressionBasicTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 ORDER BY T0.id FOR READ ONLY", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.id.orderBy(person.id).countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C1 FROM(SELECT T0.id FROM person AS T0 ORDER BY T0.id) AS T1", sql);
+    }
+
     public void testList() throws Exception {
         final AbstractQueryExpressionBasic<Long> queryExpressionBasic = person.id.orderBy(person.id);
         new Scenario(queryExpressionBasic) {

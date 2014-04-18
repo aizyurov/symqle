@@ -94,6 +94,13 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase implemen
     }
 
     @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = querySpec(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(2), list);
+    }
+
+    @Override
     public void test_orderBy_SortSpecification_SortSpecification() throws Exception {
         final Employee employee = new Employee();
         final List<Pair<String, String>> list = querySpec(employee).orderBy(employee.lastName).forReadOnly().list(getEngine());

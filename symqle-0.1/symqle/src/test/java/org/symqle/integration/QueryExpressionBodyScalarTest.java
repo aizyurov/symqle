@@ -57,7 +57,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -71,7 +72,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "James", "Margaret", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -87,7 +89,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -101,7 +104,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("Alex", "Bill", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -163,7 +167,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
             // org.postgresql.util.PSQLException: ERROR: SELECT FOR UPDATE/SHARE is not allowed with UNION/INTERSECT/EXCEPT
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Feature not supported: "FOR UPDATE && DISTINCT"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -213,7 +218,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -229,7 +235,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -243,7 +250,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -259,7 +267,8 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
             assertEquals(Arrays.asList("James", "Margaret"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -313,6 +322,13 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
         final List<String> list = firstNames(employee).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Alex", "Bill", "James", "James", "Margaret", "Margaret"), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = firstNames(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(6), list);
     }
 
     @Override
@@ -374,9 +390,16 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
         final Employee employee = new Employee();
         final String sql = firstNames(employee).showQuery(getEngine().getDialect());
         Pattern expected;
-        expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
+        if (SupportedDb.H2.equals(getDatabaseName())) {
+            // extra parentheses after UNION ALL
+            expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
+                    " UNION ALL\\(SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
+                    " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id\\)");
+        } else {
+            expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
                 " UNION ALL SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
                 " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
+        }
         assertTrue(sql, expected.matcher(sql).matches());
     }
 

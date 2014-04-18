@@ -383,6 +383,11 @@ public class StringExpressionTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.id || ? FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.name.concat(" test").countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.name || ? FROM person AS T1) AS T0", sql);
+    }
+
     public void testContains() throws Exception {
         final String sql = person.id.where(person2.id.concat(" test").contains("my test")).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE ? IN(SELECT T1.id || ? FROM person AS T1)", sql);

@@ -75,6 +75,81 @@ public interface TablePrimary : SqlBuilder {}
 TablePrimary ::= t:TableName AS id:Identifier
 ;
 
+# <table reference list> ::= <table reference> [ { <comma> <table reference> }... ]
+# <table reference> ::= <table primary or joined table> [ <sample clause> ]
+# (symqle) <table reference> ::= <table primary>
+# <derived table> ::= <table subquery>
+# <table subquery> ::= <left paren> <query expression> <right paren>
+# combine all that whe single <table reference> in the list:
+
+TablePrimary ::=
+    LEFT_PAREN qe:QueryExpression<?> RIGHT_PAREN :: private TablePrimary derivedTable
+;
+
+class DerivedTable extends TableOrView {
+    private String sql;
+
+    void setSql(final String sql) {
+        this.sql = sql;
+    }
+
+    @Override
+    public String getTableName() {
+        return sql;
+    }
+}
+
+import java.util.Collection;
+:: public AbstractAggregateQuerySpecification<Integer> countRows(final QueryExpression<?> qe) {
+    final AbstractAggregateFunction<Integer> count = new AbstractAggregateFunction<Integer>() {
+        private final AggregateFunction<Integer> delegate = countAsterisk();
+        private final DerivedTable derivedTable = new DerivedTable();
+        @Override
+        public Mapper<Integer> getMapper() {
+            return delegate.getMapper();
+        }
+
+        @Override
+        public SqlBuilder z$sqlOfAggregateFunction(final SqlContext context) {
+            final TablePrimary tablePrimary = derivedTable(qe);
+            final TableRegistry myTableRegistry = context.get(TableRegistry.class);
+            final TableRegistry innerRegistry = new ChildSelectTableRegistry(myTableRegistry);
+            final SqlContext innerContext = context.newBuilder().
+                     put(ColumnNameGenerator.class, null).
+                     put(TableRegistry.class, innerRegistry).toSqlContext();
+            qe.z$sqlOfQueryExpression(makeLearningContext(innerContext));
+            final SqlBuilder queryBuilder = tablePrimary.z$sqlOfTablePrimary(innerContext);
+            final StringBuilder innerSqlBuilder = new StringBuilder();
+            queryBuilder.appendTo(innerSqlBuilder);
+            final String innerSql = innerSqlBuilder.toString();
+            derivedTable.setSql(innerSql);
+            // make sure derived table is in the context;
+            derivedTable.getCorrelationName(context);
+            // new SqlBuilder delegates SQL text construction to delegate
+            // and parameters setting to derived table
+            return new SqlBuilder() {
+                final SqlBuilder aggregateFunctionBuilder = delegate.z$sqlOfAggregateFunction(context);
+                @Override
+                public void appendTo(final StringBuilder builder) {
+                    aggregateFunctionBuilder.appendTo(builder);
+                }
+
+                @Override
+                public char firstChar() {
+                    return aggregateFunctionBuilder.firstChar();
+                }
+
+                @Override
+                public void setParameters(final SqlParameters p) throws SQLException {
+                    queryBuilder.setParameters(p);
+                }
+            };
+        }
+    };
+    return AbstractAggregateQuerySpecification.adapt(count);
+}
+
+
 /**
 * A terminal symbol of Symqle SQL language.
 * Implementing classes are responsible for correct lexis and semantics.

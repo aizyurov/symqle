@@ -32,6 +32,23 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class AbstractIntegrationTestBase extends TestCase {
 
+
+    // databases, which do not add extra spaces when cast to CHAR(N) if length is < N
+    public static final List<String> NO_PADDING_ON_CAST_TO_CHAR = Arrays.asList(SupportedDb.MYSQL, SupportedDb.H2);
+
+        // databases, which do not support COLLATE
+    public static final List<String> COLLATE_UNSUPPORTED = Arrays.asList(SupportedDb.APACHE_DERBY, SupportedDb.H2);
+
+    /**
+     * databases, which ignore {@link java.sql.PreparedStatement#setMaxFieldSize(int)}
+     */
+    public static final List<String> IGNORE_MAX_FIELD_SIZE = Arrays.asList(SupportedDb.MYSQL, SupportedDb.H2);
+
+    /**
+     * databases, which apply NULLS FIRST as default to sort specification
+     */
+    public static final List<String> NULLS_FIRST_DEFAULT = Arrays.asList(SupportedDb.MYSQL, SupportedDb.H2);
+
     private static DataSource dataSource;
 
     private static AtomicReference<String> userNameHolder = new AtomicReference<>();
@@ -124,6 +141,8 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
             collationName = "utf8_unicode_ci";
         } else if (databaseName.equals(SupportedDb.POSTGRESQL)) {
             collationName = "\"en_US.utf8\"";
+        } else if (databaseName.equals(SupportedDb.H2)) {
+            collationName = "default_any";
         } else {
             collationName = "default";
         }
@@ -137,6 +156,8 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
             collationName = "utf8mb4_unicode_ci";
         } else if (databaseName.equals(SupportedDb.POSTGRESQL)) {
             collationName = "\"en_US.utf8\"";
+        } else if (databaseName.equals(SupportedDb.H2)) {
+            collationName = "default_any";
         } else {
             collationName = "default";
         }
@@ -150,6 +171,8 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
             collationName = "latin1_general_ci";
         } else if (databaseName.equals(SupportedDb.POSTGRESQL)) {
             collationName = "\"en_US\"";
+        } else if (databaseName.equals(SupportedDb.H2)) {
+            collationName = "default_any";
         } else {
             collationName = "default";
         }

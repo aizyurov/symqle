@@ -406,6 +406,12 @@ public class WhenClauseBaseListTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T1.age > ? THEN T1.nick END FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createWhenClauseBaseList().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T1.age > ? THEN T1.nick END FROM person AS T1) AS T0", sql);
+
+    }
+
     public void testContains() throws Exception {
         final String sql = employee.id.where(createWhenClauseBaseList().contains("Jim")).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE ? IN(SELECT CASE WHEN T1.age > ? THEN T1.name WHEN T1.age > ? THEN T1.nick END FROM person AS T1)", sql);

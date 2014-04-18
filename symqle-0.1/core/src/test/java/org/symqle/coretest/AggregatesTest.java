@@ -70,6 +70,11 @@ public class AggregatesTest extends SqlTestCase  {
         assertSimilar("SELECT T1.name AS C1 FROM person AS T1 WHERE EXISTS(SELECT SUM(T2.age) FROM person AS T2)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.age.avg().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT AVG(T2.age) FROM person AS T2) AS T0", sql);
+    }
+
     public void testContains() throws Exception {
         final Person parent = new Person();
         final Person child = new Person();

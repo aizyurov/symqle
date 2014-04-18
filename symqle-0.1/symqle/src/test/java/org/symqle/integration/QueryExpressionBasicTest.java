@@ -70,6 +70,14 @@ public class QueryExpressionBasicTest extends AbstractIntegrationTestBase implem
     }
 
     @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createQueryExpressionBasic(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
+
+    }
+
+    @Override
     public void test_scroll_QueryEngine_Callback_Option() throws Exception {
         final List<String> employees = new ArrayList<String>(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"));
         final Employee employee = new Employee();

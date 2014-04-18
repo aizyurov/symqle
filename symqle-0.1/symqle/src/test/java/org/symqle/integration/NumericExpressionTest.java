@@ -169,7 +169,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
             // org.postgresql.util.PSQLException: ERROR: collations are not supported by type double precision
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -193,7 +194,13 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             final List<String> list = createExpression(employee).concat(employee.lastName)
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList("1600Cooper", "3100First", "2100March", "2100Pedersen", "3100Redwood"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("1600.0Cooper", "3100.0First", "2100.0March", "2100.0Pedersen", "3100.0Redwood");
+            } else {
+                expected = Arrays.asList("1600Cooper", "3100First", "2100March", "2100Pedersen", "3100Redwood");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -207,7 +214,13 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             final List<String> list = createExpression(employee).concat(" marsian $")
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList("1600 marsian $", "3100 marsian $", "2100 marsian $", "2100 marsian $", "3100 marsian $"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("1600.0 marsian $", "3100.0 marsian $", "2100.0 marsian $", "2100.0 marsian $", "3100.0 marsian $");
+            } else {
+                expected = Arrays.asList("1600 marsian $", "3100 marsian $", "2100 marsian $", "2100 marsian $", "3100 marsian $");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -221,7 +234,13 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             final List<String> list = employee.lastName.concat(createExpression(employee))
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList("Cooper1600", "First3100", "March2100", "Pedersen2100", "Redwood3100"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("Cooper1600.0", "First3100.0", "March2100.0", "Pedersen2100.0", "Redwood3100.0");
+            } else {
+                expected = Arrays.asList("Cooper1600", "First3100", "March2100", "Pedersen2100", "Redwood3100");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -351,7 +370,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -368,7 +388,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -385,7 +406,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -402,7 +424,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -615,7 +638,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -632,7 +656,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -649,7 +674,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -666,7 +692,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue("Remaining: " + expected, expected.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -819,6 +846,15 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             assertTrue(expected + " does not contain " + n, expected.remove(n.doubleValue()));
         }
         assertTrue("Remaining: " + expected, expected.isEmpty());
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createExpression(employee)
+                .countRows()
+                .list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override
@@ -1272,7 +1308,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             final Employee employee = new Employee();
             final List<String> list = createExpression(employee).substring(employee.lastName.charLength().div(3)).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
-            assertEquals(Arrays.asList("600"), list);
+            final String expected = SupportedDb.H2.equals(getDatabaseName()) ? "600.0" : "600";
+            assertEquals(Arrays.asList(expected), list);
         } catch (SQLException e) {
             // ERROR 42X25: The 'SUBSTR' function is not allowed on the 'DOUBLE' type.
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(double precision, numeric) does not exist
@@ -1352,7 +1389,8 @@ public class NumericExpressionTest extends AbstractIntegrationTestBase implement
             final Employee employee = new Employee();
             final List<String> list = createExpression(employee).substring(2).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
-            assertEquals(Arrays.asList("600"), list);
+            final String expected = SupportedDb.H2.equals(getDatabaseName()) ? "600.0" : "600";
+            assertEquals(Arrays.asList(expected), list);
         } catch (SQLException e) {
             // ERROR 42X25: The 'SUBSTR' function is not allowed on the 'DOUBLE' type.
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(double precision, integer) does not exist

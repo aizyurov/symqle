@@ -158,7 +158,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 23.
             // org.postgresql.util.PSQLException: ERROR: collations are not supported by type double precision
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -177,7 +178,13 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             final List<String> list = createTerm(employee).concat(employee.lastName)
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList("-1500Cooper", "-3000First", "-2000March", "-2000Pedersen", "-3000Redwood"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("-1500.0Cooper", "-3000.0First", "-2000.0March", "-2000.0Pedersen", "-3000.0Redwood");
+            } else {
+                expected = Arrays.asList("-1500Cooper", "-3000First", "-2000March", "-2000Pedersen", "-3000Redwood");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -188,10 +195,16 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     public void test_concat_String() throws Exception {
         final Employee employee = new Employee();
         try {
-            final List<String> list = createTerm(employee).concat(" marsian $")
+            final List<String> list = createTerm(employee).concat(" marsian dollars")
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList("-1500 marsian $", "-3000 marsian $", "-2000 marsian $", "-2000 marsian $", "-3000 marsian $"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("-1500.0 marsian dollars", "-3000.0 marsian dollars", "-2000.0 marsian dollars", "-2000.0 marsian dollars", "-3000.0 marsian dollars");
+            } else {
+                expected = Arrays.asList("-1500 marsian dollars", "-3000 marsian dollars", "-2000 marsian dollars", "-2000 marsian dollars", "-3000 marsian dollars");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -205,7 +218,13 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             final List<String> list = employee.lastName.concat(createTerm(employee))
                     .orderBy(employee.lastName)
                     .list(getEngine());
-            assertEquals(Arrays.asList("Cooper-1500", "First-3000", "March-2000", "Pedersen-2000", "Redwood-3000"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("Cooper-1500.0", "First-3000.0", "March-2000.0", "Pedersen-2000.0", "Redwood-3000.0");
+            } else {
+                expected = Arrays.asList("Cooper-1500", "First-3000", "March-2000", "Pedersen-2000", "Redwood-3000");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: ERROR 42846: Cannot convert types 'DOUBLE' to 'VARCHAR'
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -337,7 +356,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -351,7 +371,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -365,7 +386,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -379,7 +401,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-2000.0, -1500.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -583,7 +606,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0, -3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -597,7 +621,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0, -3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -611,7 +636,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -625,7 +651,8 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
             assertEquals(Arrays.asList(-3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -771,6 +798,13 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
         final List<Double> list = toListOfDouble(createTerm(employee).list(getEngine()));
         Collections.sort(list);
         assertEquals(Arrays.asList(-3000.0, -3000.0, -2000.0, -2000.0, -1500.0), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createTerm(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override
@@ -1121,9 +1155,13 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     public void test_positionOf_StringExpression_StringExpression_1() throws Exception {
         try {
             final Employee employee = new Employee();
-            final List<Integer> list = employee.salary.mult(-10).positionOf(createTerm(employee))
+            final List<Integer> list = employee.salary.positionOf(employee.salary.div(3))
                     .where(employee.lastName.eq("Cooper")).list(getEngine());
-            assertEquals(Arrays.asList(1), list);
+            System.out.println(employee.salary.div(3)
+                    .where(employee.lastName.eq("Cooper")).list(getEngine()));
+            System.out.println(createTerm(employee)
+                                .where(employee.lastName.eq("Cooper")).list(getEngine()));
+            assertEquals(Arrays.asList(2), list);
         } catch (SQLException e) {
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.position(double precision, character varying) does not exist
             // apache Derby: ava.sql.SQLException: Java exception: ': java.lang.NullPointerException'.

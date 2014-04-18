@@ -603,6 +603,12 @@ public class DynamicParameterTest extends SqlTestCase {
         assertSimilar("SELECT COUNT(?) AS C1 FROM person AS T0 WHERE T0.id IS NOT NULL", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
+        final String sql = param.countRows().showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT COUNT(*) AS C1 FROM(SELECT ? FROM dual AS T0) AS T1", sql);
+    }
+
     public void testCountDistinct() throws Exception {
         final DynamicParameter<Long> param = DynamicParameter.create(CoreMappers.LONG, 1L);
         final String sql = param.countDistinct().where(person.id.isNotNull()).showQuery(new GenericDialect());

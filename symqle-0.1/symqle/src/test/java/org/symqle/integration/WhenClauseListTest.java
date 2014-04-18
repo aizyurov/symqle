@@ -168,7 +168,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
                 .orderBy(label)
                 .list(getEngine());
         final List<String> expected;
-        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+        if (NO_PADDING_ON_CAST_TO_CHAR.contains(getDatabaseName())) {
             expected = Arrays.asList("Alex", "Bill", "high", "high", "low");
         } else {
             expected = Arrays.asList("Alex", "Bill", "high", "high", "low ");
@@ -203,7 +203,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -413,7 +414,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -429,7 +431,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -445,7 +448,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -460,7 +464,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -469,7 +474,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
         try {
-            final List<String> list = new Employee().firstName.exceptDistinct(whenClauseList).list(getEngine());
+            final List<String> list = new Employee().firstName.except(whenClauseList).list(getEngine());
             assertTrue(list.toString(), list.remove("Alex"));
             assertTrue(list.toString(), list.remove("Bill"));
             assertTrue(list.toString(), list.remove("Margaret"));
@@ -485,7 +490,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
         try {
-            final List<String> list = whenClauseList.exceptDistinct(new Employee().lastName).list(getEngine());
+            final List<String> list = whenClauseList.except(new Employee().lastName).list(getEngine());
             assertTrue(list.toString(), list.remove("James"));
             assertTrue(list.toString(), list.remove("Nobody"));
             assertTrue(list.toString(), list.isEmpty());
@@ -679,7 +684,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -694,7 +700,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -709,7 +716,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -724,7 +732,8 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -733,7 +742,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
         try {
-            final List<String> list = whenClauseList.intersectDistinct(new Employee().lastName).list(getEngine());
+            final List<String> list = whenClauseList.intersect(new Employee().lastName).list(getEngine());
             assertTrue(list.toString(), list.remove("First"));
             assertTrue(list.toString(), list.remove("Redwood"));
             assertTrue(list.toString(), list.isEmpty());
@@ -748,7 +757,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         final Employee employee = new Employee();
         final AbstractSearchedWhenClauseList<String> whenClauseList = createNamesWCL(employee);
         try {
-            final List<String> list = new Employee().lastName.intersectDistinct(whenClauseList).list(getEngine());
+            final List<String> list = new Employee().lastName.intersect(whenClauseList).list(getEngine());
             assertTrue(list.toString(), list.remove("First"));
             assertTrue(list.toString(), list.remove("Redwood"));
             assertTrue(list.toString(), list.isEmpty());
@@ -871,6 +880,15 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
         assertTrue(list.toString(), list.remove("high"));
         assertTrue(list.toString(), list.remove("low"));
         assertTrue(list.toString(), list.isEmpty());
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createWhenClauseList(employee)
+                .countRows()
+                .list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override

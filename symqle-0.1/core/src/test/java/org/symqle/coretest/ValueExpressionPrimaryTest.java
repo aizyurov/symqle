@@ -422,6 +422,11 @@ public class ValueExpressionPrimaryTest extends SqlTestCase {
         }
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = employee.id.queryValue().countRows().showQuery(new OracleLikeDialect(), Option.allowNoTables(true));
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT(SELECT T1.id FROM employee AS T1) FROM dual AS T2) AS T0", sql);
+    }
+
     public void testIn() throws Exception {
         final String sql = person.id.where(employee.id.queryValue().in(person2.id.selectAll())).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE(SELECT T1.id FROM employee AS T1) IN(SELECT ALL T2.id FROM person AS T2)", sql);

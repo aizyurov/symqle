@@ -109,7 +109,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
         } catch (SQLException e) {
             // ERROR 42X01: Syntax error: Encountered "," at line 1, column 350.
             //  org.postgresql.util.PSQLException: ERROR: aggregates not allowed in WHERE clause
-            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY);
+            //  org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.POSTGRESQL, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -155,7 +156,7 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
         final List<Pair<String, String>> list = createPrimary(department).cast("CHAR(6)").pair(department.deptName).orderBy(department.deptName)
                 .list(getEngine());
         final List<Pair<String, String>> expected;
-        if (SupportedDb.MYSQL.equals(getDatabaseName())) {
+        if (NO_PADDING_ON_CAST_TO_CHAR.contains(getDatabaseName())) {
             expected = Arrays.asList(Pair.make("First", "DEV"), Pair.make("March", "HR"));
         } else {
             expected = Arrays.asList(Pair.make("First ", "DEV"), Pair.make("March ", "HR"));
@@ -186,7 +187,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("First-DEV", "March-HR"), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -355,7 +357,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -375,7 +378,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Jones"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -395,7 +399,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -415,7 +420,8 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
             assertEquals(Arrays.asList("Jones"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -470,7 +476,10 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
 
     @Override
     public void test_forReadOnly_() throws Exception {
-test_limit_int();    }
+        final One one = new One();
+        final List<Integer> list = one.id.queryValue().forReadOnly().list(getEngine(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList(1), list);
+    }
 
     @Override
     public void test_forUpdate_() throws Exception {
@@ -480,7 +489,8 @@ test_limit_int();    }
             assertEquals(Arrays.asList(1), list);
         } catch (SQLException e) {
             // derby: ERROR 42Y90: FOR UPDATE is not permitted in this type of statement.
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: General error: "java.lang.NullPointerException"
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -620,7 +630,8 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -640,7 +651,8 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -660,7 +672,8 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -680,7 +693,8 @@ test_limit_int();    }
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -821,6 +835,13 @@ test_limit_int();    }
     public void test_list_QueryEngine_Option() throws Exception {
         final One one = new One();
         final List<Integer> list = one.id.queryValue().list(getEngine(), Option.allowNoTables(true));
+        assertEquals(Arrays.asList(1), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final One one = new One();
+        final List<Integer> list = one.id.queryValue().countRows().list(getEngine(), Option.allowNoTables(true));
         assertEquals(Arrays.asList(1), list);
     }
 

@@ -259,10 +259,15 @@ public class CastSpecificationTest extends SqlTestCase {
 
     public void testExists() throws Exception {
         final Column<Long> id  =  person.id;
-        // find all but the most old
         final AbstractCastSpecification<Long> age2 = person2.age.cast("FLOAT");
         String sql = id.where(age2.exists()).showQuery(new GenericDialect());
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT CAST(T1.age AS FLOAT) FROM person AS T1)", sql);
+    }
+
+    public void testCountRows() throws Exception {
+        final AbstractCastSpecification<Long> age = person2.age.cast("FLOAT");
+        final String sql = age.countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT CAST(T1.age AS FLOAT) FROM person AS T1) AS T0", sql);
     }
 
     public void testContains() throws Exception {

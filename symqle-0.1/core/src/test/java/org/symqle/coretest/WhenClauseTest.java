@@ -434,6 +434,11 @@ public class WhenClauseTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM employee AS T0 WHERE EXISTS(SELECT CASE WHEN T1.age > ? THEN T1.name END FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = createWhenClause().countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT CASE WHEN T1.age > ? THEN T1.name END FROM person AS T1) AS T0", sql);
+    }
+
     public void testForUpdate() throws Exception {
         final String sql = createWhenClause().forUpdate().showQuery(new GenericDialect());
         assertSimilar("SELECT CASE WHEN T0.age > ? THEN T0.name END AS C0 FROM person AS T0 FOR UPDATE", sql);

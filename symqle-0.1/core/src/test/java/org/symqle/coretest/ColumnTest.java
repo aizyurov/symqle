@@ -237,6 +237,11 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT T0.id AS C0 FROM person AS T0 WHERE EXISTS(SELECT T1.age FROM person AS T1)", sql);
     }
 
+    public void testCountRows() throws Exception {
+        final String sql = person.age.countRows().showQuery(new GenericDialect());
+        assertSimilar("SELECT COUNT(*) AS C0 FROM(SELECT T1.age FROM person AS T1) AS T0", sql);
+    }
+
     public void testContains() throws Exception {
         final Column<Long> id  =  person.id;
         // find all but the most old

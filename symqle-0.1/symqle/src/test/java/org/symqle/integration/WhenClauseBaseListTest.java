@@ -1,6 +1,5 @@
 package org.symqle.integration;
 
-import junit.framework.AssertionFailedError;
 import org.symqle.common.Callback;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
@@ -146,7 +145,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
         // order is unspecified;
         // NULLS FIRST / NULLS LAST not specified; database-dependent
         final List<String> expected;
-        if (Arrays.asList(SupportedDb.MYSQL).contains(getDatabaseName())) {
+        if (NULLS_FIRST_DEFAULT.contains(getDatabaseName())) {
         // NULLS FIRST default
             expected = Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper");
         } else {
@@ -173,7 +172,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
                 .orderBy(employee.lastName)
                 .list(getEngine());
         final List<String> expected;
-        if (Arrays.asList(SupportedDb.MYSQL).contains(getDatabaseName())) {
+        if (NO_PADDING_ON_CAST_TO_CHAR.contains(getDatabaseName())) {
             // databases, which do not add spaces when casting to CHAR(n)
             expected = Arrays.asList("low", "high", null, null, "high");
         } else {
@@ -213,7 +212,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             ), list);
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE"
-            expectSQLException(e, SupportedDb.APACHE_DERBY);
+            // org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT EMPLOYEE0.FIRST_NAME COLLATE DEFAULT[*]
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.H2);
         }
     }
 
@@ -317,7 +317,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
                 .list(getEngine());
         // NULLS FIRST / NULLS LAST is database-dependent if not specified
         final List<String> expected;
-        if (Arrays.asList(SupportedDb.MYSQL).contains(getDatabaseName())) {
+        if (NULLS_FIRST_DEFAULT.contains(getDatabaseName())) {
         // NULLS FIRST default
             expected = Arrays.asList("Cooper", "First", "Redwood", "March", "Pedersen");
         } else {
@@ -439,7 +439,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -457,7 +458,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -475,7 +477,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -492,7 +495,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -685,7 +689,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -702,7 +707,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -719,7 +725,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -736,7 +743,8 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
             assertTrue(list.toString(), list.isEmpty());
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -764,7 +772,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
                 employee.salary.gt(2500.0).then(employee.lastName)
                         .orWhen(employee.salary.lt(1800.0).then(employee.firstName));
         try {
-            final List<String> list = new Employee().lastName.intersectDistinct(whenClauseBaseList).list(getEngine());
+            final List<String> list = new Employee().lastName.intersect(whenClauseBaseList).list(getEngine());
             assertTrue(list.toString(), list.remove("First"));
             assertTrue(list.toString(), list.remove("Redwood"));
             assertTrue(list.toString(), list.isEmpty());
@@ -803,7 +811,7 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
         // order is unspecified;
         // NULLS FIRST / NULLS LAST not specified; database-dependent
         final List<String> expected;
-        if (Arrays.asList(SupportedDb.MYSQL).contains(getDatabaseName())) {
+        if (NULLS_FIRST_DEFAULT.contains(getDatabaseName())) {
         // NULLS FIRST default
             expected = Arrays.asList(null, null, "high", "high", "low");
         } else {
@@ -897,6 +905,15 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
         assertTrue(list.toString(), list.remove("high"));
         assertTrue(list.toString(), list.remove("high"));
         assertTrue(list.toString(), list.isEmpty());
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = createWhenClauseBaseList(employee)
+                .countRows()
+                .list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override
@@ -1192,18 +1209,14 @@ public class WhenClauseBaseListTest extends AbstractIntegrationTestBase implemen
         final Employee employee = new Employee();
         final List<String> list = employee.lastName.orderBy(createWhenClauseBaseList(employee), employee.lastName)
                 .list(getEngine());
-        // order is unspecified;
-        // assume NULLS LAST by default
-        try {
-            assertEquals(Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen"), list);
-        } catch (AssertionFailedError e) {
-            // mysql: default is NULLS FIRST
-            if (SupportedDb.MYSQL.equals(getDatabaseName())) {
-                assertEquals(Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper"), list);
-            } else {
-                throw e;
-            }
+        final List<String> expected;
+        if (NULLS_FIRST_DEFAULT.contains(getDatabaseName())) {
+        // NULLS FIRST default
+            expected = Arrays.asList("March", "Pedersen", "First", "Redwood", "Cooper");
+        } else {
+            expected = Arrays.asList("First", "Redwood", "Cooper", "March", "Pedersen");
         }
+        assertEquals(expected, list);
     }
 
     @Override

@@ -74,6 +74,18 @@ public class SelectSublistTest extends SqlTestCase {
         }
     }
 
+    public void testCountRows() throws Exception {
+        final Label l = new Label();
+        final AbstractSelectSublist<Long> selectSublist = employee.id.label(l);
+        try {
+            final String sql = selectSublist.countRows().showQuery(new GenericDialect());
+            fail("MalformedStatementException expected but returned " + sql);
+        } catch (MalformedStatementException e) {
+            // ok
+        }
+
+    }
+
     public void testExistsPositive() throws Exception {
         final AbstractPredicate predicate = AbstractSelectSublist.adapt(employee.id).exists();
         final String sql = person.id.where(predicate).showQuery(new GenericDialect());

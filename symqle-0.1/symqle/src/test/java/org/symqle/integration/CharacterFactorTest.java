@@ -30,13 +30,14 @@ import java.util.regex.Pattern;
  */
 public class CharacterFactorTest extends AbstractIntegrationTestBase implements  AbstractCharacterFactorTestSet {
 
+
     private AbstractCharacterFactor<String> createCharacterFactor(final Employee employee) {
         return employee.firstName.collate(validCollationNameForVarchar());
     }
 
     @Override
     protected void runTest() throws Throwable {
-        if (!getDatabaseName().equals(SupportedDb.APACHE_DERBY)) {
+        if (!COLLATE_UNSUPPORTED.contains(getDatabaseName())) {
             super.runTest();
         }
     }
@@ -786,6 +787,15 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
                 .list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("Cooper", "First", "March", "Pedersen", "Redwood"), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = employee.lastName.collate(validCollationNameForVarchar())
+                .countRows()
+                .list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override

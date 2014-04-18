@@ -52,7 +52,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -66,7 +67,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -80,7 +82,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Cooper", "March", "Pedersen"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -94,7 +97,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -214,7 +218,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -228,7 +233,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -242,7 +248,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First"), list);
         } catch (SQLException e) {
             // mysql: does not support INTERSECT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -256,7 +263,8 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
             assertEquals(Arrays.asList("First", "Redwood"), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -308,6 +316,13 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
         final List<String> list = querySpec(employee).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList("First", "Redwood"), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = querySpec(employee).countRows().list(getEngine());
+        assertEquals(Arrays.asList(2), list);
     }
 
     @Override

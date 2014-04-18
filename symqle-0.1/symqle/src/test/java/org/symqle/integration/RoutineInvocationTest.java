@@ -160,7 +160,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
         } catch (SQLException e) {
             // derby: ERROR 42X01: Syntax error: Encountered "COLLATE" at line 1, column 21.
             // org.postgresql.util.PSQLException: ERROR: collations are not supported by type double precision
-            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL);
+            //  org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement
+            expectSQLException(e, SupportedDb.APACHE_DERBY, SupportedDb.POSTGRESQL, SupportedDb.H2);
         }
     }
 
@@ -178,7 +179,13 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
         try {
             final List<String> list = abs(employee.salary.opposite()).concat(employee.lastName)
                     .orderBy(employee.lastName).list(getEngine());
-            assertEquals(Arrays.asList("1500Cooper", "3000First", "2000March", "2000Pedersen", "3000Redwood"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("1500.0Cooper", "3000.0First", "2000.0March", "2000.0Pedersen", "3000.0Redwood");
+            } else {
+                expected = Arrays.asList("1500Cooper", "3000First", "2000March", "2000Pedersen", "3000Redwood");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: Cannot convert types 'DOUBLE' to 'VARCHAR'.
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -191,7 +198,13 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
         try {
             final List<String> list = abs(employee.salary.opposite()).concat(" marsian dollars")
                     .orderBy(employee.lastName).list(getEngine());
-            assertEquals(Arrays.asList("1500 marsian dollars", "3000 marsian dollars", "2000 marsian dollars", "2000 marsian dollars", "3000 marsian dollars"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("1500.0 marsian dollars", "3000.0 marsian dollars", "2000.0 marsian dollars", "2000.0 marsian dollars", "3000.0 marsian dollars");
+            } else {
+                expected = Arrays.asList("1500 marsian dollars", "3000 marsian dollars", "2000 marsian dollars", "2000 marsian dollars", "3000 marsian dollars");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: Cannot convert types 'DOUBLE' to 'VARCHAR'.
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -204,7 +217,13 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
         try {
             final List<String> list = employee.lastName.concat(abs(employee.salary.opposite()))
                     .orderBy(employee.lastName).list(getEngine());
-            assertEquals(Arrays.asList("Cooper1500", "First3000", "March2000", "Pedersen2000", "Redwood3000"), list);
+            final List<String> expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = Arrays.asList("Cooper1500.0", "First3000.0", "March2000.0", "Pedersen2000.0", "Redwood3000.0");
+            } else {
+                expected = Arrays.asList("Cooper1500", "First3000", "March2000", "Pedersen2000", "Redwood3000");
+            }
+            assertEquals(expected, list);
         } catch (SQLException e) {
             // derby: Cannot convert types 'DOUBLE' to 'VARCHAR'.
             expectSQLException(e, SupportedDb.APACHE_DERBY);
@@ -323,7 +342,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(2000.0, 2000.0, 3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -338,7 +358,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(2000.0, 2000.0, 3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -353,7 +374,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(2000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -368,7 +390,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(2000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -559,7 +582,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -573,7 +597,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0, 3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -587,7 +612,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -601,7 +627,8 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             assertEquals(Arrays.asList(3000.0), list);
         } catch (SQLException e) {
             // mysql: does not support EXCEPT
-            expectSQLException(e, SupportedDb.MYSQL);
+            // H2: does not support INTERSECT/EXCEPT DISTINCT/ALL
+            expectSQLException(e, SupportedDb.MYSQL, SupportedDb.H2);
         }
     }
 
@@ -742,6 +769,13 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
         final List<Double> list = abs(employee.salary.opposite()).list(getEngine());
         Collections.sort(list);
         assertEquals(Arrays.asList(1500.0, 2000.0, 2000.0, 3000.0, 3000.0), list);
+    }
+
+    @Override
+    public void test_countRows_() throws Exception {
+        final Employee employee = new Employee();
+        final List<Integer> list = abs(employee.salary.opposite()).countRows().list(getEngine());
+        assertEquals(Arrays.asList(5), list);
     }
 
     @Override
@@ -1163,7 +1197,13 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             final List<String> list = abs(employee.salary.opposite())
                     .substring(employee.lastName.charLength().div(3)).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
-            assertEquals(Arrays.asList("500"), list);
+            final String expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = "500.0";
+            } else {
+                expected = "500";
+            }
+            assertEquals(Arrays.asList(expected), list);
         } catch (SQLException e) {
             // ERROR 42X25: The 'SUBSTR' function is not allowed on the 'DOUBLE' type.
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(double precision, numeric) does not exist
@@ -1230,7 +1270,13 @@ public class RoutineInvocationTest extends AbstractIntegrationTestBase implement
             final Employee employee = new Employee();
             final List<String> list = abs(employee.salary.opposite()).substring(2).where(employee.lastName.eq("Cooper"))
                     .list(getEngine());
-            assertEquals(Arrays.asList("500"), list);
+            final String expected;
+            if (SupportedDb.H2.equals(getDatabaseName())) {
+                expected = "500.0";
+            } else {
+                expected = "500";
+            }
+            assertEquals(Arrays.asList(expected), list);
         } catch (SQLException e) {
             // ERROR 42X25: The 'SUBSTR' function is not allowed on the 'DOUBLE' type.
             // org.postgresql.util.PSQLException: ERROR: function pg_catalog.substring(double precision, integer) does not exist
