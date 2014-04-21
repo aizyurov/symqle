@@ -32,6 +32,7 @@ public interface Callback<Arg> {
      * this method returns false or there are no more object to process.
      * @param arg the object to process.
      * @return true to continue iterations, false to break.
+     * @throws SQLException something wrong when processing arg
      */
     boolean iterate(Arg arg) throws SQLException;
 

@@ -91,7 +91,7 @@
                     <configLocation>${basedir}/config/symqle-checks.xml</configLocation>
                     <suppressionsLocation>${basedir}/config/checkstyle-suppressions.xml</suppressionsLocation>
                     <enableRulesSummary>false</enableRulesSummary>
-                    <sourceDirectory>${project.build.directory}/generated-sources/main/</sourceDirectory>
+                    <!--sourceDirectory>${project.build.directory}/generated-sources/main/</sourceDirectory-->
                 </configuration>
             </plugin>
           <plugin>

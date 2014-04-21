@@ -21,7 +21,7 @@ package org.symqle.common;
  * A context used by Symqle query builder.
  * It is like a map, key is Class, value is object of this class.
  */
-public class SqlContext {
+public final class SqlContext {
 
     private static final int LENGTH = 5;
 
@@ -37,7 +37,7 @@ public class SqlContext {
      */
     @SuppressWarnings("unchecked")
     public final <T> T get(final Class<T> clazz) {
-        for (int i=0; i<LENGTH; i++) {
+        for (int i = 0; i < LENGTH; i++) {
             if (keys[i] == clazz) {
                 return (T) values[i];
             }
@@ -45,6 +45,10 @@ public class SqlContext {
         return null;
     }
 
+    /**
+     * Creates a Builder, which initiallu contains a copy of (@code this} contents.
+     * @return new Builder
+     */
     public final Builder newBuilder() {
         return new Builder(this.keys, this.values);
     }
@@ -52,11 +56,17 @@ public class SqlContext {
     private final Class[] keys = new Class[LENGTH];
     private final Object[] values = new Object[LENGTH];
 
+    /**
+     * A builder class for construction of SqlContext.
+     */
     public static class Builder {
 
         private final Class[] keys = new Class[LENGTH];
         private final Object[] values = new Object[LENGTH];
 
+        /**
+         * Creates empty Builder.
+         */
         public Builder() {
         }
 
@@ -65,9 +75,16 @@ public class SqlContext {
             System.arraycopy(values, 0, this.values, 0, LENGTH);
         }
 
+        /**
+         * Adds or replaces a value.
+         * @param clazz the key
+         * @param impl the value to set
+         * @param <T> type of clazz
+         * @return (@code this}
+         */
         public <T> Builder put(final Class<T> clazz, final T impl) {
             // first replace
-            for (int i=0; i<LENGTH; i++) {
+            for (int i = 0; i < LENGTH; i++) {
                 if (keys[i] == clazz) {
                     values[i] = impl;
                     return this;
@@ -84,6 +101,10 @@ public class SqlContext {
             return this;
         }
 
+        /**
+         * Constructs SqlContext containing current contents of (@code this}.
+         * @return the constructed SqlContext
+         */
         public SqlContext toSqlContext() {
             return new SqlContext(this.keys, this.values);
         }

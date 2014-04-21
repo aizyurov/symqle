@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 
+/**
+ * Symqle gate to JDBC for both updates and queries.
+ */
 public interface Engine extends QueryEngine {
 
     /**

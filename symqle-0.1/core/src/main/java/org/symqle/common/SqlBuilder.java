@@ -28,6 +28,7 @@ public interface SqlBuilder extends Parameterizer {
      * The text may contain dynamic parameters (?).
      * {@link #setParameters(SqlParameters)} should
      * properly set parameters for placeholders.
+     * @param builder the StringBuilder to append to
      */
     void appendTo(StringBuilder builder);
 

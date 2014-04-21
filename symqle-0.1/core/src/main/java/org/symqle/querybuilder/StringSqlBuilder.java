@@ -32,12 +32,12 @@ public class StringSqlBuilder implements SqlBuilder {
      * Constructs from a given text.
      * @param text the SqlBuilder text
      */
-    public StringSqlBuilder(String text) {
+    public StringSqlBuilder(final String text) {
         this.text = text;
     }
 
     @Override
-    public void appendTo(final StringBuilder a) {
+    public final void appendTo(final StringBuilder a) {
         a.append(text);
     }
 
@@ -47,7 +47,7 @@ public class StringSqlBuilder implements SqlBuilder {
     }
 
     @Override
-    public char firstChar() {
+    public final char firstChar() {
         return text.charAt(0);
     }
 }

@@ -24,7 +24,7 @@ public class UniqueColumnNameGenerator implements ColumnNameGenerator {
     private int counter = 0;
 
     @Override
-    public String getUniqueName() {
+    public final String getUniqueName() {
         return "C" + (counter++);
     }
 }

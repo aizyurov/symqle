@@ -38,20 +38,11 @@ public class CompositeSqlBuilder implements SqlBuilder {
     }
 
     @Override
-    public void appendTo(final StringBuilder builder) {
+    public final void appendTo(final StringBuilder builder) {
         first.appendTo(builder);
         for (SqlBuilder element: other) {
             final char lastChar = builder.charAt(builder.length() - 1);
             final char nextChar = element.firstChar();
-//            if (lastChar != '(' &&
-//                    lastChar != '.' &&
-//                    nextChar != ')' &&
-//                    nextChar != '(' &&
-//                    nextChar != '.' &&
-//                    nextChar != ',') {
-//                builder.append(' ');
-//            }
-//            element.appendTo(builder);
             if (FormattingRules.needSpaceBetween(lastChar, nextChar)) {
                 builder.append(' ');
             }
@@ -71,7 +62,7 @@ public class CompositeSqlBuilder implements SqlBuilder {
     }
 
     @Override
-    public char firstChar() {
+    public final char firstChar() {
         return first.firstChar();
     }
 }

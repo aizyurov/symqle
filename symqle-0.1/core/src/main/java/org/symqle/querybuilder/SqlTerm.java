@@ -37,11 +37,11 @@ public enum SqlTerm implements SqlBuilder {
      */
       NE("<>"),
     /**
-     * &lt;greater than or equals operator&gt; ::= &gt;
+     * &lt;greater than or equals operator&gt; ::= &gt;=
      */
        GE(">="),
     /**
-     * &lt;less than or equals operator&gt; ::= &lt;
+     * &lt;less than or equals operator&gt; ::= &lt;=
      */
        LE("<="),
     /**
@@ -53,7 +53,7 @@ public enum SqlTerm implements SqlBuilder {
      */
        DOUBLE_PERIOD(".."),
     /**
-     * &lt;double quote&gt; ::= "
+     * &lt;double quote&gt; ::= &quot;
      */
        DOUBLE_QUOTE("\""),
     /**
@@ -61,7 +61,7 @@ public enum SqlTerm implements SqlBuilder {
      */
        PERCENT("%"),
     /**
-     * &lt;ampersand&gt; ::= &
+     * &lt;ampersand&gt; ::= &amp;
      */
        AMPERSAND("&"),
     /**
@@ -146,1324 +146,1324 @@ public enum SqlTerm implements SqlBuilder {
      */
 
     //          <key word> ::=
-    //                <reserved word>
-    //          | <non-reserved word>
+    //                &lt;reserved word&gt;
+    //          | &lt;non-reserved word&gt;
 
-    //     <non-reserved word> ::=
+    //     &lt;non-reserved word&gt; ::=
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     ADA,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     C,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CATALOG_NAME ,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CHARACTER_SET_CATALOG ,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CHARACTER_SET_NAME,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CHARACTER_SET_SCHEMA,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CLASS_ORIGIN,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COBOL,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COLLATION_CATALOG,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COLLATION_NAME,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COLLATION_SCHEMA,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COLUMN_NAME,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COMMAND_FUNCTION,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     COMMITTED,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CONDITION_NUMBER,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CONNECTION_NAME,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CONSTRAINT_CATALOG,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CONSTRAINT_NAME,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CONSTRAINT_SCHEMA,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     CURSOR_NAME,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     DATA,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     DATETIME_INTERVAL_CODE,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     DATETIME_INTERVAL_PRECISION,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     DYNAMIC_FUNCTION,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     FORTRAN,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     LENGTH,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     MESSAGE_LENGTH,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     MESSAGE_OCTET_LENGTH,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     MESSAGE_TEXT,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     MORE,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
     MUMPS,
     /**
-     * <non-reserved word>
+     * &lt;non-reserved word&gt;
      */
 
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ABSOLUTE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ACTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ADD,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ALL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ALLOCATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ALTER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     AND,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ANY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ARE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     AS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ASC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ASSERTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     AT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     AUTHORIZATION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     AVG,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BEGIN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BETWEEN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BIT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BIT_LENGTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BOTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CASCADE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CASCADED,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CASE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CAST,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CATALOG,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CHAR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CHARACTER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CHAR_LENGTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CHARACTER_LENGTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CHECK,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CLOSE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COALESCE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COLLATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COLLATION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COLUMN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COMMIT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CONNECT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CONNECTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CONSTRAINT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CONSTRAINTS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CONTINUE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CONVERT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CORRESPONDING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COUNT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CREATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CROSS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CURRENT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CURRENT_DATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CURRENT_TIME,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CURRENT_TIMESTAMP,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CURRENT_USER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CURSOR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DAY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DEALLOCATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DEC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DECIMAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DECLARE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DEFAULT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DEFERRABLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DEFERRED,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DELETE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DESC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DESCRIBE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DESCRIPTOR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DIAGNOSTICS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DISCONNECT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DISTINCT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DOMAIN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DOUBLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DROP,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ELSE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     END,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     END_EXEC("END-EXEC"),
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ESCAPE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXCEPT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXCEPTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXEC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXECUTE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXISTS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXTERNAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EXTRACT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FALSE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FETCH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FIRST,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FLOAT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FOR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FOREIGN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FOUND,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FROM,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     FULL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GET,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GLOBAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GO,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GOTO,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GRANT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GROUP,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     HAVING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     HOUR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     IDENTITY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     IMMEDIATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     IN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INDICATOR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INITIALLY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INNER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INPUT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INSENSITIVE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INSERT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INTEGER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INTERSECT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INTERVAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     INTO,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     IS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ISOLATION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     JOIN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     KEY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LANGUAGE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LAST,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LEADING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LEFT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LEVEL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LIKE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LOCAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LOWER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MATCH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MAX,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MIN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MINUTE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MODULE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MONTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NAMES,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NATIONAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NATURAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NCHAR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NEXT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NO,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NOT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NULL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NULLS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NULLIF,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NUMERIC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OCTET_LENGTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OF,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ON,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ONLY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OPEN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OPTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ORDER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OUTER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OUTPUT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OVERLAPS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PAD ,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PARTIAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     POSITION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PRECISION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PREPARE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PRESERVE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PRIMARY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PRIOR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PRIVILEGES,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PROCEDURE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PUBLIC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     READ,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     REAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     REFERENCES,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RELATIVE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RESTRICT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     REVOKE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RIGHT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ROLLBACK,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ROWS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SCHEMA,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SCROLL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SECOND,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SECTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SELECT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SESSION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SESSION_USER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SET,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SIZE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SMALLINT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SOME,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SPACE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SQL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SQLCODE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SQLERROR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SQLSTATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SUBSTRING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SUM,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SYSTEM_USER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TABLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TEMPORARY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     THEN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TIME,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TIMESTAMP,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TIMEZONE_HOUR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TIMEZONE_MINUTE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TO,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRAILING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRANSACTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRANSLATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRANSLATION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRIM,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRUE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     UNION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     UNIQUE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     UNKNOWN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     UPDATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     UPPER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     USAGE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     USER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     USING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VALUE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VALUES,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VARCHAR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VARYING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VIEW,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WHEN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WHENEVER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WHERE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WITH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WORK,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WRITE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     YEAR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ZONE,
 
     // additional list reserved for future extensions
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     AFTER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ALIAS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ASYNC,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BEFORE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BOOLEAN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     BREADTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     COMPLETION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CALL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     CYCLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DEPTH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     DICTIONARY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EACH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ELSEIF,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     EQUALS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     GENERAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     IF,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     IGNORE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LEAVE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LESS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LIMIT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     LOOP,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     MODIFY,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NEW,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     NONE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OBJECT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OFF,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OFFSET,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OID,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OLD,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OPERATION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OPERATORS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     OTHERS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PARAMETERS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PENDANT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PREORDER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PRIVATE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     PROTECTED,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RECURSIVE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     REF,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     REFERENCING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     REPLACE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RESIGNAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RETURN,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     RETURNS,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ROLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ROUTINE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     ROW,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SAVEPOINT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SEARCH,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SENSITIVE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SEQUENCE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SIGNAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SIMILAR,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SQLEXCEPTION,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     SQLWARNING,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     STRUCTURE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TEST,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     THERE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TRIGGER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     TYPE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     UNDER,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VARIABLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VIRTUAL,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     VISIBLE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WAIT,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WHILE,
     /**
-     * <reserved word>
+     * &lt;reserved word&gt;
      */
     WITHOUT
     ;

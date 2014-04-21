@@ -1,3 +1,19 @@
+/*
+   Copyright 2010-2013 Alexander Izyurov
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.package org.symqle.common;
+*/
+
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
@@ -12,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Compiled and prepared for execution query.
+ * @param <T> JAva type of objects, to which query results are converted.
  * @author lvovich
  */
 public class PreparedQuery<T> {
@@ -21,6 +39,12 @@ public class PreparedQuery<T> {
     private final RowMapper<T> rowMapper;
     private final List<Option> options;
 
+    /**
+     * Constructs the query.
+     * @param engine the engine to use for list/scroll.
+     * @param query the query to compile
+     * @param options options to use while executing.
+     */
     public PreparedQuery(final QueryEngine engine, final QueryBuilder<T> query, final List<Option> options) {
         this.engine = engine;
         this.sql = new CompiledSql(query);
@@ -28,6 +52,11 @@ public class PreparedQuery<T> {
         this.options = options;
     }
 
+    /**
+     * Execute {@code this} and convert the results to type T.
+     * @return result set converted to Java objects,
+     * @throws SQLException from JDBC driver
+     */
     public List<T> list() throws SQLException {
         final List<T> list = new ArrayList<T>();
         scroll(new Callback<T>() {
@@ -40,6 +69,12 @@ public class PreparedQuery<T> {
         return list;
     }
 
+    /**
+     * Execute {@code this} and calls callback for each row of result set,
+     * Exits when end of result set is reached or callback returns false.
+     * @return number of processed rows,,
+     * @throws SQLException from JDBC driver
+     */
     public int scroll(final Callback<T> callback) throws SQLException {
         return engine.scroll(sql, new Callback<Row>() {
             @Override

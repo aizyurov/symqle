@@ -25,7 +25,20 @@ import java.sql.Statement;
  * Static methods of this class provide available options.
  */
 public abstract class Option {
+
+    /**
+     * Apply this Option to a {@link Statement}.
+     * Affects statement execution.
+     * @param statement the statement
+     * @throws SQLException the option cannot be applied.
+     */
     public abstract void apply(Statement statement) throws SQLException;
+
+    /**
+     * Apply this option to configuration.
+     * Affects SQL generation.
+     * @param configuration the configuration
+     */
     public abstract void apply(UpdatableConfiguration configuration);
 
     /**
