@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1148,8 +1147,7 @@ public class FactorTest extends AbstractIntegrationTestBase implements AbstractF
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createFactor(employee).showQuery(getEngine().getDialect());
-        Pattern expected = Pattern.compile("SELECT - ([A-Z][A-Z0-9]*).salary AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT - T0.salary AS C0 FROM employee AS T0", sql);
     }
 
     @Override

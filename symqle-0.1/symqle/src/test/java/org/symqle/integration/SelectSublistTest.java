@@ -459,8 +459,7 @@ public class SelectSublistTest extends AbstractIntegrationTestBase implements Ab
         final Label label = new Label();
         final AbstractSelectSublist<Double> selectSublist = employee.salary.label(label);
         final String sql = selectSublist.showQuery(getEngine().getDialect());
-        Pattern expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).salary AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT T0.salary AS C0 FROM employee AS T0", sql);
     }
 
     @Override

@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -322,12 +321,10 @@ public class QueryTermTest extends AbstractIntegrationTestBase implements Abstra
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = queryTerm(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
-        expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                " WHERE \\1\\.first_name = \\?" +
-                " INTERSECT SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT T0.last_name AS C0 FROM employee AS T0" +
+                        " WHERE T0.first_name = ?" +
+                        " INTERSECT SELECT T1.last_name AS C0 FROM department AS T2" +
+                        " LEFT JOIN employee AS T1 ON T1.emp_id = T2.manager_id", sql);
     }
 
     @Override

@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1354,9 +1353,7 @@ public class WhenClauseListTest extends AbstractIntegrationTestBase implements A
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createWhenClauseList(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
-        expected = Pattern.compile("SELECT CASE WHEN ([A-Z][A-Z0-9]*)\\.salary > \\? THEN \\? WHEN \\1\\.salary < \\? THEN \\? ELSE \\1\\.first_name END AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT CASE WHEN T0.salary > ? THEN ? WHEN T0.salary < ? THEN ? ELSE T0.first_name END AS C0 FROM employee AS \\1", sql);
     }
 
     @Override

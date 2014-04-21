@@ -130,8 +130,7 @@ public class QueryBaseTest extends AbstractIntegrationTestBase implements Abstra
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = makePair(employee).showQuery(getEngine().getDialect());
-        Pattern expected = Pattern.compile("SELECT ALL ([A-Z][A-Z0-9]*)\\.salary AS [A-Z][A-Z0-9]*, \\1\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT ALL T0.salary AS C0, T0.first_name AS C1 FROM employee AS T0", sql);
     }
 
     @Override

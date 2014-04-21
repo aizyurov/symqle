@@ -100,7 +100,12 @@ class DerivedTable extends TableOrView {
 }
 
 import java.util.Collection;
-:: public AbstractAggregateQuerySpecification<Integer> countRows(final QueryExpression<?> qe) {
+::
+    /**
+    * Creates an equivalent of {@code SELECT COUNT(*) FROM ((QueryExpression) this)}.
+    * @return constructed query specification
+    */
+    public AbstractAggregateQuerySpecification<Integer> countRows(final QueryExpression<?> qe) {
     final AbstractAggregateFunction<Integer> count = new AbstractAggregateFunction<Integer>() {
         private final AggregateFunction<Integer> delegate = countAsterisk();
         private final DerivedTable derivedTable = new DerivedTable();

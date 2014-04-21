@@ -65,7 +65,7 @@ AggregateFunction<Number> ::=
     }
 |
     /**
-     * Creates {@code sum(this)}.
+     * Creates {@code avg(this)}.
      * The result can be used in queries and subqueries.
      * @return created AbstractAggregateFunction<Number>
      */

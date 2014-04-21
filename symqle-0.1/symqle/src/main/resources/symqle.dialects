@@ -2,3 +2,4 @@ MySQL = org.symqle.dialect.MySqlDialect
 Apache\ Derby = org.symqle.dialect.DerbyDialect
 PostgreSQL = org.symqle.dialect.PostgreSQLDialect
 H2 = org.symqle.dialect.H2Dialect
+HSQL\ Database\ Engine = org.symqle.dialect.HsqlDialect

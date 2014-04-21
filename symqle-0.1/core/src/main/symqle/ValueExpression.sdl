@@ -260,16 +260,17 @@ AbstractNumericExpression<Integer> positionOf(final StringExpression<?> source, 
 }
 
 # CHAR_LENGTH / CHARACTER_LENGTH
-NumericExpression<Integer> ::= CHAR_LENGTH LEFT_PAREN string:StringExpression<?> RIGHT_PAREN
-  /**
-  * Length of {@code this} in character units.
-  * @return the length
-  */
-  :: AbstractNumericExpression<Integer> charLength {
-      public Mapper<Integer> getMapper() {
-          return CoreMappers.INTEGER;
-      }
-  }
+NumericExpression<Integer> ::=
+      /**
+      * Length of {@code this} in character units.
+      * @return numeric expression representing the length
+      */
+    CHAR_LENGTH LEFT_PAREN string:StringExpression<?> RIGHT_PAREN ::
+     AbstractNumericExpression<Integer> charLength {
+          public Mapper<Integer> getMapper() {
+              return CoreMappers.INTEGER;
+          }
+     }
 ;
 
 

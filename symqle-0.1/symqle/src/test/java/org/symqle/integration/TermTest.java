@@ -1217,8 +1217,7 @@ public class TermTest extends AbstractIntegrationTestBase implements AbstractTer
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createTerm(employee).showQuery(getEngine().getDialect());
-        Pattern expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).salary \\* \\? AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT T0.salary * ? AS C0 FROM employee AS T0", sql);
     }
 
     @Override

@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -53,7 +52,7 @@ public class SelectStatementTest extends AbstractIntegrationTestBase implements 
         final Employee employee = new Employee();
         final AbstractSelectStatement<String> selectStatement = employee.lastName.forReadOnly();
         final String sql = selectStatement.showQuery(getEngine().getDialect());
-        Pattern expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1");
+        assertSimilar("SELECT T0.last_name AS C0 FROM employee AS T0 FOR READ ONLY", sql);
 
     }
 }

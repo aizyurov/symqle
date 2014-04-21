@@ -2,6 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Attribute;
+import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.Item;
 import org.symqle.integration.model.JoinTestTable;
 
@@ -129,6 +130,15 @@ public class JoinTest extends AbstractIntegrationTestBase {
         item.insert(item.id.set(2L).also(item.name.set("sphere"))).execute(getEngine());
         attribute.insert(attribute.itemId.set(2L).also(attribute.name.set("shape")).also(attribute.value.set("sphere")))
                 .execute(getEngine());
+    }
+
+    public void testNestedJoins() throws SQLException {
+        final Employee employee = new Employee();
+        final List<Pair<String, String>> list = employee.lastName.pair(employee.department().manager().lastName)
+                .where(employee.department().country().code.eq("RUS"))
+                .orderBy(employee.lastName)
+                .list(getEngine());
+        assertEquals(Arrays.asList(Pair.make("First", "First"), Pair.make("Pedersen", "First")), list);
     }
 
 }

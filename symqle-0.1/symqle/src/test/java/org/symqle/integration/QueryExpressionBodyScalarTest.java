@@ -389,18 +389,18 @@ public class QueryExpressionBodyScalarTest extends AbstractIntegrationTestBase i
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = firstNames(employee).showQuery(getEngine().getDialect());
-        Pattern expected;
+        final String expected;
         if (SupportedDb.H2.equals(getDatabaseName())) {
             // extra parentheses after UNION ALL
-            expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                    " UNION ALL\\(SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                    " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id\\)");
+            expected = "SELECT DISTINCT T0.first_name AS C0 FROM employee AS T0" +
+                    " UNION ALL(SELECT T1.first_name AS C0 FROM department AS T2" +
+                    " LEFT JOIN employee AS T1 ON T1.emp_id = T2.manager_id)";
         } else {
-            expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1" +
-                " UNION ALL SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]* FROM department AS ([A-Z][A-Z0-9]*)" +
-                " LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id");
+            expected = "SELECT DISTINCT T0.first_name AS C0 FROM employee AS T0" +
+                                " UNION ALL SELECT T1.first_name AS C0 FROM department AS T2" +
+                                " LEFT JOIN employee AS T1 ON T1.emp_id = T2.manager_id";
         }
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar(expected,  sql);
     }
 
     @Override

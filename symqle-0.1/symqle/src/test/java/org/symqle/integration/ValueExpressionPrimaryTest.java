@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1208,13 +1207,13 @@ public class ValueExpressionPrimaryTest extends AbstractIntegrationTestBase impl
     public void test_showQuery_Dialect_Option() throws Exception {
         final One one = new One();
         final String sql = one.id.queryValue().showQuery(getEngine().getDialect(), Option.allowNoTables(true));
-        final Pattern expected;
+        final String expected;
         if (SupportedDb.MYSQL.equals(getDatabaseName())) {
-            expected = Pattern.compile("SELECT\\(SELECT ([A-Z][A-Z0-9]*)\\.id FROM one AS \\1\\) AS [A-Z][A-Z0-9]*");
+            expected = "SELECT(SELECT T0.id FROM one AS T0) AS C0";
         } else {
-            expected = Pattern.compile("SELECT\\(SELECT ([A-Z][A-Z0-9]*)\\.id FROM one AS \\1\\) AS [A-Z][A-Z0-9]* FROM\\(VALUES\\(1\\)\\) AS [A-Z][A-Z0-9]*");
+            expected = "SELECT(SELECT T0.id FROM one AS T0) AS C0 FROM(VALUES(1)) AS T1";
         }
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar(expected, sql);
     }
 
     @Override

@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1757,9 +1756,8 @@ public class WhenClauseTest extends AbstractIntegrationTestBase implements Abstr
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createWhenClause(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
-        expected = Pattern.compile("SELECT CASE WHEN ([A-Z][A-Z0-9]*)\\.emp_id = ([A-Z][A-Z0-9]*)\\.emp_id THEN \\1\\.first_name END AS [A-Z][A-Z0-9]* FROM employee AS \\1 LEFT JOIN department AS ([A-Z][A-Z0-9]*) LEFT JOIN employee AS \\2 ON \\2\\.emp_id = \\3\\.manager_id ON \\3\\.dept_id = \\1\\.dept_id");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT CASE WHEN T0.emp_id = T1.emp_id THEN T0.first_name END AS C0 FROM employee AS T0" +
+                " LEFT JOIN department AS T2 LEFT JOIN employee AS T1 ON T1.emp_id = T2.manager_id ON T2.dept_id = T0.dept_id", sql);
     }
 
     /**

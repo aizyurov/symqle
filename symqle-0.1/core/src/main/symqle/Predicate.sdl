@@ -42,11 +42,26 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 <T> Predicand2<T> ::=
      p:Predicand<T> :: implicit
 |
+     /**
+     * Creates a second predicand for qualified comparison.
+     * The SQL of this predicand looks like {@code ALL ((ScalarSubquery) this)}.
+     * @return constructed predicand
+     */
      ALL s:ScalarSubquery<T> :: Predicand2<T> all
 |
-     ANY s:ScalarSubquery<T> :: Predicand2<T> any
+     /**
+     * Creates a second predicand for qualified comparison.
+     * The SQL of this predicand looks like {@code ANY ((ScalarSubquery) this)}.
+     * @return constructed predicand
+     */
+    ANY s:ScalarSubquery<T> :: Predicand2<T> any
 |
-     SOME s:ScalarSubquery<T> :: Predicand2<T> some
+     /**
+     * Creates a second predicand for qualified comparison.
+     * The SQL of this predicand looks like {@code SOME ((ScalarSubquery) this)}.
+     * @return constructed predicand
+     */
+    SOME s:ScalarSubquery<T> :: Predicand2<T> some
 ;
 
 
@@ -97,7 +112,7 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 ::
     /**
      * Constructs predicate {@code this = ?}.
-     * The value of dynamic parameter is set to {@code value>}
+     * The value of dynamic parameter is set to {@code value}
      * @param value value of the second predicand
      * @return constructed predicate
      */
@@ -108,7 +123,7 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 ::
     /**
      * Constructs predicate {@code this <> ?}.
-     * The value of dynamic parameter is set to {@code value>}
+     * The value of dynamic parameter is set to {@code value}
      * @param value value of the second predicand
      * @return constructed predicate
      */
@@ -118,7 +133,7 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 ::
     /**
      * Constructs predicate {@code this > ?}.
-     * The value of dynamic parameter is set to {@code value>}
+     * The value of dynamic parameter is set to {@code value}
      * @param value value of the second predicand
      * @return constructed predicate
      */
@@ -129,7 +144,7 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 ::
     /**
      * Constructs predicate {@code this >= ?}.
-     * The value of dynamic parameter is set to {@code value>}
+     * The value of dynamic parameter is set to {@code value}
      * @param value value of the second predicand
      * @return constructed predicate
      */
@@ -140,7 +155,7 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 ::
     /**
      * Constructs predicate {@code this < ?}.
-     * The value of dynamic parameter is set to {@code value>}
+     * The value of dynamic parameter is set to {@code value}
      * @param value value of the second predicand
      * @return constructed predicate
      */
@@ -151,7 +166,7 @@ public interface Predicand2<T> extends Scalar<T> : SqlBuilder {}
 ::
     /**
      * Constructs predicate {@code this <= ?}.
-     * The value of dynamic parameter is set to {@code value>}
+     * The value of dynamic parameter is set to {@code value}
      * @param value value of the second predicand
      * @return constructed predicate
      */
@@ -241,8 +256,8 @@ public class AbstractInValueList<T> implements InValueList<T> {}
 ::
     /**
      * Constructs predicate {@code ? IN ((ScalarSubquery)this)}.
-     * Values of dynamic parameter is set to argument
-     * @param value the value set to dynamicc parameter
+     * Value of dynamic parameter is set to argument.
+     * @param value the value set to dynamic parameter
      * @return constructed predicate
      */
     <T> AbstractPredicate contains(final ScalarSubquery<T> subquery, final T value) {

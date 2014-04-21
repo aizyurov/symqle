@@ -1,6 +1,6 @@
 package org.symqle.integration;
 
-import junit.framework.TestCase;
+import org.symqle.coretest.SqlTestCase;
 import org.symqle.integration.model.DerbyEnvironment;
 import org.symqle.integration.model.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * and dropped after the test.
  * @author lvovich
  */
-public abstract class AbstractIntegrationTestBase extends TestCase {
+public abstract class AbstractIntegrationTestBase extends SqlTestCase {
 
 
     // databases, which do not add extra spaces when cast to CHAR(N) if length is < N
@@ -91,11 +91,7 @@ public abstract class AbstractIntegrationTestBase extends TestCase {
                 try {
                     final TestEnvironment testEnvironment = (TestEnvironment) Class.forName(environment).newInstance();
                     return testEnvironment.prepareDataSource(properties, userNameHolder);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException("Misconfiguration error", e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Misconfiguration error", e);
-                } catch (ClassNotFoundException e) {
+                } catch (Exception e) {
                     throw new RuntimeException("Misconfiguration error", e);
                 }
             }

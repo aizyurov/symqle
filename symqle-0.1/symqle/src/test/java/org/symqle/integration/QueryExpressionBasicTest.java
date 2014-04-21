@@ -96,8 +96,7 @@ public class QueryExpressionBasicTest extends AbstractIntegrationTestBase implem
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createQueryExpressionBasic(employee).showQuery(getEngine().getDialect());
-        Pattern expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 ORDER BY \\1.last_name");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT T0.last_name AS C0 FROM employee AS T0 ORDER BY T0.last_name", sql);
     }
 
 }

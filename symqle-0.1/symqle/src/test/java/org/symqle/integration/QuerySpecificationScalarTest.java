@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -375,9 +374,7 @@ public class QuerySpecificationScalarTest extends AbstractIntegrationTestBase im
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = querySpec(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
-        expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 WHERE \\1\\.salary > \\?");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT T0.last_name AS C0 FROM employee AS T0 WHERE T0.salary > ?", sql);
     }
 
     @Override

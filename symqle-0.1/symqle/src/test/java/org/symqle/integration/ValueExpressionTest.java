@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1328,13 +1327,13 @@ public class ValueExpressionTest extends AbstractIntegrationTestBase implements 
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createVE(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
+        final String expected;
         if (SupportedDb.POSTGRESQL.equals(getDatabaseName()) || SupportedDb.H2.equals(getDatabaseName())) {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).dept_id IS NOT NULL AS [A-Z][A-Z0-9]* FROM employee AS \\1");
+            expected = "SELECT T0.dept_id IS NOT NULL AS C0 FROM employee AS T0";
         } else {
-            expected = Pattern.compile("SELECT\\(([A-Z][A-Z0-9]*).dept_id IS NOT NULL\\) AS [A-Z][A-Z0-9]* FROM employee AS \\1");
+            expected = "SELECT(T0.dept_id IS NOT NULL) AS C0 FROM employee AS T0";
         }
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar(expected, sql);
     }
 
     @Override

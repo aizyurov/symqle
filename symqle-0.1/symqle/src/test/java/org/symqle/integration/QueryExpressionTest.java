@@ -73,13 +73,13 @@ public class QueryExpressionTest extends AbstractIntegrationTestBase implements 
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createQueryExpression(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
+        final String expected;
         if (getDatabaseName().equals(SupportedDb.MYSQL)) {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 ORDER BY \\1.last_name LIMIT 0, 1");
+            expected = "SELECT T0.last_name AS C0 FROM employee AS T0 ORDER BY T0.last_name LIMIT 0, 1";
         } else {
-            expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 ORDER BY \\1.last_name FETCH FIRST 1 ROWS ONLY");
+            expected = "SELECT T0.last_name AS C0 FROM employee AS T0 ORDER BY T0.last_name FETCH FIRST 1 ROWS ONLY";
         }
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar(expected,  sql);
     }
 
     @Override

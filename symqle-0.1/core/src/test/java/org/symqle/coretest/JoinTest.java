@@ -61,7 +61,6 @@ public class JoinTest extends SqlTestCase {
 
     public void testDoubleSameTableJoin() throws Exception {
         Person person = new Person();
-        Person manager = new Person();
         Department department = new Department();
         person.leftJoin(department, person.departmentId.eq(department.id));
         try {
@@ -74,7 +73,6 @@ public class JoinTest extends SqlTestCase {
 
     public void testCyclicJoin() throws Exception {
         Person person = new Person();
-        Person manager = new Person();
         Department department = new Department();
         person.leftJoin(department, person.departmentId.eq(department.id));
         try {
@@ -84,6 +82,17 @@ public class JoinTest extends SqlTestCase {
             assertTrue(e.getMessage(), e.getMessage().contains("Cyclic join"));
         }
     }
+
+    public void testShortCircuitJoin() throws Exception {
+        Person person = new Person();
+        try {
+            person.leftJoin(person, person.id.eq(person.managerId));
+            fail("MalformedStatementException expected");
+        } catch (MalformedStatementException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Cyclic join"));
+        }
+    }
+
 
     public void testSubqueryToParentJoin() throws Exception {
         Person person = new Person();

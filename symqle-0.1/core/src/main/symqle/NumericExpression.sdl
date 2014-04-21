@@ -183,7 +183,7 @@ public class AbstractFactor<T> implements Factor<T> {}
     * Unary minus:  {@code - this}.
     * {@code this} should have database type, which is numeric or
     * can be converted to number by implicit conversion.
-    * @return the resulting expression. Type parameter si the same as of {@code this}
+    * @return the resulting expression. Type parameter is the same as of {@code this}
     */
     MINUS e:ValueExpressionPrimary<T> :: AbstractFactor<T> opposite {}
 ;

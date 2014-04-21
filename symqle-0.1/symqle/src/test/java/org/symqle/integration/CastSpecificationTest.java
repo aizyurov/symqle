@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -1048,8 +1047,7 @@ public class CastSpecificationTest extends AbstractIntegrationTestBase implement
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = createCast(employee).showQuery(new GenericDialect());
-        Pattern pattern = Pattern.compile("SELECT CAST\\(([A-Z][A-Z0-9]*)\\.salary AS DECIMAL\\(6,2\\)\\) AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, pattern.matcher(sql).matches());
+        assertSimilar("SELECT CAST(T0.salary AS DECIMAL(6,2)) AS C0 FROM employee AS T0", sql);
 
     }
 

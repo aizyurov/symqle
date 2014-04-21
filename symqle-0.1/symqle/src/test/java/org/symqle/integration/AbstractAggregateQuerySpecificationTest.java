@@ -11,7 +11,6 @@ import org.symqle.testset.AbstractAggregateQuerySpecificationTestSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -188,9 +187,7 @@ public class AbstractAggregateQuerySpecificationTest extends AbstractIntegration
         final AbstractAggregateQuerySpecification<Integer> aggregateQuerySpecification =
                 employee.empId.count().where(employee.salary.gt(1800.0));
         final String sql = aggregateQuerySpecification.showQuery(getEngine().getDialect());
-        final Pattern pattern = Pattern.compile("SELECT COUNT\\(([A-Z][A-Z0-9]+)\\.emp_id\\) AS ([A-Z][A-Z0-9]+) FROM employee AS \\1 WHERE \\1.salary > \\?");
-        assertTrue(sql, pattern.matcher(sql).matches());
-
+        assertSimilar("SELECT COUNT(T0.emp_id) AS C0 FROM employee AS T0 WHERE T0.salary > ?", sql);
     }
 
 }

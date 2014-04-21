@@ -1220,8 +1220,7 @@ public class CharacterFactorTest extends AbstractIntegrationTestBase implements 
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = employee.lastName.collate("default").showQuery(new GenericDialect());
-        Pattern pattern = Pattern.compile("SELECT ([A-Z][A-Z0-9]+).last_name COLLATE default AS [A-Z][A-Z0-9]+ FROM employee AS \\1");
-        assertTrue(sql, pattern.matcher(sql).matches());
+        assertSimilar("SELECT T0.last_name COLLATE default AS C0 FROM employee AS T0", sql);
     }
 
     @Override

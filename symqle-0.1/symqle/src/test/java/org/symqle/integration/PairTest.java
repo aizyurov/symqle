@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -172,9 +171,8 @@ public class PairTest extends AbstractIntegrationTestBase implements AbstractSel
     @Override
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
-        final List<Pair<Double, String>> list = makePair(employee).list(getEngine());
-        Pattern expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*).salary AS [A-Z][A-Z0-9]*, \\1\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-
+        final String sql = makePair(employee).showQuery(getEngine().getDialect());
+        assertSimilar("SELECT T0.salary AS C0, T0.first_name AS C1 FROM employee AS T0", sql);
     }
 
     @Override

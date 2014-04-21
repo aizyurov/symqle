@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -375,9 +374,7 @@ public class QueryBaseScalarTest extends AbstractIntegrationTestBase implements 
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = distinctFirstNames(employee).showQuery(getEngine().getDialect());
-        final Pattern expected = Pattern.compile("SELECT DISTINCT ([A-Z][A-Z0-9]*).first_name AS [A-Z][A-Z0-9]* FROM employee AS \\1");
-        assertTrue(sql, expected.matcher(sql).matches());
-
+        assertSimilar("SELECT DISTINCT T0.first_name AS C0 FROM employee AS T0", sql);
     }
 
     @Override

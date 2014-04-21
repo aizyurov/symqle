@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -125,9 +124,7 @@ public class QuerySpecificationTest extends AbstractIntegrationTestBase implemen
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = querySpec(employee).showQuery(getEngine().getDialect());
-        final Pattern expected;
-        expected = Pattern.compile("SELECT ([A-Z][A-Z0-9]*)\\.first_name AS [A-Z][A-Z0-9]*, \\1\\.last_name AS [A-Z][A-Z0-9]* FROM employee AS \\1 WHERE \\1\\.salary > \\?");
-        assertTrue(sql, expected.matcher(sql).matches());
+        assertSimilar("SELECT T0.first_name AS C0, T0.last_name AS C1 FROM employee AS T0 WHERE T0.salary > ?", sql);
     }
 
 

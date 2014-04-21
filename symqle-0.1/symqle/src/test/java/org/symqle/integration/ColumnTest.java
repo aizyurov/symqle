@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
@@ -48,6 +47,8 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     }
 
     public void testDialect() throws Exception {
+        System.out.println("Database: " + getEngine().getDatabaseName());
+        System.out.println("Dialect: " + getEngine().getDialect().getName());
         assertEquals(getEngine().getDatabaseName(), getEngine().getDialect().getName());
     }
 
@@ -1091,8 +1092,7 @@ public class ColumnTest extends AbstractIntegrationTestBase implements ColumnTes
     public void test_showQuery_Dialect_Option() throws Exception {
         final Employee employee = new Employee();
         final String sql = employee.lastName.showQuery(new GenericDialect());
-        Pattern pattern = Pattern.compile("SELECT ([A-Z][A-Z0-9]+).last_name AS [A-Z][A-Z0-9]+ FROM employee AS \\1");
-        assertTrue(sql, pattern.matcher(sql).matches());
+        assertSimilar("SELECT T0.last_name AS C0 FROM employee AS T0", sql);
     }
 
     @Override
