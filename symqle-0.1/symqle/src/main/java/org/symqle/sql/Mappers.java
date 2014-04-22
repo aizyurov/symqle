@@ -10,7 +10,7 @@ import java.sql.SQLException;
 /**
  * @author lvovich
  */
-public class Mappers extends CoreMappers {
+public class Mappers implements CoreMappers {
 
     static {
         new Mappers();

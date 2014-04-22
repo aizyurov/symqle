@@ -14,7 +14,7 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.querybuilder;
+package org.symqle.common;
 
 import org.symqle.common.QueryBuilder;
 import org.symqle.common.Row;
@@ -44,22 +44,22 @@ public class ComplexQueryBuilder<T> implements QueryBuilder<T> {
     }
 
     @Override
-    public T extract(final Row row) throws SQLException {
+    public final T extract(final Row row) throws SQLException {
         return extractor.extract(row);
     }
 
     @Override
-    public void appendTo(final StringBuilder builder) {
+    public final void appendTo(final StringBuilder builder) {
        sql.appendTo(builder);
     }
 
     @Override
-    public void setParameters(final SqlParameters p) throws SQLException {
+    public final void setParameters(final SqlParameters p) throws SQLException {
         sql.setParameters(p);
     }
 
     @Override
-    public char firstChar() {
+    public final char firstChar() {
         return sql.firstChar();
     }
 }

@@ -14,7 +14,7 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.jdbc;
+package org.symqle.querybuilder;
 
 /**
  * Defines query builder behavior..

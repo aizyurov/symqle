@@ -3,7 +3,7 @@ package org.symqle.integration.model;
 import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
-import org.symqle.util.OnDemand;
+import org.symqle.common.OnDemand;
 
 /**
  * @author lvovich
@@ -22,7 +22,7 @@ public class Department extends Table {
 
     private final OnDemand<Country> countryRef = new OnDemand<Country>() {
         @Override
-        protected Country init() {
+        protected Country construct() {
             final Country country = new Country();
             leftJoin(country, country.countryId.eq(countryId));
             return country;
@@ -37,7 +37,7 @@ public class Department extends Table {
 
     private final OnDemand<Employee> managerRef = new OnDemand<Employee>() {
         @Override
-        protected Employee init() {
+        protected Employee construct() {
             final Employee manager = new Employee();
             leftJoin(manager, manager.empId.eq(managerId));
             return manager;

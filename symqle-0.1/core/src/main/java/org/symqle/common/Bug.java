@@ -16,6 +16,8 @@
 
 package org.symqle.common;
 
+import java.util.concurrent.Callable;
+
 /**
  * A utility class to handle unexpected conditions.
  * Unexpected exception, null value where it should not be etc.
@@ -72,6 +74,21 @@ public final class Bug {
      */
     public static void reportException(Exception e) {
         throw new IllegalStateException(MESSAGE, e);
+    }
+
+    /**
+     * Executes a callable and returns its result.
+     * Reports a bug if the call method throws a chaked exception.
+     * @param callable the callable to execute
+     * @param <T> return type
+     * @return the result of call method
+     */
+    public static <T> T ifFails(final Callable<T> callable) {
+        try {
+            return callable.call();
+        } catch (Exception e) {
+            throw new IllegalStateException(MESSAGE, e);
+        }
     }
 
 }

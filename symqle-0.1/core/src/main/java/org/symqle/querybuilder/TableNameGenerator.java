@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class TableNameGenerator {
 
-    private final static int MAX_PREFIX_LENGTH = 20;
+    private static final int MAX_PREFIX_LENGTH = 20;
 
     private final Set<String> used = new HashSet<String>();
 
@@ -22,10 +22,11 @@ public class TableNameGenerator {
      * @return unique name
      */
     public final String generate(final String suggestedPrefix) {
-        final String trimmedPrefix = suggestedPrefix.trim();
-        final int spaceIndex = trimmedPrefix.indexOf(" ");
-        final String truncatedPrefix = spaceIndex > 0 ? trimmedPrefix.substring(0, spaceIndex) : trimmedPrefix;
-        final String prefix = truncatedPrefix.replaceAll("[^a-zA-Z0-9_]", "");
+        final String identifiersOnlyPrefix = suggestedPrefix.replaceAll("[^a-zA-Z0-9_]", " ").trim();
+        final int spaceIndex = identifiersOnlyPrefix.indexOf(" ");
+        final String prefix = spaceIndex > 0
+                ? identifiersOnlyPrefix.substring(0, spaceIndex)
+                : identifiersOnlyPrefix;
         final String shortPrefix =
                 (prefix.length() < MAX_PREFIX_LENGTH ? prefix :
                         prefix.substring(0, MAX_PREFIX_LENGTH))
@@ -42,7 +43,8 @@ public class TableNameGenerator {
 
     /**
      * Force the "generated" name to be exactly as suggested name.
-     * @param name suggestion
+     * It responsibility of the caller to supply identifier.
+     * @param name suggestion.
      */
     public final void force(final String name) {
         Bug.reportIf(used.contains(name));

@@ -16,6 +16,8 @@
 
 package org.symqle.jdbc;
 
+import org.symqle.querybuilder.UpdatableConfiguration;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 

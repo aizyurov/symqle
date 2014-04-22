@@ -255,7 +255,7 @@ public class AbstractQueryExpressionBasic <T> implements QueryExpressionBasic<T>
 */
 public interface Literal : SqlBuilder {}
 
-import org.symqle.querybuilder.StringSqlBuilder;
+import org.symqle.common.StringSqlBuilder;
 class IntLiteral implements Literal {
     private final int value;
 

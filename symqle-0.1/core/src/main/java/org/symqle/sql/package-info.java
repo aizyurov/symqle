@@ -14,16 +14,11 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.querybuilder;
-
 /**
- * Implementation of UniqueNameProvider, which always returns the same name.
- * It is responsibility of the caller to call {@link #getUniqueName()} only once.
+ * Interfaces and classes, which are Symqle query builders. Each interface defines a method for
+ * construction of an SQL fragment and factory methods for construction of more complex objects.
+ * The constructed objects combine fragments to larger ones.
+ * <p/>
+ * All classes in this package are generated.
  */
-public class ScalarNameGenerator implements ColumnNameGenerator {
-
-    @Override
-    public final String getUniqueName() {
-        return "C0";
-    }
-}
+package org.symqle.sql;

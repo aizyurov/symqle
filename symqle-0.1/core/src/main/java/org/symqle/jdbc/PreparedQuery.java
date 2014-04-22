@@ -57,7 +57,7 @@ public class PreparedQuery<T> {
      * @return result set converted to Java objects,
      * @throws SQLException from JDBC driver
      */
-    public List<T> list() throws SQLException {
+    public final List<T> list() throws SQLException {
         final List<T> list = new ArrayList<T>();
         scroll(new Callback<T>() {
             @Override
@@ -72,10 +72,11 @@ public class PreparedQuery<T> {
     /**
      * Execute {@code this} and calls callback for each row of result set,
      * Exits when end of result set is reached or callback returns false.
-     * @return number of processed rows,,
+     * @param callback called once for each row
+     * @return number of processed rows
      * @throws SQLException from JDBC driver
      */
-    public int scroll(final Callback<T> callback) throws SQLException {
+    public final int scroll(final Callback<T> callback) throws SQLException {
         return engine.scroll(sql, new Callback<Row>() {
             @Override
             public boolean iterate(final Row row) throws SQLException {

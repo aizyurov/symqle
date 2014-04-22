@@ -25,7 +25,7 @@ import java.sql.Timestamp;
 /**
  * A collection of most common {@link Mapper}s.
  */
-public abstract class CoreMappers {
+public interface CoreMappers {
 
     /**
      * Mapper to Boolean.

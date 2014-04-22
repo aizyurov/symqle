@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.Mapper;
-import org.symqle.querybuilder.StringSqlBuilder;
+import org.symqle.common.StringSqlBuilder;
 import org.symqle.querybuilder.TableNameGenerator;
 
 /**

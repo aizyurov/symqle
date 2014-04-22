@@ -9,22 +9,17 @@ import java.sql.SQLException;
 /**
  * @author lvovich
  */
-public class ConnectorEngine extends AbstractEngine {
+public class DataSourceEngine extends AbstractEngine {
 
     private final Connector connector;
 
-//    protected ConnectorEngine(final Connector connector, final Dialect dialect, final String databaseName, final Option[] options) {
-//        super(dialect, databaseName, options);
-//        this.connector = connector;
-//    }
-
-    public ConnectorEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
+    public DataSourceEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
         super(dialect, DatabaseUtils.getDatabaseName(dataSource), options);
         final Connector connector = new DataSourceConnector(dataSource);
         this.connector = DatabaseUtils.wrap(connector, getDatabaseName());
     }
 
-    public ConnectorEngine(final DataSource dataSource, final Option... options) throws SQLException {
+    public DataSourceEngine(final DataSource dataSource, final Option... options) throws SQLException {
         super(DatabaseUtils.getDatabaseName(dataSource), options);
         final Connector connector = new DataSourceConnector(dataSource);
         this.connector = DatabaseUtils.wrap(connector, getDatabaseName());

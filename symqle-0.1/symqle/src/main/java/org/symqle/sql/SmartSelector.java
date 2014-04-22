@@ -1,10 +1,10 @@
 package org.symqle.sql;
 
 import org.symqle.common.*;
-import org.symqle.jdbc.Configuration;
+import org.symqle.querybuilder.Configuration;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.jdbc.UpdatableConfiguration;
+import org.symqle.querybuilder.UpdatableConfiguration;
 import org.symqle.querybuilder.TableNameGenerator;
 import org.symqle.querybuilder.UniqueColumnNameGenerator;
 import org.symqle.querybuilder.ColumnNameGenerator;

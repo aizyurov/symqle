@@ -4,7 +4,7 @@ import org.symqle.coretest.SqlTestCase;
 import org.symqle.integration.model.DerbyEnvironment;
 import org.symqle.integration.model.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
-import org.symqle.jdbc.ConnectorEngine;
+import org.symqle.jdbc.DataSourceEngine;
 import org.symqle.jdbc.Engine;
 
 import javax.sql.DataSource;
@@ -73,7 +73,7 @@ public abstract class AbstractIntegrationTestBase extends SqlTestCase {
     }
 
     protected Engine createTestEngine(final DataSource dataSource) throws SQLException {
-        return new ConnectorEngine(dataSource);
+        return new DataSourceEngine(dataSource);
     }
 
     protected final DataSource prepareDataSource() throws Exception {

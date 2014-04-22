@@ -1,7 +1,7 @@
 package org.symqle.dialect;
 
 import org.symqle.common.SqlBuilder;
-import org.symqle.querybuilder.StringSqlBuilder;
+import org.symqle.common.StringSqlBuilder;
 import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.GenericDialect;
 

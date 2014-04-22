@@ -3,7 +3,9 @@ package org.symqle;
 import junit.framework.TestCase;
 import org.symqle.common.Bug;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.concurrent.Callable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,4 +62,20 @@ public class BugTest extends TestCase {
             assertEquals(e.getCause().getClass(), SQLException.class);
         }
     }
+
+    public void testCallable() {
+        try {
+            final Callable<Void> callable = new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    throw new IOException();
+                }
+            };
+            Bug.ifFails(callable);
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            // fine
+        }
+    }
+
 }

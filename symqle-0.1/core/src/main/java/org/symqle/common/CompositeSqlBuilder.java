@@ -16,6 +16,8 @@
 
 package org.symqle.common;
 
+import org.symqle.querybuilder.FormattingRules;
+
 import java.sql.SQLException;
 
 /**

@@ -14,7 +14,7 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.common;
+package org.symqle.querybuilder;
 
 /**
  * Rules for SQL statements formatting. Currently only one rule is defined.

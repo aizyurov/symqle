@@ -1,8 +1,8 @@
 package org.symqle.coretest;
 
 import org.symqle.common.SqlContext;
-import org.symqle.jdbc.Configuration;
-import org.symqle.jdbc.UpdatableConfiguration;
+import org.symqle.querybuilder.Configuration;
+import org.symqle.querybuilder.UpdatableConfiguration;
 import org.symqle.sql.Dialect;
 
 /**

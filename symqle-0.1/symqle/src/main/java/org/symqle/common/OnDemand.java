@@ -1,4 +1,4 @@
-package org.symqle.util;
+package org.symqle.common;
 
 /**
  * A reference, which can create a referent on demand.
@@ -12,11 +12,11 @@ public abstract class OnDemand<T> {
     /**
      * Returns the referent.
      * The referent is created at the first call to this method.
-     * @return the referent (may be null if {@link #init} returns null)
+     * @return the referent (may be null if {@link #construct} returns null)
      */
     public final T get() {
         if (!initialized) {
-            referent = init();
+            referent = construct();
             initialized = true;
         }
         return referent;
@@ -27,5 +27,5 @@ public abstract class OnDemand<T> {
      * Subclasses must implement this method.
      * @return the created object
      */
-    protected abstract T init();
+    protected abstract T construct();
 }

@@ -2,7 +2,7 @@ package org.symqle.jdbctest;
 
 import junit.framework.TestCase;
 import org.symqle.jdbc.Option;
-import org.symqle.jdbc.UpdatableConfiguration;
+import org.symqle.querybuilder.UpdatableConfiguration;
 
 import java.sql.ResultSet;
 import java.sql.Statement;

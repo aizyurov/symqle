@@ -1,15 +1,16 @@
 package org.symqle.jdbc;
 
-import org.symqle.misc.ResourceUtils;
-import org.symqle.misc.SafeCallable;
+import org.symqle.common.Bug;
 import org.symqle.sql.Dialect;
 import org.symqle.sql.GenericDialect;
 
 import javax.sql.DataSource;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -30,20 +31,17 @@ public final class DatabaseUtils {
         }
     }
 
-    private final static Properties dialects = ResourceUtils.readProperties("symqle.dialects");
-    private final static Properties connectors = ResourceUtils.readProperties("symqle.connectors");
+    private final static Properties dialects = readProperties("symqle.dialects");
+    private final static Properties connectors = readProperties("symqle.connectors");
 
     public static Dialect getDialect(final String databaseName) {
         final String className = dialects.getProperty(databaseName);
-        final AtomicReference<Dialect> reference = new AtomicReference<Dialect>();
-        new SafeCallable() {
+        return Bug.ifFails(new Callable<Dialect>() {
             @Override
-            public Void call() throws Exception {
-                reference.set(className != null ? (Dialect) Class.forName(className).newInstance() : new GenericDialect());
-                return null;
+            public Dialect call() throws Exception {
+                return className != null ? (Dialect) Class.forName(className).newInstance() : new GenericDialect();
             }
-        }.run();
-        return reference.get();
+        });
     }
 
 
@@ -54,17 +52,27 @@ public final class DatabaseUtils {
             return connector;
         }
         final AtomicReference<Connector> reference = new AtomicReference<Connector>();
-        new SafeCallable() {
+        return Bug.ifFails(new Callable<Connector>() {
             @Override
-            public Void call() throws Exception {
+            public Connector call() throws Exception {
                 final ConnectorWrapper wrapper = (ConnectorWrapper) Class.forName(className).newInstance();
-                reference.set(wrapper.wrap(connector));
-                return null;
+                return wrapper.wrap(connector);
             }
-        }.run();
-        return reference.get();
+        });
     }
 
 
-
+    public static Properties readProperties(final String path) {
+        return Bug.ifFails(new Callable<Properties>() {
+            @Override
+            public Properties call() throws Exception {
+                try (InputStream inputStream = DatabaseUtils.class.getClassLoader().getResourceAsStream(path)) {
+                    Bug.reportIfNull(inputStream);
+                    final Properties properties = new Properties();
+                    properties.load(inputStream);
+                    return properties;
+                }
+            }
+        });
+    }
 }

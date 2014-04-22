@@ -2,18 +2,18 @@ package org.symqle.misctest;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.symqle.util.OnDemand;
+import org.symqle.common.OnDemand;
 
 /**
  * @author lvovich
  */
-public class LazyRefTest extends TestCase {
+public class OnDemandTest extends TestCase {
 
     public void test() throws Exception {
 
         final OnDemand<Object> ref = new OnDemand<Object>() {
             @Override
-            protected Object init() {
+            protected Object construct() {
                 return new Object();
             }
         };
@@ -26,7 +26,7 @@ public class LazyRefTest extends TestCase {
     public void testNull() throws Exception {
         final OnDemand<Object> ref = new OnDemand<Object>() {
             @Override
-            protected Object init() {
+            protected Object construct() {
                 return null;
             }
         };

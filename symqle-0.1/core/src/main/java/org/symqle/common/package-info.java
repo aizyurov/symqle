@@ -14,16 +14,10 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.querybuilder;
-
 /**
- * Implementation of UniqueNameProvider, which always returns the same name.
- * It is responsibility of the caller to call {@link #getUniqueName()} only once.
+ * Most common Symqle classes. This classes are used for interaction of Symqle query builders
+ * during SQL construction and for interaction with JDBC layer.
+ *
+ * @since 1.0
  */
-public class ScalarNameGenerator implements ColumnNameGenerator {
-
-    @Override
-    public final String getUniqueName() {
-        return "C0";
-    }
-}
+package org.symqle.common;

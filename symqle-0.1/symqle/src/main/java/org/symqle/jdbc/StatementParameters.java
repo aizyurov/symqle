@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 
 /**
- * An implementation of OutBoxs, which is a proxy to a PreparedStatement.
+ * An implementation of SqlParameters, which is a proxy to a PreparedStatement.
  */
 public class StatementParameters implements SqlParameters {
     private final PreparedStatement statement;

@@ -1,7 +1,7 @@
 import org.symqle.common.MalformedStatementException;
 import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.StringSqlBuilder;
+import org.symqle.common.StringSqlBuilder;
 
 /**
  * Label can be used as SortKey.

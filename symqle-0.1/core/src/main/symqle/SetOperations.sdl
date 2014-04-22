@@ -22,7 +22,7 @@ abstract class SetOperationBuilder<T> {
 import org.symqle.common.QueryBuilder;
 import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.ComplexQueryBuilder;
+import org.symqle.common.ComplexQueryBuilder;
 
 
 /**
@@ -59,7 +59,7 @@ abstract class UnionExceptBuilder<T> extends SetOperationBuilder<T> {
 import org.symqle.common.QueryBuilder;
 import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlContext;
-import org.symqle.querybuilder.ComplexQueryBuilder;
+import org.symqle.common.ComplexQueryBuilder;
 
 /**
  * @author lvovich

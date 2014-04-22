@@ -1,7 +1,7 @@
 package org.symqle.jdbctest;
 
 import junit.framework.TestCase;
-import org.symqle.jdbc.UpdatableConfiguration;
+import org.symqle.querybuilder.UpdatableConfiguration;
 
 /**
  * Created by IntelliJ IDEA.

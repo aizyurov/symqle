@@ -14,7 +14,7 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.querybuilder;
+package org.symqle.common;
 
 import org.symqle.common.SqlBuilder;
 import org.symqle.common.SqlParameters;

@@ -149,7 +149,7 @@ public interface ColumnReference<T> extends Scalar<T> : SqlBuilder {}
     tableRef:Identifier PERIOD columnName:ColumnName<T>
 ;
 
-import org.symqle.querybuilder.StringSqlBuilder;
+import org.symqle.common.StringSqlBuilder;
 import org.symqle.common.Mapper;
 /**
  * This class represents a database column.
@@ -252,7 +252,7 @@ ArgumentList ::=
         :: private ArgumentList appendArgument {}
 ;
 
-import org.symqle.querybuilder.StringSqlBuilder;
+import org.symqle.common.StringSqlBuilder;
 /**
  * An implementation of RoutineName.
  * @param <T> Java type of returned value

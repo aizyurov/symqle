@@ -17,14 +17,14 @@ public class SqlBuilderPerformanceTest extends TestCase {
         Person manager = new Person();
         department.innerJoin(manager, department.managerId.eq(manager.id));
         {
-            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
-        }
-        {
-            final long start = System.nanoTime();
-            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
-            System.out.println("Time: " + (System.nanoTime() - start) /1000 + " micros");
+            for (int k=0; k < 10; k++) {
+                final long start = System.nanoTime();
+                for (int i=0; i< 10000; i++) {
+                final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
+                    .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
+                }
+                System.out.println("Time: " + (System.nanoTime() - start) /1000/10000 + " micros");
+            }
         }
 
     }
@@ -50,24 +50,6 @@ public class SqlBuilderPerformanceTest extends TestCase {
         public Column<Long> id = defineColumn(CoreMappers.LONG, "id");
         public Column<String> name = defineColumn(CoreMappers.STRING, "name");
         public Column<Long> managerId = defineColumn(CoreMappers.LONG, "manager_id");
-    }
-
-    public static void main(String[] args) {
-        final Integer limit = Integer.valueOf(args[0]);
-        System.out.println("Starting " + limit + " iterations");
-        Person person = new Person();
-        Department department = new Department();
-        Person manager = new Person();
-        department.innerJoin(manager, department.managerId.eq(manager.id));
-        final long start = System.nanoTime();
-        for (int i=0; i< limit; i++)
-        {
-            final String sql = person.id.where(person.name.eq("John").and(person.managerId.eq(manager.id)))
-                .queryValue().where(department.name.like("T%")).showQuery(new GenericDialect());
-        }
-        System.out.println("Average time: " + (System.nanoTime() - start) / limit / 1000 + "micros");
-
-
     }
 
 }

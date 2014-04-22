@@ -3,7 +3,7 @@ package org.symqle.integration.model;
 import org.symqle.common.CoreMappers;
 import org.symqle.sql.Column;
 import org.symqle.sql.Table;
-import org.symqle.util.OnDemand;
+import org.symqle.common.OnDemand;
 
 import java.sql.Date;
 
@@ -29,7 +29,7 @@ public class Employee extends Table {
 
     private OnDemand<Department> deptRef = new OnDemand<Department>() {
         @Override
-        protected Department init() {
+        protected Department construct() {
             final Department dept = new Department();
             leftJoin(dept, dept.deptId.eq(deptId));
             return dept;

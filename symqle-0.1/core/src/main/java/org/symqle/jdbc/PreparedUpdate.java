@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Compile and prepared for execution update statement,
+ * Compile and prepared for execution update statement.
  * @author lvovich
  */
 public class PreparedUpdate {
@@ -35,13 +35,16 @@ public class PreparedUpdate {
     private final GeneratedKeys<?> generatedKeys;
 
     /**
-     * Constructs PreparedUpdate
+     * Constructs PreparedUpdate.
      * @param engine the engine to use for execution
      * @param update sql builder to provide source
      * @param options options to use when executing
      * @param generatedKeys generated keys holder. May be null if generated keys are not needed.
      */
-    public PreparedUpdate(final Engine engine, final SqlBuilder update, final List<Option> options, final GeneratedKeys<?> generatedKeys) {
+    public PreparedUpdate(final Engine engine,
+                          final SqlBuilder update,
+                          final List<Option> options,
+                          final GeneratedKeys<?> generatedKeys) {
         this.engine = engine;
         final StringBuilder sourceSql = new StringBuilder();
         update.appendTo(sourceSql);
@@ -52,21 +55,21 @@ public class PreparedUpdate {
     }
 
     /**
-     * Executes {@code this}
+     * Executes {@code this}.
      * @return number of affected rows
      * @throws SQLException from JDBC driver
      */
-    public int execute() throws SQLException {
+    public final int execute() throws SQLException {
         return engine.execute(update, generatedKeys, options);
     }
 
     /**
-     * Submits to a batcher
+     * Submits {@code this} to a batcher.
      * @param batcher the batcher to use. should be associated with the same Engine.
      * @return same as {@link Batcher#submit(org.symqle.common.Sql, java.util.List)}
      * @throws SQLException if attempt of flush was unsuccessful
      */
-    public int[] submit(final Batcher batcher) throws SQLException {
+    public final int[] submit(final Batcher batcher) throws SQLException {
         if (batcher.getEngine() != engine) {
             throw new IllegalArgumentException("Incompatible batcher");
         }

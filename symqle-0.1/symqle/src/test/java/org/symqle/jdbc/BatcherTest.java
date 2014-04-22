@@ -32,7 +32,7 @@ public class BatcherTest extends TestCase {
 
         replay(dataSource,  connection, preparedStatement, metaData);
 
-        Engine engine = new ConnectorEngine(dataSource);
+        Engine engine = new DataSourceEngine(dataSource);
 
         Person person = new Person();
         final DynamicParameter<Long> idParam = person.id.param();

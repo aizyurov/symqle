@@ -48,7 +48,7 @@ public class OptionTest extends TestCase {
         statement.close();
         connection.close();
         replay(connector, connection,  statement, resultSet, metaData);
-        final Engine engine = new ConnectorEngine(connector);
+        final Engine engine = new DataSourceEngine(connector);
         final List<String> list = queryExpressionBasic.list(engine,
                 Option.setFetchDirection(ResultSet.FETCH_FORWARD),
                 Option.setFetchSize(2),
@@ -87,7 +87,7 @@ public class OptionTest extends TestCase {
         statement.close();
         connection.close();
         replay(connector, connection,  statement, resultSet, metaData);
-        final Engine engine = new ConnectorEngine(connector,
+        final Engine engine = new DataSourceEngine(connector,
                 Option.setFetchDirection(ResultSet.FETCH_FORWARD),
                         Option.setFetchSize(2),
                         Option.setMaxFieldSize(5),

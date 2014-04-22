@@ -69,7 +69,7 @@ public class AbstractSelectorTest extends TestCase {
         connection.close();
         replay(dataSource, connection,  statement, resultSet, metaData);
 
-        final Engine engine = new ConnectorEngine(dataSource, new GenericDialect());
+        final Engine engine = new DataSourceEngine(dataSource, new GenericDialect());
         try {
             final List<PersonDTO> list = mapper.list(engine);
             fail("IllegalStateException expected");
@@ -105,7 +105,7 @@ public class AbstractSelectorTest extends TestCase {
         connection.close();
         replay(gate, connection,  statement, resultSet, metaData);
 
-        final Engine engine = new ConnectorEngine(gate);
+        final Engine engine = new DataSourceEngine(gate);
         final List<PersonDTO> list = mapper.list(engine);
         assertEquals(1, list.size());
         assertEquals(123L, list.get(0).id.longValue());
