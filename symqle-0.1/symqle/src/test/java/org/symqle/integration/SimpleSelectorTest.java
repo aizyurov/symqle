@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
-import org.symqle.sql.AbstractSelector;
+import org.symqle.sql.Selector;
 import org.symqle.integration.model.Employee;
 
 import java.sql.SQLException;
@@ -57,7 +57,7 @@ public class SimpleSelectorTest extends AbstractSelectorTestBase {
     }
 
 
-    private class EmployeeSelector extends AbstractSelector<EmployeeDTO> {
+    private class EmployeeSelector extends Selector<EmployeeDTO> {
         private final RowMapper<Integer> id;
         private final RowMapper<String> firstName;
         private final RowMapper<String> lastName;

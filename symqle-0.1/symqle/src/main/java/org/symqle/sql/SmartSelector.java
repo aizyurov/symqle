@@ -1,3 +1,19 @@
+/*
+   Copyright 2010-2013 Alexander Izyurov
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.package org.symqle.common;
+*/
+
 package org.symqle.sql;
 
 import org.symqle.common.*;
@@ -20,16 +36,58 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A base class for Selectors, which has more simple API than Selector (at the expence of some performance penalty).
+ * You have only to implement {@link #create()} method, using {@link #get(SelectList)} inside.
+ * Example:
+ * <pre>
+ * <code>
+ *     public class PersonSelector extends SmartSelector&gt;PersonDTO&lt; {
+ *         private final Person person;
+ *         ...
+ *         public PersonSelector(final Person person) {
+ *             this.person = person;
+ *         }
+ *         protected PersonDTO create() {
+ *             return new PersonDTO(
+ *                  get(person.id()),
+ *                  get(person.name()),
+ *                  ...
+ *             );
+ *         }
+ *     }
+ * </code>
+ * </pre>
  * @author lvovich
  */
 public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
+     /**
+      * Implement in derived classes.
+      * Recursive calls to {@link #create()}
+      * are not allowed. Use {@link #get(SelectList)} in the body
+      * to get data from current row.
+      * @return created object
+      * @throws SQLException error extracting data from row (e.g. wrong data type).
+     */
     protected abstract D create() throws SQLException;
 
+    /**
+     * Extracts a value from current row.
+     * @param selectList what is extracted.
+     * @param <T> result type
+     * @return extracted value
+     * @throws SQLException from JDBC driver
+     */
     protected final <T> T get(SelectList<T> selectList) throws SQLException {
         return currentRowMap.get(selectList);
     }
 
+    /**
+     * Engine, which re-uses the same connection.
+     * This engine can be used inside {@link #create()} method to make additional queries
+     * (probably depending of the values in current row).
+     * @return
+     */
     protected final QueryEngine getQueryEngine() {
         return currentRowMap.getQueryEngine();
     }
@@ -70,7 +128,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
     private RowMap currentRowMap;
 
-    public interface RowMap {
+    private interface RowMap {
         <T> T get(SelectList<T> selectList) throws SQLException;
         /**
          * An engine to execute queries on the same connection.

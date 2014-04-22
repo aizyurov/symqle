@@ -5,7 +5,7 @@ import org.symqle.common.RowMapper;
 import org.symqle.integration.AbstractIntegrationTestBase;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.sql.AbstractInsertStatement;
-import org.symqle.sql.AbstractSelector;
+import org.symqle.sql.Selector;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.SmartSelector;
 
@@ -107,7 +107,7 @@ public class JdbcBenchmark extends AbstractIntegrationTestBase {
         }
     }
 
-    private static class InsertFullSelector extends AbstractSelector<InsertDto> {
+    private static class InsertFullSelector extends Selector<InsertDto> {
         private final RowMapper<Integer> id;
         private final RowMapper<String> text;
         private final RowMapper<Boolean> active;

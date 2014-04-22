@@ -4,7 +4,7 @@ import org.symqle.common.Callback;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
 import org.symqle.common.SqlParameters;
-import org.symqle.common.StringSql;
+import org.symqle.sql.StringSql;
 import org.symqle.integration.model.BigTable;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;

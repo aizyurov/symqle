@@ -5,7 +5,7 @@ import org.symqle.common.RowMapper;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.sql.AbstractSelector;
+import org.symqle.sql.Selector;
 import org.symqle.sql.SmartSelector;
 import org.symqle.sql.DebugDialect;
 
@@ -51,7 +51,7 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
         }
     }
 
-    private static class DepartmentSelector extends AbstractSelector<DepartmentWithEmployeesDTO> {
+    private static class DepartmentSelector extends Selector<DepartmentWithEmployeesDTO> {
         private final RowMapper<Integer> idMapper;
         private final RowMapper<String> nameMapper;
 
@@ -94,7 +94,7 @@ public class SelectorWithCollectionTest extends AbstractSelectorTestBase {
         }
     }
 
-    private static class EmployeeSelector extends AbstractSelector<EmployeeDTO> {
+    private static class EmployeeSelector extends Selector<EmployeeDTO> {
         private final RowMapper<Integer> id;
         private final RowMapper<String> firstName;
         private final RowMapper<String> lastName;

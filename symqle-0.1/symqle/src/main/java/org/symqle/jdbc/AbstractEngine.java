@@ -1,3 +1,19 @@
+/*
+   Copyright 2010-2013 Alexander Izyurov
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.package org.symqle.common;
+*/
+
 package org.symqle.jdbc;
 
 import org.symqle.common.Callback;
@@ -15,10 +31,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Implements common functionality of Engine.
  * @author lvovich
  */
 public abstract class AbstractEngine extends AbstractQueryEngine implements Engine {
 
+    /**
+     * Constructs the engine
+     * @param dialect forces the use of this dialect, no auto-detection
+     * @param databaseName used for dialect detection
+     * @param options options to apply for query building and execution
+     */
     public AbstractEngine(final Dialect dialect, final String databaseName, final Option[] options) {
         super(dialect, databaseName, options);
     }
@@ -27,8 +50,20 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         super(databaseName, options);
     }
 
+    /**
+     * Open a connection to database.
+     * Subclasses may re-use already open connection.
+     * @return open connection.
+     * @throws SQLException failure to open connection
+     */
     protected abstract Connection getConnection() throws SQLException;
 
+    /**
+     * Release open connection.
+     * Close or return to a pool or other object from which it was borrowed.
+     * @param connection open connection
+     * @throws SQLException error closing connection
+     */
     protected abstract void releaseConnection(Connection connection) throws SQLException;
 
     @Override

@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.coretest.SqlTestCase;
 import org.symqle.integration.model.DerbyEnvironment;
-import org.symqle.integration.model.ExternalDbEnvironment;
+import org.symqle.jdbc.ExternalDbEnvironment;
 import org.symqle.integration.model.TestEnvironment;
 import org.symqle.jdbc.DataSourceEngine;
 import org.symqle.jdbc.Engine;

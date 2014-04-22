@@ -2,7 +2,7 @@ package org.symqle.integration;
 
 import org.symqle.common.Sql;
 import org.symqle.common.SqlParameters;
-import org.symqle.common.StringSql;
+import org.symqle.sql.StringSql;
 import org.symqle.integration.model.DeleteDetail;
 import org.symqle.integration.model.DeleteMaster;
 import org.symqle.jdbc.Batcher;

@@ -1,6 +1,7 @@
-package org.symqle.integration.model;
+package org.symqle.jdbc;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.symqle.integration.model.AbstractTestEnvironment;
 import org.symqle.jdbc.DatabaseUtils;
 
 import javax.sql.DataSource;

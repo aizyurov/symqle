@@ -33,4 +33,13 @@ public class DatabaseUtilsTest extends TestCase {
         final Connector wrappedConnector = DatabaseUtils.wrap(connector, "YourSQL");
         assertEquals(connector, wrappedConnector);
     }
+
+    public void testMissingResource() throws Exception {
+        try {
+            DatabaseUtils.readProperties("nothing.properties");
+            fail("IllegalStateException expected");
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("symqle.org"));
+        }
+    }
 }

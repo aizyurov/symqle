@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Row;
 import org.symqle.common.RowMapper;
-import org.symqle.sql.AbstractSelector;
+import org.symqle.sql.Selector;
 import org.symqle.sql.Column;
 import org.symqle.sql.GenericDialect;
 import org.symqle.sql.TableOrView;
@@ -124,7 +124,7 @@ public class AbstractSelectorTest extends TestCase {
         }
     }
 
-    private static class PersonSelector extends AbstractSelector<PersonDTO> {
+    private static class PersonSelector extends Selector<PersonDTO> {
 
         private final RowMapper<Long> idKey;
         private final RowMapper<String> nameKey;
@@ -142,14 +142,14 @@ public class AbstractSelectorTest extends TestCase {
         }
     }
 
-    private static class EmptyPersonSelector extends AbstractSelector<PersonDTO> {
+    private static class EmptyPersonSelector extends Selector<PersonDTO> {
         @Override
         protected PersonDTO create(final Row row) throws SQLException {
             return null;
         }
     }
 
-    private static class MapCallFromCreateSelector extends AbstractSelector<PersonDTO> {
+    private static class MapCallFromCreateSelector extends Selector<PersonDTO> {
         private final Person person;
 
         private MapCallFromCreateSelector(final Person person) {

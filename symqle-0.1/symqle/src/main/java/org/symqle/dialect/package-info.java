@@ -14,31 +14,7 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.jdbc;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 /**
- * Simple DataSource-based connector.
- * No additional connection setup.
- * @author lvovich
+ * Dialects for supported databases.
  */
-class DataSourceConnector implements Connector {
-
-    private final DataSource dataSource;
-
-    /**
-     * Constructs from data source.
-     * @param dataSource the source
-     */
-    public DataSourceConnector(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    @Override
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
-    }
-}
+package org.symqle.dialect;

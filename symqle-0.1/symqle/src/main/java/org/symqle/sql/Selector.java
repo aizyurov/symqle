@@ -1,3 +1,19 @@
+/*
+   Copyright 2010-2013 Alexander Izyurov
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.package org.symqle.common;
+*/
+
 package org.symqle.sql;
 
 import org.symqle.common.QueryBuilder;
@@ -13,15 +29,47 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A basic class to build custom selectors.
+ * Use {@link #map(SelectList)} to define what you are selecting and save
+ * RowMappers in private members.
+ * Implement {@link #create(org.symqle.common.Row)}, calling
+ * {@link RowMapper#extract(org.symqle.common.Row)}.
+ * Example:
+ * <pre>
+ * <code>
+ *     public class PersonSelector extends Selector&gt;PersonDTO&lt; {
+ *         private final RowMapper&lt;String&gt; nameMapper;
+ *         ...
+ *         public PersonSelector(final Person person) {
+ *             nameMapper = map(person.name());
+ *             ...
+ *         }
+ *         protected PersonDTO create(final Row row) {
+ *             return new PersonDTO(
+ *                  nameMapper.extract(row),
+ *                  ...
+ *             );
+ *         }
+ *     }
+ * </code>
+ * </pre>
  * @author lvovich
  * @param <D> data type
  */
-public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
+public abstract class Selector<D> extends AbstractSelectList<D> {
 
 
     private final List<KeyImpl<?>> keys = new ArrayList<KeyImpl<?>>();
     private final AtomicBoolean keysLocked = new AtomicBoolean();
 
+    /**
+     * Implement in derived classes.
+     * {@link #map(SelectList)} and recursive calls to {@link #create(org.symqle.common.Row)}
+     * are not allowed, Use {@link RowMapper#extract(org.symqle.common.Row)} in the body
+     * to get data from row.
+     * @param row current row
+     * @return created object
+     * @throws SQLException error extracting data from row (e.g. wrong data type).
+     */
     protected abstract D create(final Row row) throws SQLException;
 
     @Override
@@ -38,6 +86,13 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
         return new InnerQueryBuilder(query);
     }
 
+    /**
+     * Creates a RowMapper, which can be later used in create() method.
+     * Use this method in constructor and save results in class members.
+     * @param selectList what you are selecting
+     * @param <E> Java type of selected value
+     * @return ready to use RowMapper
+     */
     public final <E> RowMapper<E> map(final SelectList<E> selectList) {
         if (keysLocked.get()) {
             throw new IllegalStateException("map() cannot be called at this point");
@@ -48,7 +103,7 @@ public abstract class AbstractSelector<D> extends AbstractSelectList<D> {
     }
 
 
-    public class KeyImpl<E> implements RowMapper<E> {
+    private class KeyImpl<E> implements RowMapper<E> {
         private final AbstractSelectList<E> selectList;
         private RowMapper<E> rowMapper;
 
