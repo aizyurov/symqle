@@ -14,12 +14,7 @@
    limitations under the License.package org.symqle.common;
 */
 
-package org.symqle.sql;
-
-import org.symqle.common.CoreMappers;
-import org.symqle.common.InBox;
-import org.symqle.common.Mapper;
-import org.symqle.common.OutBox;
+package org.symqle.common;
 
 import java.sql.SQLException;
 

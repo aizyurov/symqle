@@ -1,11 +1,11 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
+import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.integration.model.MyDual;
 import org.symqle.sql.AbstractLikePredicateBase;
-import org.symqle.sql.Params;
 import org.symqle.testset.AbstractLikePredicateBaseTestSet;
 
 import java.sql.SQLException;

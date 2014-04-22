@@ -2,7 +2,9 @@ package org.symqle.integration;
 
 import org.symqle.common.Callback;
 import org.symqle.common.CoreMappers;
+import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
+import org.symqle.sql.Params;
 import org.symqle.dialect.MySqlDialect;
 import org.symqle.integration.model.Country;
 import org.symqle.integration.model.Department;
@@ -13,8 +15,6 @@ import org.symqle.sql.AbstractCastSpecification;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Functions;
 import org.symqle.sql.Label;
-import org.symqle.sql.Mappers;
-import org.symqle.sql.Params;
 import org.symqle.testset.DynamicParameterTestSet;
 
 import java.sql.SQLException;

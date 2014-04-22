@@ -1,11 +1,11 @@
 package org.symqle.integration;
 
 import org.symqle.common.Pair;
+import org.symqle.sql.Params;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
 import org.symqle.sql.AbstractBooleanExpression;
 import org.symqle.sql.BooleanExpression;
-import org.symqle.sql.Params;
 import org.symqle.testset.AbstractBooleanExpressionTestSet;
 
 import java.sql.Date;

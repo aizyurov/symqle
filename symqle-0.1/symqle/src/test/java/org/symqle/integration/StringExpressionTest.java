@@ -14,7 +14,7 @@ import org.symqle.integration.model.One;
 import org.symqle.sql.AbstractStringExpression;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Label;
-import org.symqle.sql.Mappers;
+import org.symqle.common.Mappers;
 import org.symqle.sql.Params;
 import org.symqle.testset.AbstractStringExpressionTestSet;
 

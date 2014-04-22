@@ -4,6 +4,7 @@ import junit.framework.AssertionFailedError;
 import org.symqle.common.Callback;
 import org.symqle.common.CoreMappers;
 import org.symqle.common.Pair;
+import org.symqle.sql.Params;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
 import org.symqle.integration.model.InsertTable;
@@ -11,7 +12,6 @@ import org.symqle.integration.model.MyDual;
 import org.symqle.sql.AbstractValueExpression;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Label;
-import org.symqle.sql.Params;
 import org.symqle.sql.SelectStatement;
 import org.symqle.testset.AbstractValueExpressionTestSet;
 

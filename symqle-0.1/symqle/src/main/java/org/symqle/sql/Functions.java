@@ -17,6 +17,7 @@
 package org.symqle.sql;
 
 import org.symqle.common.CoreMappers;
+import org.symqle.common.Mappers;
 
 /**
  * These functions are supported by most dialects.

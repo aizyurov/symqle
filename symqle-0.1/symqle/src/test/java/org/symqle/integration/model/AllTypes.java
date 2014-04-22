@@ -1,8 +1,8 @@
 package org.symqle.integration.model;
 
 import org.symqle.common.CoreMappers;
+import org.symqle.common.Mappers;
 import org.symqle.sql.Column;
-import org.symqle.sql.Mappers;
 import org.symqle.sql.Table;
 
 import java.sql.Date;

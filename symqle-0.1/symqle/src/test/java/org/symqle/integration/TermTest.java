@@ -1,6 +1,7 @@
 package org.symqle.integration;
 
 import org.symqle.common.Callback;
+import org.symqle.common.Mappers;
 import org.symqle.common.Pair;
 import org.symqle.integration.model.Department;
 import org.symqle.integration.model.Employee;
@@ -12,7 +13,6 @@ import org.symqle.sql.AbstractTerm;
 import org.symqle.sql.AbstractValueExpressionPrimary;
 import org.symqle.sql.DynamicParameter;
 import org.symqle.sql.Label;
-import org.symqle.sql.Mappers;
 import org.symqle.testset.AbstractTermTestSet;
 
 import java.sql.SQLException;
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author lvovich
