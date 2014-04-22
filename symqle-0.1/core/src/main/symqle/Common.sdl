@@ -35,7 +35,7 @@ import java.util.List;
 import static org.symqle.common.SqlContext.Builder;
 /**
 * This class contains the logic of sql building. Other org.symqle.sql classes call its methods to construct
-* more complex clauses.
+* more complex clauses. Most its methods are private and package scope.
 */
 public final class Symqle  {
     private Symqle() {
