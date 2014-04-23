@@ -34,8 +34,11 @@ import java.util.concurrent.Callable;
  */
 final class DatabaseUtils {
 
-    private DatabaseUtils() {}
-    static { new DatabaseUtils(); }
+    private DatabaseUtils() {
+    }
+    static {
+        new DatabaseUtils();
+    }
 
     /**
      * Reads database name from metadata.
@@ -53,8 +56,8 @@ final class DatabaseUtils {
         }
     }
 
-    private final static Properties dialects = readProperties("symqle.dialects");
-    private final static Properties connectors = readProperties("symqle.connectors");
+    private static final Properties dialects = readProperties("symqle.dialects");
+    private static final Properties connectors = readProperties("symqle.connectors");
 
     /**
      * Find suitable dialect for this database.

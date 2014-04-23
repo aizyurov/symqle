@@ -28,9 +28,9 @@ public class TableNameGenerator {
                 ? identifiersOnlyPrefix.substring(0, spaceIndex)
                 : identifiersOnlyPrefix;
         final String shortPrefix =
-                (prefix.length() < MAX_PREFIX_LENGTH ? prefix :
-                        prefix.substring(0, MAX_PREFIX_LENGTH))
-                        .toUpperCase();
+                (prefix.length() < MAX_PREFIX_LENGTH
+                        ? prefix
+                        : prefix.substring(0, MAX_PREFIX_LENGTH)).toUpperCase();
         int i = 0;
         String name = shortPrefix + i;
         while (used.contains(name)) {

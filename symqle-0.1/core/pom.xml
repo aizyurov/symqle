@@ -101,17 +101,6 @@
     </build>
     <reporting>
        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.12</version>
-                <configuration>
-                    <configLocation>${basedir}/config/symqle-checks.xml</configLocation>
-                    <suppressionsLocation>${basedir}/config/checkstyle-suppressions.xml</suppressionsLocation>
-                    <enableRulesSummary>false</enableRulesSummary>
-                    <!--sourceDirectory>${project.build.directory}/generated-sources/main/</sourceDirectory-->
-                </configuration>
-            </plugin>
            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-site-plugin</artifactId>

@@ -79,7 +79,7 @@ public abstract class Selector<D> extends AbstractSelectList<D> {
             throw new IllegalStateException("No mappings defined");
         }
         AbstractSelectList<?> result = keys.get(0).selectList;
-        for (int i=1; i<keys.size(); i++) {
+        for (int i = 1; i < keys.size(); i++) {
             result = result.pair(keys.get(i).selectList);
         }
         final QueryBuilder<?> query = result.z$sqlOfSelectList(context);
@@ -107,7 +107,7 @@ public abstract class Selector<D> extends AbstractSelectList<D> {
         private final AbstractSelectList<E> selectList;
         private RowMapper<E> rowMapper;
 
-        private KeyImpl(final SelectList<E> selectList) {
+        public KeyImpl(final SelectList<E> selectList) {
             this.selectList = new AbstractSelectList<E>() {
                 @Override
                 public QueryBuilder<E> z$sqlOfSelectList(final SqlContext context) {

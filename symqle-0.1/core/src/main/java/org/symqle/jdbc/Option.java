@@ -16,17 +16,19 @@
 
 package org.symqle.jdbc;
 
+import org.symqle.common.StrictEqual;
 import org.symqle.querybuilder.UpdatableConfiguration;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * An option, which can be applied to a Statement, e.g. fetch size, query timeout etc.
+ * An option, which can be applied to a Statement, e.g. fetch size, query timeout
  * or to Configuration.
  * Static methods of this class provide available options.
+ * @param <T> the type of object, which {@this} is comparable by equals(). should be type of {@code this}.
  */
-public abstract class Option {
+public abstract class Option<T> extends StrictEqual<T> {
 
     /**
      * Apply this Option to a {@link Statement}.
@@ -44,9 +46,10 @@ public abstract class Option {
     public abstract void apply(UpdatableConfiguration configuration);
 
     /**
-     * Subclasses should implement {@link #apply(java.sql.Statement)}
+     * Subclasses should implement {@link #apply(java.sql.Statement)}.
+     * @param <T> the type of object, which {@code this} is comparable to by equals(). should be type of {@code this}.
      */
-    private abstract static class StatementOption extends Option {
+    private abstract static class StatementOption<T> extends Option<T> {
         @Override
         public void apply(final UpdatableConfiguration configuration) {
             // do nothing
@@ -54,9 +57,10 @@ public abstract class Option {
     }
 
     /**
-     * Subclasses should implement {@link #apply(UpdatableConfiguration)}
+     * Subclasses should implement {@link #apply(UpdatableConfiguration)}.
+     * @param <T> the type of object, which {@this} is comparable by equals(). should be type of {@code this}.
      */
-    private abstract static class ConfigurationOption extends Option {
+    private abstract static class ConfigurationOption<T> extends Option<T> {
         @Override
         public void apply(final Statement statement) throws SQLException {
             // do nothing
@@ -142,7 +146,7 @@ public abstract class Option {
         return new ImplicitCrossJoinsOption(allow);
     }
 
-    private static class FetchDirectionOption extends StatementOption {
+    private static class FetchDirectionOption extends StatementOption<FetchDirectionOption> {
         private final int direction;
 
         public FetchDirectionOption(final int direction) {
@@ -155,15 +159,8 @@ public abstract class Option {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final FetchDirectionOption that = (FetchDirectionOption) o;
-
-            if (direction != that.direction) return false;
-
-            return true;
+        protected final boolean equalsTo(final FetchDirectionOption other) {
+            return direction == other.direction;
         }
 
         @Override
@@ -172,7 +169,7 @@ public abstract class Option {
         }
     }
 
-    private static class FetchSizeOption extends StatementOption {
+    private static class FetchSizeOption extends StatementOption<FetchSizeOption> {
         private final int rows;
 
         public FetchSizeOption(final int rows) {
@@ -184,16 +181,10 @@ public abstract class Option {
             statement.setFetchSize(rows);
         }
 
+
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final FetchSizeOption that = (FetchSizeOption) o;
-
-            if (rows != that.rows) return false;
-
-            return true;
+        protected final boolean equalsTo(final FetchSizeOption other) {
+            return rows == other.rows;
         }
 
         @Override
@@ -202,7 +193,7 @@ public abstract class Option {
         }
     }
 
-    private static class MaxFieldSizeOption extends StatementOption {
+    private static class MaxFieldSizeOption extends StatementOption<MaxFieldSizeOption> {
         private final int max;
 
         public MaxFieldSizeOption(final int max) {
@@ -215,15 +206,8 @@ public abstract class Option {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final MaxFieldSizeOption that = (MaxFieldSizeOption) o;
-
-            if (max != that.max) return false;
-
-            return true;
+        protected boolean equalsTo(final MaxFieldSizeOption other) {
+            return max == other.max;
         }
 
         @Override
@@ -232,7 +216,7 @@ public abstract class Option {
         }
     }
 
-    private static class MaxRowsOption extends StatementOption {
+    private static class MaxRowsOption extends StatementOption<MaxRowsOption> {
         private final int max;
 
         public MaxRowsOption(final int max) {
@@ -245,15 +229,8 @@ public abstract class Option {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final MaxRowsOption that = (MaxRowsOption) o;
-
-            if (max != that.max) return false;
-
-            return true;
+        protected boolean equalsTo(final MaxRowsOption other) {
+            return max == other.max;
         }
 
         @Override
@@ -262,7 +239,7 @@ public abstract class Option {
         }
     }
 
-    private static class QueryTimeoutOption extends StatementOption {
+    private static class QueryTimeoutOption extends StatementOption<QueryTimeoutOption> {
         private final int seconds;
 
         public QueryTimeoutOption(final int seconds) {
@@ -275,15 +252,8 @@ public abstract class Option {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final QueryTimeoutOption that = (QueryTimeoutOption) o;
-
-            if (seconds != that.seconds) return false;
-
-            return true;
+        protected boolean equalsTo(final QueryTimeoutOption other) {
+            return seconds == other.seconds;
         }
 
         @Override
@@ -292,7 +262,7 @@ public abstract class Option {
         }
     }
 
-    private static class NoTablesOption extends ConfigurationOption {
+    private static class NoTablesOption extends ConfigurationOption<NoTablesOption> {
         private final boolean allow;
 
         public NoTablesOption(final boolean allow) {
@@ -305,15 +275,8 @@ public abstract class Option {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final NoTablesOption that = (NoTablesOption) o;
-
-            if (allow != that.allow) return false;
-
-            return true;
+        protected boolean equalsTo(final NoTablesOption other) {
+            return allow == other.allow;
         }
 
         @Override
@@ -322,7 +285,7 @@ public abstract class Option {
         }
     }
 
-    private static class ImplicitCrossJoinsOption extends ConfigurationOption {
+    private static class ImplicitCrossJoinsOption extends ConfigurationOption<ImplicitCrossJoinsOption> {
         private final boolean allow;
 
         public ImplicitCrossJoinsOption(final boolean allow) {
@@ -335,15 +298,8 @@ public abstract class Option {
         }
 
         @Override
-        public boolean equals(final Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            final ImplicitCrossJoinsOption that = (ImplicitCrossJoinsOption) o;
-
-            if (allow != that.allow) return false;
-
-            return true;
+        protected boolean equalsTo(final ImplicitCrossJoinsOption other) {
+            return allow == other.allow;
         }
 
         @Override

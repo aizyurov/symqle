@@ -37,7 +37,7 @@ import java.util.List;
 public abstract class AbstractEngine extends AbstractQueryEngine implements Engine {
 
     /**
-     * Constructs the engine
+     * Constructs the engine with a given dialect.
      * @param dialect forces the use of this dialect, no auto-detection
      * @param databaseName used for dialect detection
      * @param options options to apply for query building and execution
@@ -46,6 +46,11 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         super(dialect, databaseName, options);
     }
 
+    /**
+     * Constructs the engine with dialect auto-detection.
+     * @param databaseName used for dialect detection
+     * @param options options to apply for query building and execution
+     */
     public AbstractEngine(final String databaseName, final Option[] options) {
         super(databaseName, options);
     }
@@ -67,16 +72,17 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     protected abstract void releaseConnection(Connection connection) throws SQLException;
 
     @Override
-    public int execute(final Sql statement, final List<Option> options) throws SQLException {
+    public final int execute(final Sql statement, final List<Option> options) throws SQLException {
         return execute(statement, null, options);
     }
 
     @Override
-    public int execute(final Sql statement, final GeneratedKeys<?> keyHolder, final List<Option> options) throws SQLException {
+    public final int execute(final Sql statement, final GeneratedKeys<?> keyHolder, final List<Option> options)
+            throws SQLException {
         final Connection connection = getConnection();
         try {
-            final PreparedStatement preparedStatement = keyHolder != null ?
-                    connection.prepareStatement(statement.text(), Statement.RETURN_GENERATED_KEYS)
+            final PreparedStatement preparedStatement = keyHolder != null
+                    ? connection.prepareStatement(statement.text(), Statement.RETURN_GENERATED_KEYS)
                     : connection.prepareStatement(statement.text());
             try {
                 setupStatement(preparedStatement, statement, options);
@@ -86,7 +92,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
                     final ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                     try {
                         generatedKeys.next();
-                        final ResultSetRow row = new ResultSetRow(generatedKeys, new InnerQueryEngine(this, connection));
+                        final ResultSetRow row =
+                                new ResultSetRow(generatedKeys, new InnerQueryEngine(this, connection));
                         keyHolder.read(row.getValue(1));
                     } finally {
                         generatedKeys.close();
@@ -103,7 +110,8 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    public final int scroll(final Sql query, final Callback<Row> callback, final List<Option> options)
+            throws SQLException {
         final Connection connection = getConnection();
         try {
             return scroll(connection, query, callback, options);
@@ -113,7 +121,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
     }
 
     @Override
-    public Batcher newBatcher(final int batchSizeLimit) {
+    public final Batcher newBatcher(final int batchSizeLimit) {
         return new BatcherImpl(batchSizeLimit);
     }
 
@@ -121,7 +129,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         private final String statementText;
         private final List<Option> options;
 
-        private StatementKey(final String statementText, final List<Option> options) {
+        public StatementKey(final String statementText, final List<Option> options) {
             this.statementText = statementText;
             this.options = options;
         }
@@ -137,7 +145,7 @@ public abstract class AbstractEngine extends AbstractQueryEngine implements Engi
         private final List<Parameterizer> queue;
         private volatile StatementKey currentKey = null;
 
-        private BatcherImpl(final int batchSize) {
+        public BatcherImpl(final int batchSize) {
             this.batchSize = batchSize;
             this.queue = new ArrayList<Parameterizer>(batchSize);
         }

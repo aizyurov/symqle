@@ -34,20 +34,20 @@ class ResultSetRow implements Row {
     private final QueryEngine innerEngine;
 
     /**
-     * Constructs for a given ResultSet and inner engine
+     * Constructs for a given ResultSet and inner engine.
      * @param resultSet the result set to view
      */
-    public ResultSetRow(ResultSet resultSet, QueryEngine engine) {
+    public ResultSetRow(final ResultSet resultSet, final QueryEngine engine) {
         this.resultSet = resultSet;
         this.innerEngine = engine;
     }
 
     @Override
-    public final InBox getValue(String label) {
+    public final InBox getValue(final String label) {
         return new LabeledInBox(label);
     }
-    
-    public final InBox getValue(int position) {
+
+    public final InBox getValue(final int position) {
         return new PositionedInBox(position);
     }
 
@@ -59,7 +59,7 @@ class ResultSetRow implements Row {
     private class LabeledInBox implements InBox {
         private final String label;
 
-        private LabeledInBox(final String label) {
+        public LabeledInBox(final String label) {
             this.label = label;
         }
 
@@ -135,14 +135,14 @@ class ResultSetRow implements Row {
             return resultSet.getBytes(label);
         }
     }
-    
+
     private class PositionedInBox implements InBox {
         private final int position;
 
-        private PositionedInBox(final int position) {
+        public PositionedInBox(final int position) {
             this.position = position;
         }
-        
+
         @Override
         public Boolean getBoolean() throws SQLException {
             final boolean result = resultSet.getBoolean(position);

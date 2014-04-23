@@ -17,13 +17,13 @@
 package org.symqle.sql;
 
 import org.symqle.common.*;
-import org.symqle.querybuilder.Configuration;
 import org.symqle.jdbc.Option;
 import org.symqle.jdbc.QueryEngine;
-import org.symqle.querybuilder.UpdatableConfiguration;
+import org.symqle.querybuilder.ColumnNameGenerator;
+import org.symqle.querybuilder.Configuration;
 import org.symqle.querybuilder.TableNameGenerator;
 import org.symqle.querybuilder.UniqueColumnNameGenerator;
-import org.symqle.querybuilder.ColumnNameGenerator;
+import org.symqle.querybuilder.UpdatableConfiguration;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -57,6 +57,7 @@ import java.util.Map;
  *     }
  * </code>
  * </pre>
+ * @param <D> type of created objects
  * @author lvovich
  */
 public abstract class SmartSelector<D> extends AbstractSelectList<D> {
@@ -78,7 +79,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
      * @return extracted value
      * @throws SQLException from JDBC driver
      */
-    protected final <T> T get(SelectList<T> selectList) throws SQLException {
+    protected final <T> T get(final SelectList<T> selectList) throws SQLException {
         return currentRowMap.get(selectList);
     }
 
@@ -86,15 +87,15 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
      * Engine, which re-uses the same connection.
      * This engine can be used inside {@link #create()} method to make additional queries
      * (probably depending of the values in current row).
-     * @return
+     * @return engine, which operates on current connection
      */
     protected final QueryEngine getQueryEngine() {
         return currentRowMap.getQueryEngine();
     }
 
     @Override
-    public QueryBuilder<D> z$sqlOfSelectList(final SqlContext context) {
-        currentRowMap = new ProbeRowMap(context);
+    public final QueryBuilder<D> z$sqlOfSelectList(final SqlContext context) {
+        currentRowMap = new ProbeRowMap();
         try {
             create();
         } catch (SQLException e) {
@@ -140,10 +141,8 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     }
 
     private class ProbeRowMap implements RowMap {
-        private final SqlContext context;
 
-        private ProbeRowMap(final SqlContext context) {
-            this.context = context;
+        public ProbeRowMap() {
         }
 
         @Override
@@ -167,7 +166,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     private class ProbeSelectList<T> extends AbstractSelectList<T> {
         private final SelectList<T> sl;
 
-        private ProbeSelectList(final SelectList<T> sl) {
+        public ProbeSelectList(final SelectList<T> sl) {
             this.sl = sl;
         }
 
@@ -182,7 +181,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
     private class ResultSetRowMap implements RowMap {
         private final Row row;
 
-        private ResultSetRowMap(final Row row) {
+        public ResultSetRowMap(final Row row) {
             this.row = row;
         }
 
@@ -223,7 +222,7 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
                 .toSqlContext();
     }
 
-    private final static Row probeRow = new ProbeRow();
+    private static final Row probeRow = new ProbeRow();
 
     private static class ProbeRow implements Row {
         @Override
@@ -306,10 +305,6 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
 
     private static class ProbeQueryEngine implements QueryEngine {
 
-        private ProbeQueryEngine() {
-            System.out.println("ProbeQueryEngine constructor");
-        }
-
         @Override
         public Dialect getDialect() {
             return new DebugDialect();
@@ -321,13 +316,13 @@ public abstract class SmartSelector<D> extends AbstractSelectList<D> {
         }
 
         @Override
-        public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+        public int scroll(final Sql query, final Callback<Row> callback, final List<Option> options)
+                throws SQLException {
             return 0;
         }
 
         @Override
         public String getDatabaseName() {
-            System.out.println("getDatabaseName called: " + getDialect().getName());
             return getDialect().getName();
         }
     }

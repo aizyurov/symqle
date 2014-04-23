@@ -26,7 +26,7 @@ package org.symqle.common;
 public interface Sql extends Parameterizer {
 
     /**
-     * The SQL text
+     * The SQL text.
      * @return the text
      */
     String text();

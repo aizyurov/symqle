@@ -44,7 +44,8 @@ public class H2Dialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(final SqlBuilder qe, final SqlBuilder other) {
+    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_ALL_QueryTerm(
+            final SqlBuilder qe, final SqlBuilder other) {
         // H2 requires additional parentheses; use if other does not start with parenthesis
         if (other.firstChar() != '(') {
             return concat(qe, EXCEPT, ALL, LEFT_PAREN, other, RIGHT_PAREN);
@@ -54,7 +55,8 @@ public class H2Dialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(final SqlBuilder qe, final SqlBuilder other) {
+    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_DISTINCT_QueryTerm(
+            final SqlBuilder qe, final SqlBuilder other) {
         // H2 requires additional parentheses; use if other does not start with parenthesis
         if (other.firstChar() != '(') {
             return concat(qe, EXCEPT, DISTINCT, LEFT_PAREN, other, RIGHT_PAREN);
@@ -64,7 +66,8 @@ public class H2Dialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(final SqlBuilder qe, final SqlBuilder other) {
+    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_EXCEPT_QueryTerm(
+            final SqlBuilder qe, final SqlBuilder other) {
         // H2 requires additional parentheses; use if other does not start with parenthesis
         if (other.firstChar() != '(') {
             return concat(qe, EXCEPT, LEFT_PAREN, other, RIGHT_PAREN);
@@ -74,7 +77,8 @@ public class H2Dialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(final SqlBuilder qe, final SqlBuilder other) {
+    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_ALL_QueryTerm(
+            final SqlBuilder qe, final SqlBuilder other) {
         // H2 requires additional parentheses; use if other does not start with parenthesis
         if (other.firstChar() != '(') {
             return concat(qe, UNION, ALL, LEFT_PAREN, other, RIGHT_PAREN);
@@ -84,7 +88,8 @@ public class H2Dialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(final SqlBuilder qe, final SqlBuilder other) {
+    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_DISTINCT_QueryTerm(
+            final SqlBuilder qe, final SqlBuilder other) {
         // H2 requires additional parentheses; use if other does not start with parenthesis
         if (other.firstChar() != '(') {
             return concat(qe, UNION, DISTINCT, LEFT_PAREN, other, RIGHT_PAREN);
@@ -94,7 +99,8 @@ public class H2Dialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(final SqlBuilder qe, final SqlBuilder other) {
+    public SqlBuilder QueryExpressionBodyScalar_is_QueryExpressionBodyScalar_UNION_QueryTerm(
+            final SqlBuilder qe, final SqlBuilder other) {
         // H2 requires additional parentheses; use if other does not start with parenthesis
         if (other.firstChar() != '(') {
             return concat(qe, UNION, LEFT_PAREN, other, RIGHT_PAREN);

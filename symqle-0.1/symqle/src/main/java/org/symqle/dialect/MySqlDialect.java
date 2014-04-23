@@ -33,12 +33,12 @@ public class MySqlDialect extends GenericDialect {
     }
 
     /**
-     * Mysql does not support FOR READ ONLY; just omitted
+     * Mysql does not support FOR READ ONLY; just omitted.
       * @param qe QueryExpression
-     * @return
+     * @return proper SqlBuilder
      */
     @Override
-    public SqlBuilder SelectStatement_is_QueryExpression_FOR_READ_ONLY(SqlBuilder qe) {
+    public SqlBuilder SelectStatement_is_QueryExpression_FOR_READ_ONLY(final SqlBuilder qe) {
         return SelectStatement_is_QueryExpression(qe);
     }
 
@@ -56,12 +56,14 @@ public class MySqlDialect extends GenericDialect {
     }
 
     @Override
-    public SqlBuilder QueryExpression_is_QueryExpressionBasic_FETCH_FIRST_Literal_ROWS_ONLY(final SqlBuilder qe, final SqlBuilder limit) {
+    public SqlBuilder QueryExpression_is_QueryExpressionBasic_FETCH_FIRST_Literal_ROWS_ONLY(
+            final SqlBuilder qe, final SqlBuilder limit) {
         return concat(qe, SqlTerm.LIMIT, new StringSqlBuilder("0"), SqlTerm.COMMA, limit);
     }
 
     @Override
-    public SqlBuilder QueryExpression_is_QueryExpressionBasic_OFFSET_Literal_ROWS_FETCH_FIRST_Literal_ROWS_ONLY(final SqlBuilder qe, final SqlBuilder offset, final SqlBuilder limit) {
+    public SqlBuilder QueryExpression_is_QueryExpressionBasic_OFFSET_Literal_ROWS_FETCH_FIRST_Literal_ROWS_ONLY(
+            final SqlBuilder qe, final SqlBuilder offset, final SqlBuilder limit) {
         return concat(qe, SqlTerm.LIMIT, offset, SqlTerm.COMMA, limit);
     }
 }

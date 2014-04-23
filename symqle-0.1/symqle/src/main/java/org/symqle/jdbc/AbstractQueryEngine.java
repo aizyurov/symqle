@@ -42,7 +42,7 @@ abstract class AbstractQueryEngine implements QueryEngine {
     private final String databaseName;
 
     /**
-     * Constructs the engine
+     * Constructs the engine with the given dialect.
      * @param dialect forces the use of this dialect, no auto-detection
      * @param databaseName used for dialect detection
      * @param options options to apply for query building and execution
@@ -90,14 +90,17 @@ abstract class AbstractQueryEngine implements QueryEngine {
      * @param connection open connection
      * @param query the query to execute
      * @param callback called for each row
-     * @param options will be applied after default options
+     * @param scrollOptions will be applied after default options
      * @return number of processed rows
      * @throws SQLException something wrong happened (from JDBC driver)
      */
-    protected final  int scroll(final Connection connection, final Sql query, final Callback<Row> callback, final List<Option> options) throws SQLException {
+    protected final  int scroll(final Connection connection,
+                                final Sql query,
+                                final Callback<Row> callback,
+                                final List<Option> scrollOptions) throws SQLException {
         final PreparedStatement preparedStatement = connection.prepareStatement(query.text());
         try {
-            setupStatement(preparedStatement, query, options);
+            setupStatement(preparedStatement, query, scrollOptions);
             final ResultSet resultSet = preparedStatement.executeQuery();
             try {
                 final InnerQueryEngine innerEngine = new InnerQueryEngine(this, connection);
@@ -123,11 +126,13 @@ abstract class AbstractQueryEngine implements QueryEngine {
      * Call this method after statement creation.
      * @param preparedStatement the statement
      * @param parameterizer sets parameters
-     * @param options will be applied to statement.
+     * @param allOptions will be applied to statement.
      * @throws SQLException from JDBC driver
      */
-    protected final void setupStatement(final PreparedStatement preparedStatement, final Parameterizer parameterizer, final List<Option> options) throws SQLException {
-        for (Option option : options) {
+    protected final void setupStatement(final PreparedStatement preparedStatement,
+                                        final Parameterizer parameterizer,
+                                        final List<Option> allOptions) throws SQLException {
+        for (Option option : allOptions) {
             option.apply(preparedStatement);
         }
         SqlParameters parameters = new StatementParameters(preparedStatement);

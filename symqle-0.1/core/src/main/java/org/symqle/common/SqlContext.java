@@ -36,7 +36,7 @@ public final class SqlContext {
      * @return the object stored under this key; null if not found
      */
     @SuppressWarnings("unchecked")
-    public final <T> T get(final Class<T> clazz) {
+    public <T> T get(final Class<T> clazz) {
         for (int i = 0; i < LENGTH; i++) {
             if (keys[i] == clazz) {
                 return (T) values[i];
@@ -49,7 +49,7 @@ public final class SqlContext {
      * Creates a Builder, which initiallu contains a copy of (@code this} contents.
      * @return new Builder
      */
-    public final Builder newBuilder() {
+    public Builder newBuilder() {
         return new Builder(this.keys, this.values);
     }
 
@@ -82,7 +82,7 @@ public final class SqlContext {
          * @param <T> type of clazz
          * @return (@code this}
          */
-        public <T> Builder put(final Class<T> clazz, final T impl) {
+        public final <T> Builder put(final Class<T> clazz, final T impl) {
             // first replace
             for (int i = 0; i < LENGTH; i++) {
                 if (keys[i] == clazz) {
@@ -93,7 +93,7 @@ public final class SqlContext {
             int i = 0;
             // will have ArrayIndexOutOfBoundsException it there is no free slot
             // never expected
-            while (keys[i] !=null) {
+            while (keys[i] != null) {
                 i++;
             }
             keys[i] = clazz;
@@ -105,7 +105,7 @@ public final class SqlContext {
          * Constructs SqlContext containing current contents of (@code this}.
          * @return the constructed SqlContext
          */
-        public SqlContext toSqlContext() {
+        public final SqlContext toSqlContext() {
             return new SqlContext(this.keys, this.values);
         }
     }

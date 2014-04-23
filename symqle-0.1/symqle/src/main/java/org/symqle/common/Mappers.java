@@ -22,17 +22,20 @@ import java.sql.SQLException;
  * A collection of Mapper objects.
  * @author lvovich
  */
-public class Mappers implements CoreMappers {
+public final class Mappers implements CoreMappers {
 
     static {
         new Mappers();
+    }
+
+    private Mappers() {
     }
 
     /**
      * Maps to {@link Short}.
      * For use with TINYINT and similar database types.
      */
-    public final static Mapper<Short> SHORT = new Mapper<Short>() {
+    public static final Mapper<Short> SHORT = new Mapper<Short>() {
         @Override
         public Short value(final InBox inBox) throws SQLException {
             return inBox.getShort();

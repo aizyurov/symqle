@@ -39,7 +39,7 @@ public final class Bug {
      * @param condition condition to check
      * @throws IllegalStateException condition is true
      */
-    public static void reportIf(boolean condition) {
+    public static void reportIf(final boolean condition) {
         if (condition) {
             throw new IllegalStateException(MESSAGE);
         }
@@ -50,7 +50,7 @@ public final class Bug {
      * @param o object co check for null
      * @throws IllegalStateException if null
      */
-    public static void reportIfNull(Object o) {
+    public static void reportIfNull(final Object o) {
         if (o == null) {
             throw new IllegalStateException(MESSAGE);
         }
@@ -61,24 +61,24 @@ public final class Bug {
      * @param o object co check for not null
      * @throws IllegalStateException if not null
      */
-    public static void reportIfNotNull(Object o) {
+    public static void reportIfNotNull(final Object o) {
         if (o != null) {
             throw new IllegalStateException(MESSAGE);
         }
     }
 
     /**
-     * Reports a bug which wrapped checked exception.
+     * Reports a bug with wrapped checked exception.
      * @param e exception to wrap
      * @throws IllegalStateException always
      */
-    public static void reportException(Exception e) {
+    public static void reportException(final Exception e) {
         throw new IllegalStateException(MESSAGE, e);
     }
 
     /**
      * Executes a callable and returns its result.
-     * Reports a bug if the call method throws a chaked exception.
+     * Reports a bug if the call method throws a checked exception.
      * @param callable the callable to execute
      * @param <T> return type
      * @return the result of call method

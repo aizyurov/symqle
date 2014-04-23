@@ -27,7 +27,7 @@ import java.sql.SQLException;
 interface Connector {
 
     /**
-     * Makes a connection to data source
+     * Makes a connection to data source.
      *
      * @return  a connection to the data source
      * @exception java.sql.SQLException if a database access error occurs

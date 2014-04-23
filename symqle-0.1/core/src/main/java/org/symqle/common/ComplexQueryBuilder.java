@@ -16,12 +16,6 @@
 
 package org.symqle.common;
 
-import org.symqle.common.QueryBuilder;
-import org.symqle.common.Row;
-import org.symqle.common.RowMapper;
-import org.symqle.common.SqlBuilder;
-import org.symqle.common.SqlParameters;
-
 import java.sql.SQLException;
 
 /**

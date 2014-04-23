@@ -22,8 +22,9 @@ import org.symqle.sql.GenericDialect;
 
 import static org.symqle.querybuilder.SqlTerm.*;
 
+
 /**
- * Dialec of <a href="http://www.postgresql.org/">PostgreSQL database</a>.
+ * Dialect of <a href="http://www.postgresql.org/">PostgreSQL database</a>.
  * @author lvovich
  */
 public class PostgreSQLDialect extends GenericDialect {
@@ -43,12 +44,16 @@ public class PostgreSQLDialect extends GenericDialect {
 
     @Override
     public SqlBuilder Predicate_is_LikePredicateBase_ESCAPE_StringExpression(final SqlBuilder b, final SqlBuilder esc) {
-        return concat(SqlTerm.LEFT_PAREN, super.Predicate_is_LikePredicateBase_ESCAPE_StringExpression(b, esc), SqlTerm.RIGHT_PAREN);
+        return concat(SqlTerm.LEFT_PAREN,
+                super.Predicate_is_LikePredicateBase_ESCAPE_StringExpression(b, esc),
+                SqlTerm.RIGHT_PAREN);
     }
 
     @Override
     public SqlBuilder Predicate_is_LikePredicateBase(final SqlBuilder b) {
-        return concat(SqlTerm.LEFT_PAREN, super.Predicate_is_LikePredicateBase(b), SqlTerm.RIGHT_PAREN);
+        return concat(SqlTerm.LEFT_PAREN,
+                super.Predicate_is_LikePredicateBase(b),
+                SqlTerm.RIGHT_PAREN);
     }
 
     // IS FALSE .. IS TRUE have too high priority in PostgreSQL
@@ -88,6 +93,7 @@ public class PostgreSQLDialect extends GenericDialect {
 
     // mostly for DynamicParameter:: its type is unknown, need explicit CAST
 
+    @Override
     public SqlBuilder BooleanPrimary_is_ValueExpressionPrimary(final SqlBuilder e) {
         return concat(SqlTerm.CAST, SqlTerm.LEFT_PAREN, e, SqlTerm.AS, SqlTerm.BOOLEAN, SqlTerm.RIGHT_PAREN);
     }
@@ -97,7 +103,9 @@ public class PostgreSQLDialect extends GenericDialect {
         return "(VALUES(1))";
     }
 
-    public SqlBuilder TableReference_is_TableReference_OUTER_JOIN_TableReference_ON_BooleanExpression(final SqlBuilder l, final SqlBuilder r, final SqlBuilder c) {
+    @Override
+    public SqlBuilder TableReference_is_TableReference_OUTER_JOIN_TableReference_ON_BooleanExpression(
+            final SqlBuilder l, final SqlBuilder r, final SqlBuilder c) {
         return concat(l, FULL, OUTER, JOIN, r, ON, c);
     }
 

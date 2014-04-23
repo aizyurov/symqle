@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Implementation of QueryEngine, which re-uses existing connection,
+ * Implementation of QueryEngine, which re-uses existing connection.
  * @author lvovich
  */
 class InnerQueryEngine extends AbstractQueryEngine {

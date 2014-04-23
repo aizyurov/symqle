@@ -27,6 +27,7 @@ import java.util.List;
 /**
  * A holder of generated keys for insert statements.
  * @author lvovich
+ * @param <T> Java type of generated key
  */
 public final class GeneratedKeys<T> {
 
@@ -48,11 +49,11 @@ public final class GeneratedKeys<T> {
     }
 
     /**
-     * Reads next key from InBox
+     * Reads next key from InBox.
      * @param inBox the box containing next key
      * @throws SQLException key cannot be converted by mapper.
      */
-    void read(InBox inBox) throws SQLException {
+    void read(final InBox inBox) throws SQLException {
         keys.add(mapper.value(inBox));
     }
 

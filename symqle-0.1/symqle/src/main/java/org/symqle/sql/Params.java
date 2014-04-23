@@ -22,7 +22,7 @@ import org.symqle.common.CoreMappers;
  * A utility class with shortcuts to DynamicParameter factory methods.
  * @author lvovich
  */
-public class Params {
+public final class Params {
 
     private Params() {
     }
@@ -36,7 +36,7 @@ public class Params {
      * @param b initial value
      * @return created DynamicParameter
      */
-    public static DynamicParameter<Boolean> p(boolean b) {
+    public static DynamicParameter<Boolean> p(final boolean b) {
         return DynamicParameter.create(CoreMappers.BOOLEAN, b);
     }
 
@@ -45,7 +45,7 @@ public class Params {
      * @param x initial value
      * @return created DynamicParameter
      */
-    public static DynamicParameter<Integer> p(int x) {
+    public static DynamicParameter<Integer> p(final int x) {
         return DynamicParameter.create(CoreMappers.INTEGER, x);
     }
 
@@ -54,7 +54,7 @@ public class Params {
      * @param x initial value
      * @return created DynamicParameter
      */
-    public static DynamicParameter<Long> p(long x) {
+    public static DynamicParameter<Long> p(final long x) {
         return DynamicParameter.create(CoreMappers.LONG, x);
     }
 
@@ -63,7 +63,7 @@ public class Params {
      * @param x initial value
      * @return created DynamicParameter
      */
-    public static DynamicParameter<String> p(String x) {
+    public static DynamicParameter<String> p(final String x) {
         return DynamicParameter.create(CoreMappers.STRING, x);
     }
 
@@ -72,7 +72,7 @@ public class Params {
      * @param x initial value
      * @return created DynamicParameter
      */
-    public static DynamicParameter<Double> p(double x) {
+    public static DynamicParameter<Double> p(final double x) {
         return DynamicParameter.create(CoreMappers.DOUBLE, x);
     }
 

@@ -18,8 +18,10 @@ package org.symqle.dialect;
 
 import org.symqle.common.SqlBuilder;
 import org.symqle.common.StringSqlBuilder;
-import org.symqle.querybuilder.SqlTerm;
 import org.symqle.sql.GenericDialect;
+
+import static org.symqle.querybuilder.SqlTerm.*;
+
 
 /**
  * Dialect for <a href="http://db.apache.org/derby/">Apache Derby database</a>.
@@ -40,33 +42,40 @@ public class DerbyDialect extends GenericDialect {
     @Override
     public SqlBuilder BooleanPrimary_is_ValueExpressionPrimary(final SqlBuilder e) {
         // Derby does not cast implicitly; using explicit case
-        return concat(SqlTerm.CAST, SqlTerm.LEFT_PAREN, e, SqlTerm.AS, SqlTerm.BOOLEAN, SqlTerm.RIGHT_PAREN);
+        return concat(CAST, LEFT_PAREN, e, AS, BOOLEAN, RIGHT_PAREN);
     }
 
     @Override
     public SqlBuilder ValueExpression_is_BooleanExpression(final SqlBuilder bve) {
         // derby dialect misunderstands usage of BooleanExpression where ValueExpression is required;
         // surrounding with parentheses to avoid it
-        return concat(SqlTerm.LEFT_PAREN, bve, SqlTerm.RIGHT_PAREN);
+        return concat(LEFT_PAREN, bve, RIGHT_PAREN);
     }
 
     @Override
-    public SqlBuilder StringExpression_is_SUBSTRING_LEFT_PAREN_StringExpression_FROM_NumericExpression_FOR_NumericExpression_RIGHT_PAREN(final SqlBuilder s, final SqlBuilder start, final SqlBuilder len) {
-        return concat(new StringSqlBuilder("SUBSTR"), SqlTerm.LEFT_PAREN, s, SqlTerm.COMMA, start, SqlTerm.COMMA, len, SqlTerm.RIGHT_PAREN);
+    public SqlBuilder
+    StringExpression_is_SUBSTRING_LEFT_PAREN_StringExpression_FROM_NumericExpression_FOR_NumericExpression_RIGHT_PAREN(
+            final SqlBuilder s, final SqlBuilder start, final SqlBuilder len) {
+        return concat(new StringSqlBuilder("SUBSTR"), LEFT_PAREN, s, COMMA, start, COMMA, len, RIGHT_PAREN);
     }
 
     @Override
-    public SqlBuilder StringExpression_is_SUBSTRING_LEFT_PAREN_StringExpression_FROM_NumericExpression_RIGHT_PAREN(final SqlBuilder s, final SqlBuilder start) {
-        return concat(new StringSqlBuilder("SUBSTR"), SqlTerm.LEFT_PAREN, s, SqlTerm.COMMA, start, SqlTerm.RIGHT_PAREN);
+    public SqlBuilder
+    StringExpression_is_SUBSTRING_LEFT_PAREN_StringExpression_FROM_NumericExpression_RIGHT_PAREN(
+            final SqlBuilder s, final SqlBuilder start) {
+        return concat(new StringSqlBuilder("SUBSTR"), LEFT_PAREN, s, COMMA, start, RIGHT_PAREN);
     }
 
     @Override
-    public SqlBuilder NumericExpression_is_POSITION_LEFT_PAREN_StringExpression_IN_StringExpression_RIGHT_PAREN(final SqlBuilder pattern, final SqlBuilder source) {
-        return concat(new StringSqlBuilder("LOCATE"), SqlTerm.LEFT_PAREN, pattern, SqlTerm.COMMA, source, SqlTerm.RIGHT_PAREN);
+    public SqlBuilder
+    NumericExpression_is_POSITION_LEFT_PAREN_StringExpression_IN_StringExpression_RIGHT_PAREN(
+            final SqlBuilder pattern, final SqlBuilder source) {
+        return concat(new StringSqlBuilder("LOCATE"), LEFT_PAREN, pattern, COMMA, source, RIGHT_PAREN);
     }
 
     @Override
-    public SqlBuilder NumericExpression_is_CHAR_LENGTH_LEFT_PAREN_StringExpression_RIGHT_PAREN(final SqlBuilder string) {
-        return concat(SqlTerm.LENGTH, SqlTerm.LEFT_PAREN, string, SqlTerm.RIGHT_PAREN);
+    public SqlBuilder NumericExpression_is_CHAR_LENGTH_LEFT_PAREN_StringExpression_RIGHT_PAREN(
+            final SqlBuilder string) {
+        return concat(LENGTH, LEFT_PAREN, string, RIGHT_PAREN);
     }
 }

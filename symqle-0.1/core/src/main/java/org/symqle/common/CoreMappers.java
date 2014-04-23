@@ -30,7 +30,7 @@ public interface CoreMappers {
     /**
      * Mapper to Boolean.
      */
-    public static final Mapper<Boolean> BOOLEAN = new Mapper<Boolean>() {
+    Mapper<Boolean> BOOLEAN = new Mapper<Boolean>() {
         @Override
         public Boolean value(final InBox inBox) throws SQLException {
             return inBox.getBoolean();
@@ -45,7 +45,7 @@ public interface CoreMappers {
     /**
      * Mapper to Number.
      */
-    public static  final Mapper<Number> NUMBER = new Mapper<Number>() {
+     Mapper<Number> NUMBER = new Mapper<Number>() {
         @Override
         public Number value(final InBox inBox) throws SQLException {
             return inBox.getBigDecimal();
@@ -60,7 +60,7 @@ public interface CoreMappers {
     /**
      * Mapper to Long.
      */
-    public static  final Mapper<Long> LONG = new Mapper<Long>() {
+     Mapper<Long> LONG = new Mapper<Long>() {
         @Override
         public Long value(final InBox inBox) throws SQLException {
             return inBox.getLong();
@@ -75,7 +75,7 @@ public interface CoreMappers {
     /**
      * Mapper to String.
      */
-    public static  final Mapper<String> STRING = new Mapper<String>() {
+     Mapper<String> STRING = new Mapper<String>() {
         @Override
         public String value(final InBox inBox) throws SQLException {
             return inBox.getString();
@@ -90,7 +90,7 @@ public interface CoreMappers {
     /**
      * Mapper to Integer.
      */
-    public static final Mapper<Integer> INTEGER = new Mapper<Integer>() {
+    Mapper<Integer> INTEGER = new Mapper<Integer>() {
         @Override
         public Integer value(final InBox inBox) throws SQLException {
             return inBox.getInt();
@@ -105,7 +105,7 @@ public interface CoreMappers {
     /**
      * Mapper to java.sql.Date.
      */
-    public static final Mapper<Date> DATE = new Mapper<Date>() {
+    Mapper<Date> DATE = new Mapper<Date>() {
         @Override
         public Date value(final InBox inBox) throws SQLException {
             return inBox.getDate();
@@ -120,7 +120,7 @@ public interface CoreMappers {
     /**
      * Mapper to java.sql.Time.
      */
-    public static final Mapper<Time> TIME = new Mapper<Time>() {
+    Mapper<Time> TIME = new Mapper<Time>() {
         @Override
         public Time value(final InBox inBox) throws SQLException {
             return inBox.getTime();
@@ -135,7 +135,7 @@ public interface CoreMappers {
     /**
      * Mapper to java.sql.Timestamp.
      */
-    public static final Mapper<Timestamp> TIMESTAMP = new Mapper<Timestamp>() {
+    Mapper<Timestamp> TIMESTAMP = new Mapper<Timestamp>() {
         @Override
         public Timestamp value(final InBox inBox) throws SQLException {
             return inBox.getTimestamp();
@@ -151,7 +151,7 @@ public interface CoreMappers {
      * Mapper to Double.
      */
 
-    public static final Mapper<Double> DOUBLE = new Mapper<Double>() {
+    Mapper<Double> DOUBLE = new Mapper<Double>() {
         @Override
         public Double value(final InBox inBox) throws SQLException {
             return inBox.getDouble();

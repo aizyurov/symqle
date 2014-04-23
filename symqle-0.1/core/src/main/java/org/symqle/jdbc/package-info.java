@@ -15,6 +15,6 @@
 */
 
 /**
- * Interfaces and classes, which support Symqle objects interaction to JDBC driver,
+ * Interfaces and classes which support Symqle objects interaction to JDBC driver.
  */
 package org.symqle.jdbc;

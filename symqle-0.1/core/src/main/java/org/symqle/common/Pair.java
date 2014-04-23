@@ -21,7 +21,7 @@ package org.symqle.common;
  * @param <First> type of first object
  * @param <Second> type of second object
  */
-public class Pair<First, Second> {
+public class Pair<First, Second> extends StrictEqual<Pair<First, Second>> {
     private final First o1;
     private final Second o2;
 
@@ -64,23 +64,8 @@ public class Pair<First, Second> {
     }
 
     @Override
-    public final boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Pair pair = (Pair) o;
-
-        if (o1 != null ? !o1.equals(pair.o1) : pair.o1 != null) {
-            return false;
-        }
-        if (o2 != null ? !o2.equals(pair.o2) : pair.o2 != null) {
-            return false;
-        }
-        return true;
+    protected final boolean equalsTo(final Pair<First, Second> other) {
+        return areSame(o1, other.o1) && areSame(o2, other.o2);
     }
 
     @Override
@@ -90,6 +75,7 @@ public class Pair<First, Second> {
         return result;
     }
 
+    @Override
     public final String toString() {
         return "(" + first() + ", " + second() + ")";
     }

@@ -41,7 +41,7 @@ public interface QueryEngine  {
     int scroll(Sql query, Callback<Row> callback, List<Option> options) throws SQLException;
 
     /**
-     * Database name as reported by {@link java.sql.DatabaseMetaData#getDatabaseProductName()}
+     * Database name as reported by {@link java.sql.DatabaseMetaData#getDatabaseProductName()}.
      * @return the database name
      */
     String getDatabaseName();

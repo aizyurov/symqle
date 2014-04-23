@@ -23,14 +23,13 @@ import org.symqle.common.Mappers;
  * These functions are supported by most dialects.
  * @author lvovich
  */
-public class Functions {
+public final class Functions {
 
     private Functions() {
     }
 
     static {
         new Functions();
-
     }
 
     /**
@@ -87,6 +86,7 @@ public class Functions {
     /**
      * Round to nearest less or equal integer.
      * @param arg the argument
+     * @param <T> associated Java type
      * @return object representing {@code FLOOR(arg)}
      */
     public static <T> AbstractRoutineInvocation<T> floor(
@@ -97,6 +97,7 @@ public class Functions {
     /**
      * Round to nearest greater or equal integer.
      * @param arg the argument
+     * @param <T> associated Java type
      * @return object representing {@code CEIL(arg)}
      */
     public static <T> AbstractRoutineInvocation<T> ceil(
@@ -106,7 +107,7 @@ public class Functions {
 
 
     /**
-     * Power,
+     * Power.
      * @param base the argument
      * @param exponent the exponent
      * @return object representing {@code POWER(base, exponent)}
@@ -117,7 +118,7 @@ public class Functions {
     }
 
     /**
-     * Power,
+     * Power.
      * @param base the argument
      * @param exponent the exponent
      * @return object representing {@code POWER(base, ?)} with value of parameter set to exponent.

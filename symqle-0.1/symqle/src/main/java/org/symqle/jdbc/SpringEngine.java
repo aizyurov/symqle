@@ -26,7 +26,8 @@ import java.sql.SQLException;
  * Engine, which is aware of Spring transactions.
  * Statements, executed in this engine, will be executed in Spring transactions,
  * for example, if their execute() method is called inside
- * {@link org.springframework.transaction.support.TransactionTemplate#execute(org.springframework.transaction.support.TransactionCallback)}
+ * {@link org.springframework.transaction.support.TransactionTemplate#execute
+ * (org.springframework.transaction.support.TransactionCallback)}
  * @author lvovich
  */
 public class SpringEngine extends AbstractEngine {
@@ -37,23 +38,26 @@ public class SpringEngine extends AbstractEngine {
      * Constructs the engine, auto-detecting proper dialect.
      * @param dataSource provides connection to the database
      * @param options default options to apply for query building and execution
+     * @throws SQLException failed to connect to database
      */
     public SpringEngine(final DataSource dataSource, final Option... options) throws SQLException {
         super(DatabaseUtils.getDatabaseName(dataSource), options);
-        final Connector connector = new SpringConnector(dataSource);
-        this.connector = DatabaseUtils.wrap(connector, getDatabaseName());
+        final Connector originalConnector = new SpringConnector(dataSource);
+        this.connector = DatabaseUtils.wrap(originalConnector, getDatabaseName());
     }
 
     /**
-     * Constructs the engine.
+     * Constructs the engine with given dialect.
      * @param dataSource provides connection to the database
      * @param dialect forces the use of this dialect, no auto-detection
      * @param options default options to apply for query building and execution
+     * @throws SQLException failed to connect to database
      */
-    public SpringEngine(final DataSource dataSource, final Dialect dialect, final Option... options) throws SQLException {
+    public SpringEngine(final DataSource dataSource, final Dialect dialect, final Option... options)
+            throws SQLException {
         super(dialect, DatabaseUtils.getDatabaseName(dataSource), options);
-        final Connector connector = new SpringConnector(dataSource);
-        this.connector = DatabaseUtils.wrap(connector, getDatabaseName());
+        final Connector originalConnector = new SpringConnector(dataSource);
+        this.connector = DatabaseUtils.wrap(originalConnector, getDatabaseName());
     }
 
     @Override

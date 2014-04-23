@@ -20,7 +20,7 @@ package org.symqle.querybuilder;
  * Rules for SQL statements formatting. Currently only one rule is defined.
  * @author lvovich
  */
-public class FormattingRules {
+public final class FormattingRules {
 
     private FormattingRules() {
     }
@@ -30,29 +30,30 @@ public class FormattingRules {
     }
 
     /**
-     * Determines where a space is needed between SQL terminal symbols.
+     * Separator to insert between SQL terminal symbols.
      * Space is inserted between 2 non-punctuation symbols to separate them.
      * Additionall, space is inserted sometimes to improve readability, e.g.
-     * after comma and after right parenthesis.
-     * @param first
-     * @param second
-     * @return
+     * after comma and after right parenthesis, after +,- etc.
+     * Not inserted before and after period, before and after left parenthesis.
+     * @param first left character
+     * @param second right character
+     * @return separator, may be empty string.
      */
-    public static boolean needSpaceBetween(final char first, final char second) {
+    public static String separator(final char first, final char second) {
 
         switch(first) {
             case '(' :
             case '.' :
-                return false;
+                return "";
             default:
                 switch (second) {
                     case ')' :
                     case '(' :
                     case '.' :
                     case ',' :
-                        return false;
+                        return "";
                     default:
-                        return true;
+                        return " ";
                 }
         }
     }

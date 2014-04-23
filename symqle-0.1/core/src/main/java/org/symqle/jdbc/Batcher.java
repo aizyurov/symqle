@@ -40,7 +40,7 @@ public interface Batcher {
     int[] submit(Sql sql, List<Option> options) throws SQLException;
 
     /**
-     * flushes all pending updates to database
+     * Flushes all pending updates to database.
      * @return same as {@link java.sql.PreparedStatement#executeBatch()},
      * empty array if queue was empty.
      * @throws java.sql.SQLException from jdbc driver

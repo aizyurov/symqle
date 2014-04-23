@@ -35,7 +35,7 @@ public class StatementParameters implements SqlParameters {
     private int position;
 
     /**
-     * Constructs from a PreparedStatement
+     * Constructs from a PreparedStatement.
      * @param statement the statement to proxy
      */
     public StatementParameters(final PreparedStatement statement) {
@@ -50,7 +50,7 @@ public class StatementParameters implements SqlParameters {
     private class StatementParameter implements OutBox {
         private final int position;
 
-        private StatementParameter(final int position) {
+        public StatementParameter(final int position) {
             this.position = position;
         }
 

@@ -35,7 +35,7 @@ import java.util.List;
  */
 class SavedParameterizer implements Parameterizer {
 
-    final SavedParameters savedParameters;
+    private final SavedParameters savedParameters;
 
     /**
      * Constructs from another Parameterizer.
@@ -62,7 +62,7 @@ class SavedParameterizer implements Parameterizer {
             return outBox;
         }
 
-        public void replay(SqlParameters parameters) throws SQLException {
+        public void replay(final SqlParameters parameters) throws SQLException {
 
             for (SavedOutBox savedOutBox : outBoxes) {
                 savedOutBox.replay(parameters.next());
@@ -205,7 +205,7 @@ class SavedParameterizer implements Parameterizer {
             });
         }
 
-        public void replay(OutBox outBox) throws SQLException {
+        public void replay(final OutBox outBox) throws SQLException {
             for (ValueSetter setter : setters) {
                 setter.setValue(outBox);
             }

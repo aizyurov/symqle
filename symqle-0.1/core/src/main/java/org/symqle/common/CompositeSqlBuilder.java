@@ -45,9 +45,7 @@ public class CompositeSqlBuilder implements SqlBuilder {
         for (SqlBuilder element: other) {
             final char lastChar = builder.charAt(builder.length() - 1);
             final char nextChar = element.firstChar();
-            if (FormattingRules.needSpaceBetween(lastChar, nextChar)) {
-                builder.append(' ');
-            }
+            builder.append(FormattingRules.separator(lastChar, nextChar));
             element.appendTo(builder);
         }
     }
@@ -55,6 +53,7 @@ public class CompositeSqlBuilder implements SqlBuilder {
     /**
      * Sets OutBox by delegation to each member in turn.
      * @param p OutBox interface to write parameter values into
+     * @throws java.sql.SQLException jdbc driver failed to set parameters
      */
     public final void setParameters(final SqlParameters p) throws SQLException {
         first.setParameters(p);

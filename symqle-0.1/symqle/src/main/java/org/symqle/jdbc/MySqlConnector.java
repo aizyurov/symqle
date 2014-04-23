@@ -33,7 +33,7 @@ class MySqlConnector implements Connector {
     // false if have to set session variable
     // null if unknown
     private Boolean pipesAsConcat;
-    private final static String PIPES_AS_CONCAT = "PIPES_AS_CONCAT";
+    private static final String PIPES_AS_CONCAT = "PIPES_AS_CONCAT";
 
     private final Connector connector;
 
@@ -52,7 +52,7 @@ class MySqlConnector implements Connector {
         return connection;
     }
 
-    private void prepareConnection(Connection connection) throws SQLException {
+    private void prepareConnection(final Connection connection) throws SQLException {
         String sqlMode = null;
         if (pipesAsConcat == null) {
             sqlMode = getSqlMode(connection);
@@ -73,7 +73,7 @@ class MySqlConnector implements Connector {
         }
         final PreparedStatement preparedStatement = connection.prepareStatement("set session sql_mode=?");
         try {
-            preparedStatement.setString(1,  "".equals(sqlMode) ? PIPES_AS_CONCAT : sqlMode +","+ PIPES_AS_CONCAT);
+            preparedStatement.setString(1,  "".equals(sqlMode) ? PIPES_AS_CONCAT : sqlMode + "," + PIPES_AS_CONCAT);
             preparedStatement.executeUpdate();
         } finally {
             preparedStatement.close();
