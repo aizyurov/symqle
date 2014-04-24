@@ -19,7 +19,7 @@ import static org.easymock.EasyMock.verify;
 /**
  * @author lvovich
  */
-public class MappersTest extends TestCase {
+public class CoreMappersTest extends TestCase {
 
     public void testDate() throws Exception {
         InBox inBox = createMock(InBox.class);

@@ -16,6 +16,7 @@
 
 package org.symqle.common;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 /**
@@ -91,6 +92,30 @@ public final class Mappers implements CoreMappers {
         @Override
         public void setValue(final OutBox param, final byte[] value) throws SQLException {
             param.setBytes(value);
+        }
+    };
+
+    public static final Mapper<BigDecimal> DECIMAL = new Mapper<BigDecimal>() {
+        @Override
+        public BigDecimal value(final InBox inBox) throws SQLException {
+            return inBox.getBigDecimal();
+        }
+
+        @Override
+        public void setValue(final OutBox param, final BigDecimal value) throws SQLException {
+            param.setBigDecimal(value);
+        }
+    };
+
+    public static final Mapper<Void> VOID = new Mapper<Void>() {
+        @Override
+        public Void value(final InBox inBox) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public void setValue(final OutBox param, final Void value) throws SQLException {
+            throw new IllegalArgumentException("Cannot set Void value");
         }
     };
 }
