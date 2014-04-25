@@ -6,7 +6,6 @@ import org.symqle.common.Mappers;
 import org.symqle.common.OutBox;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
