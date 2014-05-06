@@ -22,12 +22,12 @@ public abstract class SqlTestCase extends TestCase {
         int lastMatchEnd = 0;
         while(matcher.find()) {
             expectedAliases.add(matcher.group(1));
-            patternBuilder.append(escapeSpecialSymbols(expected.substring(lastMatchEnd, matcher.start())));
+            patternBuilder.append(Pattern.quote(expected.substring(lastMatchEnd, matcher.start())));
             patternBuilder.append(asPattern);
             lastMatchEnd = matcher.end();
         }
         if (lastMatchEnd < expected.length()) {
-            patternBuilder.append(escapeSpecialSymbols(expected.substring(lastMatchEnd, expected.length())));
+            patternBuilder.append(Pattern.quote(expected.substring(lastMatchEnd, expected.length())));
         }
         final Map<String, String> knownMappings = new HashMap<String, String>();
         Pattern sqlPattern = Pattern.compile(patternBuilder.toString());
@@ -45,23 +45,4 @@ public abstract class SqlTestCase extends TestCase {
         }
     }
 
-    public static String escapeSpecialSymbols(String source) {
-        StringBuilder builder = new StringBuilder();
-        for (int i=0; i<source.length(); i++) {
-            final char c = source.charAt(i);
-            switch (c) {
-                case '*':
-                case '.':
-                case '+':
-                case '?':
-                case '(':
-                case ')':
-                case '|':
-                    builder.append('\\');
-                // and fall through
-                default: builder.append(c);
-            }
-        }
-        return builder.toString();
-    }
 }

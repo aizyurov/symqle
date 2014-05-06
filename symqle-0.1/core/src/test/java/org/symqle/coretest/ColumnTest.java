@@ -55,10 +55,6 @@ public class ColumnTest extends SqlTestCase {
         assertSimilar("SELECT DISTINCT T0.id AS C0 FROM person AS T0", col.distinct().showQuery(new GenericDialect()));
     }
 
-    public void testEscapeSpecialSymbols() {
-        assertEquals("abs\\(T0\\.id\\)", escapeSpecialSymbols("abs(T0.id)"));
-    }
-
     public void testAsFunctionArgument() throws Exception {
         final String sql = SqlFunction.create("abs", CoreMappers.LONG).apply(person.id).showQuery(new GenericDialect());
         assertSimilar("SELECT abs(T0.id) AS C0 FROM person AS T0", sql);
